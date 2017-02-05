@@ -1,0 +1,4 @@
+# Telling GIT that Xcode pbxproj remote and local files
+# should be merged using union of differences
+*.pbxproj binary merge=union
+
