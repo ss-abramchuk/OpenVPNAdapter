@@ -54,6 +54,7 @@
 		C909DF7C1E4F303F000999B2 /* OpenVPNAdapter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNAdapter.mm; sourceTree = "<group>"; };
 		C909DF7E1E4F3313000999B2 /* OpenVPNAdapter+Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNAdapter+Client.h"; sourceTree = "<group>"; };
 		C909DF811E4F39E9000999B2 /* OpenVPNAdapter+Provider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNAdapter+Provider.h"; sourceTree = "<group>"; };
+		C90E31011E4F86C90030CCA5 /* OpenVPNError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNError.h; sourceTree = "<group>"; };
 		C91031021E47237A0004DFFE /* OpenVPN Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenVPN Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C91031051E47237A0004DFFE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C910310A1E47237A0004DFFE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -97,6 +98,7 @@
 		C909DF6B1E4EF962000999B2 /* OpenVPN Adapter */ = {
 			isa = PBXGroup;
 			children = (
+				C90E31011E4F86C90030CCA5 /* OpenVPNError.h */,
 				C909DF7A1E4F2D0D000999B2 /* OpenVPNEvent.h */,
 				C909DF6F1E4F20C4000999B2 /* OpenVPNClient.h */,
 				C909DF741E4F2528000999B2 /* OpenVPNClient.mm */,
