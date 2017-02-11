@@ -14,6 +14,7 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
+#import "OpenVPNEvent.h"
 #import "OpenVPNClient.h"
 
 #import "OpenVPNAdapter.h"
@@ -73,6 +74,68 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     CFRelease(tunSocketSource);
     
     return YES;
+}
+
+#pragma mark Event and Log Handlers
+
+- (void)handleEvent:(const ClientAPI::Event *)event {
+    NSAssert(self.delegate != nil, @"delegate property should not be nil");
+    
+    NSString *eventName = [NSString stringWithUTF8String:event->name.c_str()];
+    OpenVPNEvent eventIdentifier = [self getOpenVPNEventFromName:eventName];
+    
+    NSString *eventMessage = [NSString stringWithUTF8String:event->info.c_str()];
+    
+    if (event->error) {
+        NSMutableDictionary *userInfo = [NSMutableDictionary new];
+        // TODO: Generate error and handle it by delegate
+    } else {
+        [self.delegate handleEvent:eventIdentifier message:![eventMessage isEqualToString:@""] ? eventMessage : nil];
+    }
+}
+
+- (void)handleLog:(const ClientAPI::LogInfo *)log {
+    NSString *message = [NSString stringWithCString:log->text.c_str() encoding:NSUTF8StringEncoding];
+    NSLog(@"%@", message);
+}
+
+- (OpenVPNEvent)getOpenVPNEventFromName:(NSString *)name {
+    NSDictionary *events = @{
+        @"DISCONNECTED": @(OpenVPNEventDisconnected),
+        @"CONNECTED": @(OpenVPNEventConnected),
+        @"RECONNECTING": @(OpenVPNEventReconnecting),
+        @"RESOLVE": @(OpenVPNEventResolve),
+        @"WAIT": @(OpenVPNEventWait),
+        @"WAIT_PROXY": @(OpenVPNEventWaitProxy),
+        @"CONNECTING": @(OpenVPNEventConnecting),
+        @"GET_CONFIG": @(OpenVPNEventGetConfig),
+        @"ASSIGN_IP": @(OpenVPNEventAssignIP),
+        @"ADD_ROUTES": @(OpenVPNEventAddRoutes),
+        @"ECHO": @(OpenVPNEventEcho),
+        @"INFO": @(OpenVPNEventInfo),
+        @"PAUSE": @(OpenVPNEventPause),
+        @"RESUME": @(OpenVPNEventResume),
+        @"TRANSPORT_ERROR": @(OpenVPNEventTransportError),
+        @"TUN_ERROR": @(OpenVPNEventTunError),
+        @"CLIENT_RESTART": @(OpenVPNEventClientRestart),
+        @"AUTH_FAILED": @(OpenVPNEventAuthFailed),
+        @"CERT_VERIFY_FAIL": @(OpenVPNEventCertVerifyFail),
+        @"TLS_VERSION_MIN": @(OpenVPNEventTLSVersionMin),
+        @"CLIENT_HALT": @(OpenVPNEventClientHalt),
+        @"CONNECTION_TIMEOUT": @(OpenVPNEventConnectionTimeout),
+        @"INACTIVE_TIMEOUT": @(OpenVPNEventInactiveTimeout),
+        @"DYNAMIC_CHALLENGE": @(OpenVPNEventDynamicChallenge),
+        @"PROXY_NEED_CREDS": @(OpenVPNEventProxyNeedCreds),
+        @"PROXY_ERROR": @(OpenVPNEventProxyError),
+        @"TUN_SETUP_FAILED": @(OpenVPNEventTunSetupFailed),
+        @"TUN_IFACE_CREATE": @(OpenVPNEventTunIfaceCreate),
+        @"TUN_IFACE_DISABLED": @(OpenVPNEventTunIfaceDisabled),
+        @"EPKI_ERROR": @(OpenVPNEventEPKIError),
+        @"EPKI_INVALID_ALIAS": @(OpenVPNEventEPKIInvalidAlias),
+    };
+    
+    OpenVPNEvent event = events[name] != nil ? (OpenVPNEvent)[(NSNumber *)events[name] unsignedIntegerValue] : OpenVPNEventUnknown;
+    return event;
 }
 
 @end
