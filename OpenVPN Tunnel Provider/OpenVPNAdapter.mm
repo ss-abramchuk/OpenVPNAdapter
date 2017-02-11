@@ -14,12 +14,16 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
+#import "OpenVPNError.h"
 #import "OpenVPNEvent.h"
 #import "OpenVPNClient.h"
 
 #import "OpenVPNAdapter.h"
 #import "OpenVPNAdapter+Client.h"
 #import "OpenVPNAdapter+Provider.h"
+
+NSString *const OpenVPNClientErrorDomain = @"OpenVPNClientErrorDomain";
+NSString *const OpenVPNClientErrorFatalKey = @"OpenVPNClientErrorFatalKey";
 
 
 @interface OpenVPNAdapter ()
@@ -82,15 +86,25 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     NSAssert(self.delegate != nil, @"delegate property should not be nil");
     
     NSString *eventName = [NSString stringWithUTF8String:event->name.c_str()];
-    OpenVPNEvent eventIdentifier = [self getOpenVPNEventFromName:eventName];
+    OpenVPNEvent eventIdentifier = [self getOpenVPNEventByName:eventName];
     
     NSString *eventMessage = [NSString stringWithUTF8String:event->info.c_str()];
     
     if (event->error) {
         NSMutableDictionary *userInfo = [NSMutableDictionary new];
-        // TODO: Generate error and handle it by delegate
+        [userInfo setObject:[NSNumber numberWithBool:event->fatal] forKey:OpenVPNClientErrorFatalKey];
+        
+        if (eventMessage != nil && ![eventMessage isEqualToString:@""]) {
+            [userInfo setObject:eventMessage forKey:NSLocalizedDescriptionKey];
+        }
+        
+        NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
+                                             code:eventIdentifier
+                                         userInfo:[userInfo copy]];
+        
+        [self.delegate handleError:error];
     } else {
-        [self.delegate handleEvent:eventIdentifier message:![eventMessage isEqualToString:@""] ? eventMessage : nil];
+        [self.delegate handleEvent:eventIdentifier message:eventMessage == nil || [eventMessage isEqualToString:@""] ? nil : eventMessage];
     }
 }
 
@@ -99,7 +113,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     NSLog(@"%@", message);
 }
 
-- (OpenVPNEvent)getOpenVPNEventFromName:(NSString *)name {
+- (OpenVPNEvent)getOpenVPNEventByName:(NSString *)eventName {
     NSDictionary *events = @{
         @"DISCONNECTED": @(OpenVPNEventDisconnected),
         @"CONNECTED": @(OpenVPNEventConnected),
@@ -134,7 +148,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         @"EPKI_INVALID_ALIAS": @(OpenVPNEventEPKIInvalidAlias),
     };
     
-    OpenVPNEvent event = events[name] != nil ? (OpenVPNEvent)[(NSNumber *)events[name] unsignedIntegerValue] : OpenVPNEventUnknown;
+    OpenVPNEvent event = events[eventName] != nil ? (OpenVPNEvent)[(NSNumber *)events[eventName] unsignedIntegerValue] : OpenVPNEventUnknown;
     return event;
 }
 
