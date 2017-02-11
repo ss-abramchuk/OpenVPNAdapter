@@ -16,9 +16,9 @@
 
 @protocol OpenVPNAdapterDelegate <NSObject>
 
-- (void)setTunnelSettings:(nonnull NEPacketTunnelNetworkSettings *)settings
+- (void)configureTunnelWithSettings:(nonnull NEPacketTunnelNetworkSettings *)settings
                  callback:(nonnull void (^)(NEPacketTunnelFlow * __nullable flow))callback
-NS_SWIFT_NAME(setTunnel(settings:callback:));
+NS_SWIFT_NAME(configureTunnel(settings:callback:));
 
 - (void)handleEvent:(OpenVPNEvent)event
             message:(nullable NSString *)message
