@@ -94,7 +94,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C909DF6B1E4EF962000999B2 /* Client */ = {
+		C909DF6B1E4EF962000999B2 /* OpenVPN Adapter */ = {
 			isa = PBXGroup;
 			children = (
 				C909DF7A1E4F2D0D000999B2 /* OpenVPNEvent.h */,
@@ -105,7 +105,7 @@
 				C909DF811E4F39E9000999B2 /* OpenVPNAdapter+Provider.h */,
 				C909DF7C1E4F303F000999B2 /* OpenVPNAdapter.mm */,
 			);
-			name = Client;
+			name = "OpenVPN Adapter";
 			sourceTree = "<group>";
 		};
 		C91030F71E471D760004DFFE = {
@@ -207,7 +207,7 @@
 		C91031231E4727E20004DFFE /* OpenVPN Tunnel Provider */ = {
 			isa = PBXGroup;
 			children = (
-				C909DF6B1E4EF962000999B2 /* Client */,
+				C909DF6B1E4EF962000999B2 /* OpenVPN Adapter */,
 				C91031301E4728F10004DFFE /* Libraries */,
 				C91031321E4729120004DFFE /* Provider */,
 			);
