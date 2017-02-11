@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C909DF751E4F2528000999B2 /* OpenVPNClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = C909DF741E4F2528000999B2 /* OpenVPNClient.mm */; };
+		C909DF7D1E4F303F000999B2 /* OpenVPNAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = C909DF7C1E4F303F000999B2 /* OpenVPNAdapter.mm */; };
 		C91031061E47237A0004DFFE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91031051E47237A0004DFFE /* AppDelegate.swift */; };
 		C910310B1E47237A0004DFFE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C91031091E47237A0004DFFE /* Main.storyboard */; };
 		C910310D1E47237A0004DFFE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C910310C1E47237A0004DFFE /* Assets.xcassets */; };
@@ -45,6 +47,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C909DF6F1E4F20C4000999B2 /* OpenVPNClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNClient.h; sourceTree = "<group>"; };
+		C909DF741E4F2528000999B2 /* OpenVPNClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNClient.mm; sourceTree = "<group>"; };
+		C909DF7A1E4F2D0D000999B2 /* OpenVPNEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNEvent.h; sourceTree = "<group>"; };
+		C909DF7B1E4F303F000999B2 /* OpenVPNAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapter.h; sourceTree = "<group>"; };
+		C909DF7C1E4F303F000999B2 /* OpenVPNAdapter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNAdapter.mm; sourceTree = "<group>"; };
+		C909DF7E1E4F3313000999B2 /* OpenVPNAdapter+Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNAdapter+Client.h"; sourceTree = "<group>"; };
+		C909DF811E4F39E9000999B2 /* OpenVPNAdapter+Provider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNAdapter+Provider.h"; sourceTree = "<group>"; };
 		C91031021E47237A0004DFFE /* OpenVPN Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenVPN Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C91031051E47237A0004DFFE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C910310A1E47237A0004DFFE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -85,6 +94,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C909DF6B1E4EF962000999B2 /* Client */ = {
+			isa = PBXGroup;
+			children = (
+				C909DF7A1E4F2D0D000999B2 /* OpenVPNEvent.h */,
+				C909DF6F1E4F20C4000999B2 /* OpenVPNClient.h */,
+				C909DF741E4F2528000999B2 /* OpenVPNClient.mm */,
+				C909DF7B1E4F303F000999B2 /* OpenVPNAdapter.h */,
+				C909DF7E1E4F3313000999B2 /* OpenVPNAdapter+Client.h */,
+				C909DF811E4F39E9000999B2 /* OpenVPNAdapter+Provider.h */,
+				C909DF7C1E4F303F000999B2 /* OpenVPNAdapter.mm */,
+			);
+			name = Client;
+			sourceTree = "<group>";
+		};
 		C91030F71E471D760004DFFE = {
 			isa = PBXGroup;
 			children = (
@@ -184,6 +207,7 @@
 		C91031231E4727E20004DFFE /* OpenVPN Tunnel Provider */ = {
 			isa = PBXGroup;
 			children = (
+				C909DF6B1E4EF962000999B2 /* Client */,
 				C91031301E4728F10004DFFE /* Libraries */,
 				C91031321E4729120004DFFE /* Provider */,
 			);
@@ -438,6 +462,8 @@
 			files = (
 				C91031271E4727E20004DFFE /* PacketTunnelProvider.swift in Sources */,
 				C91031461E47345F0004DFFE /* ovpncli.cpp in Sources */,
+				C909DF7D1E4F303F000999B2 /* OpenVPNAdapter.mm in Sources */,
+				C909DF751E4F2528000999B2 /* OpenVPNClient.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -774,6 +800,7 @@
 				C91031131E47237A0004DFFE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C910312C1E4727E20004DFFE /* Build configuration list for PBXNativeTarget "OpenVPN Tunnel Provider" */ = {
 			isa = XCConfigurationList;
@@ -782,6 +809,7 @@
 				C910312E1E4727E20004DFFE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
