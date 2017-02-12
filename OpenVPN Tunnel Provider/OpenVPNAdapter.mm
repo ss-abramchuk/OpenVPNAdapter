@@ -23,7 +23,9 @@
 #import "OpenVPNAdapter+Provider.h"
 
 NSString *const OpenVPNClientErrorDomain = @"OpenVPNClientErrorDomain";
+
 NSString *const OpenVPNClientErrorFatalKey = @"OpenVPNClientErrorFatalKey";
+NSString *const OpenVPNClientErrorEventKey = @"OpenVPNClientErrorEventKey";
 
 
 @interface OpenVPNAdapter ()
@@ -86,20 +88,21 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     NSAssert(self.delegate != nil, @"delegate property should not be nil");
     
     NSString *eventName = [NSString stringWithUTF8String:event->name.c_str()];
-    OpenVPNEvent eventIdentifier = [self getOpenVPNEventByName:eventName];
+    OpenVPNEvent eventIdentifier = [self getEventIdentifierByName:eventName];
     
     NSString *eventMessage = [NSString stringWithUTF8String:event->info.c_str()];
     
     if (event->error) {
         NSMutableDictionary *userInfo = [NSMutableDictionary new];
-        [userInfo setObject:[NSNumber numberWithBool:event->fatal] forKey:OpenVPNClientErrorFatalKey];
+        [userInfo setObject:@(event->fatal) forKey:OpenVPNClientErrorFatalKey];
+        [userInfo setObject:@(eventIdentifier) forKey:OpenVPNClientErrorEventKey];
         
         if (eventMessage != nil && ![eventMessage isEqualToString:@""]) {
             [userInfo setObject:eventMessage forKey:NSLocalizedDescriptionKey];
         }
         
         NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
-                                             code:eventIdentifier
+                                             code:OpenVPNErrorClientFailure
                                          userInfo:[userInfo copy]];
         
         [self.delegate handleError:error];
@@ -113,7 +116,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     NSLog(@"%@", message);
 }
 
-- (OpenVPNEvent)getOpenVPNEventByName:(NSString *)eventName {
+- (OpenVPNEvent)getEventIdentifierByName:(NSString *)eventName {
     NSDictionary *events = @{
         @"DISCONNECTED": @(OpenVPNEventDisconnected),
         @"CONNECTED": @(OpenVPNEventConnected),
@@ -154,6 +157,68 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 @end
 
+
 @implementation OpenVPNAdapter (Provider)
+
+#pragma mark Client Configuration
+
+- (BOOL)configureWithUsername:(NSString *)username password:(NSString *)password configuration:(NSData *)configuration error:(out NSError * __autoreleasing _Nullable *)error {
+    NSString *vpnConfiguration = [[NSString alloc] initWithData:configuration encoding:NSUTF8StringEncoding];
+    
+    if (vpnConfiguration == nil) {
+        if (error) *error = [NSError errorWithDomain:OpenVPNClientErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
+            // TODO: Write error message
+            NSLocalizedDescriptionKey: @"Failed to ..."
+        }];
+        return NO;
+    }
+    
+    ClientAPI::Config clientConfiguration;
+    clientConfiguration.content = std::string([vpnConfiguration UTF8String]);
+    clientConfiguration.connTimeout = 30;
+    
+    self.vpnClient = new OpenVPNClient((__bridge void *)self);
+    
+    ClientAPI::EvalConfig eval = self.vpnClient->eval_config(clientConfiguration);
+    if (eval.error) {
+        if (error) *error = [NSError errorWithDomain:OpenVPNClientErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
+            NSLocalizedDescriptionKey: [NSString stringWithUTF8String:eval.message.c_str()]
+        }];
+        return NO;
+    }
+    
+    ClientAPI::ProvideCreds creds;
+    creds.username = [username UTF8String];
+    creds.password = [password UTF8String];
+    
+    ClientAPI::Status creds_status = self.vpnClient->provide_creds(creds);
+    if (creds_status.error) {
+        if (error) *error = [NSError errorWithDomain:OpenVPNClientErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
+            NSLocalizedDescriptionKey: [NSString stringWithUTF8String:creds_status.message.c_str()]
+        }];
+        return NO;
+    }
+    
+    return YES;
+}
+
+#pragma mark Connection Control
+
+
+
+@end
+
+
+@implementation OpenVPNAdapter
+
+- (void)dealloc {
+    delete self.vpnClient;
+    
+    CFSocketInvalidate(self.tunSocket);
+    CFSocketInvalidate(self.vpnSocket);
+    
+    CFRelease(self.tunSocket);
+    CFRelease(self.vpnSocket);
+}
 
 @end
