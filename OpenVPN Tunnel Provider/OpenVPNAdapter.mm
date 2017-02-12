@@ -22,10 +22,10 @@
 #import "OpenVPNAdapter+Client.h"
 #import "OpenVPNAdapter+Provider.h"
 
-NSString *const OpenVPNClientErrorDomain = @"OpenVPNClientErrorDomain";
+NSString * const OpenVPNClientErrorDomain = @"OpenVPNClientErrorDomain";
 
-NSString *const OpenVPNClientErrorFatalKey = @"OpenVPNClientErrorFatalKey";
-NSString *const OpenVPNClientErrorEventKey = @"OpenVPNClientErrorEventKey";
+NSString * const OpenVPNClientErrorFatalKey = @"OpenVPNClientErrorFatalKey";
+NSString * const OpenVPNClientErrorEventKey = @"OpenVPNClientErrorEventKey";
 
 
 @interface OpenVPNAdapter ()

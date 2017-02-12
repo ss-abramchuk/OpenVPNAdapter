@@ -10,8 +10,8 @@
 
 extern NSString * __nonnull const OpenVPNClientErrorDomain;
 
-extern NSString *__nonnull const OpenVPNClientErrorFatalKey;
-extern NSString *__nonnull const OpenVPNClientErrorEventKey;
+extern NSString * __nonnull const OpenVPNClientErrorFatalKey;
+extern NSString * __nonnull const OpenVPNClientErrorEventKey;
 
 typedef NS_ENUM(NSUInteger, OpenVPNError) {
     OpenVPNErrorConfigurationFailure,
