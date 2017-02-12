@@ -204,7 +204,37 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 #pragma mark Connection Control
 
+- (void)connect {
+    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-client.tunnel-provider.connection", NULL);
+    dispatch_async(connectQueue, ^{
+        try {
+            OpenVPNClient::init_process();
+            
+            ClientAPI::Status status = self.vpnClient->connect();
+            if (status.error) {
+                NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
+                                                     code:OpenVPNErrorClientFailure
+                                                 userInfo:@{ NSLocalizedDescriptionKey: [NSString stringWithUTF8String:status.message.c_str()],
+                                                             OpenVPNClientErrorFatalKey: @(YES),
+                                                             OpenVPNClientErrorEventKey: @(OpenVPNEventConnectionFailed) }];
+                [self.delegate handleError:error];
+            }
+            
+            OpenVPNClient::uninit_process();
+        } catch(const std::exception& e) {
+            NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
+                                                 code:OpenVPNErrorClientFailure
+                                             userInfo:@{ NSLocalizedDescriptionKey: [NSString stringWithUTF8String:e.what()],
+                                                         OpenVPNClientErrorFatalKey: @(YES),
+                                                         OpenVPNClientErrorEventKey: @(OpenVPNEventConnectionFailed) }];
+            [self.delegate handleError:error];
+        }
+    });
+}
 
+- (void)disconnect {
+    self.vpnClient->stop();
+}
 
 @end
 
