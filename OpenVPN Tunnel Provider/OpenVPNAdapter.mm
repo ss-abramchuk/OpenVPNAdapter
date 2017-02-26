@@ -17,6 +17,7 @@
 #import "OpenVPNError.h"
 #import "OpenVPNEvent.h"
 #import "OpenVPNClient.h"
+#import "TUNConfiguration.h"
 
 #import "OpenVPNAdapter.h"
 #import "OpenVPNAdapter+Client.h"
@@ -32,13 +33,14 @@ NSString * const OpenVPNClientErrorEventKey = @"OpenVPNClientErrorEventKey";
 
 @property OpenVPNClient *vpnClient;
 
+@property (strong, nonatomic) TUNConfiguration *tunConfiguration;
+
 @property CFSocketRef tunSocket;
 @property CFSocketRef vpnSocket;
 
 @property (weak, nonatomic) NEPacketTunnelFlow *packetFlow;
 
 @end
-
 
 @implementation OpenVPNAdapter (Client)
 
@@ -78,6 +80,91 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     CFRunLoopAddSource(CFRunLoopGetMain(), tunSocketSource, kCFRunLoopCommonModes);
     
     CFRelease(tunSocketSource);
+    
+    return YES;
+}
+
+#pragma mark TUN Configuration
+
+- (BOOL)setRemoteAddress:(NSString *)address {
+    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+    
+    if (address == nil) {
+        return NO;
+    }
+    
+    self.tunConfiguration.remoteAddress = address;
+    
+    return YES;
+}
+
+- (BOOL)addLocalAddress:(NSString *)address subnet:(NSString *)subnet gateway:(NSString *)gateway {
+    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+    
+    if (address == nil || subnet == nil) {
+        return NO;
+    }
+    
+    [self.tunConfiguration.localAddresses addObject:address];
+    [self.tunConfiguration.subnets addObject:subnet];
+    
+    return YES;
+}
+
+- (BOOL)addRoute:(NSString *)route subnet:(NSString *)subnet {
+    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+    
+    if (route == nil || subnet == nil) {
+        return NO;
+    }
+    
+    NEIPv4Route *includedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
+    [self.tunConfiguration.includedRoutes addObject:includedRoute];
+    
+    return YES;
+}
+
+- (BOOL)excludeRoute:(NSString *)route subnet:(NSString *)subnet {
+    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+    
+    if (route == nil || subnet == nil) {
+        return NO;
+    }
+    
+    NEIPv4Route *excludedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
+    [self.tunConfiguration.excludedRoutes addObject:excludedRoute];
+    
+    return YES;
+}
+
+- (BOOL)addDNSAddress:(NSString *)address {
+    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+    
+    if (address == nil) {
+        return NO;
+    }
+    
+    [self.tunConfiguration.dnsAddresses addObject:address];
+    
+    return YES;
+}
+
+- (BOOL)addSearchDomain:(NSString *)domain {
+    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+    
+    if (domain == nil) {
+        return NO;
+    }
+    
+    [self.tunConfiguration.searchDomains addObject:domain];
+    
+    return YES;
+}
+
+- (BOOL)setMTU:(NSInteger)mtu {
+    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+    
+    self.tunConfiguration.mtu = @(mtu);
     
     return YES;
 }
@@ -157,7 +244,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 @end
 
-
 @implementation OpenVPNAdapter (Provider)
 
 #pragma mark Client Configuration
@@ -205,11 +291,13 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark Connection Control
 
 - (void)connect {
-    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-client.tunnel-provider.connection", NULL);
+    // TODO: Describe why we use async invocation here
+    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-ios-client.tunnel-provider.connection", NULL);
     dispatch_async(connectQueue, ^{
+        self.tunConfiguration = [TUNConfiguration new];
+        OpenVPNClient::init_process();
+        
         try {
-            OpenVPNClient::init_process();
-            
             ClientAPI::Status status = self.vpnClient->connect();
             if (status.error) {
                 NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
@@ -219,8 +307,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
                                                              OpenVPNClientErrorEventKey: @(OpenVPNEventConnectionFailed) }];
                 [self.delegate handleError:error];
             }
-            
-            OpenVPNClient::uninit_process();
         } catch(const std::exception& e) {
             NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
                                                  code:OpenVPNErrorClientFailure
@@ -229,6 +315,9 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
                                                          OpenVPNClientErrorEventKey: @(OpenVPNEventConnectionFailed) }];
             [self.delegate handleError:error];
         }
+        
+        OpenVPNClient::uninit_process();
+        self.tunConfiguration = nil;
     });
 }
 
@@ -237,7 +326,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 }
 
 @end
-
 
 @implementation OpenVPNAdapter
 
