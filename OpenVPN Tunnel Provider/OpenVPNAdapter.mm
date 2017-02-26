@@ -199,7 +199,11 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         dispatch_semaphore_signal(sema);
     }];
     
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
+    if (dispatch_semaphore_wait(sema, timeout) != 0) {
+        NSLog(@"Tunnel configuration failed due to timeout");
+        return -1;
+    }
     
     if (self.packetFlow) {
         [self readTUNPackets];
