@@ -40,6 +40,9 @@ NSString * const OpenVPNClientErrorEventKey = @"OpenVPNClientErrorEventKey";
 
 @property (weak, nonatomic) NEPacketTunnelFlow *packetFlow;
 
+- (void)readTUNPackets;
+- (void)readVPNData:(NSData *)data;
+
 @end
 
 @implementation OpenVPNAdapter (Client)
@@ -51,7 +54,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     switch (type) {
         case kCFSocketDataCallBack:
-            // TODO: Handle received data and send it to the tun interface
+            [adapter readVPNData:(__bridge NSData *)data];
             break;
             
         default:
@@ -167,6 +170,43 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     self.tunConfiguration.mtu = @(mtu);
     
     return YES;
+}
+
+- (NSInteger)establishTunnel {
+    NSAssert(self.delegate != nil, @"delegate property should not be nil");
+    
+    NEIPv4Settings *ipSettings = [[NEIPv4Settings alloc] initWithAddresses:@[self.tunConfiguration.localAddresses] subnetMasks:@[self.tunConfiguration.subnets]];
+    ipSettings.includedRoutes = self.tunConfiguration.includedRoutes;
+    ipSettings.excludedRoutes = self.tunConfiguration.excludedRoutes;
+    
+    NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.tunConfiguration.remoteAddress];
+    networkSettings.IPv4Settings = ipSettings;
+    
+    if (self.tunConfiguration.dnsAddresses.count > 0) {
+        networkSettings.DNSSettings = [[NEDNSSettings alloc] initWithServers:self.tunConfiguration.dnsAddresses];
+        
+        if (self.tunConfiguration.searchDomains.count > 0) {
+            networkSettings.DNSSettings.searchDomains = self.tunConfiguration.searchDomains;
+        }
+    }
+    
+    networkSettings.MTU = self.tunConfiguration.mtu;
+    
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    
+    [self.delegate configureTunnelWithSettings:networkSettings callback:^(NEPacketTunnelFlow * _Nullable flow) {
+        self.packetFlow = flow;
+        dispatch_semaphore_signal(sema);
+    }];
+    
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    
+    if (self.packetFlow) {
+        [self readTUNPackets];
+        return CFSocketGetNative(self.vpnSocket);
+    } else {
+        return -1;
+    }
 }
 
 #pragma mark Event and Log Handlers
@@ -328,6 +368,20 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 @end
 
 @implementation OpenVPNAdapter
+
+#pragma mark TUN -> OpenVPN
+
+- (void)readTUNPackets {
+    // TODO: Read data from the TUN and send it to the VPN server
+}
+
+#pragma mark OpenVPN -> TUN
+
+- (void)readVPNData:(NSData *)data {
+    // TODO: Read data from the VPN and send it to the TUN interface
+}
+
+#pragma mark Deallocation
 
 - (void)dealloc {
     delete self.vpnClient;
