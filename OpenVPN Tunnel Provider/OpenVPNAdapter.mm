@@ -35,8 +35,8 @@ NSString * const OpenVPNClientErrorEventKey = @"OpenVPNClientErrorEventKey";
 
 @property (strong, nonatomic) TUNConfiguration *tunConfiguration;
 
-@property CFSocketRef tunSocket;
 @property CFSocketRef vpnSocket;
+@property CFSocketRef tunSocket;
 
 @property (weak, nonatomic) NEPacketTunnelFlow *packetFlow;
 
@@ -71,15 +71,15 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     CFSocketContext socketCtxt = {0, (__bridge void *)self, NULL, NULL, NULL};
     
-    self.tunSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, &socketCallback, &socketCtxt);
-    self.vpnSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
+    self.vpnSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, &socketCallback, &socketCtxt);
+    self.tunSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
     
-    if (!self.tunSocket || !self.vpnSocket) {
+    if (!self.vpnSocket || !self.tunSocket) {
         NSLog(@"Failed to create core foundation sockets from native sockets");
         return NO;
     }
     
-    CFRunLoopSourceRef tunSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, self.tunSocket, 0);
+    CFRunLoopSourceRef tunSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, self.vpnSocket, 0);
     CFRunLoopAddSource(CFRunLoopGetMain(), tunSocketSource, kCFRunLoopCommonModes);
     
     CFRelease(tunSocketSource);
@@ -207,7 +207,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     if (self.packetFlow) {
         [self readTUNPackets];
-        return CFSocketGetNative(self.vpnSocket);
+        return CFSocketGetNative(self.tunSocket);
     } else {
         return -1;
     }
@@ -376,7 +376,22 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark TUN -> OpenVPN
 
 - (void)readTUNPackets {
-    // TODO: Read data from the TUN and send it to the VPN server
+    [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols) {
+        [packets enumerateObjectsUsingBlock:^(NSData * data, NSUInteger idx, BOOL * stop) {
+            // Prepend data with network protocol. It should be done because OpenVPN uses uint32_t prefixes containing network protocol.
+            NSNumber *protocol = protocols[idx];
+            uint32_t prefix = CFSwapInt32HostToBig((uint32_t)[protocol unsignedIntegerValue]);
+            
+            NSMutableData *packet = [NSMutableData new];
+            [packet appendBytes:&prefix length:sizeof(prefix)];
+            [packet appendData:packet];
+            
+            // Send data to the VPN server
+            CFSocketSendData(self.vpnSocket, NULL, (CFDataRef)packet, 0.05);
+        }];
+        
+        [self readTUNPackets];
+    }];
 }
 
 #pragma mark OpenVPN -> TUN
@@ -390,11 +405,11 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (void)dealloc {
     delete self.vpnClient;
     
-    CFSocketInvalidate(self.tunSocket);
     CFSocketInvalidate(self.vpnSocket);
+    CFSocketInvalidate(self.tunSocket);
     
-    CFRelease(self.tunSocket);
     CFRelease(self.vpnSocket);
+    CFRelease(self.tunSocket);
 }
 
 @end
