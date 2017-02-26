@@ -20,6 +20,7 @@
 		C910313F1E4732080004DFFE /* liblz4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C910313E1E4732080004DFFE /* liblz4.a */; };
 		C91031411E4732160004DFFE /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C91031401E4732160004DFFE /* libmbedtls.a */; };
 		C91031461E47345F0004DFFE /* ovpncli.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C91031451E47345F0004DFFE /* ovpncli.cpp */; };
+		C9990B391E62F60400474227 /* TUNConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = C9990B381E62F60400474227 /* TUNConfiguration.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,8 @@
 		C91031441E47345F0004DFFE /* ovpncli.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ovpncli.hpp; path = Vendors/openvpn/openvpn/client/ovpncli.hpp; sourceTree = "<group>"; };
 		C91031451E47345F0004DFFE /* ovpncli.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ovpncli.cpp; path = Vendors/openvpn/openvpn/client/ovpncli.cpp; sourceTree = "<group>"; };
 		C9990B361E62F0E800474227 /* OpenVPN Client.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "OpenVPN Client.entitlements"; sourceTree = "<group>"; };
+		C9990B371E62F60400474227 /* TUNConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUNConfiguration.h; sourceTree = "<group>"; };
+		C9990B381E62F60400474227 /* TUNConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUNConfiguration.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +104,8 @@
 			children = (
 				C90E31011E4F86C90030CCA5 /* OpenVPNError.h */,
 				C909DF7A1E4F2D0D000999B2 /* OpenVPNEvent.h */,
+				C9990B371E62F60400474227 /* TUNConfiguration.h */,
+				C9990B381E62F60400474227 /* TUNConfiguration.m */,
 				C909DF6F1E4F20C4000999B2 /* OpenVPNClient.h */,
 				C909DF741E4F2528000999B2 /* OpenVPNClient.mm */,
 				C909DF7B1E4F303F000999B2 /* OpenVPNAdapter.h */,
@@ -133,7 +138,6 @@
 		C91031041E47237A0004DFFE /* OpenVPN Client */ = {
 			isa = PBXGroup;
 			children = (
-				C9990B361E62F0E800474227 /* OpenVPN Client.entitlements */,
 				C91031151E47242D0004DFFE /* Controllers */,
 				C91031191E4724D10004DFFE /* Storyboards */,
 				C91031171E47249E0004DFFE /* Libraries */,
@@ -171,6 +175,7 @@
 		C91031181E4724A90004DFFE /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				C9990B361E62F0E800474227 /* OpenVPN Client.entitlements */,
 				C91031111E47237A0004DFFE /* Info.plist */,
 			);
 			name = Configuration;
@@ -480,6 +485,7 @@
 				C91031461E47345F0004DFFE /* ovpncli.cpp in Sources */,
 				C909DF7D1E4F303F000999B2 /* OpenVPNAdapter.mm in Sources */,
 				C909DF751E4F2528000999B2 /* OpenVPNClient.mm in Sources */,
+				C9990B391E62F60400474227 /* TUNConfiguration.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
