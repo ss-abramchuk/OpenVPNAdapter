@@ -71,6 +71,7 @@
 		C91031431E47345E0004DFFE /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		C91031441E47345F0004DFFE /* ovpncli.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ovpncli.hpp; path = Vendors/openvpn/openvpn/client/ovpncli.hpp; sourceTree = "<group>"; };
 		C91031451E47345F0004DFFE /* ovpncli.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ovpncli.cpp; path = Vendors/openvpn/openvpn/client/ovpncli.cpp; sourceTree = "<group>"; };
+		C9990B361E62F0E800474227 /* OpenVPN Client.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "OpenVPN Client.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +133,7 @@
 		C91031041E47237A0004DFFE /* OpenVPN Client */ = {
 			isa = PBXGroup;
 			children = (
+				C9990B361E62F0E800474227 /* OpenVPN Client.entitlements */,
 				C91031151E47242D0004DFFE /* Controllers */,
 				C91031191E4724D10004DFFE /* Storyboards */,
 				C91031171E47249E0004DFFE /* Libraries */,
@@ -340,12 +342,24 @@
 				TargetAttributes = {
 					C91031011E47237A0004DFFE = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 2TWXCGG7R3;
 						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					C91031211E4727E20004DFFE = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 2TWXCGG7R3;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -538,10 +552,12 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "OpenVPN Client/OpenVPN Client.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2TWXCGG7R3;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -566,8 +582,10 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-client";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-ios-client";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "c6bdf97a-4a6e-45f5-af63-045d8b3f0ffc";
+				PROVISIONING_PROFILE_SPECIFIER = "OpenVPN Client Dev Profile";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -599,10 +617,12 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "OpenVPN Client/OpenVPN Client.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -620,7 +640,7 @@
 				INFOPLIST_FILE = "OpenVPN Client/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-client";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-ios-client";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -654,7 +674,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2TWXCGG7R3;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -698,8 +719,10 @@
 					"-DHAVE_LZ4",
 					"-DUSE_POLARSSL",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-client.tunnel-provider";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-ios-client.tunnel-provider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "7eef51df-5e5e-48fe-8743-0409498969ac";
+				PROVISIONING_PROFILE_SPECIFIER = "OpenVPN Tunnel Provider Dev Profile";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -735,6 +758,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -771,7 +795,7 @@
 					"-DHAVE_LZ4",
 					"-DUSE_POLARSSL",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-client.tunnel-provider";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-ios-client.tunnel-provider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
