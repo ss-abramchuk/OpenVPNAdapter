@@ -9,7 +9,6 @@
 #import <sstream>
 
 #import <Foundation/Foundation.h>
-#import <NetworkExtension/NetworkExtension.h>
 
 #import "OpenVPNAdapter+Client.h"
 
@@ -56,16 +55,17 @@ bool OpenVPNClient::tun_builder_exclude_route(const std::string& address, int pr
 }
 
 bool OpenVPNClient::tun_builder_add_dns_server(const std::string& address, bool ipv6) {
-    return [(__bridge OpenVPNAdapter *)adapter addDNSAddress:[NSString stringWithUTF8String:address.c_str()]];
+    NSString *dnsAddress = [NSString stringWithUTF8String:address.c_str()];
+    return [(__bridge OpenVPNAdapter *)adapter addDNSAddress:dnsAddress];
 }
 
 bool OpenVPNClient::tun_builder_add_search_domain(const std::string& domain) {
-    return [(__bridge OpenVPNAdapter *)adapter addSearchDomain:[NSString stringWithUTF8String:domain.c_str()]];
+    NSString *searchDomain = [NSString stringWithUTF8String:domain.c_str()];
+    return [(__bridge OpenVPNAdapter *)adapter addSearchDomain:searchDomain];
 }
 
 bool OpenVPNClient::tun_builder_set_mtu(int mtu) {
-    [(__bridge OpenVPNAdapter *)adapter setMTU:mtu];
-    return true;
+    return [(__bridge OpenVPNAdapter *)adapter setMTU:mtu];
 }
 
 bool OpenVPNClient::tun_builder_set_session_name(const std::string& name) {
