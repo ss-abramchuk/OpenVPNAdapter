@@ -6,5 +6,9 @@
 	<array>
 		<string>group.me.ss-abramchuk.openvpn-ios-client</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)keychain-shared</string>
+	</array>
 </dict>
 </plist>
