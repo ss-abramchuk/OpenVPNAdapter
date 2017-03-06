@@ -397,7 +397,24 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark OpenVPN -> TUN
 
 - (void)readVPNData:(NSData *)data {
-    // TODO: Read data from the VPN and send it to the TUN interface
+    // Get network protocol from data
+    NSUInteger prefixSize = sizeof(uint32_t);
+    
+    if (data.length < prefixSize) {
+        NSLog(@"Incorrect OpenVPN packet size");
+        return;
+    }
+    
+    uint32_t protocol = UINT32_MAX;
+    [data getBytes:&protocol length:prefixSize];
+    
+    protocol = CFSwapInt32BigToHost(protocol);
+    
+    // Send the packet to the TUN interface
+    NSData *packet = [data subdataWithRange:NSMakeRange(prefixSize, data.length - prefixSize)];
+    if (![self.packetFlow writePackets:@[packet] withProtocols:@[@(protocol)]]) {
+        NSLog(@"Failed to send OpenVPN packet to the TUN interface");
+    }
 }
 
 #pragma mark Deallocation
