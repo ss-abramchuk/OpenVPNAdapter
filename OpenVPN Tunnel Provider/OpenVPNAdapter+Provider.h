@@ -32,13 +32,14 @@ NS_SWIFT_NAME(handle(error:));
 
 @interface OpenVPNAdapter (Provider)
 
+@property (strong, nonatomic, nullable) NSString *username;
+@property (strong, nonatomic, nullable) NSString *password;
+
 @property (weak, nonatomic, null_unspecified) id<OpenVPNAdapterDelegate> delegate;
 
-- (BOOL)configureWithUsername:(nonnull NSString *)username
-                     password:(nonnull NSString *)password
-                configuration:(nonnull NSData *)configuration
-                        error:(out NSError * __nullable * __nullable)error
-NS_SWIFT_NAME(configure(username:password:configuration:));
+- (BOOL)configureUsing:(nonnull NSData *)settings
+            error:(out NSError * __nullable * __nullable)error
+NS_SWIFT_NAME(configure(using:));
 
 - (void)connect;
 - (void)disconnect;

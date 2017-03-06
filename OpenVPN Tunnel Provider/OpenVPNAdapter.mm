@@ -290,15 +290,19 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 @implementation OpenVPNAdapter (Provider)
 
+@dynamic username;
+@dynamic password;
+
+@dynamic delegate;
+
 #pragma mark Client Configuration
 
-- (BOOL)configureWithUsername:(NSString *)username password:(NSString *)password configuration:(NSData *)configuration error:(out NSError * __autoreleasing _Nullable *)error {
-    NSString *vpnConfiguration = [[NSString alloc] initWithData:configuration encoding:NSUTF8StringEncoding];
+- (BOOL)configureUsing:(NSData *)settings error:(out NSError * __autoreleasing _Nullable *)error {
+    NSString *vpnConfiguration = [[NSString alloc] initWithData:settings encoding:NSUTF8StringEncoding];
     
     if (vpnConfiguration == nil) {
         if (error) *error = [NSError errorWithDomain:OpenVPNClientErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
-            // TODO: Write error message
-            NSLocalizedDescriptionKey: @"Failed to ..."
+            NSLocalizedDescriptionKey: @"Failed to read VPN configuration"
         }];
         return NO;
     }
@@ -318,8 +322,8 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }
     
     ClientAPI::ProvideCreds creds;
-    creds.username = [username UTF8String];
-    creds.password = [password UTF8String];
+    creds.username = [self.username UTF8String];
+    creds.password = [self.password UTF8String];
     
     ClientAPI::Status creds_status = self.vpnClient->provide_creds(creds);
     if (creds_status.error) {
