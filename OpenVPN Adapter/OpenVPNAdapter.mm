@@ -204,9 +204,9 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         dispatch_semaphore_signal(sema);
     }];
     
-    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC);
     if (dispatch_semaphore_wait(sema, timeout) != 0) {
-        NSLog(@"Tunnel configuration failed due to timeout");
+        NSLog(@"Failed to establish tunnel in a reasonable time");
         return -1;
     }
     
@@ -337,8 +337,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     clientConfiguration.content = std::string([vpnConfiguration UTF8String]);
     clientConfiguration.connTimeout = 30;
     
-    self.vpnClient = new OpenVPNClient((__bridge void *)self);
-    
     ClientAPI::EvalConfig eval = self.vpnClient->eval_config(clientConfiguration);
     if (eval.error) {
         if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
@@ -392,6 +390,16 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         
         OpenVPNClient::uninit_process();
         self.tunConfiguration = nil;
+        
+        if (self.vpnSocket) {
+            CFSocketInvalidate(self.vpnSocket);
+            CFRelease(self.vpnSocket);
+        }
+        
+        if (self.tunSocket) {
+            CFSocketInvalidate(self.tunSocket);
+            CFRelease(self.tunSocket);
+        }
     });
 }
 
@@ -412,6 +420,8 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         _username = nil;
         _password = nil;
         _delegate = nil;
+        
+        self.vpnClient = new OpenVPNClient((__bridge void *)self);
     }
     return self;
 }
@@ -464,16 +474,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 - (void)dealloc {
     delete self.vpnClient;
-    
-    if (self.vpnSocket) {
-        CFSocketInvalidate(self.vpnSocket);
-        CFRelease(self.vpnSocket);
-    }
-    
-    if (self.tunSocket) {
-        CFSocketInvalidate(self.tunSocket);
-        CFRelease(self.tunSocket);
-    }
 }
 
 @end
