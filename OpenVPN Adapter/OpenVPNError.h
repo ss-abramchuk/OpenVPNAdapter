@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString * __nonnull const OpenVPNClientErrorDomain;
+extern NSString * __nonnull const OpenVPNAdapterErrorDomain;
 
-extern NSString * __nonnull const OpenVPNClientErrorFatalKey;
-extern NSString * __nonnull const OpenVPNClientErrorEventKey;
+extern NSString * __nonnull const OpenVPNAdapterErrorFatalKey;
+extern NSString * __nonnull const OpenVPNAdapterErrorEventKey;
 
 typedef NS_ENUM(NSUInteger, OpenVPNError) {
     OpenVPNErrorConfigurationFailure,

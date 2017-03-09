@@ -8,6 +8,7 @@
 
 import NetworkExtension
 import KeychainAccess
+import OpenVPNAdapter
 
 enum PacketTunnelProviderError: Error {
     
@@ -32,11 +33,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
         
-        vpnAdapter = OpenVPNAdapter()
-        vpnAdapter?.delegate = self
+        let vpnAdapter = OpenVPNAdapter()
+        vpnAdapter.delegate = self
         
         if let username = protocolConfiguration.username {
-            vpnAdapter?.username = username
+            vpnAdapter.username = username
         }
         
         if let reference = protocolConfiguration.passwordReference {
@@ -45,7 +46,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                     throw PacketTunnelProviderError.startFailure(message: "Failed to retrieve password from keychain")
                 }
                 
-                vpnAdapter?.password = password
+                vpnAdapter.password = password
             } catch {
                 completionHandler(error)
                 return
@@ -53,15 +54,16 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
         
         do {
-            try vpnAdapter?.configure(using: settings)
+            try vpnAdapter.configure(using: settings)
         } catch {
             completionHandler(error)
             return
         }
         
+        self.vpnAdapter = vpnAdapter
         startHandler = completionHandler
-
-        vpnAdapter?.connect()
+        
+        vpnAdapter.connect()
     }
     
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {

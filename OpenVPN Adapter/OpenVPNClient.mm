@@ -10,7 +10,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "OpenVPNAdapter+Client.h"
+#import "OpenVPNAdapter+Internal.h"
 
 #import "OpenVPNClient.h"
 

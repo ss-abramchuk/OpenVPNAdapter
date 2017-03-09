@@ -20,13 +20,13 @@
 #import "TUNConfiguration.h"
 
 #import "OpenVPNAdapter.h"
-#import "OpenVPNAdapter+Client.h"
-#import "OpenVPNAdapter+Provider.h"
+#import "OpenVPNAdapter+Internal.h"
+#import "OpenVPNAdapter+Public.h"
 
-NSString * const OpenVPNClientErrorDomain = @"OpenVPNClientErrorDomain";
+NSString * const OpenVPNAdapterErrorDomain = @"me.ss-abramchuk.openvpn-adapter.error-domain";
 
-NSString * const OpenVPNClientErrorFatalKey = @"OpenVPNClientErrorFatalKey";
-NSString * const OpenVPNClientErrorEventKey = @"OpenVPNClientErrorEventKey";
+NSString * const OpenVPNAdapterErrorFatalKey = @"me.ss-abramchuk.openvpn-adapter.error-key.fatal";
+NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter.error-key.event";
 
 
 @interface OpenVPNAdapter ()
@@ -225,14 +225,14 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     if (event->error) {
         NSMutableDictionary *userInfo = [NSMutableDictionary new];
-        [userInfo setObject:@(event->fatal) forKey:OpenVPNClientErrorFatalKey];
-        [userInfo setObject:@(eventIdentifier) forKey:OpenVPNClientErrorEventKey];
+        [userInfo setObject:@(event->fatal) forKey:OpenVPNAdapterErrorFatalKey];
+        [userInfo setObject:@(eventIdentifier) forKey:OpenVPNAdapterErrorEventKey];
         
         if (eventMessage != nil && ![eventMessage isEqualToString:@""]) {
             [userInfo setObject:eventMessage forKey:NSLocalizedDescriptionKey];
         }
         
-        NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
+        NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
                                              code:OpenVPNErrorClientFailure
                                          userInfo:[userInfo copy]];
         
@@ -301,7 +301,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     NSString *vpnConfiguration = [[NSString alloc] initWithData:settings encoding:NSUTF8StringEncoding];
     
     if (vpnConfiguration == nil) {
-        if (error) *error = [NSError errorWithDomain:OpenVPNClientErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
+        if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
             NSLocalizedDescriptionKey: @"Failed to read VPN configuration"
         }];
         return NO;
@@ -315,19 +315,20 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     ClientAPI::EvalConfig eval = self.vpnClient->eval_config(clientConfiguration);
     if (eval.error) {
-        if (error) *error = [NSError errorWithDomain:OpenVPNClientErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
+        if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
             NSLocalizedDescriptionKey: [NSString stringWithUTF8String:eval.message.c_str()]
         }];
         return NO;
     }
     
+    // TODO: Check whether nil values can be used for username and password or not
     ClientAPI::ProvideCreds creds;
     creds.username = [self.username UTF8String];
     creds.password = [self.password UTF8String];
     
     ClientAPI::Status creds_status = self.vpnClient->provide_creds(creds);
     if (creds_status.error) {
-        if (error) *error = [NSError errorWithDomain:OpenVPNClientErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
+        if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
             NSLocalizedDescriptionKey: [NSString stringWithUTF8String:creds_status.message.c_str()]
         }];
         return NO;
@@ -340,7 +341,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 - (void)connect {
     // TODO: Describe why we use async invocation here
-    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-ios-client.tunnel-provider.connection", NULL);
+    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-ios-client.connection", NULL);
     dispatch_async(connectQueue, ^{
         self.tunConfiguration = [TUNConfiguration new];
         OpenVPNClient::init_process();
@@ -348,19 +349,19 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         try {
             ClientAPI::Status status = self.vpnClient->connect();
             if (status.error) {
-                NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
+                NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
                                                      code:OpenVPNErrorClientFailure
                                                  userInfo:@{ NSLocalizedDescriptionKey: [NSString stringWithUTF8String:status.message.c_str()],
-                                                             OpenVPNClientErrorFatalKey: @(YES),
-                                                             OpenVPNClientErrorEventKey: @(OpenVPNEventConnectionFailed) }];
+                                                             OpenVPNAdapterErrorFatalKey: @(YES),
+                                                             OpenVPNAdapterErrorEventKey: @(OpenVPNEventConnectionFailed) }];
                 [self.delegate handleError:error];
             }
         } catch(const std::exception& e) {
-            NSError *error = [NSError errorWithDomain:OpenVPNClientErrorDomain
+            NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
                                                  code:OpenVPNErrorClientFailure
                                              userInfo:@{ NSLocalizedDescriptionKey: [NSString stringWithUTF8String:e.what()],
-                                                         OpenVPNClientErrorFatalKey: @(YES),
-                                                         OpenVPNClientErrorEventKey: @(OpenVPNEventConnectionFailed) }];
+                                                         OpenVPNAdapterErrorFatalKey: @(YES),
+                                                         OpenVPNAdapterErrorEventKey: @(OpenVPNEventConnectionFailed) }];
             [self.delegate handleError:error];
         }
         
