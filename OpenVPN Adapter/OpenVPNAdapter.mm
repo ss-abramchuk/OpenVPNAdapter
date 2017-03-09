@@ -29,7 +29,12 @@ NSString * const OpenVPNAdapterErrorFatalKey = @"me.ss-abramchuk.openvpn-adapter
 NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter.error-key.event";
 
 
-@interface OpenVPNAdapter ()
+@interface OpenVPNAdapter () {
+    NSString *_username;
+    NSString *_password;
+    
+    __weak id<OpenVPNAdapterDelegate> _delegate;
+}
 
 @property OpenVPNClient *vpnClient;
 
@@ -290,10 +295,31 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 @implementation OpenVPNAdapter (Provider)
 
-@dynamic username;
-@dynamic password;
+#pragma mark Properties Gettters/Setters
 
-@dynamic delegate;
+- (void)setUsername:(NSString *)username {
+    _username = username;
+}
+
+- (NSString *)username {
+    return _username;
+}
+
+- (void)setPassword:(NSString *)password {
+    _password = password;
+}
+
+- (NSString *)password {
+    return _password;
+}
+
+- (void)setDelegate:(id<OpenVPNAdapterDelegate>)delegate {
+    _delegate = delegate;
+}
+
+- (id<OpenVPNAdapterDelegate>)delegate {
+    return _delegate;
+}
 
 #pragma mark Client Configuration
 
@@ -320,11 +346,10 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         }];
         return NO;
     }
-    
-    // TODO: Check whether nil values can be used for username and password or not
+
     ClientAPI::ProvideCreds creds;
-    creds.username = [self.username UTF8String];
-    creds.password = [self.password UTF8String];
+    creds.username = self.username == nil? "" : [self.username UTF8String];
+    creds.password = self.password == nil ? "" : [self.password UTF8String];
     
     ClientAPI::Status creds_status = self.vpnClient->provide_creds(creds);
     if (creds_status.error) {
@@ -378,6 +403,19 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 @implementation OpenVPNAdapter
 
+#pragma mark Initialization
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _username = nil;
+        _password = nil;
+        _delegate = nil;
+    }
+    return self;
+}
+
 #pragma mark TUN -> OpenVPN
 
 - (void)readTUNPackets {
@@ -427,11 +465,15 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (void)dealloc {
     delete self.vpnClient;
     
-    CFSocketInvalidate(self.vpnSocket);
-    CFSocketInvalidate(self.tunSocket);
+    if (self.vpnSocket) {
+        CFSocketInvalidate(self.vpnSocket);
+        CFRelease(self.vpnSocket);
+    }
     
-    CFRelease(self.vpnSocket);
-    CFRelease(self.tunSocket);
+    if (self.tunSocket) {
+        CFSocketInvalidate(self.tunSocket);
+        CFRelease(self.tunSocket);
+    }
 }
 
 @end
