@@ -43,7 +43,7 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 @property CFSocketRef vpnSocket;
 @property CFSocketRef tunSocket;
 
-@property (weak, nonatomic) NEPacketTunnelFlow *packetFlow;
+@property (weak, nonatomic) id<OpenVPNAdapterPacketFlow> packetFlow;
 
 - (void)readTUNPackets;
 - (void)readVPNData:(NSData *)data;
@@ -199,7 +199,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
-    [self.delegate configureTunnelWithSettings:networkSettings callback:^(NEPacketTunnelFlow * _Nullable flow) {
+    [self.delegate configureTunnelWithSettings:networkSettings callback:^(id<OpenVPNAdapterPacketFlow> _Nullable flow) {
         self.packetFlow = flow;
         dispatch_semaphore_signal(sema);
     }];

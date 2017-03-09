@@ -74,7 +74,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
 extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     
-    func configureTunnel(settings: NEPacketTunnelNetworkSettings, callback: @escaping (NEPacketTunnelFlow?) -> Void) {
+    func configureTunnel(settings: NEPacketTunnelNetworkSettings, callback: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
         setTunnelNetworkSettings(settings) { (error) in
             callback(error == nil ? self.packetFlow : nil)
         }
@@ -85,7 +85,7 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     }
     
     func handle(error: Error) {
-        
+
     }
     
 }

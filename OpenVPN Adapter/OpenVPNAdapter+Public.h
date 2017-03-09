@@ -10,14 +10,19 @@
 
 #import "OpenVPNAdapter.h"
 
-@class NEPacketTunnelFlow;
 @class NEPacketTunnelNetworkSettings;
 
+@protocol OpenVPNAdapterPacketFlow <NSObject>
+
+- (void)readPacketsWithCompletionHandler:(nonnull void (^)(NSArray<NSData *>  * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols))completionHandler;
+- (BOOL)writePackets:(nonnull NSArray<NSData *> *)packets withProtocols:(nonnull NSArray<NSNumber *> *)protocols;
+
+@end
 
 @protocol OpenVPNAdapterDelegate <NSObject>
 
 - (void)configureTunnelWithSettings:(nonnull NEPacketTunnelNetworkSettings *)settings
-                 callback:(nonnull void (^)(NEPacketTunnelFlow * __nullable flow))callback
+                 callback:(nonnull void (^)(id<OpenVPNAdapterPacketFlow> _Nullable flow))callback
 NS_SWIFT_NAME(configureTunnel(settings:callback:));
 
 - (void)handleEvent:(OpenVPNEvent)event
@@ -28,7 +33,6 @@ NS_SWIFT_NAME(handle(event:message:));
 NS_SWIFT_NAME(handle(error:));
 
 @end
-
 
 @interface OpenVPNAdapter (Provider)
 
