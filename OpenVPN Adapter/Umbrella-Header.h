@@ -5,7 +5,7 @@
 //  Created by Sergey Abramchuk on 09.03.17.
 //
 //
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATO
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 @import UIKit;
 #else
 @import AppKit;
