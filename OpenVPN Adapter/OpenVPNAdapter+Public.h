@@ -12,6 +12,8 @@
 
 @class NEPacketTunnelNetworkSettings;
 
+// TODO: Add documentation to properties and methods
+
 @protocol OpenVPNAdapterPacketFlow <NSObject>
 
 - (void)readPacketsWithCompletionHandler:(nonnull void (^)(NSArray<NSData *>  * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols))completionHandler;

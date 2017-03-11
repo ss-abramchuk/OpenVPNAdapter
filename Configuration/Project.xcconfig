@@ -1,0 +1,29 @@
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx
+TARGETED_DEVICE_FAMILY = 1,2
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// iOS-specific settings
+//
+IPHONEOS_DEPLOYMENT_TARGET = 9.0
+
+VALID_ARCHS[sdk=iphoneos*] = arm64 armv7 armv7s
+VALID_ARCHS[sdk=iphonesimulator*] = i386 x86_64
+
+LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*] =  @executable_path/Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*] =  @executable_path/Frameworks @loader_path/Frameworks
+
+ENABLE_BITCODE[sdk=iphonesimulator*] = NO
+ENABLE_BITCODE[sdk=iphone*] = NO
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// macOS-specific settings
+//
+MACOSX_DEPLOYMENT_TARGET = 10.11
+
+VALID_ARCHS[sdk=macosx*] = i386 x86_64
+
+LD_RUNPATH_SEARCH_PATHS[sdk=macosx*] =  @executable_path/../Frameworks @loader_path/../Frameworks
+
+ENABLE_BITCODE[sdk=macosx*] = NO

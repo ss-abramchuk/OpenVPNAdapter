@@ -1,0 +1,15 @@
+PRODUCT_NAME = OpenVPNAdapter
+PRODUCT_BUNDLE_IDENTIFIER = me.ss-abramchuk.openvpn-adapter
+INFOPLIST_FILE = Configuration/Info-Framework.plist
+MODULEMAP_FILE = OpenVPN Adapter/module.modulemap
+DYLIB_CURRENT_VERSION = $(CURRENT_PROJECT_VERSION)
+APPLICATION_EXTENSION_API_ONLY = YES
+CLANG_CXX_LANGUAGE_STANDARD = gnu++14
+CLANG_CXX_LIBRARY = libc++
+HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/asio" "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/lz4/include" "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/polarssl/include" "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/openvpn"
+LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*] = "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/lz4/lib/sim" "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/polarssl/lib/sim"
+LIBRARY_SEARCH_PATHS[sdk=iphoneos*] = "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/lz4/lib/ios" "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/polarssl/lib/ios"
+LIBRARY_SEARCH_PATHS[sdk=macosx*] = "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/lz4/lib/macos" "$(PROJECT_DIR)/OpenVPN Adapter/Vendors/polarssl/lib/macos"
+OTHER_LDFLAGS = -lmbedtls -llz4
+OTHER_CPLUSPLUSFLAGS = $(OTHER_CFLAGS) -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_POLARSSL -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER
+GCC_WARN_64_TO_32_BIT_CONVERSION = NO

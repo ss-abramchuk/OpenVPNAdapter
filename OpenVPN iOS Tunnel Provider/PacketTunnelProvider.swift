@@ -11,30 +11,27 @@ import KeychainAccess
 import OpenVPNAdapter
 
 enum PacketTunnelProviderError: Error {
-    
-    case startFailure(message: String)
-    
+    case fatalError(message: String)
 }
 
 class PacketTunnelProvider: NEPacketTunnelProvider {
     
     let keychain = Keychain(service: "me.ss-abramchuk.openvpn-ios-client", accessGroup: "2TWXCGG7R3.keychain-shared")
     
-    var vpnAdapter: OpenVPNAdapter?
+    lazy var vpnAdapter: OpenVPNAdapter = {
+        return OpenVPNAdapter().then { $0.delegate = self }
+    }()
     
     var startHandler: ((Error?) -> Void)?
     var stopHandler: (() -> Void)?
     
     override func startTunnel(options: [String : NSObject]? = nil, completionHandler: @escaping (Error?) -> Void) {
         guard let settings = options?["Settings"] as? Data else {
-            let error = PacketTunnelProviderError.startFailure(message: "Failed to retrieve OpenVPN settings from options")
+            let error = PacketTunnelProviderError.fatalError(message: "Failed to retrieve OpenVPN settings from options")
             completionHandler(error)
             
             return
         }
-        
-        let vpnAdapter = OpenVPNAdapter()
-        vpnAdapter.delegate = self
         
         if let username = protocolConfiguration.username {
             vpnAdapter.username = username
@@ -43,7 +40,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         if let reference = protocolConfiguration.passwordReference {
             do {
                 guard let password = try keychain.get(ref: reference) else {
-                    throw PacketTunnelProviderError.startFailure(message: "Failed to retrieve password from keychain")
+                    throw PacketTunnelProviderError.fatalError(message: "Failed to retrieve password from keychain")
                 }
                 
                 vpnAdapter.password = password
@@ -59,15 +56,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             completionHandler(error)
             return
         }
-        
-        self.vpnAdapter = vpnAdapter
+
         startHandler = completionHandler
-        
         vpnAdapter.connect()
     }
     
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-        
+        stopHandler = completionHandler
+        vpnAdapter.disconnect()
     }
     
 }

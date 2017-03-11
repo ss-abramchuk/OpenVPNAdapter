@@ -5,8 +5,11 @@
 //  Created by Sergey Abramchuk on 09.03.17.
 //
 //
-
-#import <UIKit/UIKit.h>
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATO
+@import UIKit;
+#else
+@import AppKit;
+#endif
 
 //! Project version number for OpenVPNAdapter.
 FOUNDATION_EXPORT double OpenVPNAdapterVersionNumber;
