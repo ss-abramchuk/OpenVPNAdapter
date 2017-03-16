@@ -85,7 +85,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }
     
     CFRunLoopSourceRef tunSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, self.vpnSocket, 0);
-    CFRunLoopAddSource(CFRunLoopGetMain(), tunSocketSource, kCFRunLoopCommonModes);
+    CFRunLoopAddSource(CFRunLoopGetMain(), tunSocketSource, kCFRunLoopDefaultMode);
     
     CFRelease(tunSocketSource);
     
