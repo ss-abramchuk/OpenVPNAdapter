@@ -102,7 +102,7 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     func handle(error: Error) {
         // Handle only fatal errors
         guard let fatal = (error as NSError).userInfo[OpenVPNAdapterErrorFatalKey] as? Bool, fatal == true else {
-            fatalError("")
+            return
         }
         
         if let startHandler = startHandler {
