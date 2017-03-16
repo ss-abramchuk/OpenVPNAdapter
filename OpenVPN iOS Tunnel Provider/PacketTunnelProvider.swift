@@ -77,11 +77,40 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     }
     
     func handle(event: OpenVPNEvent, message: String?) {
-        
+        switch event {
+        case .connected: // Successfully connected to the VPN server
+            guard let startHandler = startHandler else {
+                return
+            }
+            
+            startHandler(nil)
+            self.startHandler = nil
+            
+        case .disconnected: // Disconnected from the VPN server
+            guard let stopHandler = stopHandler else {
+                return
+            }
+            
+            stopHandler()
+            self.startHandler = nil
+            
+        default:
+            break
+        }
     }
     
     func handle(error: Error) {
-
+        // Handle only fatal errors
+        guard let fatal = (error as NSError).userInfo[OpenVPNAdapterErrorFatalKey] as? Bool, fatal == true else {
+            fatalError("")
+        }
+        
+        if let startHandler = startHandler {
+            startHandler(error)
+            self.startHandler = nil
+        } else {
+            cancelTunnelWithError(error)
+        }
     }
     
 }
