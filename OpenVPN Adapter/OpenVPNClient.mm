@@ -24,11 +24,15 @@ bool OpenVPNClient::tun_builder_new() {
 }
 
 bool OpenVPNClient::tun_builder_set_remote_address(const std::string &address, bool ipv6) {
+    // TODO: Adapter should be able to set IPv6 remote address
+    
     NSString *remoteAddress = [NSString stringWithUTF8String:address.c_str()];
     return [(__bridge OpenVPNAdapter *)adapter setRemoteAddress:remoteAddress];
 }
 
 bool OpenVPNClient::tun_builder_add_address(const std::string &address, int prefix_length, const std::string &gateway, bool ipv6, bool net30) {
+    // TODO: Adapter should be able to add IPv6 addresses
+    
     NSString *localAddress = [NSString stringWithUTF8String:address.c_str()];
     NSString *subnet = [NSString stringWithUTF8String:get_subnet(prefix_length).c_str()];
     NSString *gatewayAddress = [NSString stringWithUTF8String:gateway.c_str()];
@@ -41,6 +45,8 @@ bool OpenVPNClient::tun_builder_reroute_gw(bool ipv4, bool ipv6, unsigned int fl
 }
 
 bool OpenVPNClient::tun_builder_add_route(const std::string& address, int prefix_length, int metric, bool ipv6) {
+    // TODO: Adapter should be able to add IPv6 routes
+    
     NSString *route = [NSString stringWithUTF8String:address.c_str()];
     NSString *subnet = [NSString stringWithUTF8String:get_subnet(prefix_length).c_str()];
     
@@ -48,6 +54,8 @@ bool OpenVPNClient::tun_builder_add_route(const std::string& address, int prefix
 }
 
 bool OpenVPNClient::tun_builder_exclude_route(const std::string& address, int prefix_length, int metric, bool ipv6) {
+    // TODO: Adapter should be able to exclude IPv6 routes
+    
     NSString *route = [NSString stringWithUTF8String:address.c_str()];
     NSString *subnet = [NSString stringWithUTF8String:get_subnet(prefix_length).c_str()];
     
@@ -55,6 +63,8 @@ bool OpenVPNClient::tun_builder_exclude_route(const std::string& address, int pr
 }
 
 bool OpenVPNClient::tun_builder_add_dns_server(const std::string& address, bool ipv6) {
+    // TODO: Adapter should be able to add IPv6 DNS
+    
     NSString *dnsAddress = [NSString stringWithUTF8String:address.c_str()];
     return [(__bridge OpenVPNAdapter *)adapter addDNSAddress:dnsAddress];
 }
