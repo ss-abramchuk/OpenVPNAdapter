@@ -391,6 +391,9 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         OpenVPNClient::uninit_process();
         self.tunConfiguration = nil;
         
+        self.username = nil;
+        self.password = nil;
+        
         if (self.vpnSocket) {
             CFSocketInvalidate(self.vpnSocket);
             CFRelease(self.vpnSocket);
