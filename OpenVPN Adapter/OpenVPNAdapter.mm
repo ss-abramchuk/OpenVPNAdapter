@@ -248,8 +248,10 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 }
 
 - (void)handleLog:(const ClientAPI::LogInfo *)log {
+    NSAssert(self.delegate != nil, @"delegate property should not be nil");
+    
     NSString *message = [NSString stringWithCString:log->text.c_str() encoding:NSUTF8StringEncoding];
-    NSLog(@"%@", message);
+    [self.delegate handleLog:message];
 }
 
 - (OpenVPNEvent)getEventIdentifierByName:(NSString *)eventName {

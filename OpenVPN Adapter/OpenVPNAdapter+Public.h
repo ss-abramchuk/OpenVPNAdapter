@@ -34,6 +34,9 @@ NS_SWIFT_NAME(handle(event:message:));
 - (void)handleError:(nonnull NSError *)error
 NS_SWIFT_NAME(handle(error:));
 
+- (void)handleLog:(nonnull NSString *)logMessage
+NS_SWIFT_NAME(handle(logMessage:));
+
 @end
 
 @interface OpenVPNAdapter (Provider)
