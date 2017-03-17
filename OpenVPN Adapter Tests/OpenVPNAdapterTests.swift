@@ -12,23 +12,32 @@ import NetworkExtension
 
 class OpenVPNAdapterTests: XCTestCase {
     
-    let vpnConfiguration = "free_openvpn_udp"
+    enum ConfigurationType {
+        case withoutCredentials, withCredentials
+    }
     
-    var vpnAdapterExpectation: XCTestExpectation?
+    enum ExpectationsType {
+        case connection
+    }
+    
+    let configurations: [ConfigurationType : String] = [
+        .withoutCredentials: "free_openvpn_udp"
+    ]
+    
+    var expectations = [ExpectationsType : XCTestExpectation]()
     
     override func setUp() {
         super.setUp()
+        expectations.removeAll()
     }
     
     override func tearDown() {
-        vpnAdapterExpectation = nil
-        
         super.tearDown()
     }
     
     // Test connection without specifying username and password
     func testConectionWithoutCredentials() {
-        let configuration = getVPNConfiguration()
+        let configuration = getVPNConfiguration(type: .withoutCredentials)
 
         let adapter = OpenVPNAdapter()
         do {
@@ -37,7 +46,7 @@ class OpenVPNAdapterTests: XCTestCase {
             XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
         }
         
-        vpnAdapterExpectation = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection-w/o-credentials")
+        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection-w/o-credentials")
         
         adapter.delegate = self
         adapter.connect()
@@ -51,9 +60,10 @@ class OpenVPNAdapterTests: XCTestCase {
 
 extension OpenVPNAdapterTests {
     
-    func getVPNConfiguration() -> Data {
+    func getVPNConfiguration(type: ConfigurationType) -> Data {
         guard
-            let path = Bundle.current.url(forResource: vpnConfiguration, withExtension: "ovpn"),
+            let fileName = configurations[type],
+            let path = Bundle.current.url(forResource: fileName, withExtension: "ovpn"),
             let configuration = try? Data(contentsOf: path)
         else {
             fatalError("Failed to retrieve OpenVPN configuration")
@@ -71,11 +81,25 @@ extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
     }
     
     func handle(event: OpenVPNEvent, message: String?) {
-        
+        switch event {
+        case .connected:
+            guard let connectionExpectation = expectations[.connection] else { return }
+            connectionExpectation.fulfill()
+            
+        case .disconnected:
+            break
+            
+        default:
+            break
+        }
     }
     
     func handle(error: Error) {
         
+    }
+    
+    func handle(logMessage: String) {
+        print("\(logMessage)")
     }
     
 }
