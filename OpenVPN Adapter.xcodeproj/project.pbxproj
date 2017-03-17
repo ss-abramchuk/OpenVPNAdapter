@@ -371,7 +371,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "TAGS=\"TODO:|FIXME:|\\?\\?\\?|\\!\\!\\!\"\nERRORTAG=\"ERROR:\"\nfind \"${SRCROOT}/OpenVPN Adapter\" \\( -name \"*.h\" -or -name \"*.mm\" -or -name \"*.m\" -or -name \"*.swift\" \\) ! -path \"*/Vendors/*\" -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($TAGS).*\\$|($ERRORTAG).*\\$\" | perl -p -e \"s/($TAGS)/ warning: \\$1/\" | perl -p -e \"s/($ERRORTAG)/ error: \\$1/\"";
+			shellScript = "TAGS=\"TODO:|FIXME:|\\?\\?\\?|\\!\\!\\!\"\nERRORTAG=\"ERROR:\"\nfind \"${SRCROOT}/${TARGET_NAME}\" \\( -name \"*.h\" -or -name \"*.mm\" -or -name \"*.m\" -or -name \"*.swift\" \\) ! -path \"*/Vendors/*\" -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($TAGS).*\\$|($ERRORTAG).*\\$\" | perl -p -e \"s/($TAGS)/ warning: \\$1/\" | perl -p -e \"s/($ERRORTAG)/ error: \\$1/\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
