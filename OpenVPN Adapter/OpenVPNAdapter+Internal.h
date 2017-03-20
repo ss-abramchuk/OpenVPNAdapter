@@ -17,17 +17,18 @@ using namespace openvpn;
 
 - (BOOL)configureSockets;
 
-- (BOOL)setRemoteAddress:(NSString *)address;
+- (BOOL)setRemoteAddress:(NSString *)address isIPv6:(BOOL)isIPv6;
 
-- (BOOL)addLocalAddress:(NSString *)address subnet:(NSString *)subnet gateway:(NSString *)gateway;
+- (BOOL)addLocalAddress:(NSString *)address prefixLength:(NSNumber *)prefixLength gateway:(NSString *)gateway isIPv6:(BOOL)isIPv6;
 
-- (BOOL)addRoute:(NSString *)route subnet:(NSString *)subnet;
-- (BOOL)excludeRoute:(NSString *)route subnet:(NSString *)subnet;
+- (BOOL)defaultGatewayRerouteIPv4:(BOOL)rerouteIPv4 rerouteIPv6:(BOOL)rerouteIPv6;
+- (BOOL)addRoute:(NSString *)route prefixLength:(NSNumber *)prefixLength isIPv6:(BOOL)isIPv6;
+- (BOOL)excludeRoute:(NSString *)route prefixLength:(NSNumber *)prefixLength isIPv6:(BOOL)isIPv6;
 
-- (BOOL)addDNSAddress:(NSString *)address;
+- (BOOL)addDNSAddress:(NSString *)address isIPv6:(BOOL)isIPv6;
 - (BOOL)addSearchDomain:(NSString *)domain;
 
-- (BOOL)setMTU:(NSInteger)mtu;
+- (BOOL)setMTU:(NSNumber *)mtu;
 
 - (NSInteger)establishTunnel;
 

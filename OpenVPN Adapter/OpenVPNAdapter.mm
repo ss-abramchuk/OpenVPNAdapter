@@ -38,15 +38,23 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 @property OpenVPNClient *vpnClient;
 
-@property (strong, nonatomic) TUNConfiguration *tunConfiguration;
-
 @property CFSocketRef vpnSocket;
 @property CFSocketRef tunSocket;
+
+@property (strong, nonatomic) NSString *remoteAddress;
+
+@property (strong, nonatomic) TUNConfiguration *tunConfigurationIPv6;
+@property (strong, nonatomic) TUNConfiguration *tunConfigurationIPv4;
+
+@property (strong, nonatomic) NSMutableArray *searchDomains;
+
+@property (strong, nonatomic) NSNumber *mtu;
 
 @property (weak, nonatomic) id<OpenVPNAdapterPacketFlow> packetFlow;
 
 - (void)readTUNPackets;
 - (void)readVPNData:(NSData *)data;
+- (NSString *)getSubnetFromPrefixLength:(NSNumber *)prefixLength;
 
 @end
 
@@ -94,108 +102,159 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 #pragma mark TUN Configuration
 
-- (BOOL)setRemoteAddress:(NSString *)address {
-    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
-    
+- (BOOL)setRemoteAddress:(NSString *)address isIPv6:(BOOL)isIPv6 {
     if (address == nil) {
         return NO;
     }
     
-    self.tunConfiguration.remoteAddress = address;
+    self.remoteAddress = address;
     
     return YES;
 }
 
-- (BOOL)addLocalAddress:(NSString *)address subnet:(NSString *)subnet gateway:(NSString *)gateway {
-    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
-    
-    if (address == nil || subnet == nil) {
+- (BOOL)addLocalAddress:(NSString *)address prefixLength:(NSNumber *)prefixLength gateway:(NSString *)gateway isIPv6:(BOOL)isIPv6 {
+    if (address == nil || prefixLength == nil) {
         return NO;
     }
     
-    [self.tunConfiguration.localAddresses addObject:address];
-    [self.tunConfiguration.subnets addObject:subnet];
+    if (isIPv6) {
+        [self.tunConfigurationIPv6.localAddresses addObject:address];
+        [self.tunConfigurationIPv6.prefixLengths addObject:prefixLength];
+    } else {
+        [self.tunConfigurationIPv4.localAddresses addObject:address];
+        [self.tunConfigurationIPv4.prefixLengths addObject:prefixLength];
+    }
     
     return YES;
 }
 
-- (BOOL)addRoute:(NSString *)route subnet:(NSString *)subnet {
-    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
+- (BOOL)defaultGatewayRerouteIPv4:(BOOL)rerouteIPv4 rerouteIPv6:(BOOL)rerouteIPv6 {
+    if (rerouteIPv6) {
+        NEIPv6Route *includedRoute = [NEIPv6Route defaultRoute];
+        [self.tunConfigurationIPv6.includedRoutes addObject:includedRoute];
+    }
     
-    if (route == nil || subnet == nil) {
+    if (rerouteIPv4) {
+        NEIPv4Route *includedRoute = [NEIPv4Route defaultRoute];
+        [self.tunConfigurationIPv4.includedRoutes addObject:includedRoute];
+    }
+    
+    return YES;
+}
+
+- (BOOL)addRoute:(NSString *)route prefixLength:(NSNumber *)prefixLength isIPv6:(BOOL)isIPv6 {
+    if (route == nil || prefixLength == nil) {
         return NO;
     }
     
-    NEIPv4Route *includedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
-    [self.tunConfiguration.includedRoutes addObject:includedRoute];
+    if (isIPv6) {
+        NEIPv6Route *includedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:prefixLength];
+        [self.tunConfigurationIPv6.includedRoutes addObject:includedRoute];
+    } else {
+        NSString *subnet = [self getSubnetFromPrefixLength:prefixLength];
+        NEIPv4Route *includedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
+        [self.tunConfigurationIPv4.includedRoutes addObject:includedRoute];
+    }
     
     return YES;
 }
 
-- (BOOL)excludeRoute:(NSString *)route subnet:(NSString *)subnet {
-    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
-    
-    if (route == nil || subnet == nil) {
+- (BOOL)excludeRoute:(NSString *)route prefixLength:(NSNumber *)prefixLength isIPv6:(BOOL)isIPv6 {
+    if (route == nil || prefixLength == nil) {
         return NO;
     }
     
-    NEIPv4Route *excludedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
-    [self.tunConfiguration.excludedRoutes addObject:excludedRoute];
+    if (isIPv6) {
+        NEIPv6Route *excludedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:prefixLength];
+        [self.tunConfigurationIPv6.excludedRoutes addObject:excludedRoute];
+    } else {
+        NSString *subnet = [self getSubnetFromPrefixLength:prefixLength];
+        NEIPv4Route *excludedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
+        [self.tunConfigurationIPv4.excludedRoutes addObject:excludedRoute];
+    }
     
     return YES;
 }
 
-- (BOOL)addDNSAddress:(NSString *)address {
-    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
-    
+- (BOOL)addDNSAddress:(NSString *)address isIPv6:(BOOL)isIPv6 {
     if (address == nil) {
         return NO;
     }
     
-    [self.tunConfiguration.dnsAddresses addObject:address];
+    if (isIPv6) {
+        [self.tunConfigurationIPv6.dnsAddresses addObject:address];
+    } else {
+        [self.tunConfigurationIPv4.dnsAddresses addObject:address];
+    }
     
     return YES;
 }
 
 - (BOOL)addSearchDomain:(NSString *)domain {
-    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
-    
     if (domain == nil) {
         return NO;
     }
     
-    [self.tunConfiguration.searchDomains addObject:domain];
+    [self.searchDomains addObject:domain];
     
     return YES;
 }
 
-- (BOOL)setMTU:(NSInteger)mtu {
-    NSAssert(self.tunConfiguration != nil, @"TUN configuration should be initialized");
-    
-    self.tunConfiguration.mtu = @(mtu);
-    
+- (BOOL)setMTU:(NSNumber *)mtu {
+    self.mtu = mtu;
     return YES;
 }
 
 - (NSInteger)establishTunnel {
     NSAssert(self.delegate != nil, @"delegate property should not be nil");
     
-    NEIPv4Settings *ipSettings = [[NEIPv4Settings alloc] initWithAddresses:@[self.tunConfiguration.localAddresses] subnetMasks:@[self.tunConfiguration.subnets]];
-    ipSettings.includedRoutes = self.tunConfiguration.includedRoutes;
-    ipSettings.excludedRoutes = self.tunConfiguration.excludedRoutes;
+    NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.remoteAddress];
     
-    NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.tunConfiguration.remoteAddress];
-    networkSettings.IPv4Settings = ipSettings;
-    
-    if (self.tunConfiguration.dnsAddresses.count > 0) {
-        networkSettings.DNSSettings = [[NEDNSSettings alloc] initWithServers:self.tunConfiguration.dnsAddresses];
+    // Configure IPv6 addresses and routes
+    if (self.tunConfigurationIPv6.initialized) {
+        NEIPv6Settings *settingsIPv6 = [[NEIPv6Settings alloc] initWithAddresses:self.tunConfigurationIPv6.localAddresses networkPrefixLengths:self.tunConfigurationIPv6.prefixLengths];
+        settingsIPv6.includedRoutes = self.tunConfigurationIPv6.includedRoutes;
+        settingsIPv6.excludedRoutes = self.tunConfigurationIPv6.excludedRoutes;
         
-        if (self.tunConfiguration.searchDomains.count > 0) {
-            networkSettings.DNSSettings.searchDomains = self.tunConfiguration.searchDomains;
-        }
+        networkSettings.IPv6Settings = settingsIPv6;
     }
     
-    networkSettings.MTU = self.tunConfiguration.mtu;
+    // Configure IPv4 addresses and routes
+    if (self.tunConfigurationIPv4.initialized) {
+        NSMutableArray *subnets = [NSMutableArray new];
+        [self.tunConfigurationIPv4.prefixLengths enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSString *subnet = [self getSubnetFromPrefixLength:obj];
+            [subnets addObject:subnet];
+        }];
+        
+        NEIPv4Settings *ipSettings = [[NEIPv4Settings alloc] initWithAddresses:self.tunConfigurationIPv4.localAddresses subnetMasks:subnets];
+        ipSettings.includedRoutes = self.tunConfigurationIPv4.includedRoutes;
+        ipSettings.excludedRoutes = self.tunConfigurationIPv4.excludedRoutes;
+        
+        networkSettings.IPv4Settings = ipSettings;
+    }
+    
+    // Configure DNS addresses and search domains
+    NSMutableArray *dnsAddresses = [NSMutableArray new];
+    
+    if (self.tunConfigurationIPv6.dnsAddresses.count > 0) {
+        [dnsAddresses addObjectsFromArray:self.tunConfigurationIPv6.dnsAddresses];
+    }
+    
+    if (self.tunConfigurationIPv4.dnsAddresses.count > 0) {
+        [dnsAddresses addObjectsFromArray:self.tunConfigurationIPv4.dnsAddresses];
+    }
+    
+    if (dnsAddresses.count > 0) {
+        networkSettings.DNSSettings = [[NEDNSSettings alloc] initWithServers:dnsAddresses];
+    }
+    
+    if (networkSettings.DNSSettings && self.searchDomains.count > 0) {
+        networkSettings.DNSSettings.searchDomains = self.searchDomains;
+    }
+    
+    // Set MTU
+    networkSettings.MTU = self.mtu;
     
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
@@ -368,7 +427,11 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     // TODO: Describe why we use async invocation here
     dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-ios-client.connection", NULL);
     dispatch_async(connectQueue, ^{
-        self.tunConfiguration = [TUNConfiguration new];
+        self.tunConfigurationIPv6 = [TUNConfiguration new];
+        self.tunConfigurationIPv4 = [TUNConfiguration new];
+        
+        self.searchDomains = [NSMutableArray new];
+        
         OpenVPNClient::init_process();
         
         try {
@@ -391,7 +454,15 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         }
         
         OpenVPNClient::uninit_process();
-        self.tunConfiguration = nil;
+        
+        self.remoteAddress = nil;
+        
+        self.tunConfigurationIPv6 = nil;
+        self.tunConfigurationIPv4 = nil;
+        
+        self.searchDomains = nil;
+        
+        self.mtu = nil;
         
         self.username = nil;
         self.password = nil;
@@ -473,6 +544,19 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (![self.packetFlow writePackets:@[packet] withProtocols:@[@(protocol)]]) {
         NSLog(@"Failed to send OpenVPN packet to the TUN interface");
     }
+}
+
+#pragma mark Utils
+
+- (NSString *)getSubnetFromPrefixLength:(NSNumber *)prefixLength {
+    uint32_t bitmask = UINT_MAX << (sizeof(uint32_t) * 8 - prefixLength.integerValue);
+    
+    uint8_t first = (bitmask >> 24) & 0xFF;
+    uint8_t second = (bitmask >> 16) & 0xFF;
+    uint8_t third = (bitmask >> 8) & 0xFF;
+    uint8_t fourth = bitmask & 0xFF;
+    
+    return [NSString stringWithFormat:@"%uc.%uc.%uc.%uc", first, second, third, fourth];
 }
 
 #pragma mark Deallocation

@@ -24,49 +24,34 @@ bool OpenVPNClient::tun_builder_new() {
 }
 
 bool OpenVPNClient::tun_builder_set_remote_address(const std::string &address, bool ipv6) {
-    // TODO: Adapter should be able to set IPv6 remote address
-    
     NSString *remoteAddress = [NSString stringWithUTF8String:address.c_str()];
-    return [(__bridge OpenVPNAdapter *)adapter setRemoteAddress:remoteAddress];
+    return [(__bridge OpenVPNAdapter *)adapter setRemoteAddress:remoteAddress isIPv6:ipv6];
 }
 
 bool OpenVPNClient::tun_builder_add_address(const std::string &address, int prefix_length, const std::string &gateway, bool ipv6, bool net30) {
-    // TODO: Adapter should be able to add IPv6 addresses
-    
     NSString *localAddress = [NSString stringWithUTF8String:address.c_str()];
-    NSString *subnet = [NSString stringWithUTF8String:get_subnet(prefix_length).c_str()];
     NSString *gatewayAddress = [NSString stringWithUTF8String:gateway.c_str()];
     
-    return [(__bridge OpenVPNAdapter *)adapter addLocalAddress:localAddress subnet:subnet gateway:gatewayAddress];
+    return [(__bridge OpenVPNAdapter *)adapter addLocalAddress:localAddress prefixLength:@(prefix_length) gateway:gatewayAddress isIPv6:ipv6];
 }
 
 bool OpenVPNClient::tun_builder_reroute_gw(bool ipv4, bool ipv6, unsigned int flags) {
-    return true;
+    return [(__bridge OpenVPNAdapter *)adapter defaultGatewayRerouteIPv4:ipv4 rerouteIPv6:ipv6];
 }
 
 bool OpenVPNClient::tun_builder_add_route(const std::string& address, int prefix_length, int metric, bool ipv6) {
-    // TODO: Adapter should be able to add IPv6 routes
-    
     NSString *route = [NSString stringWithUTF8String:address.c_str()];
-    NSString *subnet = [NSString stringWithUTF8String:get_subnet(prefix_length).c_str()];
-    
-    return [(__bridge OpenVPNAdapter *)adapter addRoute:route subnet:subnet];
+    return [(__bridge OpenVPNAdapter *)adapter addRoute:route prefixLength:@(prefix_length) isIPv6:ipv6];
 }
 
 bool OpenVPNClient::tun_builder_exclude_route(const std::string& address, int prefix_length, int metric, bool ipv6) {
-    // TODO: Adapter should be able to exclude IPv6 routes
-    
     NSString *route = [NSString stringWithUTF8String:address.c_str()];
-    NSString *subnet = [NSString stringWithUTF8String:get_subnet(prefix_length).c_str()];
-    
-    return [(__bridge OpenVPNAdapter *)adapter excludeRoute:route subnet:subnet];
+    return [(__bridge OpenVPNAdapter *)adapter excludeRoute:route prefixLength:@(prefix_length) isIPv6:ipv6];
 }
 
-bool OpenVPNClient::tun_builder_add_dns_server(const std::string& address, bool ipv6) {
-    // TODO: Adapter should be able to add IPv6 DNS
-    
+bool OpenVPNClient::tun_builder_add_dns_server(const std::string& address, bool ipv6) {    
     NSString *dnsAddress = [NSString stringWithUTF8String:address.c_str()];
-    return [(__bridge OpenVPNAdapter *)adapter addDNSAddress:dnsAddress];
+    return [(__bridge OpenVPNAdapter *)adapter addDNSAddress:dnsAddress isIPv6:ipv6];
 }
 
 bool OpenVPNClient::tun_builder_add_search_domain(const std::string& domain) {
@@ -75,7 +60,7 @@ bool OpenVPNClient::tun_builder_add_search_domain(const std::string& domain) {
 }
 
 bool OpenVPNClient::tun_builder_set_mtu(int mtu) {
-    return [(__bridge OpenVPNAdapter *)adapter setMTU:mtu];
+    return [(__bridge OpenVPNAdapter *)adapter setMTU:@(mtu)];
 }
 
 bool OpenVPNClient::tun_builder_set_session_name(const std::string& name) {

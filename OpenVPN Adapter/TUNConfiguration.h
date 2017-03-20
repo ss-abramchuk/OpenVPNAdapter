@@ -8,21 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-@class NEIPv4Route;
-
 @interface TUNConfiguration : NSObject
 
-@property (strong, nonatomic) NSString *remoteAddress;
+@property (nonatomic) BOOL initialized;
 
-@property (readonly, strong, nonatomic) NSMutableArray<NSString *> *localAddresses;
-@property (readonly, strong, nonatomic) NSMutableArray<NSString *> *subnets;
+@property (readonly, strong, nonatomic) NSMutableArray *localAddresses;
+@property (readonly, strong, nonatomic) NSMutableArray *prefixLengths;
 
-@property (readonly, strong, nonatomic) NSMutableArray<NEIPv4Route *> *includedRoutes;
-@property (readonly, strong, nonatomic) NSMutableArray<NEIPv4Route *> *excludedRoutes;
+@property (readonly, strong, nonatomic) NSMutableArray *includedRoutes;
+@property (readonly, strong, nonatomic) NSMutableArray *excludedRoutes;
 
-@property (readonly, strong, nonatomic) NSMutableArray<NSString *> *dnsAddresses;
-@property (readonly, strong, nonatomic) NSMutableArray<NSString *> *searchDomains;
-
-@property (strong, nonatomic) NSNumber *mtu;
+@property (readonly, strong, nonatomic) NSMutableArray *dnsAddresses;
 
 @end

@@ -15,13 +15,12 @@
     self = [super init];
     if (self) {
         _localAddresses = [NSMutableArray new];
-        _subnets = [NSMutableArray new];
+        _prefixLengths = [NSMutableArray new];
         
         _includedRoutes = [NSMutableArray new];
         _excludedRoutes = [NSMutableArray new];
         
         _dnsAddresses = [NSMutableArray new];
-        _searchDomains = [NSMutableArray new];
     }
     return self;
 }
