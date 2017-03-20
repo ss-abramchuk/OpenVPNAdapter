@@ -565,7 +565,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     uint8_t third = (bitmask >> 8) & 0xFF;
     uint8_t fourth = bitmask & 0xFF;
     
-    return [NSString stringWithFormat:@"%uc.%uc.%uc.%uc", first, second, third, fourth];
+    return [NSString stringWithFormat:@"%hhu.%hhu.%hhu.%hhu", first, second, third, fourth];
 }
 
 #pragma mark Deallocation
