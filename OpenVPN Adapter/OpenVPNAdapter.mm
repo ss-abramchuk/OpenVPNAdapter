@@ -118,9 +118,17 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }
     
     if (isIPv6) {
+        if (!self.tunConfigurationIPv6.initialized) {
+            self.tunConfigurationIPv6.initialized = YES;
+        }
+        
         [self.tunConfigurationIPv6.localAddresses addObject:address];
         [self.tunConfigurationIPv6.prefixLengths addObject:prefixLength];
     } else {
+        if (!self.tunConfigurationIPv4.initialized) {
+            self.tunConfigurationIPv4.initialized = YES;
+        }
+        
         [self.tunConfigurationIPv4.localAddresses addObject:address];
         [self.tunConfigurationIPv4.prefixLengths addObject:prefixLength];
     }
@@ -256,6 +264,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     // Set MTU
     networkSettings.MTU = self.mtu;
     
+    // Establish TUN interface 
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
     [self.delegate configureTunnelWithSettings:networkSettings callback:^(id<OpenVPNAdapterPacketFlow> _Nullable flow) {

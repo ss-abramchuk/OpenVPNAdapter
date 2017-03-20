@@ -14,6 +14,8 @@
 {
     self = [super init];
     if (self) {
+        _initialized = NO;
+        
         _localAddresses = [NSMutableArray new];
         _prefixLengths = [NSMutableArray new];
         
