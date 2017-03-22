@@ -393,7 +393,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 #pragma mark Client Configuration
 
-- (BOOL)configureUsing:(NSData *)settings error:(out NSError * __autoreleasing _Nullable *)error {
+- (BOOL)configureUsingSettings:(NSData *)settings error:(out NSError * __autoreleasing _Nullable *)error {
     NSString *vpnConfiguration = [[NSString alloc] initWithData:settings encoding:NSUTF8StringEncoding];
     
     if (vpnConfiguration == nil) {
