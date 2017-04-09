@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -52,6 +52,7 @@ namespace openvpn {
       INFO,
       PAUSE,
       RESUME,
+      RELAY,
 
       // start of nonfatal errors, must be marked by NONFATAL_ERROR_START below
       TRANSPORT_ERROR,
@@ -73,6 +74,7 @@ namespace openvpn {
       TUN_IFACE_DISABLED,
       EPKI_ERROR,          // EPKI refers to External PKI errors, i.e. errors in accessing external
       EPKI_INVALID_ALIAS,  //    certificates or keys.
+      RELAY_ERROR,
 
       N_TYPES
     };
@@ -99,6 +101,7 @@ namespace openvpn {
 	"INFO",
 	"PAUSE",
 	"RESUME",
+	"RELAY",
 
 	// nonfatal errors
 	"TRANSPORT_ERROR",
@@ -120,6 +123,7 @@ namespace openvpn {
 	"TUN_IFACE_DISABLED",
 	"EPKI_ERROR",
 	"EPKI_INVALID_ALIAS",
+	"RELAY_ERROR",
       };
 
       static_assert(N_TYPES == array_size(names), "event names array inconsistency");
@@ -220,6 +224,11 @@ namespace openvpn {
       Resume() : Base(RESUME) {}
     };
 
+    struct Relay : public Base
+    {
+      Relay() : Base(RELAY) {}
+    };
+
     struct Disconnected : public Base
     {
       Disconnected() : Base(DISCONNECTED) {}
@@ -314,6 +323,11 @@ namespace openvpn {
     struct ClientRestart : public ReasonBase
     {
       ClientRestart(std::string reason) : ReasonBase(CLIENT_RESTART, std::move(reason)) {}
+    };
+
+    struct RelayError : public ReasonBase
+    {
+      RelayError(std::string reason) : ReasonBase(RELAY_ERROR, std::move(reason)) {}
     };
 
     struct DynamicChallenge : public ReasonBase

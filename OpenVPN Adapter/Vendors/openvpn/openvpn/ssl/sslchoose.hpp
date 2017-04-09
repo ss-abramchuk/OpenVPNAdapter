@@ -4,23 +4,27 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef OPENVPN_SSL_SSLCHOOSE_H
 #define OPENVPN_SSL_SSLCHOOSE_H
+
+#ifndef OPENVPN_LOG_SSL
+#define OPENVPN_LOG_SSL(x) OPENVPN_LOG(x)
+#endif
 
 #ifdef USE_OPENSSL
 #include <openvpn/openssl/crypto/api.hpp>
@@ -34,30 +38,31 @@
 #include <openvpn/applecrypto/util/rand.hpp>
 #endif
 
-#ifdef USE_POLARSSL
-#include <polarssl/debug.h>  // for debug_set_threshold
-#include <openvpn/polarssl/crypto/api.hpp>
-#include <openvpn/polarssl/ssl/sslctx.hpp>
-#include <openvpn/polarssl/util/rand.hpp>
+#ifdef USE_MBEDTLS
+#include <mbedtls/platform.h>
+#include <mbedtls/debug.h>  // for debug_set_threshold
+#include <openvpn/mbedtls/crypto/api.hpp>
+#include <openvpn/mbedtls/ssl/sslctx.hpp>
+#include <openvpn/mbedtls/util/rand.hpp>
 #endif
 
-#ifdef USE_POLARSSL_APPLE_HYBRID
+#ifdef USE_MBEDTLS_APPLE_HYBRID
 #include <openvpn/applecrypto/crypto/api.hpp>
-#include <openvpn/polarssl/ssl/sslctx.hpp>
-#include <openvpn/polarssl/util/rand.hpp>
+#include <openvpn/mbedtls/ssl/sslctx.hpp>
+#include <openvpn/mbedtls/util/rand.hpp>
 #endif
 
 namespace openvpn {
   namespace SSLLib {
-#if defined(USE_POLARSSL)
-    typedef PolarSSLCryptoAPI CryptoAPI;
-    typedef PolarSSLContext SSLAPI;
-    typedef PolarSSLRandom RandomAPI;
-#elif defined(USE_POLARSSL_APPLE_HYBRID)
-    // Uses Apple framework for CryptoAPI and PolarSSL for SSLAPI and RandomAPI
+#if defined(USE_MBEDTLS)
+    typedef MbedTLSCryptoAPI CryptoAPI;
+    typedef MbedTLSContext SSLAPI;
+    typedef MbedTLSRandom RandomAPI;
+#elif defined(USE_MBEDTLS_APPLE_HYBRID)
+    // Uses Apple framework for CryptoAPI and MbedTLS for SSLAPI and RandomAPI
     typedef AppleCryptoAPI CryptoAPI;
-    typedef PolarSSLContext SSLAPI;
-    typedef PolarSSLRandom RandomAPI;
+    typedef MbedTLSContext SSLAPI;
+    typedef MbedTLSRandom RandomAPI;
 #elif defined(USE_APPLE_SSL)
     typedef AppleCryptoAPI CryptoAPI;
     typedef AppleSSLContext SSLAPI;

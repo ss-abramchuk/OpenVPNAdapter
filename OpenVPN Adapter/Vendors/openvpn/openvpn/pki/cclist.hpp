@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -137,13 +137,13 @@ namespace openvpn {
 	OPENVPN_THROW(parse_cert_crl_error, title << " : CERT/CRL content ended unexpectedly without END marker");
     }
 
-    static void from_string(const std::string content, const std::string& title, CertList* cert_list, CRLList* crl_list = nullptr)
+    static void from_string(const std::string& content, const std::string& title, CertList* cert_list, CRLList* crl_list = nullptr)
     {
       std::stringstream in(content);
       from_istream(in, title, cert_list, crl_list);
     }
 
-    static void from_file(const std::string filename, CertList* cert_list, CRLList* crl_list = nullptr)
+    static void from_file(const std::string& filename, CertList* cert_list, CRLList* crl_list = nullptr)
     {
       std::ifstream ifs(filename.c_str());
       if (!ifs)

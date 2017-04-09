@@ -4,25 +4,25 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
 // API for random number implementations.
 
-#ifndef OPENVPN_POLARSSL_UTIL_RANDAPI_H
-#define OPENVPN_POLARSSL_UTIL_RANDAPI_H
+#ifndef OPENVPN_MBEDTLS_UTIL_RANDAPI_H
+#define OPENVPN_MBEDTLS_UTIL_RANDAPI_H
 
 #include <string>
 
@@ -39,6 +39,9 @@ namespace openvpn {
 
     // Random algorithm name
     virtual std::string name() const = 0;
+
+    // Return true if algorithm is crypto-strength
+    virtual bool is_crypto() const = 0;
 
     // Fill buffer with random bytes
     virtual void rand_bytes(unsigned char *buf, size_t size) = 0;
@@ -89,6 +92,13 @@ namespace openvpn {
 	return start;
       else
 	return start + rand_get_positive<T>() % (end - start + 1);
+    }
+
+    // Throw an exception if algorithm is not crypto-strength
+    void assert_crypto() const
+    {
+      if (!is_crypto())
+	throw Exception("RandomAPI: " + name() + " algorithm is not crypto-strength");
     }
 
     // UniformRandomBitGenerator for std::shuffle

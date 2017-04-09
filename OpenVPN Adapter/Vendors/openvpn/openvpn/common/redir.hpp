@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -34,12 +34,12 @@
 #include <memory>
 #include <algorithm>
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/scoped_fd.hpp>
 #include <openvpn/common/tempfile.hpp>
-#include <openvpn/buffer/buflist.hpp>
+#include <openvpn/common/pipe.hpp>
 
 namespace openvpn {
 
@@ -95,6 +95,30 @@ namespace openvpn {
     ScopedFD out;
     ScopedFD err;
     bool combine_out_err = false;
+  };
+
+  class RedirectNull : public RedirectStdFD
+  {
+  public:
+    RedirectNull()
+    {
+      // open /dev/null for stdin
+      in.reset(::open("/dev/null", O_RDONLY, 0));
+      if (!in.defined())
+	{
+	  const int eno = errno;
+	  OPENVPN_THROW(redirect_std_err, "RedirectNull: error opening /dev/null for input : " << std::strerror(eno));
+	}
+
+      // open /dev/null for stdout
+      out.reset(::open("/dev/null", O_RDWR, 0));
+      if (!out.defined())
+	{
+	  const int eno = errno;
+	  OPENVPN_THROW(redirect_std_err, "RedirectNull: error opening /dev/null for output : " << std::strerror(eno));
+	}
+      combine_out_err = true;
+    }
   };
 
   class RedirectStd : public RedirectStdFD
@@ -193,7 +217,7 @@ namespace openvpn {
       int fd[2];
 
       // stdout
-      make_pipe(fd);
+      Pipe::make_pipe(fd);
       out.reset(cloexec(fd[0]));
       remote.out.reset(fd[1]);
 
@@ -201,7 +225,7 @@ namespace openvpn {
       combine_out_err = remote.combine_out_err = combine_out_err_arg;
       if (!combine_out_err)
 	{
-	  make_pipe(fd);
+	  Pipe::make_pipe(fd);
 	  err.reset(cloexec(fd[0]));
 	  remote.err.reset(fd[1]);
 	}
@@ -209,7 +233,7 @@ namespace openvpn {
       // stdin
       if (enable_in)
 	{
-	  make_pipe(fd);
+	  Pipe::make_pipe(fd);
 	  in.reset(cloexec(fd[1]));
 	  remote.in.reset(fd[0]);
 	}
@@ -227,110 +251,16 @@ namespace openvpn {
 
     void transact(InOut& inout)
     {
-      asio::io_context io_context(1);
-      SD_OUT send_in(io_context, inout.in, in);
-      SD_IN recv_out(io_context, out);
-      SD_IN recv_err(io_context, err);
+      openvpn_io::io_context io_context(1);
+      Pipe::SD_OUT send_in(io_context, inout.in, in);
+      Pipe::SD_IN recv_out(io_context, out);
+      Pipe::SD_IN recv_err(io_context, err);
       io_context.run();
       inout.out = recv_out.content();
       inout.err = recv_err.content();
     }
 
   private:
-    class SD
-    {
-    public:
-      SD(asio::io_context& io_context, ScopedFD& fd)
-      {
-	if (fd.defined())
-	  sd.reset(new asio::posix::stream_descriptor(io_context, fd.release()));
-      }
-
-      bool defined() const
-      {
-	return bool(sd);
-      }
-
-    protected:
-      std::unique_ptr<asio::posix::stream_descriptor> sd;
-    };
-
-    class SD_OUT : public SD
-    {
-    public:
-      SD_OUT(asio::io_context& io_context, const std::string& content, ScopedFD& fd)
-	: SD(io_context, fd)
-      {
-	if (defined())
-	  {
-	    buf = buf_alloc_from_string(content);
-	    queue_write();
-	  }
-      }
-
-    private:
-      void queue_write()
-      {
-	sd->async_write_some(buf.const_buffers_1_limit(2048),
-			     [this](const asio::error_code& ec, const size_t bytes_sent) {
-			       if (!ec && bytes_sent < buf.size())
-				 {
-				   buf.advance(bytes_sent);
-				   queue_write();
-				 }
-			       else
-				 sd->close();
-			     });
-      }
-
-      BufferAllocated buf;
-    };
-
-    class SD_IN : public SD
-    {
-    public:
-      SD_IN(asio::io_context& io_context, ScopedFD& fd)
-	: SD(io_context, fd)
-      {
-	if (defined())
-	  queue_read();
-      }
-
-      const std::string content() const
-      {
-	return data.to_string();
-      }
-
-    private:
-      void queue_read()
-      {
-	buf.reset(0, 2048, 0);
-	sd->async_read_some(buf.mutable_buffers_1_clamp(),
-			    [this](const asio::error_code& ec, const size_t bytes_recvd) {
-			      if (!ec)
-				{
-				  buf.set_size(bytes_recvd);
-				  data.put_consume(buf);
-				  queue_read();
-				}
-			      else
-				sd->close();
-			    });
-      }
-
-      BufferAllocated buf;
-      BufferList data;
-    };
-
-    static void make_pipe(int fd[2])
-    {
-      if (::pipe(fd) < 0)
-	{
-	  const int eno = errno;
-	  OPENVPN_THROW(redirect_std_err, "error creating pipe : " << std::strerror(eno));
-	}
-    }
-
     // set FD_CLOEXEC to prevent fd from being passed across execs
     static int cloexec(const int fd)
     {

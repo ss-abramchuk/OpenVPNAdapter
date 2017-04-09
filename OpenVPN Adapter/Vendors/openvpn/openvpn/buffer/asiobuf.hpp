@@ -4,25 +4,25 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef OPENVPN_BUFFER_ASIOBUF_H
 #define OPENVPN_BUFFER_ASIOBUF_H
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/buffer/buffer.hpp>
 
@@ -37,19 +37,19 @@ namespace openvpn {
     }
 
     // Implement the ConstBufferSequence requirements.
-    typedef asio::const_buffer value_type;
-    typedef const asio::const_buffer* const_iterator;
-    const asio::const_buffer* begin() const { return buf; }
-    const asio::const_buffer* end() const { return buf + 2; }
+    typedef openvpn_io::const_buffer value_type;
+    typedef const openvpn_io::const_buffer* const_iterator;
+    const openvpn_io::const_buffer* begin() const { return buf; }
+    const openvpn_io::const_buffer* end() const { return buf + 2; }
 
     const size_t size() const
     {
-      return asio::buffer_size(buf[0])
-	   + asio::buffer_size(buf[1]);
+      return openvpn_io::buffer_size(buf[0])
+	   + openvpn_io::buffer_size(buf[1]);
     }
 
   private:
-    const asio::const_buffer buf[2];
+    const openvpn_io::const_buffer buf[2];
   };
 }
 

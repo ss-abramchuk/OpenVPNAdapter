@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,6 +26,7 @@
 
 #include <string>
 #include <sstream>
+#include <utility>
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
@@ -36,8 +37,13 @@ namespace openvpn {
 
     struct Header {
       Header() {}
-      Header(const std::string& name_arg, const std::string& value_arg)
-	: name(name_arg), value(value_arg) {}
+      Header(std::string name_arg, std::string value_arg)
+	: name(std::move(name_arg)), value(std::move(value_arg)) {}
+
+      bool name_match(const std::string& n) const
+      {
+	return string::strcasecmp(n, name) == 0;
+      }
 
       std::string to_string() const
       {
@@ -56,7 +62,7 @@ namespace openvpn {
       {
 	for (auto &h : *this)
 	  {
-	    if (string::strcasecmp(key, h.name) == 0)
+	    if (h.name_match(key))
 	      return &h;
 	  }
 	return nullptr;
@@ -66,7 +72,7 @@ namespace openvpn {
       {
 	for (auto &h : *this)
 	  {
-	    if (string::strcasecmp(key, h.name) == 0)
+	    if (h.name_match(key))
 	      return &h;
 	  }
 	return nullptr;

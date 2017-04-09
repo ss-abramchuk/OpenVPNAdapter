@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -51,7 +51,7 @@ namespace openvpn {
       init_error("OpenSSL");
     }
 
-    explicit OpenSSLException(const std::string error_text)
+    explicit OpenSSLException(const std::string& error_text)
     {
       ssl_err = -1;
       init_error(error_text.c_str());
@@ -62,7 +62,7 @@ namespace openvpn {
       init_ssl_error(ssl_error, "OpenSSL");
     }
 
-    explicit OpenSSLException(const std::string error_text, const int ssl_error)
+    explicit OpenSSLException(const std::string& error_text, const int ssl_error)
     {
       init_ssl_error(ssl_error, error_text.c_str());
     }

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/rc.hpp>
@@ -51,6 +51,7 @@ namespace openvpn {
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual std::string local_endpoint_info() const = 0;
+    virtual IP::Addr local_endpoint_addr() const = 0;
   };
 
   // Factory for server transport object.
@@ -58,7 +59,7 @@ namespace openvpn {
   {
     typedef RCPtr<TransportServerFactory> Ptr;
 
-    virtual TransportServer::Ptr new_server_obj(asio::io_context& io_context) = 0;
+    virtual TransportServer::Ptr new_server_obj(openvpn_io::io_context& io_context) = 0;
   };
 
   // Base class for the per-client-instance state of the TransportServer.

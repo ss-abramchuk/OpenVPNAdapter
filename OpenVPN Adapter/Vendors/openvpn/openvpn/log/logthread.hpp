@@ -4,23 +4,26 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
 // This is a general-purpose logging framework that allows for OPENVPN_LOG and
 // OPENVPN_LOG_NTNL macros to dispatch logging data to a thread-local handler.
+
+// NOTE: define USE_ASIO_THREADLOCAL if your C++ doesn't support the
+// "thread_local" attribute.
 
 #ifndef OPENVPN_LOG_LOGTHREAD_H
 #define OPENVPN_LOG_LOGTHREAD_H
@@ -29,7 +32,9 @@
 #include <sstream>
 #include <thread>
 
+#if defined(USE_ASIO) && defined(USE_ASIO_THREADLOCAL)
 #include <asio/detail/tss_ptr.hpp>
+#endif
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/extern.hpp>
@@ -111,7 +116,11 @@ namespace openvpn {
     };
 #else
     // OPENVPN_LOG uses thread-local object pointer
+#if defined(USE_ASIO) && defined(USE_ASIO_THREADLOCAL)
     OPENVPN_EXTERN asio::detail::tss_ptr<OPENVPN_LOG_CLASS> global_log; // GLOBAL
+#else
+    OPENVPN_EXTERN thread_local OPENVPN_LOG_CLASS* global_log; // GLOBAL
+#endif
     struct Context
     {
       // Mechanism for passing thread-local

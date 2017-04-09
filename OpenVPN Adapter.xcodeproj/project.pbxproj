@@ -10,8 +10,6 @@
 		C90BAD311E73FF6C00DEFB32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C90BAD301E73FF6C00DEFB32 /* SystemConfiguration.framework */; };
 		C912BB251E7C3339002B9414 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C912BB241E7C3339002B9414 /* NetworkExtension.framework */; };
 		C9BB47601E71663A00F3F98C /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BB475E1E71663A00F3F98C /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C9BB476C1E716AEE00F3F98C /* ovpncli.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9BB476A1E716AEE00F3F98C /* ovpncli.hpp */; };
-		C9BB476D1E716AEE00F3F98C /* ovpncli.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BB476B1E716AEE00F3F98C /* ovpncli.cpp */; };
 		C9BB47711E7171A100F3F98C /* OpenVPNError.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BB476F1E7171A100F3F98C /* OpenVPNError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9BB47721E7171A100F3F98C /* OpenVPNEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BB47701E7171A100F3F98C /* OpenVPNEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9BB47751E7171D900F3F98C /* TUNConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BB47731E7171D900F3F98C /* TUNConfiguration.h */; };
@@ -26,6 +24,8 @@
 		C9BB47931E71821A00F3F98C /* OpenVPNAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9BB475C1E71663A00F3F98C /* OpenVPNAdapter.framework */; };
 		C9BB479C1E71836100F3F98C /* free_openvpn_udp.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C9BB479B1E71836100F3F98C /* free_openvpn_udp.ovpn */; };
 		C9BB47A21E7183DB00F3F98C /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BB47A11E7183DB00F3F98C /* Bundle.swift */; };
+		C9FD921A1E9A667600374FC4 /* ovpncli.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9FD92181E9A667600374FC4 /* ovpncli.hpp */; };
+		C9FD921B1E9A667600374FC4 /* ovpncli.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9FD92191E9A667600374FC4 /* ovpncli.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,8 +50,6 @@
 		C912BB241E7C3339002B9414 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		C9BB475C1E71663A00F3F98C /* OpenVPNAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenVPNAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9BB475E1E71663A00F3F98C /* Umbrella-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Umbrella-Header.h"; sourceTree = "<group>"; };
-		C9BB476A1E716AEE00F3F98C /* ovpncli.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ovpncli.hpp; path = Vendors/openvpn/openvpn/client/ovpncli.hpp; sourceTree = "<group>"; };
-		C9BB476B1E716AEE00F3F98C /* ovpncli.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ovpncli.cpp; path = Vendors/openvpn/openvpn/client/ovpncli.cpp; sourceTree = "<group>"; };
 		C9BB476F1E7171A100F3F98C /* OpenVPNError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = OpenVPNError.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		C9BB47701E7171A100F3F98C /* OpenVPNEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNEvent.h; sourceTree = "<group>"; };
 		C9BB47731E7171D900F3F98C /* TUNConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUNConfiguration.h; sourceTree = "<group>"; };
@@ -66,6 +64,8 @@
 		C9BB47901E71821A00F3F98C /* OpenVPNAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenVPNAdapterTests.swift; sourceTree = "<group>"; };
 		C9BB479B1E71836100F3F98C /* free_openvpn_udp.ovpn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = free_openvpn_udp.ovpn; sourceTree = "<group>"; };
 		C9BB47A11E7183DB00F3F98C /* Bundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		C9FD92181E9A667600374FC4 /* ovpncli.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ovpncli.hpp; path = Vendors/openvpn/client/ovpncli.hpp; sourceTree = "<group>"; };
+		C9FD92191E9A667600374FC4 /* ovpncli.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ovpncli.cpp; path = Vendors/openvpn/client/ovpncli.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,8 +186,8 @@
 		C9BB47691E716AC500F3F98C /* OpenVPN */ = {
 			isa = PBXGroup;
 			children = (
-				C9BB476A1E716AEE00F3F98C /* ovpncli.hpp */,
-				C9BB476B1E716AEE00F3F98C /* ovpncli.cpp */,
+				C9FD92181E9A667600374FC4 /* ovpncli.hpp */,
+				C9FD92191E9A667600374FC4 /* ovpncli.cpp */,
 			);
 			name = OpenVPN;
 			sourceTree = "<group>";
@@ -251,12 +251,12 @@
 			files = (
 				C9BB47791E7171ED00F3F98C /* OpenVPNClient.h in Headers */,
 				C9BB47721E7171A100F3F98C /* OpenVPNEvent.h in Headers */,
-				C9BB476C1E716AEE00F3F98C /* ovpncli.hpp in Headers */,
 				C9BB477F1E7173C700F3F98C /* OpenVPNAdapter.h in Headers */,
 				C9BB47601E71663A00F3F98C /* Umbrella-Header.h in Headers */,
 				C9BB47811E7173C700F3F98C /* OpenVPNAdapter+Public.h in Headers */,
 				C9BB47711E7171A100F3F98C /* OpenVPNError.h in Headers */,
 				C9BB47801E7173C700F3F98C /* OpenVPNAdapter+Internal.h in Headers */,
+				C9FD921A1E9A667600374FC4 /* ovpncli.hpp in Headers */,
 				C9BB47751E7171D900F3F98C /* TUNConfiguration.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -308,7 +308,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0830;
 				TargetAttributes = {
 					C9BB475B1E71663A00F3F98C = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -383,7 +383,7 @@
 				C9BB47821E7173C700F3F98C /* OpenVPNAdapter.mm in Sources */,
 				C9BB477A1E7171ED00F3F98C /* OpenVPNClient.mm in Sources */,
 				C9BB47761E7171D900F3F98C /* TUNConfiguration.m in Sources */,
-				C9BB476D1E716AEE00F3F98C /* ovpncli.cpp in Sources */,
+				C9FD921B1E9A667600374FC4 /* ovpncli.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,7 +411,26 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C90BAD2A1E73F5AF00DEFB32 /* Project.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
@@ -419,6 +438,23 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C90BAD2A1E73F5AF00DEFB32 /* Project.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;

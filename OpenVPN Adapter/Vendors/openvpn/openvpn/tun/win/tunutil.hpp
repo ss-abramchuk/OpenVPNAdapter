@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,7 +24,7 @@
 #ifndef OPENVPN_TUN_WIN_TUNUTIL_H
 #define OPENVPN_TUN_WIN_TUNUTIL_H
 
-#include <asio/detail/socket_types.hpp> // prevent winsock multiple def errors
+#include <openvpn/common/socktypes.hpp> // prevent winsock multiple def errors
 
 #include <windows.h>
 #include <winsock2.h> // for IPv6
@@ -42,7 +42,7 @@
 
 #include <tap-windows.h>
 
-#include <openvpn/common/format.hpp>
+#include <openvpn/common/to_string.hpp>
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/socktypes.hpp>

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -33,77 +33,13 @@
 #include <memory>
 #include <utility>
 
-#include <openvpn/common/size.hpp>
 #include <openvpn/common/action.hpp>
 #include <openvpn/common/redir.hpp>
 #include <openvpn/common/signal.hpp>
 #include <openvpn/common/argv.hpp>
-
-extern char **environ;
+#include <openvpn/common/environ.hpp>
 
 namespace openvpn {
-
-  class Environ : public std::vector<std::string>
-  {
-  public:
-    void load_from_environ()
-    {
-      reserve(64);
-      for (char **e = ::environ; *e != NULL; ++e)
-	emplace_back(*e);
-    }
-
-    std::string to_string() const
-    {
-      std::string ret;
-      ret.reserve(512);
-      for (const auto &s : *this)
-	{
-	  ret += s;
-	  ret += '\n';
-	}
-      return ret;
-    }
-
-    int find_index(const std::string& name) const
-    {
-      for (int i = 0; i < size(); ++i)
-	{
-	  const std::string& s = (*this)[i];
-	  const size_t pos = s.find_first_of('=');
-	  if (pos != std::string::npos)
-	    {
-	      if (name == s.substr(0, pos))
-		return i;
-	    }
-	  else
-	    {
-	      if (name == s)
-		return i;
-	    }
-	}
-      return -1;
-    }
-
-    std::string find(const std::string& name) const
-    {
-      const int i = find_index(name);
-      if (i >= 0)
-	return value(i);
-      else
-	return "";
-    }
-
-    std::string value(const size_t idx) const
-    {
-      const std::string& s = (*this)[idx];
-      const size_t pos = s.find_first_of('=');
-      if (pos != std::string::npos)
-	return s.substr(pos+1);
-      else
-	return "";
-    }
-  };
 
   // low-level fork/exec (async)
   inline pid_t system_cmd_async(const std::string& cmd,

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -45,12 +45,12 @@ namespace openvpn {
     std::vector<std::string> ret;
     if (size_hint)
       ret.reserve(size_hint);
-    unique_ptr_del<DIR> dir(opendir(dirname.c_str()), [](DIR* d) { closedir(d); });
+    unique_ptr_del<DIR> dir(::opendir(dirname.c_str()), [](DIR* d) { ::closedir(d); });
     if (!dir)
       throw enum_dir_error(dirname + ": cannot open directory");
 
     struct dirent *e;
-    while ((e = readdir(dir.get())) != nullptr)
+    while ((e = ::readdir(dir.get())) != nullptr)
       {
 	std::string fn(e->d_name);
 	if (fn != "." && fn != "..")

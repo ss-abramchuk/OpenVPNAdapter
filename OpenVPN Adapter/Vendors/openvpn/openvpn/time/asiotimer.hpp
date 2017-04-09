@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -27,8 +27,7 @@
 
 #include <chrono>
 
-#include <asio.hpp>
-#include <asio/basic_waitable_timer.hpp>
+#include <openvpn/io/io.hpp> // was: #include <asio/basic_waitable_timer.hpp>
 
 #include <openvpn/common/olong.hpp>
 #include <openvpn/time/time.hpp>
@@ -57,17 +56,17 @@ namespace openvpn {
     }
   };
 
-  class AsioTimer : public asio::basic_waitable_timer<AsioClock>
+  class AsioTimer : public openvpn_io::basic_waitable_timer<AsioClock>
   {
   public:
-    AsioTimer(asio::io_context& io_context)
-      : asio::basic_waitable_timer<AsioClock>(io_context)
+    AsioTimer(openvpn_io::io_context& io_context)
+      : openvpn_io::basic_waitable_timer<AsioClock>(io_context)
     {
     }
 
     std::size_t expires_at(const Time& t)
     {
-      return asio::basic_waitable_timer<AsioClock>::expires_at(AsioClock::to_time_point(t));
+      return openvpn_io::basic_waitable_timer<AsioClock>::expires_at(AsioClock::to_time_point(t));
     }    
   };
 }

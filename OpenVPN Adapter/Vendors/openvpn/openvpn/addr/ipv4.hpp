@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,7 +26,7 @@
 #include <sstream>
 #include <cstdint>           // for std::uint32_t
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
@@ -91,7 +91,7 @@ namespace openvpn {
 	std::memset(&ret, 0, sizeof(ret));
 	ret.sin_family = AF_INET;
 	ret.sin_port = 0;
-	ret.sin_addr.s_addr = htonl(u.addr);;
+	ret.sin_addr.s_addr = htonl(u.addr);
 	return ret;
       }
 
@@ -112,6 +112,11 @@ namespace openvpn {
 	Addr ret;
 	ret.u.addr = ntohl(addr);
 	return ret;
+      }
+
+      void to_byte_string(unsigned char *bytestr) const
+      {
+	*(base_type*)bytestr = ntohl(u.addr);
       }
 
       std::uint32_t to_uint32_net() const // return value in net byte order
@@ -198,8 +203,8 @@ namespace openvpn {
 
       static Addr from_string(const std::string& ipstr, const char *title = nullptr)
       {
-	asio::error_code ec;
-	asio::ip::address_v4 a = asio::ip::make_address_v4(ipstr, ec);
+	openvpn_io::error_code ec;
+	openvpn_io::ip::address_v4 a = openvpn_io::ip::make_address_v4(ipstr, ec);
 	if (ec)
 	  throw ipv4_exception(IP::internal::format_error(ipstr, title, "v4", ec));
 	return from_asio(a);
@@ -207,7 +212,7 @@ namespace openvpn {
 
       std::string to_string() const
       {
-	const asio::ip::address_v4 a = to_asio();
+	const openvpn_io::ip::address_v4 a = to_asio();
 	std::string ret = a.to_string();
 	return ret;
       }
@@ -270,16 +275,16 @@ namespace openvpn {
 	return os.str();
       }
 
-      static Addr from_asio(const asio::ip::address_v4& asio_addr)
+      static Addr from_asio(const openvpn_io::ip::address_v4& asio_addr)
       {
 	Addr ret;
 	ret.u.addr = (std::uint32_t)asio_addr.to_uint();
 	return ret;
       }
 
-      asio::ip::address_v4 to_asio() const
+      openvpn_io::ip::address_v4 to_asio() const
       {
-	return asio::ip::address_v4(u.addr);
+	return openvpn_io::ip::address_v4(u.addr);
       }
 
       Addr operator&(const Addr& other) const {
@@ -408,6 +413,11 @@ namespace openvpn {
       bool all_ones() const
       {
 	return ~u.addr == 0;
+      }
+
+      bool is_loopback() const
+      {
+	return (u.addr & 0x7F000000) == 0x7F000000;
       }
 
       // number of network bits in netmask,

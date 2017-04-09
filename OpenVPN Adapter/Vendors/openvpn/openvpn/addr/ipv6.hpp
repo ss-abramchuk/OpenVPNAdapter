@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,7 +26,7 @@
 #include <algorithm>         // for std::min
 #include <cstdint>           // for std::uint32_t
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
@@ -97,8 +97,8 @@ namespace openvpn {
 
       static Addr from_string(const std::string& ipstr, const char *title = nullptr)
       {
-	asio::error_code ec;
-	asio::ip::address_v6 a = asio::ip::make_address_v6(ipstr, ec);
+	openvpn_io::error_code ec;
+	openvpn_io::ip::address_v6 a = openvpn_io::ip::make_address_v6(ipstr, ec);
 	if (ec)
 	  throw ipv6_exception(IP::internal::format_error(ipstr, title, "v6", ec));
 	return from_asio(a);
@@ -106,7 +106,7 @@ namespace openvpn {
 
       std::string to_string() const
       {
-	const asio::ip::address_v6 a = to_asio();
+	const openvpn_io::ip::address_v6 a = to_asio();
 	std::string ret = a.to_string();
 	return ret;
       }
@@ -218,7 +218,7 @@ namespace openvpn {
 	throw ipv6_exception("arpa() not implemented");
       }
 
-      static Addr from_asio(const asio::ip::address_v6& asio_addr)
+      static Addr from_asio(const openvpn_io::ip::address_v6& asio_addr)
       {
 	Addr ret;
 	union ipv6addr addr;
@@ -261,11 +261,11 @@ namespace openvpn {
 	return a->u32[3];
       }
 
-      asio::ip::address_v6 to_asio() const
+      openvpn_io::ip::address_v6 to_asio() const
       {
 	union ipv6addr addr;
 	host_to_network_order(&addr, &u);
-	return asio::ip::address_v6(addr.asio_bytes, scope_id_);
+	return openvpn_io::ip::address_v6(addr.asio_bytes, scope_id_);
       }
 
       static Addr from_zero()
@@ -458,6 +458,11 @@ namespace openvpn {
       bool all_ones() const
       {
 	return u.u64[0] == ~std::uint64_t(0) && u.u64[1] == ~std::uint64_t(0);
+      }
+
+      bool is_loopback() const // ::1
+      {
+	return u.u64[Endian::e2(1)] == 0 && u.u64[Endian::e2(0)] == 1;
       }
 
       bool bit(unsigned int pos) const
@@ -665,7 +670,7 @@ namespace openvpn {
 	std::uint64_t u64[2];
 	std::uint32_t u32[4]; // generally stored in host byte order
 	unsigned char bytes[16];
-	asio::ip::address_v6::bytes_type asio_bytes;
+	openvpn_io::ip::address_v6::bytes_type asio_bytes;
       };
 
       void prefix_len_to_netmask_unchecked(const unsigned int prefix_len)

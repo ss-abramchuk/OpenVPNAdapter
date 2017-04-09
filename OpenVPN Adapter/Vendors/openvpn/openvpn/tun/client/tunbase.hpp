@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/rc.hpp>
 #include <openvpn/common/options.hpp>
@@ -35,70 +35,62 @@
 
 namespace openvpn {
 
-// Base class for objects that implement a client tun interface.
-struct TunClient : public virtual RC<thread_unsafe_refcount>
-{
-        typedef RCPtr<TunClient> Ptr;
+  // Base class for objects that implement a client tun interface.
+  struct TunClient : public virtual RC<thread_unsafe_refcount>
+  {
+    typedef RCPtr<TunClient> Ptr;
 
-        virtual void tun_start(const OptionList&, TransportClient&, CryptoDCSettings&) = 0;
-        virtual void stop() = 0;
-        virtual void set_disconnect() = 0;
-        virtual bool tun_send(BufferAllocated& buf) = 0; // return true if send succeeded
+    virtual void tun_start(const OptionList&, TransportClient&, CryptoDCSettings&) = 0;
+    virtual void stop() = 0;
+    virtual void set_disconnect() = 0;
+    virtual bool tun_send(BufferAllocated& buf) = 0; // return true if send succeeded
 
-        virtual std::string tun_name() const = 0;
+    virtual std::string tun_name() const = 0;
 
-        virtual std::string vpn_ip4() const = 0; // VPN IP addresses
-        virtual std::string vpn_ip6() const = 0;
+    virtual std::string vpn_ip4() const = 0; // VPN IP addresses
+    virtual std::string vpn_ip6() const = 0;
 
-        virtual std::string vpn_gw4() const {
-                return std::string();
-        }                                                         // VPN gateways
-        virtual std::string vpn_gw6() const {
-                return std::string();
-        }
-};
+    virtual std::string vpn_gw4() const { return std::string(); } // VPN gateways
+    virtual std::string vpn_gw6() const { return std::string(); }
+  };
 
-// Base class for parent of tun interface object, used to
-// communicate received data packets, exceptions, and progress
-// notifications.
-struct TunClientParent
-{
-        virtual void tun_recv(BufferAllocated& buf) = 0;
-        virtual void tun_error(const Error::Type fatal_err, const std::string& err_text) = 0;
+  // Base class for parent of tun interface object, used to
+  // communicate received data packets, exceptions, and progress
+  // notifications.
+  struct TunClientParent
+  {
+    virtual void tun_recv(BufferAllocated& buf) = 0;
+    virtual void tun_error(const Error::Type fatal_err, const std::string& err_text) = 0;
 
-        // progress notifications
-        virtual void tun_pre_tun_config() = 0;
-        virtual void tun_pre_route_config() = 0;
-        virtual void tun_connected() = 0;
-};
+    // progress notifications
+    virtual void tun_pre_tun_config() = 0;
+    virtual void tun_pre_route_config() = 0;
+    virtual void tun_connected() = 0;
+  };
 
-// Factory for tun interface objects.
-struct TunClientFactory : public virtual RC<thread_unsafe_refcount>
-{
-        typedef RCPtr<TunClientFactory> Ptr;
+  // Factory for tun interface objects.
+  struct TunClientFactory : public virtual RC<thread_unsafe_refcount>
+  {
+    typedef RCPtr<TunClientFactory> Ptr;
 
-        virtual TunClient::Ptr new_tun_client_obj(asio::io_context& io_context,
-                                                  TunClientParent& parent,
-                                                  TransportClient* transcli) = 0;
+    virtual TunClient::Ptr new_tun_client_obj(openvpn_io::io_context& io_context,
+					      TunClientParent& parent,
+					      TransportClient* transcli) = 0;
 
-        // return true if layer 2 tunnels are supported
-        virtual bool layer_2_supported() const {
-                return false;
-        }
+    // return true if layer 2 tunnels are supported
+    virtual bool layer_2_supported() const { return false; }
 
-        // Called on TunClient close, after TunClient::stop has been called.
-        // disconnected ->
-        //   true: this is the final disconnect, or
-        //   false: we are in a pause/reconnecting state.
-        virtual void finalize(const bool disconnected) {
-        }
+    // Called on TunClient close, after TunClient::stop has been called.
+    // disconnected ->
+    //   true: this is the final disconnect, or
+    //   false: we are in a pause/reconnecting state.
+    virtual void finalize(const bool disconnected) {}
 
-        // Called just prior to transport layer opening up a socket to addr.
-        // Allows the implementation to ensure connectivity for outgoing
-        // transport connection to server.
-        virtual void ip_hole_punch(const IP::Addr& addr) {
-        }
-};
+    // Called just prior to transport layer opening up a socket to addr.
+    // Allows the implementation to ensure connectivity for outgoing
+    // transport connection to server.
+    virtual void ip_hole_punch(const IP::Addr& addr) {}
+  };
 
 } // namespace openvpn
 

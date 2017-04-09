@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -25,6 +25,7 @@
 #define OPENVPN_COMMON_SCOPED_FD_H
 
 #include <unistd.h> // for close()
+#include <errno.h>
 
 namespace openvpn {
 
@@ -88,19 +89,25 @@ namespace openvpn {
     // return false if close error
     bool close()
     {
-      if (defined())
-	{
-	  const int status = ::close(fd);
-	  post_close(status);
-	  //OPENVPN_LOG("**** SFD CLOSE fd=" << fd << " status=" << status);
-	  fd = -1;
-	  return status == 0;
-	}
-      else
-	return true;
+      return close_with_errno() == 0;
     }
 
-    virtual void post_close(const int close_status)
+    // return errno value if close error, otherwise return 0
+    int close_with_errno()
+    {
+      int eno = 0;
+      if (defined())
+	{
+	  if (::close(fd) == -1)
+	    eno = errno;
+	  post_close(eno);
+	  //OPENVPN_LOG("**** SFD CLOSE fd=" << fd << " errno=" << eno);
+	  fd = -1;
+	}
+      return eno;
+    }
+
+    virtual void post_close(const int close_errno)
     {
     }
 

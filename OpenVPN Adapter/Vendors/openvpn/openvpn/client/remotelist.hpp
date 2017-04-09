@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <utility>
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/rc.hpp>
@@ -274,7 +274,7 @@ namespace openvpn {
 	virtual void pre_resolve_done() = 0;
       };
 
-      PreResolve(asio::io_context& io_context_arg,
+      PreResolve(openvpn_io::io_context& io_context_arg,
 		 const RemoteList::Ptr& remote_list_arg,
 		 const SessionStats::Ptr& stats_arg)
 	:  io_context(io_context_arg),
@@ -340,7 +340,7 @@ namespace openvpn {
 		    // call into Asio to do the resolve operation
 		    OPENVPN_LOG_REMOTELIST("*** PreResolve RESOLVE on " << item.server_host);
 		    resolver.async_resolve(item.server_host, "",
-					   [self=Ptr(this)](const asio::error_code& error, asio::ip::tcp::resolver::results_type results)
+					   [self=Ptr(this)](const openvpn_io::error_code& error, openvpn_io::ip::tcp::resolver::results_type results)
 					   {
 					     self->resolve_callback(error, results);
 					   });
@@ -363,8 +363,8 @@ namespace openvpn {
       }
 
       // callback on resolve completion
-      void resolve_callback(const asio::error_code& error,
-			    asio::ip::tcp::resolver::results_type results)
+      void resolve_callback(const openvpn_io::error_code& error,
+			    openvpn_io::ip::tcp::resolver::results_type results)
       {
 	if (notify_callback && index < remote_list->list.size())
 	  {
@@ -385,8 +385,8 @@ namespace openvpn {
 	  }
       }
 
-      asio::io_context& io_context;
-      asio::ip::tcp::resolver resolver;
+      openvpn_io::io_context& io_context;
+      openvpn_io::ip::tcp::resolver resolver;
       NotifyCallback* notify_callback;
       RemoteList::Ptr remote_list;
       SessionStats::Ptr stats;

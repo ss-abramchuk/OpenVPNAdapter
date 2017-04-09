@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -50,8 +50,10 @@
 #define OPENVPN_CLIENT_CLICONNECT_H
 
 #include <memory>
+#include <utility>
 
 #include <openvpn/common/rc.hpp>
+#include <openvpn/asio/asiowork.hpp>
 #include <openvpn/error/excode.hpp>
 #include <openvpn/time/asiotimer.hpp>
 #include <openvpn/client/cliopt.hpp>
@@ -74,7 +76,7 @@ namespace openvpn {
 
     OPENVPN_SIMPLE_EXCEPTION(client_connect_unhandled_exception);
 
-    ClientConnect(asio::io_context& io_context_arg,
+    ClientConnect(openvpn_io::io_context& io_context_arg,
 		  const ClientOptions::Ptr& client_options_arg)
       : generation(0),
 	halt(false),
@@ -157,7 +159,7 @@ namespace openvpn {
 	}
     }
 
-    void stop_on_signal(const asio::error_code& error, int signal_number)
+    void stop_on_signal(const openvpn_io::error_code& error, int signal_number)
     {
       stop();
     }
@@ -166,7 +168,7 @@ namespace openvpn {
     void thread_safe_stop()
     {
       if (!halt)
-	asio::post(io_context, [self=Ptr(this)]()
+	openvpn_io::post(io_context, [self=Ptr(this)]()
 		   {
 		     self->graceful_stop();
 		   });
@@ -184,7 +186,7 @@ namespace openvpn {
 	      interim_finalize();
 	    }
 	  cancel_timers();
-	  asio_work.reset(new asio::io_context::work(io_context));
+	  asio_work.reset(new AsioWork(io_context));
 	  ClientEvent::Base::Ptr ev = new ClientEvent::Pause(reason);
 	  client_options->events().add_event(std::move(ev));
 	  client_options->stats().error(Error::N_PAUSE);
@@ -213,7 +215,7 @@ namespace openvpn {
 	  server_poll_timer.cancel();
 	  client_options->remote_reset_cache_item();
 	  restart_wait_timer.expires_at(Time::now() + Time::Duration::seconds(seconds));
-	  restart_wait_timer.async_wait([self=Ptr(this), gen=generation](const asio::error_code& error)
+	  restart_wait_timer.async_wait([self=Ptr(this), gen=generation](const openvpn_io::error_code& error)
                                         {
                                           self->restart_wait_callback(gen, error);
                                         });
@@ -223,7 +225,7 @@ namespace openvpn {
     void thread_safe_pause(const std::string& reason)
     {
       if (!halt)
-	asio::post(io_context, [self=Ptr(this), reason]()
+	openvpn_io::post(io_context, [self=Ptr(this), reason]()
 		   {
 		     self->pause(reason);
 		   });
@@ -232,7 +234,7 @@ namespace openvpn {
     void thread_safe_resume()
     {
       if (!halt)
-	asio::post(io_context, [self=Ptr(this)]()
+	openvpn_io::post(io_context, [self=Ptr(this)]()
 		   {
 		     self->resume();
 		   });
@@ -241,7 +243,7 @@ namespace openvpn {
     void thread_safe_reconnect(int seconds)
     {
       if (!halt)
-	asio::post(io_context, [self=Ptr(this), seconds]()
+	openvpn_io::post(io_context, [self=Ptr(this), seconds]()
 		   {
 		     self->reconnect(seconds);
 		   });
@@ -250,6 +252,21 @@ namespace openvpn {
     void dont_restart()
     {
       dont_restart_ = true;
+    }
+
+    void post_cc_msg(const std::string& msg)
+    {
+      if (!halt && client)
+	client->post_cc_msg(msg);
+    }
+
+    void thread_safe_post_cc_msg(std::string msg)
+    {
+      if (!halt)
+	openvpn_io::post(io_context, [self=Ptr(this), msg=std::move(msg)]()
+		   {
+		     self->post_cc_msg(msg);
+		   });
     }
 
     ~ClientConnect()
@@ -281,7 +298,7 @@ namespace openvpn {
       conn_timer_pending = false;
     }
 
-    void restart_wait_callback(unsigned int gen, const asio::error_code& e)
+    void restart_wait_callback(unsigned int gen, const openvpn_io::error_code& e)
     {
       if (!e && gen == generation && !halt)
 	{
@@ -296,7 +313,7 @@ namespace openvpn {
 	}
     }
 
-    void server_poll_callback(unsigned int gen, const asio::error_code& e)
+    void server_poll_callback(unsigned int gen, const openvpn_io::error_code& e)
     {
       if (!e && gen == generation && !halt && !client->first_packet_received())
 	{
@@ -305,7 +322,7 @@ namespace openvpn {
 	}
     }
 
-    void conn_timer_callback(unsigned int gen, const asio::error_code& e)
+    void conn_timer_callback(unsigned int gen, const openvpn_io::error_code& e)
     {
       if (!e && !halt)
 	{
@@ -329,7 +346,7 @@ namespace openvpn {
       if (!conn_timer_pending && conn_timeout > 0)
 	{
 	  conn_timer.expires_at(Time::now() + Time::Duration::seconds(conn_timeout));
-	  conn_timer.async_wait([self=Ptr(this), gen=generation](const asio::error_code& error)
+	  conn_timer.async_wait([self=Ptr(this), gen=generation](const openvpn_io::error_code& error)
                                 {
                                   self->conn_timer_callback(gen, error);
                                 });
@@ -370,14 +387,14 @@ namespace openvpn {
 	}
     }
 
-    void queue_restart(const unsigned int delay = 2)
+    void queue_restart(const unsigned int delay_ms = 2000)
     {
-      OPENVPN_LOG("Client terminated, restarting in " << delay << "...");
+      OPENVPN_LOG("Client terminated, restarting in " << delay_ms << " ms...");
       server_poll_timer.cancel();
       interim_finalize();
       client_options->remote_reset_cache_item();
-      restart_wait_timer.expires_at(Time::now() + Time::Duration::seconds(delay));
-      restart_wait_timer.async_wait([self=Ptr(this), gen=generation](const asio::error_code& error)
+      restart_wait_timer.expires_at(Time::now() + Time::Duration::milliseconds(delay_ms));
+      restart_wait_timer.async_wait([self=Ptr(this), gen=generation](const openvpn_io::error_code& error)
                                     {
                                       self->restart_wait_callback(gen, error);
                                     });
@@ -504,7 +521,7 @@ namespace openvpn {
 		    ClientEvent::Base::Ptr ev = new ClientEvent::TransportError(client->fatal_reason());
 		    client_options->events().add_event(std::move(ev));
 		    client_options->stats().error(Error::TRANSPORT_ERROR);
-		    queue_restart(5); // use a larger timeout to allow preemption from higher levels
+		    queue_restart(5000); // use a larger timeout to allow preemption from higher levels
 		  }
 		  break;
 		case Error::TUN_ERROR:
@@ -512,7 +529,24 @@ namespace openvpn {
 		    ClientEvent::Base::Ptr ev = new ClientEvent::TunError(client->fatal_reason());
 		    client_options->events().add_event(std::move(ev));
 		    client_options->stats().error(Error::TUN_ERROR);
-		    queue_restart(5);
+		    queue_restart(5000);
+		  }
+		  break;
+		case Error::RELAY:
+		  {
+		    ClientEvent::Base::Ptr ev = new ClientEvent::Relay();
+		    client_options->events().add_event(std::move(ev));
+		    client_options->stats().error(Error::RELAY);
+		    transport_factory_relay = client->transport_factory_relay();
+		    queue_restart(0);
+		  }
+		  break;
+		case Error::RELAY_ERROR:
+		  {
+		    ClientEvent::Base::Ptr ev = new ClientEvent::RelayError(client->fatal_reason());
+		    client_options->events().add_event(std::move(ev));
+		    client_options->stats().error(Error::RELAY_ERROR);
+		    stop();
 		  }
 		  break;
 		default:
@@ -531,7 +565,7 @@ namespace openvpn {
 	  client->stop(false);
 	  interim_finalize();
 	}
-      if (generation > 1)
+      if (generation > 1 && !transport_factory_relay)
 	{
 	  ClientEvent::Base::Ptr ev = new ClientEvent::Reconnecting();
 	  client_options->events().add_event(std::move(ev));
@@ -539,15 +573,24 @@ namespace openvpn {
 	  if (!(client && client->reached_connected_state()))
 	    client_options->next();
 	}
-      Client::Config::Ptr cli_config = client_options->client_config(); // client_config in cliopt.hpp
+
+      // client_config in cliopt.hpp
+      Client::Config::Ptr cli_config = client_options->client_config(!transport_factory_relay);
       client.reset(new Client(io_context, *cli_config, this)); // build ClientProto::Session from cliproto.hpp
       client_finalized = false;
+
+      // relay?
+      if (transport_factory_relay)
+	{
+	  client->transport_factory_override(std::move(transport_factory_relay));
+	  transport_factory_relay.reset();
+	}
 
       restart_wait_timer.cancel();
       if (client_options->server_poll_timeout_enabled())
 	{
 	  server_poll_timer.expires_at(Time::now() + client_options->server_poll_timeout());
-	  server_poll_timer.async_wait([self=Ptr(this), gen=generation](const asio::error_code& error)
+	  server_poll_timer.async_wait([self=Ptr(this), gen=generation](const openvpn_io::error_code& error)
                                        {
                                          self->server_poll_callback(gen, error);
                                        });
@@ -585,14 +628,15 @@ namespace openvpn {
     bool dont_restart_;
     bool lifecycle_started;
     int conn_timeout;
-    asio::io_context& io_context;
+    openvpn_io::io_context& io_context;
     ClientOptions::Ptr client_options;
     Client::Ptr client;
+    TransportClientFactory::Ptr transport_factory_relay;
     AsioTimer server_poll_timer;
     AsioTimer restart_wait_timer;
     AsioTimer conn_timer;
     bool conn_timer_pending;
-    std::unique_ptr<asio::io_context::work> asio_work;
+    std::unique_ptr<AsioWork> asio_work;
     RemoteList::PreResolve::Ptr pre_resolve;
   };
 

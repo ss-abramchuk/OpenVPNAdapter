@@ -4,162 +4,156 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
-// Deal with adding routes on Linux
+// Add routes on Linux using AF_NETLINK socket
 
 #ifndef OPENVPN_NETCONF_LINUX_ROUTE_H
 #define OPENVPN_NETCONF_LINUX_ROUTE_H
 
-#include <string>
-#include <sstream>
+#include <cstring>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
+#include <net/if.h>
+#include <errno.h>
 
-#include <openvpn/common/rc.hpp>
+#include <string>
+
 #include <openvpn/common/exception.hpp>
-#include <openvpn/common/options.hpp>
-#include <openvpn/common/process.hpp>
-#include <openvpn/common/file.hpp>
-#include <openvpn/common/split.hpp>
-#include <openvpn/common/splitlines.hpp>
-#include <openvpn/common/hexstr.hpp>
-#include <openvpn/buffer/buffer.hpp>
-#include <openvpn/addr/ip.hpp>
-#include <openvpn/client/rgopt.hpp>
+#include <openvpn/common/scoped_fd.hpp>
+#include <openvpn/addr/route.hpp>
 
 namespace openvpn {
 
-  class RouteListLinux : public RC<thread_unsafe_refcount>
+  class LinuxRoute
   {
   public:
-    typedef RCPtr<RouteListLinux> Ptr;
+    OPENVPN_EXCEPTION(linux_route_error);
 
-    OPENVPN_EXCEPTION(route_error);
-
-    RouteListLinux(const OptionList& opt, const IP::Addr& server_addr_arg)
-      : stopped(false), did_redirect_gw(false), server_addr(server_addr_arg)
+    LinuxRoute()
     {
-      local_gateway = get_default_gateway_v4();
+      fd.reset(::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE));
+      if (!fd.defined())
+	throw linux_route_error("creating AF_NETLINK socket");
 
-      // get route-gateway
-      {
-	const Option& o = opt.get("route-gateway");
-	o.exact_args(2);
-	route_gateway = IP::Addr::from_string(o.get(1, 256), "route-gateway");
-      }
+      struct sockaddr_nl local;
+      ::memset(&local, 0, sizeof(local));
+      local.nl_family = AF_NETLINK;
+      local.nl_pad = 0;
+      local.nl_pid = 0; // only use getpid() if unique instantiation per process
+      local.nl_groups = 0;
+      if (::bind(fd(), (struct sockaddr*)&local, sizeof(local)) < 0)
+	throw linux_route_error("binding to AF_NETLINK socket");
+    }
 
-      // do redirect-gateway
-      rg_flags.init(opt);
-      if (rg_flags.redirect_gateway_ipv4_enabled()) // fixme ipv6
+    void add_delete(const bool add,
+		    const IP::Route& route,
+		    const int if_index,
+		    const int table=RT_TABLE_MAIN)
+    {
+      typedef struct {
+	struct nlmsghdr  nlmsg_info;
+	struct rtmsg	 rtmsg_info;
+	char		 buffer[64];  // must be large enough to contain request
+      } netlink_req_t;
+
+      struct rtattr *rtattr_ptr;
+      int rtmsg_len;
+      struct sockaddr_nl peer;
+      struct msghdr msg_info;
+      struct iovec iov_info;
+      netlink_req_t netlink_req;
+
+      ::memset(&peer, 0, sizeof(peer));
+      peer.nl_family = AF_NETLINK;
+      peer.nl_pad = 0;
+      peer.nl_pid = 0;
+      peer.nl_groups = 0;
+
+      ::memset(&msg_info, 0, sizeof(msg_info));
+      msg_info.msg_name = (void *) &peer;
+      msg_info.msg_namelen = sizeof(peer);
+
+      ::memset(&netlink_req, 0, sizeof(netlink_req));
+
+      rtmsg_len = sizeof(struct rtmsg);
+
+      // add destination addr
+      rtattr_ptr = (struct rtattr *) netlink_req.buffer;
+      rtattr_ptr->rta_type = RTA_DST;
+      rtattr_ptr->rta_len = sizeof(struct rtattr) + route.addr.size_bytes();
+      route.addr.to_byte_string_variable(((unsigned char *)rtattr_ptr) + sizeof(struct rtattr));
+      rtmsg_len += rtattr_ptr->rta_len;
+
+      // add if_index
+      rtattr_ptr = (struct rtattr *) (((unsigned char *)rtattr_ptr) + rtattr_ptr->rta_len);
+      rtattr_ptr->rta_type = RTA_OIF;
+      rtattr_ptr->rta_len = sizeof(struct rtattr) + 4;
+      ::memcpy(((unsigned char *)rtattr_ptr) + sizeof(struct rtattr), &if_index, 4);
+      rtmsg_len += rtattr_ptr->rta_len;
+
+      netlink_req.nlmsg_info.nlmsg_len = NLMSG_LENGTH(rtmsg_len);
+
+      if (add)
 	{
-	  add_del_reroute_gw_v4(true);
-	  did_redirect_gw = true;
+	  netlink_req.nlmsg_info.nlmsg_flags = NLM_F_REQUEST | NLM_F_CREATE;
+	  netlink_req.nlmsg_info.nlmsg_type = RTM_NEWROUTE;
+	}
+      else // delete
+	{
+	  netlink_req.nlmsg_info.nlmsg_flags = NLM_F_REQUEST;
+	  netlink_req.nlmsg_info.nlmsg_type = RTM_DELROUTE;
+	}
+
+      netlink_req.rtmsg_info.rtm_family = route.addr.family();
+      netlink_req.rtmsg_info.rtm_table = table;
+      netlink_req.rtmsg_info.rtm_dst_len = route.prefix_len; // add prefix
+
+      netlink_req.rtmsg_info.rtm_protocol = RTPROT_STATIC;
+      netlink_req.rtmsg_info.rtm_scope = RT_SCOPE_UNIVERSE;
+      netlink_req.rtmsg_info.rtm_type = RTN_UNICAST;
+
+      iov_info.iov_base = (void *) &netlink_req.nlmsg_info;
+      iov_info.iov_len = netlink_req.nlmsg_info.nlmsg_len;
+      msg_info.msg_iov = &iov_info;
+      msg_info.msg_iovlen = 1;
+
+      const ssize_t status = ::sendmsg(fd(), &msg_info, 0);
+      if (status < 0)
+	{
+	  const int eno = errno;
+	  OPENVPN_THROW(linux_route_error, "add_delete: sendmsg failed: " << std::strerror(eno));
 	}
     }
 
-    void stop()
+    static int if_index(const std::string& iface)
     {
-      if (!stopped)
-	{
-	  if (did_redirect_gw)
-	    {
-	      add_del_reroute_gw_v4(false);
-	      did_redirect_gw = false;
-	    }
-	  stopped = true;
-	}
-    }
-
-    virtual ~RouteListLinux()
-    {
-      stop();
+      const unsigned int ret = ::if_nametoindex(iface.c_str());
+      if (!ret)
+	OPENVPN_THROW(linux_route_error, "if_index: no such interface: " << iface);
+      return ret;
     }
 
   private:
-    static IP::Addr get_default_gateway_v4()
-    {
-      typedef std::vector<std::string> strvec;
-      const std::string proc_net_route = read_text_simple("/proc/net/route");
-      SplitLines in(proc_net_route, 0);
-      std::string best_gw;
-      while (in(true))
-	{
-	  const std::string& line = in.line_ref();
-	  strvec v = Split::by_space<strvec, StandardLex, SpaceMatch, Split::NullLimit>(line);
-	  if (v.size() >= 8)
-	    {
-	      if (v[1] == "00000000" && v[7] == "00000000")
-		{
-		  const IP::Addr gw = cvt_pnr_ip_v4(v[2]);
-		  return gw;
-		}
-	    }
-	}
-      throw route_error("can't determine default gateway");
-    }
-
-    void add_del_reroute_gw_v4(const bool add)
-    {
-      const IP::Addr a_255_255_255_255 = IP::Addr::from_string("255.255.255.255");
-      const IP::Addr a_0_0_0_0 = IP::Addr::from_string("0.0.0.0");
-      const IP::Addr a_128_0_0_0 = IP::Addr::from_string("128.0.0.0");
-
-      add_del_route(add, server_addr, a_255_255_255_255, local_gateway);
-      add_del_route(add, a_0_0_0_0, a_128_0_0_0, route_gateway);
-      add_del_route(add, a_128_0_0_0, a_128_0_0_0, route_gateway);
-    }
-
-    int add_del_route(const bool add,
-		      const IP::Addr& net,
-		      const IP::Addr& mask,
-		      const IP::Addr& gw)
-    {
-      Argv argv;
-      argv.push_back("/sbin/route");
-      if (add)
-	argv.push_back("add");
-      else
-	argv.push_back("del");
-      argv.push_back("-net");
-      argv.push_back(net.to_string());
-      argv.push_back("netmask");
-      argv.push_back(mask.to_string());
-      argv.push_back("gw");
-      argv.push_back(gw.to_string());
-      OPENVPN_LOG(argv.to_string());
-      return system_cmd(argv[0], argv);
-    }
-
-    static IP::Addr cvt_pnr_ip_v4(const std::string& hexaddr)
-    {
-      BufferAllocated v(4, BufferAllocated::CONSTRUCT_ZERO);
-      parse_hex(v, hexaddr);
-      if (v.size() != 4)
-	throw route_error("bad hex address");
-      IPv4::Addr ret = IPv4::Addr::from_bytes(v.data());
-      return IP::Addr::from_ipv4(ret);
-    }
-
-    bool stopped;
-    RedirectGatewayFlags rg_flags;
-    bool did_redirect_gw;
-    IP::Addr server_addr;
-    IP::Addr route_gateway;
-    IP::Addr local_gateway;
+    ScopedFD fd;
   };
 
-} // namespace openvpn
+}
 
-#endif // OPENVPN_NETCONF_LINUX_ROUTE_H
+#endif

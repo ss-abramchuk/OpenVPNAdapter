@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -34,13 +34,13 @@
 //#include <openvpn/applecrypto/util/selftest.hpp>
 #endif
 
-#ifdef USE_POLARSSL
-#include <openvpn/polarssl/util/selftest.hpp>
+#ifdef USE_MBEDTLS
+#include <openvpn/mbedtls/util/selftest.hpp>
 #endif
 
-#ifdef USE_POLARSSL_APPLE_HYBRID
+#ifdef USE_MBEDTLS_APPLE_HYBRID
 //#include <openvpn/applecrypto/util/selftest.hpp>
-#include <openvpn/polarssl/util/selftest.hpp>
+#include <openvpn/mbedtls/util/selftest.hpp>
 #endif
 
 namespace openvpn {
@@ -54,8 +54,8 @@ namespace openvpn {
 #     ifdef USE_APPLE_SSL
         //ret += crypto_self_test_apple();
 #     endif
-#     if defined(USE_POLARSSL) || defined(USE_POLARSSL_APPLE_HYBRID)
-        ret += crypto_self_test_polarssl();
+#     if defined(USE_MBEDTLS) || defined(USE_MBEDTLS_APPLE_HYBRID)
+        ret += crypto_self_test_mbedtls();
 #     endif
       return ret;
     }

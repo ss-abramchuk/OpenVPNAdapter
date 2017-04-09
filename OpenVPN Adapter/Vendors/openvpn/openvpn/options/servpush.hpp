@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -40,14 +40,21 @@ namespace openvpn {
       const auto* push = opt.get_index_ptr(opt_name);
       if (push)
 	{
-	    reserve(push->size());
-	    for (auto &i : *push)
-	      {
-		const Option& o = opt[i];
-		o.touch();
-		push_back(o.get(1, 512));
-	      }
+	  reserve(size() + push->size());
+	  for (auto &i : *push)
+	    {
+	      const Option& o = opt[i];
+	      o.touch();
+	      push_back(o.get(1, 512));
+	    }
 	}
+    }
+
+    void extend(const std::vector<std::string>& other)
+    {
+      reserve(size() + other.size());
+      for (auto &e : other)
+	push_back(e);
     }
 
     // do a roundtrip to csv and back to OptionList

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Build Android dependencies (run after build-toolchain)
+set -e
+if [ -z "$O3" ]; then
+    echo O3 var must point to ovpn3 tree ; exit 1
+fi
+export DEP_DIR=${DEP_DIR:-$HOME/src/android}
+cd $DEP_DIR
+rm -rf asio* boost* lz4* lzo* minicrypto openssl* polarssl* snappy* mbedtls*
+echo "******* ASIO"
+$O3/core/deps/asio/build-asio
+echo "******* MBEDTLS"
+$O3/core/scripts/android/build-mbedtls
+echo "******* LZ4"
+$O3/core/scripts/android/build-lz4
+
+#echo "******* BOOST"
+#$O3/core/scripts/android/build-boost
+#echo "******* MINICRYPTO"
+#$O3/core/scripts/android/build-minicrypto
+#echo "******* OpenSSL"
+#$O3/core/scripts/android/build-openssl-small
+#echo "******* LZO"
+#$O3/core/scripts/android/build-lzo
+#echo "******* SNAPPY"
+#$O3/core/scripts/android/build-snappy

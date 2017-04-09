@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -54,11 +54,18 @@ namespace openvpn {
 			      const PeerAddr::Ptr& peer_addr) = 0;
     virtual void push_request(const ProtoContext::Config::Ptr& pconf) = 0;
 
+    // INFO notification
+    virtual void info_request(const std::string& imsg) = 0;
+
     // bandwidth stats notification
     virtual void stats_notify(const PeerStats& ps, const bool final) = 0;
 
     // client float notification
     virtual void float_notify(const PeerAddr::Ptr& addr) = 0;
+
+    // ID
+    virtual std::string instance_name() const = 0;
+    virtual std::uint64_t instance_id() const = 0;
 
     // return a JSON string describing connected user
     virtual std::string describe_user() = 0;
@@ -72,7 +79,7 @@ namespace openvpn {
     virtual void post_info_user(BufferPtr&& info) = 0;
 
     // set ACL ID for user
-    virtual void set_acl_id(const unsigned int acl_id,
+    virtual void set_acl_id(const int acl_id,
 			    const std::string* username,
 			    const bool challenge,
 			    const bool throw_on_error) = 0;
@@ -103,10 +110,13 @@ namespace openvpn {
 
 
     // send control channel message
-    virtual void post_info(BufferPtr&& info) = 0;
+    virtual void post_cc_msg(BufferPtr&& msg) = 0;
 
     // set fwmark value in client instance
     virtual void set_fwmark(const unsigned int fwmark) = 0;
+
+    // set up relay to target
+    virtual void relay(const IP::Addr& target, const int port) = 0;
 
     // get client bandwidth stats
     virtual PeerStats stats_poll() = 0;

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -116,14 +116,25 @@ namespace openvpn {
     // return true if string ends with char c
     inline bool ends_with(const std::string& str, const char c)
     {
-      const size_t len = str.length();
-      return len > 0 && str[len-1] == c;
+      return str.length() && str.back() == c;
     }
 
     // return true if string ends with a newline
     inline bool ends_with_newline(const std::string& str)
     {
       return ends_with(str, '\n');
+    }
+
+    // return true if string ends with a CR or LF
+    inline bool ends_with_crlf(const std::string& str)
+    {
+      if (str.length())
+	{
+	  const char c = str.back();
+	  return c == '\n' || c == '\r';
+	}
+      else
+	return false;
     }
 
     // make sure that string ends with char c, if not append it
@@ -165,19 +176,20 @@ namespace openvpn {
       return str;
     }
 
+    // make sure that string ends with char c, if not append it (unless the string is empty)
+    inline std::string add_trailing_unless_empty_copy(const std::string& str, const char c)
+    {
+      if (str.empty() || ends_with(str, c))
+	return str;
+      else
+	return str + c;
+    }
+
     // remove trailing \r or \n chars
     inline void trim_crlf(std::string& str)
     {
-      static const char crlf[] = "\r\n";
-      const size_t pos = str.find_last_not_of(crlf);
-      if (pos == std::string::npos)
-	str = "";
-      else
-	{
-	  const size_t p = pos + 1;
-	  if (p < str.length())
-	    str = str.substr(0, p);
-	}
+      while (ends_with_crlf(str))
+	str.pop_back();
     }
 
     // remove trailing \r or \n chars
@@ -227,6 +239,11 @@ namespace openvpn {
       return std::isalpha(static_cast<unsigned char>(c)) != 0;
     }
 
+    inline bool is_alphanumeric(const char c)
+    {
+      return std::isalnum(static_cast<unsigned char>(c)) != 0;
+    }
+
     inline bool is_printable(const char c)
     {
       return std::isprint(static_cast<unsigned char>(c)) != 0;
@@ -251,7 +268,7 @@ namespace openvpn {
     inline bool is_word(const std::string& str)
     {
       for (auto &c : str)
-	if (!(is_alpha(c) || is_digit(c) || c == '_'))
+	if (!(is_alphanumeric(c) || c == '_'))
 	  return false;
       return true;
     }
@@ -431,7 +448,7 @@ namespace openvpn {
 	  ret += s;
 	  first = false;
 	}
-      if (tail)
+      if (tail && !ret.empty())
 	ret += delim;
       return ret;
     }

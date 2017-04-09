@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -39,6 +39,7 @@
 #include <openvpn/ssl/nscert.hpp>
 #include <openvpn/ssl/tlsver.hpp>
 #include <openvpn/ssl/tls_remote.hpp>
+#include <openvpn/ssl/tls_cert_profile.hpp>
 #include <openvpn/random/randapi.hpp>
 
 namespace openvpn {
@@ -87,6 +88,7 @@ namespace openvpn {
     enum LoadFlags {
       LF_PARSE_MODE = (1<<0),
       LF_ALLOW_CLIENT_CERT_NOT_REQUIRED = (1<<1),
+      LF_RELAY_MODE = (1<<2), // look for "relay-ca" instead of "ca" directive
     };
 
     virtual void set_mode(const Mode& mode_arg) = 0;
@@ -107,6 +109,8 @@ namespace openvpn {
     virtual void set_tls_remote(const std::string& tls_remote_arg) = 0;
     virtual void set_tls_version_min(const TLSVersion::Type tvm) = 0;
     virtual void set_tls_version_min_override(const std::string& override) = 0;
+    virtual void set_tls_cert_profile(const TLSCertProfile::Type type) = 0;
+    virtual void set_tls_cert_profile_override(const std::string& override) = 0;
     virtual void set_local_cert_enabled(const bool v) = 0;
     virtual void set_enable_renegotiation(const bool v) = 0;
     virtual void set_force_aes_cbc_ciphersuites(const bool v) = 0;

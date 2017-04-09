@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -25,7 +25,7 @@
 #include <string>
 #include <cstring> // for std::memset
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
@@ -120,16 +120,16 @@ namespace openvpn {
 
 	// slow path
 	{
-	  asio::error_code ec;
-	  asio::ip::make_address(ipstr, ec);
+	  openvpn_io::error_code ec;
+	  openvpn_io::ip::make_address(ipstr, ec);
 	  return !ec;
 	}
       }
 
       static Addr from_string(const std::string& ipstr, const char *title = nullptr, Version required_version = UNSPEC)
       {
-	asio::error_code ec;
-	asio::ip::address a = asio::ip::make_address(ipstr, ec);
+	openvpn_io::error_code ec;
+	openvpn_io::ip::address a = openvpn_io::ip::make_address(ipstr, ec);
 	if (ec)
 	  throw ip_exception(internal::format_error(ipstr, title, "", ec));
 	const Addr ret = from_asio(a);
@@ -275,6 +275,17 @@ namespace openvpn {
 	  std::memset(bytestr, 0, 16);
       }
 
+      // convert Addr to variable length byte string
+      void to_byte_string_variable(unsigned char *bytestr) const
+      {
+	if (ver == V4)
+	  u.v4.to_byte_string(bytestr);
+	else if (ver == V6)
+	  u.v6.to_byte_string(bytestr);
+	else
+	  throw ip_exception("address unspecified");
+      }
+
       std::uint32_t to_uint32_net() const // return value in net byte order
       {
 	if (ver == V4)
@@ -342,7 +353,7 @@ namespace openvpn {
       {
 	if (ver != UNSPEC)
 	  {
-	    const asio::ip::address a = to_asio();
+	    const openvpn_io::ip::address a = to_asio();
 	    std::string ret = a.to_string();
 	    return ret;
 	  }
@@ -381,7 +392,7 @@ namespace openvpn {
 	  throw ip_exception("address unspecified");
       }
 
-      static Addr from_asio(const asio::ip::address& addr)
+      static Addr from_asio(const openvpn_io::ip::address& addr)
       {
 	if (addr.is_v4())
 	  {
@@ -401,14 +412,14 @@ namespace openvpn {
 	  throw ip_exception("address unspecified");
       }
 
-      asio::ip::address to_asio() const
+      openvpn_io::ip::address to_asio() const
       {
 	switch (ver)
 	  {
 	  case V4:
-	    return asio::ip::address_v4(u.v4.to_asio());
+	    return openvpn_io::ip::address_v4(u.v4.to_asio());
 	  case V6:
-	    return asio::ip::address_v6(u.v6.to_asio());
+	    return openvpn_io::ip::address_v6(u.v6.to_asio());
 	  default:
 	    throw ip_exception("address unspecified");
 	  }
@@ -650,6 +661,19 @@ namespace openvpn {
 	  }
       }
 
+      bool is_loopback() const
+      {
+	switch (ver)
+	  {
+	  case V4:
+	    return u.v4.is_loopback();
+	  case V6:
+	    return u.v6.is_loopback();
+	  default:
+	    return false;
+	  }
+      }
+
       bool defined() const
       {
 	return ver != UNSPEC;
@@ -693,9 +717,40 @@ namespace openvpn {
 	return version_mask(ver);
       }
 
+      int version_index() const
+      {
+	switch (ver)
+	  {
+	  case V4:
+	    return 0;
+	  case V6:
+	    return 1;
+	  default:
+	    throw ip_exception("version index undefined");
+	  }
+      }
+
+      int family() const
+      {
+	switch (ver)
+	  {
+	  case V4:
+	    return AF_INET;
+	  case V6:
+	    return AF_INET6;
+	  default:
+	    return -1;
+	  }
+      }
+
       bool is_compatible(const Addr& other) const
       {
 	return ver == other.ver;
+      }
+
+      bool is_ipv6() const
+      {
+	return ver == V6;
       }
 
       void verify_version_consistency(const Addr& other) const
@@ -763,6 +818,12 @@ namespace openvpn {
       unsigned int size() const
       {
 	return version_size(ver);
+      }
+
+      // address size in bytes
+      unsigned int size_bytes() const
+      {
+	return size() / 8;
       }
 
       // address size in bits of particular IP version

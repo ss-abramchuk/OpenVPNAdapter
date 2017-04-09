@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -41,7 +41,7 @@
 #include <openvpn/common/platform.hpp>
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/size.hpp>
-#include <openvpn/common/asiosignal.hpp>
+#include <openvpn/asio/asiosignal.hpp>
 #include <openvpn/common/signal.hpp>
 #include <openvpn/common/stop.hpp>
 #include <openvpn/time/time.hpp>
@@ -124,7 +124,7 @@ namespace openvpn {
 
 #ifdef OPENVPN_EXIT_IN
       exit_timer.expires_at(Time::now() + Time::Duration::seconds(OPENVPN_EXIT_IN));
-      exit_timer.async_wait([self=Ptr(this)](const asio::error_code& error)
+      exit_timer.async_wait([self=Ptr(this)](const openvpn_io::error_code& error)
                             {
 			      if (!error)
 				self->cancel();
@@ -200,9 +200,9 @@ namespace openvpn {
 #ifdef ASIO_HAS_LOCAL_SOCKETS
     void set_exit_socket(ScopedFD& fd)
     {
-      exit_sock.reset(new asio::posix::stream_descriptor(io_context, fd.release()));
-      exit_sock->async_read_some(asio::null_buffers(),
-				 [self=Ptr(this)](const asio::error_code& error, const size_t bytes_recvd)
+      exit_sock.reset(new openvpn_io::posix::stream_descriptor(io_context, fd.release()));
+      exit_sock->async_read_some(openvpn_io::null_buffers(),
+				 [self=Ptr(this)](const openvpn_io::error_code& error, const size_t bytes_recvd)
 				 {
 				   if (!error)
 				     self->cancel();
@@ -263,12 +263,16 @@ namespace openvpn {
     {
       if (halt)
 	return;
-      asio::post(io_context, [self=Ptr(this)]()
+      openvpn_io::post(io_context, [self=Ptr(this)]()
         {
 	  std::lock_guard<std::recursive_mutex> lock(self->mutex);
 	  if (self->halt)
 	    return;
 	  self->halt = true;
+
+	  // async stop
+	  if (self->async_stop_)
+	    self->async_stop_->stop();
 
 	  self->exit_timer.cancel();
 #ifdef ASIO_HAS_LOCAL_SOCKETS
@@ -292,10 +296,6 @@ namespace openvpn {
 	      }
 	    OPENVPN_LOG(self->prefix << "Stopping " << stopped << '/' << self->servlist.size() << " thread(s)");
 	  }
-
-	  // async stop
-	  if (self->async_stop_)
-	    self->async_stop_->stop();
 	});
     }
 
@@ -331,7 +331,7 @@ namespace openvpn {
 	cancel();
     }
 
-    void signal(const asio::error_code& error, int signum)
+    void signal(const openvpn_io::error_code& error, int signum)
     {
       if (!error && !halt)
 	{
@@ -358,21 +358,21 @@ namespace openvpn {
 
     void signal_rearm()
     {
-      signals->register_signals_all([self=Ptr(this)](const asio::error_code& error, int signal_number)
+      signals->register_signals_all([self=Ptr(this)](const openvpn_io::error_code& error, int signal_number)
                                     {
                                       self->signal(error, signal_number);
                                     });
     }
 
     // these vars only used by main thread
-    asio::io_context io_context{1};
+    openvpn_io::io_context io_context{1};
     typename Stats::Ptr stats;
     ASIOSignals::Ptr signals;
     AsioTimer exit_timer;
     std::string prefix;
     std::vector<std::thread*> threadlist;
 #ifdef ASIO_HAS_LOCAL_SOCKETS
-    std::unique_ptr<asio::posix::stream_descriptor> exit_sock;
+    std::unique_ptr<openvpn_io::posix::stream_descriptor> exit_sock;
 #endif
 
     // main lock

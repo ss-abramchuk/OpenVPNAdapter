@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -41,7 +41,7 @@
 #include <openvpn/common/string.hpp>
 #include <openvpn/common/uniqueptr.hpp>
 #include <openvpn/common/hexstr.hpp>
-#include <openvpn/common/format.hpp>
+#include <openvpn/common/to_string.hpp>
 #include <openvpn/frame/frame.hpp>
 #include <openvpn/buffer/buffer.hpp>
 #include <openvpn/pki/cclist.hpp>
@@ -93,6 +93,7 @@ namespace openvpn {
 		 flags(0),
 		 ns_cert_type(NSCert::NONE),
 		 tls_version_min(TLSVersion::UNDEF),
+		 tls_cert_profile(TLSCertProfile::UNDEF),
 		 local_cert_enabled(true),
 		 force_aes_cbc_ciphersuites(false),
 		 enable_renegotiation(false) {}
@@ -195,6 +196,16 @@ namespace openvpn {
 	TLSVersion::apply_override(tls_version_min, override);
       }
 
+      virtual void set_tls_cert_profile(const TLSCertProfile::Type type)
+      {
+	tls_cert_profile = type;
+      }
+
+      virtual void set_tls_cert_profile_override(const std::string& override)
+      {
+	TLSCertProfile::apply_override(tls_cert_profile, override);
+      }
+
       virtual void set_local_cert_enabled(const bool v)
       {
 	local_cert_enabled = v;
@@ -263,7 +274,9 @@ namespace openvpn {
 
 	// ca
 	{
-	  const std::string ca_txt = opt.cat("ca");
+	  std::string ca_txt = opt.cat("ca");
+	  if (lflags & LF_RELAY_MODE)
+	    ca_txt += opt.cat("relay-extra-ca");
 	  load_ca(ca_txt, true);
 	}
 
@@ -292,16 +305,21 @@ namespace openvpn {
 	    load_dh(dh_txt);
 	  }
 
+	// relay mode
+	std::string relay_prefix;
+	if (lflags & LF_RELAY_MODE)
+	  relay_prefix = "relay-";
+
 	// ns-cert-type
-	ns_cert_type = NSCert::ns_cert_type(opt);
+	ns_cert_type = NSCert::ns_cert_type(opt, relay_prefix);
 
 	// parse remote-cert-x options
-	KUParse::remote_cert_tls(opt, ku, eku);
-	KUParse::remote_cert_ku(opt, ku);
-	KUParse::remote_cert_eku(opt, eku);
+	KUParse::remote_cert_tls(opt, relay_prefix, ku, eku);
+	KUParse::remote_cert_ku(opt, relay_prefix, ku);
+	KUParse::remote_cert_eku(opt, relay_prefix, eku);
 
 	// parse tls-remote
-	tls_remote = opt.get_optional("tls-remote", 1, 256);
+	tls_remote = opt.get_optional(relay_prefix + "tls-remote", 1, 256);
 
 	// Parse tls-version-min option.
 	// Assume that presence of SSL_OP_NO_TLSvX macro indicates
@@ -314,8 +332,11 @@ namespace openvpn {
 #         else
             const TLSVersion::Type maxver = TLSVersion::V1_0;
 #         endif
-	  tls_version_min = TLSVersion::parse_tls_version_min(opt, maxver);
+	  tls_version_min = TLSVersion::parse_tls_version_min(opt, relay_prefix, maxver);
 	}
+
+	// parse tls-cert-profile
+	tls_cert_profile = TLSCertProfile::parse_tls_cert_profile(opt, relay_prefix);
 
 	// unsupported cert checkers
 	{
@@ -338,6 +359,7 @@ namespace openvpn {
       std::string eku;              // if defined, peer cert X509 extended key usage must match this OID/string
       std::string tls_remote;
       TLSVersion::Type tls_version_min; // minimum TLS version that we will negotiate
+      TLSCertProfile::Type tls_cert_profile;
       X509Track::ConfigSet x509_track_config;
       bool local_cert_enabled;
       bool force_aes_cbc_ciphersuites;
@@ -563,6 +585,7 @@ namespace openvpn {
 	  BIO_free_all(ssl_bio);
 	if (ssl)
 	  SSL_free(ssl);
+	openssl_clear_error_stack();
 	ssl_clear();
       }
 
@@ -708,7 +731,7 @@ namespace openvpn {
 
 	  /* get signature */
 	  std::string sig_b64;
-	  const bool status = self->external_pki->sign("RSA_RAW", from_b64, sig_b64);
+	  const bool status = self->external_pki->sign(from_b64, sig_b64);
 	  if (!status)
 	    throw ssl_external_pki("OpenSSL: could not obtain signature");
 
@@ -840,12 +863,17 @@ namespace openvpn {
 	    }
 	  else
 	    {
-	      if (!SSL_CTX_set_cipher_list(ctx, "DEFAULT:!EXP:!PSK:!SRP:!LOW:!RC4:!kRSA"))
+	      if (!SSL_CTX_set_cipher_list(ctx, "DEFAULT:!EXP:!PSK:!SRP:!LOW:!RC4:!kRSA:!MD5:!SSLv2"))
 		OPENVPN_THROW(ssl_context_error, "OpenSSLContext: SSL_CTX_set_cipher_list failed");
 #if OPENSSL_VERSION_NUMBER >= 0x10002000L
 	      SSL_CTX_set_ecdh_auto(ctx, 1);
 #endif
 	    }
+
+	  // tls-cert-profile is not implemented yet in OpenSSL (fixme),
+	  // so throw exception if the setting is anything other than LEGACY.
+	  if (TLSCertProfile::default_if_undef(config->tls_cert_profile) != TLSCertProfile::LEGACY)
+	    OPENVPN_THROW(ssl_context_error, "OpenSSLContext: tls-cert-profile not implemented yet");
 
 	  if (config->local_cert_enabled)
 	    {

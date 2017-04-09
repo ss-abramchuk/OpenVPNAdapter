@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -41,7 +41,7 @@ namespace openvpn {
       virtual void action_thread_finished(const ActionThread* self, bool status) = 0;
     };
 
-    ActionThread(asio::io_context& io_context_arg,
+    ActionThread(openvpn_io::io_context& io_context_arg,
 		 const ActionList::Ptr& action_list,
 		 Notify* completion_handler_arg)
       : io_context(io_context_arg),
@@ -95,13 +95,13 @@ namespace openvpn {
 	{
 	  OPENVPN_LOG("ActionThread Exception: " << e.what());
 	}
-      asio::post(io_context, [self=Ptr(this), status]()
+      openvpn_io::post(io_context, [self=Ptr(this), status]()
 		 {
 		   self->completion_post(status);
 		 });
     }
 
-    asio::io_context& io_context;
+    openvpn_io::io_context& io_context;
     std::thread* thread;
     ActionList::Ptr actions;       // actions to execute in child thread
     Notify* completion_handler;    // completion handler

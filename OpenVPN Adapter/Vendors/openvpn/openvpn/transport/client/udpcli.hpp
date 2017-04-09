@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,7 +26,7 @@
 
 #include <sstream>
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/likely.hpp>
 #include <openvpn/common/platform.hpp>
@@ -60,8 +60,8 @@ namespace openvpn {
 	return new ClientConfig;
       }
 
-      virtual TransportClient::Ptr new_transport_client_obj(asio::io_context& io_context,
-							    TransportClientParent& parent);
+      virtual TransportClient::Ptr new_transport_client_obj(openvpn_io::io_context& io_context,
+							    TransportClientParent* parent);
 
     private:
       ClientConfig()
@@ -92,9 +92,9 @@ namespace openvpn {
 	      }
 	    else
 	      {
-		parent.transport_pre_resolve();
+		parent->transport_pre_resolve();
 		resolver.async_resolve(server_host, server_port,
-				       [self=Ptr(this)](const asio::error_code& error, asio::ip::udp::resolver::results_type results)
+				       [self=Ptr(this)](const openvpn_io::error_code& error, openvpn_io::ip::udp::resolver::results_type results)
 				       {
 					 self->do_resolve_(error, results);
 				       });
@@ -148,13 +148,23 @@ namespace openvpn {
 	return IP::Addr::from_asio(server_endpoint.address());
       }
 
+      virtual Protocol transport_protocol() const
+      {
+	if (server_endpoint.address().is_v4())
+	  return Protocol(Protocol::UDPv4);
+	else if (server_endpoint.address().is_v6())
+	  return Protocol(Protocol::UDPv6);
+	else
+	  return Protocol();
+      }
+
       virtual void stop() { stop_(); }
       virtual ~Client() { stop_(); }
 
     private:
-      Client(asio::io_context& io_context_arg,
+      Client(openvpn_io::io_context& io_context_arg,
 	     ClientConfig* config_arg,
-	     TransportClientParent& parent_arg)
+	     TransportClientParent* parent_arg)
 	:  io_context(io_context_arg),
 	   socket(io_context_arg),
 	   config(config_arg),
@@ -162,6 +172,11 @@ namespace openvpn {
 	   resolver(io_context_arg),
 	   halt(false)
       {
+      }
+
+      virtual void transport_reparent(TransportClientParent* parent_arg)
+      {
+	parent = parent_arg;
       }
 
       bool send(const Buffer& buf)
@@ -177,7 +192,7 @@ namespace openvpn {
 		if (err == EADDRNOTAVAIL)
 		  {
 		    stop();
-		    parent.transport_error(Error::TRANSPORT_ERROR, "EADDRNOTAVAIL: Can't assign requested address");
+		    parent->transport_error(Error::TRANSPORT_ERROR, "EADDRNOTAVAIL: Can't assign requested address");
 		  }
 #endif
 		return false;
@@ -192,7 +207,7 @@ namespace openvpn {
       void udp_read_handler(PacketFrom::SPtr& pfp) // called by LinkImpl
       {
 	if (config->server_addr_float || pfp->sender_endpoint == server_endpoint)
-	  parent.transport_recv(pfp->buf);
+	  parent->transport_recv(pfp->buf);
 	else
 	  config->stats->error(Error::BAD_SRC_ADDR);
       }
@@ -210,8 +225,8 @@ namespace openvpn {
       }
 
       // called after DNS resolution has succeeded or failed
-      void do_resolve_(const asio::error_code& error,
-		       asio::ip::udp::resolver::results_type results)
+      void do_resolve_(const openvpn_io::error_code& error,
+		       openvpn_io::ip::udp::resolver::results_type results)
       {
 	if (!halt)
 	  {
@@ -227,7 +242,7 @@ namespace openvpn {
 		os << "DNS resolve error on '" << server_host << "' for UDP session: " << error.message();
 		config->stats->error(Error::RESOLVE_ERROR);
 		stop();
-		parent.transport_error(Error::UNDEF, os.str());
+		parent->transport_error(Error::UNDEF, os.str());
 	      }
 	  }
       }
@@ -237,8 +252,8 @@ namespace openvpn {
       {
 	config->remote_list->get_endpoint(server_endpoint);
 	OPENVPN_LOG("Contacting " << server_endpoint << " via UDP");
-	parent.transport_wait();
-	parent.ip_hole_punch(server_endpoint_addr());
+	parent->transport_wait();
+	parent->ip_hole_punch(server_endpoint_addr());
 	socket.open(server_endpoint.protocol());
 #ifdef OPENVPN_PLATFORM_TYPE_UNIX
 	if (config->socket_protect)
@@ -247,19 +262,19 @@ namespace openvpn {
 	      {
 		config->stats->error(Error::SOCKET_PROTECT_ERROR);
 		stop();
-		parent.transport_error(Error::UNDEF, "socket_protect error (UDP)");
+		parent->transport_error(Error::UNDEF, "socket_protect error (UDP)");
 		return;
 	      }
 	  }
 #endif
-	socket.async_connect(server_endpoint, [self=Ptr(this)](const asio::error_code& error)
+	socket.async_connect(server_endpoint, [self=Ptr(this)](const openvpn_io::error_code& error)
                                               {
                                                 self->start_impl_(error);
                                               });
       }
 
       // start I/O on UDP socket
-      void start_impl_(const asio::error_code& error)
+      void start_impl_(const openvpn_io::error_code& error)
       {
 	if (!halt)
 	  {
@@ -273,7 +288,7 @@ namespace openvpn {
 		impl->gremlin_config(config->gremlin_config);
 #endif
 		impl->start(config->n_parallel);
-		parent.transport_connecting();
+		parent->transport_connecting();
 	      }
 	    else
 	      {
@@ -281,7 +296,7 @@ namespace openvpn {
 		os << "UDP connect error on '" << server_host << ':' << server_port << "' (" << server_endpoint << "): " << error.message();
 		config->stats->error(Error::UDP_CONNECT_ERROR);
 		stop();
-		parent.transport_error(Error::UNDEF, os.str());
+		parent->transport_error(Error::UNDEF, os.str());
 	      }
 	  }
       }
@@ -289,18 +304,18 @@ namespace openvpn {
       std::string server_host;
       std::string server_port;
 
-      asio::io_context& io_context;
-      asio::ip::udp::socket socket;
+      openvpn_io::io_context& io_context;
+      openvpn_io::ip::udp::socket socket;
       ClientConfig::Ptr config;
-      TransportClientParent& parent;
+      TransportClientParent* parent;
       LinkImpl::Ptr impl;
-      asio::ip::udp::resolver resolver;
+      openvpn_io::ip::udp::resolver resolver;
       UDPTransport::AsioEndpoint server_endpoint;
       bool halt;
     };
 
-    inline TransportClient::Ptr ClientConfig::new_transport_client_obj(asio::io_context& io_context,
-								       TransportClientParent& parent)
+    inline TransportClient::Ptr ClientConfig::new_transport_client_obj(openvpn_io::io_context& io_context,
+								       TransportClientParent* parent)
     {
       return TransportClient::Ptr(new Client(io_context, this, parent));
     }

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -28,8 +28,8 @@
 #include <sstream>
 #include <memory>
 
-#include <openvpn/common/format.hpp>
-#include <openvpn/common/scoped_asio_stream.hpp>
+#include <openvpn/common/to_string.hpp>
+#include <openvpn/asio/scoped_asio_stream.hpp>
 #include <openvpn/common/cleanup.hpp>
 #include <openvpn/time/asiotimer.hpp>
 #include <openvpn/tun/client/tunbase.hpp>
@@ -77,7 +77,7 @@ namespace openvpn {
     };
 
     // These types manage the underlying TAP driver HANDLE
-    typedef asio::windows::stream_handle TAPStream;
+    typedef openvpn_io::windows::stream_handle TAPStream;
     typedef ScopedAsioStream<TAPStream> ScopedTAPStream;
     typedef TunPersistTemplate<ScopedTAPStream> TunPersist;
 
@@ -100,7 +100,7 @@ namespace openvpn {
 
       TunWin::SetupFactory::Ptr tun_setup_factory;
 
-      TunWin::SetupBase::Ptr new_setup_obj(asio::io_context& io_context)
+      TunWin::SetupBase::Ptr new_setup_obj(openvpn_io::io_context& io_context)
       {
 	if (tun_setup_factory)
 	  return tun_setup_factory->new_setup_obj(io_context);
@@ -113,7 +113,7 @@ namespace openvpn {
 	return new ClientConfig;
       }
 
-      virtual TunClient::Ptr new_tun_client_obj(asio::io_context& io_context,
+      virtual TunClient::Ptr new_tun_client_obj(openvpn_io::io_context& io_context,
 						TunClientParent& parent,
 						TransportClient* transcli) override;
 
@@ -293,7 +293,7 @@ namespace openvpn {
       virtual ~Client() { stop_(); }
 
     private:
-      Client(asio::io_context& io_context_arg,
+      Client(openvpn_io::io_context& io_context_arg,
 	     ClientConfig* config_arg,
 	     TunClientParent& parent_arg)
 	:  io_context(io_context_arg),
@@ -329,7 +329,7 @@ namespace openvpn {
       }
 
       void tun_error_handler(const Error::Type errtype, // called by TunImpl
-			     const asio::error_code* error)
+			     const openvpn_io::error_code* error)
       {
 	if (errtype == Error::TUN_READ_ERROR && error && error->value() == 995)
 	  parent.tun_error(Error::TUN_IFACE_DISABLED, "TAP adapter is disabled");
@@ -389,7 +389,7 @@ namespace openvpn {
       void layer_2_schedule_timer(const unsigned int seconds)
       {
 	l2_timer.expires_at(Time::now() + Time::Duration::seconds(seconds));
-	l2_timer.async_wait([self=Ptr(this)](const asio::error_code& error)
+	l2_timer.async_wait([self=Ptr(this)](const openvpn_io::error_code& error)
 			    {
 			      if (!error && !self->halt)
 				self->layer_2_timer_callback();
@@ -425,7 +425,7 @@ namespace openvpn {
 	  }
       }
 
-      asio::io_context& io_context;
+      openvpn_io::io_context& io_context;
       TunPersist::Ptr tun_persist; // contains the TAP device HANDLE
       ClientConfig::Ptr config;
       TunClientParent& parent;
@@ -440,7 +440,7 @@ namespace openvpn {
       bool halt;
     };
 
-    inline TunClient::Ptr ClientConfig::new_tun_client_obj(asio::io_context& io_context,
+    inline TunClient::Ptr ClientConfig::new_tun_client_obj(openvpn_io::io_context& io_context,
 							   TunClientParent& parent,
 							   TransportClient* transcli)
     {

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,6 +24,7 @@
 #ifndef OPENVPN_SERVER_SERVPROTO_H
 #define OPENVPN_SERVER_SERVPROTO_H
 
+#include <memory>
 #include <utility> // for std::move
 
 #include <openvpn/common/size.hpp>
@@ -32,6 +33,7 @@
 #include <openvpn/common/unicode.hpp>
 #include <openvpn/common/abort.hpp>
 #include <openvpn/common/link.hpp>
+#include <openvpn/common/string.hpp>
 #include <openvpn/buffer/bufstream.hpp>
 #include <openvpn/time/asiotimer.hpp>
 #include <openvpn/time/coarsetime.hpp>
@@ -65,7 +67,7 @@ namespace openvpn {
       typedef RCPtr<Factory> Ptr;
       typedef Base::Config ProtoConfig;
 
-      Factory(asio::io_context& io_context_arg,
+      Factory(openvpn_io::io_context& io_context_arg,
 	      const Base::Config& c)
 	: io_context(io_context_arg)
       {
@@ -93,7 +95,7 @@ namespace openvpn {
 	return new ProtoConfig(*proto_context_config);
       }
 
-      asio::io_context& io_context;
+      openvpn_io::io_context& io_context;
       ProtoConfig::Ptr proto_context_config;
 
       ManClientInstanceFactory::Ptr man_factory;
@@ -196,6 +198,8 @@ namespace openvpn {
       virtual bool transport_recv(BufferAllocated& buf)
       {
 	bool ret = false;
+	if (!Base::primary_defined())
+	  return false;
 	try {
 	  OPENVPN_LOG_SERVPROTO("Transport RECV[" << buf.size() << "] " << client_endpoint_render() << ' ' << Base::dump_packet(buf));
 
@@ -281,15 +285,12 @@ namespace openvpn {
       }
 
     private:
-      Session(asio::io_context& io_context_arg,
+      Session(openvpn_io::io_context& io_context_arg,
 	      const Factory& factory,
 	      ManClientInstanceFactory::Ptr man_factory_arg,
 	      TunClientInstanceFactory::Ptr tun_factory_arg)
 	: Base(factory.clone_proto_config(), factory.stats),
 	  io_context(io_context_arg),
-	  halt(false),
-	  did_push(false),
-	  did_client_halt_restart(false),
 	  housekeeping_timer(io_context_arg),
 	  disconnect_at(Time::infinite()),
 	  stats(factory.stats),
@@ -350,6 +351,11 @@ namespace openvpn {
 		  }
 	      }
 	  }
+	else if (string::starts_with(msg, "INFO,"))
+	  {
+	    if (get_management())
+	      ManLink::send->info_request(msg.substr(5));
+	  }
 	else
 	  {
 	    OPENVPN_LOG("Unrecognized client request: " << msg);
@@ -368,12 +374,37 @@ namespace openvpn {
 	  TunLink::send->set_fwmark(fwmark);
       }
 
+      virtual void relay(const IP::Addr& target, const int port)
+      {
+	Base::update_now();
+
+	if (TunLink::send && !relay_transition)
+	  {
+	    relay_transition = true;
+	    TunLink::send->relay(target, port);
+	    disconnect_in(Time::Duration::seconds(10)); // not a real disconnect, just complete transition to relay
+	  }
+
+	if (Base::primary_defined())
+	  {
+	    BufferPtr buf(new BufferAllocated(64, 0));
+	    buf_append_string(*buf, "RELAY");
+	    buf->null_terminate();
+	    Base::control_send(std::move(buf));
+	    Base::flush(true);
+	  }
+
+	set_housekeeping_timer();
+      }
+
       virtual void push_reply(std::vector<BufferPtr>&& push_msgs,
 			      const std::vector<IP::Route>& rtvec,
 			      const unsigned int initial_fwmark)
       {
-	if (halt)
+	if (halt || relay_transition || !Base::primary_defined())
 	  return;
+
+	Base::update_now();
 
 	if (get_tun())
 	  {
@@ -469,20 +500,24 @@ namespace openvpn {
 	    disconnect_in(Time::Duration::seconds(1));
 	  }
 
-	buf->null_terminate();
-	Base::control_send(std::move(buf));
-	Base::flush(true);
+	if (Base::primary_defined())
+	  {
+	    buf->null_terminate();
+	    Base::control_send(std::move(buf));
+	    Base::flush(true);
+	  }
+
 	set_housekeeping_timer();
       }
 
-      virtual void post_info(BufferPtr&& info)
+      virtual void post_cc_msg(BufferPtr&& msg)
       {
-	if (halt)
+	if (halt || !Base::primary_defined())
 	  return;
 
 	Base::update_now();
-	info->null_terminate();
-	Base::control_send(std::move(info));
+	msg->null_terminate();
+	Base::control_send(std::move(msg));
 	Base::flush(true);
 	set_housekeeping_timer();
       }
@@ -529,12 +564,14 @@ namespace openvpn {
 	return bool(TunLink::send);
       }
 
+      // caller must ensure that update_now() was called before
+      // and set_housekeeping_timer() called after this method
       void disconnect_in(const Time::Duration& dur)
       {
 	disconnect_at = now() + dur;
       }
 
-      void housekeeping_callback(const asio::error_code& e)
+      void housekeeping_callback(const openvpn_io::error_code& e)
       {
 	try {
 	  if (!e && !halt)
@@ -547,7 +584,12 @@ namespace openvpn {
 	      if (Base::invalidated())
 		invalidation_error(Base::invalidation_reason());
 	      else if (now() >= disconnect_at)
-		error("disconnect triggered");
+		{
+		  if (relay_transition && !did_client_halt_restart)
+		    Base::pre_destroy();
+		  else
+		    error("disconnect triggered");
+		}
 	      else
 		set_housekeeping_timer();
 	    }
@@ -569,7 +611,7 @@ namespace openvpn {
 		next.max(now());
 		housekeeping_schedule.reset(next);
 		housekeeping_timer.expires_at(next);
-		housekeeping_timer.async_wait([self=Ptr(this)](const asio::error_code& error)
+		housekeeping_timer.async_wait([self=Ptr(this)](const openvpn_io::error_code& error)
                                               {
                                                 self->housekeeping_callback(error);
                                               });
@@ -619,10 +661,12 @@ namespace openvpn {
 	  }
       }
 
-      asio::io_context& io_context;
-      bool halt;
-      bool did_push;
-      bool did_client_halt_restart;
+      openvpn_io::io_context& io_context;
+
+      bool halt = false;
+      bool did_push = false;
+      bool did_client_halt_restart = false;
+      bool relay_transition = false;
 
       PeerAddr::Ptr peer_addr;
 

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -30,7 +30,7 @@
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/number.hpp>
-#include <openvpn/common/format.hpp>
+#include <openvpn/common/to_string.hpp>
 #include <openvpn/common/split.hpp>
 #include <openvpn/common/hash.hpp>
 #include <openvpn/addr/ip.hpp>
@@ -183,24 +183,33 @@ namespace openvpn {
       std::string to_string() const
       {
 	std::ostringstream os;
-	for (typename Base::const_iterator i = Base::begin(); i != Base::end(); ++i)
-	  os << i->to_string() << std::endl;
+	for (auto &r : *this)
+	  os << r.to_string() << std::endl;
 	return os.str();
       }
 
       IP::Addr::VersionMask version_mask() const
       {
 	IP::Addr::VersionMask mask = 0;
-	for (typename Base::const_iterator i = Base::begin(); i != Base::end(); ++i)
-	  mask |= i->version_mask();
+	for (auto &r : *this)
+	  mask |= r.version_mask();
 	return mask;
       }
 
       void verify_canonical() const
       {
-	for (typename Base::const_iterator i = Base::begin(); i != Base::end(); ++i)
-	  if (!i->is_canonical())
-	    throw route_list_error("route not canonical: " + i->to_string());
+	for (auto &r : *this)
+	  if (!r.is_canonical())
+	    throw route_list_error("route not canonical: " + r.to_string());
+      }
+
+      template <typename R>
+      bool contains(const R& c) const
+      {
+	for (auto &r : *this)
+	  if (r.contains(c))
+	    return true;
+	return false;
       }
     };
 

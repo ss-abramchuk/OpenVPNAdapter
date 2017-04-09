@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -45,7 +45,7 @@ namespace openvpn {
     public:
       typedef RCPtr<DelayedQueue> Ptr;
 
-      DelayedQueue(asio::io_context& io_context,
+      DelayedQueue(openvpn_io::io_context& io_context,
 		   const unsigned int delay_ms)
 	: dur(Time::Duration::milliseconds(delay_ms)),
 	  next_event(io_context)
@@ -110,7 +110,7 @@ namespace openvpn {
 	  return;
 	EventBase& ev = *events.front();
 	next_event.expires_at(ev.fire_time());
-	next_event.async_wait([self=Ptr(this)](const asio::error_code& error)
+	next_event.async_wait([self=Ptr(this)](const openvpn_io::error_code& error)
 			      {
 				if (!error)
 				  {
@@ -163,7 +163,7 @@ namespace openvpn {
     class SendRecvQueue
     {
     public:
-      SendRecvQueue(asio::io_context& io_context,
+      SendRecvQueue(openvpn_io::io_context& io_context,
 		    const Config::Ptr& conf_arg,
 		    const bool tcp_arg)
 	: conf(conf_arg),

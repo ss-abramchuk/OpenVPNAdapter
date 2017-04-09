@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -25,7 +25,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <cstring>     // for memcpy
-#include <unistd.h>    // for write, unlink
+#include <unistd.h>    // for write, unlink, lseek
+#include <sys/types.h> // for lseek
 
 #include <string>
 #include <memory>
@@ -33,6 +34,7 @@
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/scoped_fd.hpp>
 #include <openvpn/common/write.hpp>
+#include <openvpn/buffer/bufread.hpp>
 
 namespace openvpn {
   class TempFile
@@ -70,6 +72,28 @@ namespace openvpn {
       delete_file();
     }
 
+    void reset()
+    {
+      const off_t off = ::lseek(fd(), 0, SEEK_SET);
+      if (off < 0)
+	{
+	  const int eno = errno;
+	  OPENVPN_THROW(tempfile_exception, "seek error on temporary file: " << filename() << " : " << std::strerror(eno));
+	}
+      if (off)
+	OPENVPN_THROW(tempfile_exception, "unexpected seek on temporary file: " << filename());
+    }
+
+    void truncate()
+    {
+      reset();
+      if (::ftruncate(fd(), 0) < 0)
+	{
+	  const int eno = errno;
+	  OPENVPN_THROW(tempfile_exception, "ftruncate error on temporary file: " << filename() << " : " << std::strerror(eno));
+	}
+    }
+
     void write(const std::string& content)
     {
       const ssize_t size = write_retry(fd(), content.c_str(), content.length());
@@ -82,6 +106,12 @@ namespace openvpn {
 	{
 	  OPENVPN_THROW(tempfile_exception, "incomplete write to temporary file: " << filename());
 	}
+    }
+
+    std::string read()
+    {
+      BufferList buflist = buf_read(fd(), filename());
+      return buflist.to_string();
     }
 
     std::string filename() const
@@ -99,6 +129,11 @@ namespace openvpn {
 	  const int eno = errno;
 	  OPENVPN_THROW(tempfile_exception, "error closing temporary file: " << filename() << " : " << std::strerror(eno));
 	}
+    }
+
+    void set_delete(const bool del_flag)
+    {
+      del = del_flag;
     }
 
     void delete_file()

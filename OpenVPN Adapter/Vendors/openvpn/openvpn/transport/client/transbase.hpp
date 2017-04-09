@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -27,7 +27,7 @@
 
 #include <string>
 
-#include <asio.hpp>
+#include <openvpn/io/io.hpp>
 
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/rc.hpp>
@@ -35,8 +35,10 @@
 #include <openvpn/addr/ip.hpp>
 #include <openvpn/error/error.hpp>
 #include <openvpn/crypto/cryptodc.hpp>
+#include <openvpn/transport/protocol.hpp>
 
 namespace openvpn {
+  struct TransportClientParent;
 
   // Base class for client transport object.
   struct TransportClient : public virtual RC<thread_unsafe_refcount>
@@ -53,6 +55,8 @@ namespace openvpn {
     virtual void reset_align_adjust(const size_t align_adjust) = 0;
     virtual IP::Addr server_endpoint_addr() const = 0;
     virtual void server_endpoint_info(std::string& host, std::string& port, std::string& proto, std::string& ip_addr) const = 0;
+    virtual Protocol transport_protocol() const = 0;
+    virtual void transport_reparent(TransportClientParent* parent) = 0;
   };
 
   // Base class for parent of client transport object, used by client transport
@@ -93,8 +97,9 @@ namespace openvpn {
   {
     typedef RCPtr<TransportClientFactory> Ptr;
 
-    virtual TransportClient::Ptr new_transport_client_obj(asio::io_context& io_context,
-							  TransportClientParent& parent) = 0;
+    virtual TransportClient::Ptr new_transport_client_obj(openvpn_io::io_context& io_context,
+							  TransportClientParent* parent) = 0;
+    virtual bool is_relay() { return false; }
   };
 
 } // namespace openvpn

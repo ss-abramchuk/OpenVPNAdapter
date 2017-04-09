@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2016 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License Version 3
+//    it under the terms of the GNU General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
+//    GNU General Public License for more details.
 //
-//    You should have received a copy of the GNU Affero General Public License
+//    You should have received a copy of the GNU General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,6 +26,7 @@
 #include <sstream>
 #include <vector>
 
+#include <openvpn/common/number.hpp>
 #include <openvpn/http/urlencode.hpp>
 #include <openvpn/http/webexcept.hpp>
 #include <openvpn/common/string.hpp>
@@ -108,6 +109,68 @@ namespace openvpn {
 	  return p->value;
 	else
 	  throw url_parameter_error(key + " : not found");
+      }
+
+      template <typename T>
+      T get_num(const std::string& name, const std::string& short_name, const T default_value) const
+      {
+	const Parm* p = get(name);
+	if (!p && !short_name.empty())
+	  p = get(short_name);
+	if (p)
+	  return parse_number_throw<T>(p->value, name);
+	else
+	  return default_value;
+      }
+
+      template <typename T>
+      T get_num_required(const std::string& name, const std::string& short_name) const
+      {
+	const Parm* p = get(name);
+	if (!p && !short_name.empty())
+	  p = get(short_name);
+	if (!p)
+	  throw url_parameter_error(name + " : not found");
+	return parse_number_throw<T>(p->value, name);
+      }
+
+      bool get_bool(const std::string& name, const std::string& short_name, const bool default_value) const
+      {
+	const Parm* p = get(name);
+	if (!p && !short_name.empty())
+	  p = get(short_name);
+	if (p)
+	  {
+	    if (p->value == "0")
+	      return false;
+	    else if (p->value == "1")
+	      return true;
+	    else
+	      throw url_parameter_error(name + ": parameter must be 0 or 1");
+	  }
+	else
+	  return default_value;
+      }
+
+      std::string get_string(const std::string& name, const std::string& short_name) const
+      {
+	const Parm* p = get(name);
+	if (!p && !short_name.empty())
+	  p = get(short_name);
+	if (p)
+	  return p->value;
+	else
+	  return "";
+      }
+
+      std::string get_string_required(const std::string& name, const std::string& short_name) const
+      {
+	const Parm* p = get(name);
+	if (!p && !short_name.empty())
+	  p = get(short_name);
+	if (!p)
+	  throw url_parameter_error(name + " : not found");
+	return p->value;
       }
 
       std::string to_string() const
