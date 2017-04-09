@@ -107,6 +107,7 @@ bool OpenVPNClient::socket_protect(int socket) {
     return true;
 }
 
+// TODO: Provide interfacing with an OS-layer Keychain
 void OpenVPNClient::external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) { }
 void OpenVPNClient::external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) { }
 
@@ -120,18 +121,4 @@ void OpenVPNClient::event(const ClientAPI::Event& ev) {
 
 void OpenVPNClient::log(const ClientAPI::LogInfo& log) {
     [(__bridge OpenVPNAdapter *)adapter handleLog:&log];
-}
-
-std::string OpenVPNClient::get_subnet(int prefix_length) {
-    uint32_t bitmask = UINT_MAX << (sizeof(uint32_t) * 8 - prefix_length);
-    
-    uint8_t first = (bitmask >> 24) & 0xFF;
-    uint8_t second = (bitmask >> 16) & 0xFF;
-    uint8_t third = (bitmask >> 8) & 0xFF;
-    uint8_t fourth = bitmask & 0xFF;
-    
-    std::stringstream stream;
-    stream << std::to_string(first) << "." << std::to_string(second) << "." << std::to_string(third) << "." << std::to_string(fourth);
-    
-    return stream.str();
 }
