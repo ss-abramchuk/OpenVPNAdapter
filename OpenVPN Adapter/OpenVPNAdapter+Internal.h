@@ -6,7 +6,7 @@
 //
 //
 
-#import <openvpn/client/ovpncli.hpp>
+#import <client/ovpncli.hpp>
 
 #import "OpenVPNAdapter.h"
 
