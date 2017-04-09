@@ -1,0 +1,5 @@
+*.pyc
+cli.exe
+cli.obj
+*.pdb
+.vs

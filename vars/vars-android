@@ -1,0 +1,13 @@
+export DEP_DIR=$HOME/src/android
+export PLATFORM=android
+export ABI=armeabi
+export DEBUG_BUILD=0
+export OTHER_COMPILER_FLAGS=""
+export CXX_COMPILER_FLAGS="-std=c++11"
+export LIB_OPT_LEVEL="-O3"
+export LIB_FPIC="-fPIC"
+export TC=$DEP_DIR/tc-arm
+export PLATFORM_FLAGS="--sysroot=$TC/sysroot"
+
+[ -z "$VARS_SAVE_PATH" ] && VARS_SAVE_PATH="$PATH"
+export PATH="$TC/bin:$TC/arm-linux-androideabi/bin:$VARS_SAVE_PATH"

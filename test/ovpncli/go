@@ -1,0 +1,34 @@
+#!/bin/bash
+GCC_EXTRA="$GCC_EXTRA -DOPENVPN_SHOW_SESSION_TOKEN"
+[ "$EER" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DTEST_EER"
+[ "$NULL" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_FORCE_TUN_NULL"
+[ "$EXIT" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DTUN_NULL_EXIT"
+[ "$GREMLIN" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_GREMLIN"
+[ "$DEX" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_DISABLE_EXPLICIT_EXIT"
+[ "$BS64" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_BS64_DATA_LIMIT=2500000"
+if [ "$AGENT" = "1" ]; then
+    GCC_EXTRA="$GCC_EXTRA -DOPENVPN_COMMAND_AGENT"
+    export JSON=1
+fi
+export GCC_EXTRA
+if [ "$(uname)" == "Darwin" ]; then
+    cd $O3/core
+    if [ "$DEBUG" = "3" ]; then
+	. vars/vars-osx64-dbg
+    else
+	. vars/vars-osx64
+    fi
+    . vars/setpath
+    cd test/ovpncli
+    ASIO=1 MTLS=1 LZ4=1 PTPROXY=1 build cli 2>&1
+else
+    cd $O3/core
+    if [ "$DEBUG" = "3" ]; then
+	. vars/vars-linux-dbg
+    else
+	. vars/vars-linux
+    fi
+    . vars/setpath
+    cd test/ovpncli
+    ASIO=1 MTLS=1 LZ4=1 NOSSL=1 PTPROXY=1 build cli 2>&1
+fi
