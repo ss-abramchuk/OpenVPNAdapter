@@ -19,34 +19,31 @@
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OPENVPN_APPLE_SCDYNSTORE_H
-#define OPENVPN_APPLE_SCDYNSTORE_H
-
-#include <SystemConfiguration/SCDynamicStore.h>
-
-#include <openvpn/apple/cf/cf.hpp>
+#ifndef OPENVPN_TUN_EXTERN_FW_H
+#define OPENVPN_TUN_EXTERN_FW_H
 
 namespace openvpn {
-  namespace CF {
-    OPENVPN_CF_WRAP(DynamicStore, dynamic_store_cast, SCDynamicStoreRef, SCDynamicStoreGetTypeID)
 
-    template <typename RET, typename KEY>
-    inline RET DynamicStoreCopy(const DynamicStore& ds, const KEY& key)
-    {
-      String keystr = string(key);
-      return RET(RET::cast(SCDynamicStoreCopyValue(ds(), keystr())));
-    }
+#if defined(OPENVPN_EXTERNAL_TUN_FACTORY)
 
-    template <typename KEY>
-    inline Dict DynamicStoreCopyDict(const DynamicStore& ds, const KEY& key)
+  struct TunClientFactory;
+  class OptionList;
+
+  namespace ExternalTun {
+    struct Config;   // defined in config.hpp
+    struct Factory
     {
-      Dict dict = DynamicStoreCopy<Dict>(ds, key);
-      if (dict.defined())
-	return dict;
-      else
-	return CF::empty_dict();
-    }
+      virtual TunClientFactory* new_tun_factory(const Config& conf, const OptionList& opt) = 0;
+      virtual ~Factory() {}
+    };
   }
-}
 
+#else
+
+  namespace ExternalTun {
+    struct Factory {};
+  }
+
+#endif
+}
 #endif

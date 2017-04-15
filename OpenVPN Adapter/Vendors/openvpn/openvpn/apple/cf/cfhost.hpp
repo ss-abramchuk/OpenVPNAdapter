@@ -19,33 +19,14 @@
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OPENVPN_APPLE_SCDYNSTORE_H
-#define OPENVPN_APPLE_SCDYNSTORE_H
-
-#include <SystemConfiguration/SCDynamicStore.h>
+#ifndef OPENVPN_APPLECRYPTO_CF_CFHOST_H
+#define OPENVPN_APPLECRYPTO_CF_CFHOST_H
 
 #include <openvpn/apple/cf/cf.hpp>
 
 namespace openvpn {
   namespace CF {
-    OPENVPN_CF_WRAP(DynamicStore, dynamic_store_cast, SCDynamicStoreRef, SCDynamicStoreGetTypeID)
-
-    template <typename RET, typename KEY>
-    inline RET DynamicStoreCopy(const DynamicStore& ds, const KEY& key)
-    {
-      String keystr = string(key);
-      return RET(RET::cast(SCDynamicStoreCopyValue(ds(), keystr())));
-    }
-
-    template <typename KEY>
-    inline Dict DynamicStoreCopyDict(const DynamicStore& ds, const KEY& key)
-    {
-      Dict dict = DynamicStoreCopy<Dict>(ds, key);
-      if (dict.defined())
-	return dict;
-      else
-	return CF::empty_dict();
-    }
+    OPENVPN_CF_WRAP(Host, host_cast, CFHostRef, CFHostGetTypeID)
   }
 }
 
