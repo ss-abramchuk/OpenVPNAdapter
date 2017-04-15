@@ -21,7 +21,7 @@ class OpenVPNAdapterTests: XCTestCase {
     }
     
     let configurations: [ConfigurationType : String] = [
-        .withoutCredentials: "free_openvpn_udp"
+        .withoutCredentials: "free_openvpn_udp_jp"
     ]
     
     var expectations = [ExpectationsType : XCTestExpectation]()
@@ -51,7 +51,7 @@ class OpenVPNAdapterTests: XCTestCase {
         adapter.delegate = self
         adapter.connect()
         
-        waitForExpectations(timeout: 10.0) { (error) in
+        waitForExpectations(timeout: 30.0) { (error) in
             adapter.disconnect()
         }
     }
