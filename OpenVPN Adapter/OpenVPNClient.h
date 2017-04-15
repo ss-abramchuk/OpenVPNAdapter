@@ -15,6 +15,8 @@ class OpenVPNClient : public ClientAPI::OpenVPNClient
 public:
     OpenVPNClient(void * adapter);
     
+    virtual TunClientFactory* new_tun_factory(const ExternalTun::Config& conf, const OptionList& opt) override;
+    
     virtual bool tun_builder_new() override;
     
     virtual bool tun_builder_set_remote_address(const std::string& address, bool ipv6) override;

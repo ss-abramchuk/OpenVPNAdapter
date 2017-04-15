@@ -17,6 +17,10 @@ OpenVPNClient::OpenVPNClient(void *adapter) : ClientAPI::OpenVPNClient() {
     this->adapter = adapter;
 }
 
+TunClientFactory* OpenVPNClient::new_tun_factory(const ExternalTun::Config& conf, const OptionList& opt) {
+    return nullptr;
+}
+
 bool OpenVPNClient::tun_builder_new() {
     return [(__bridge OpenVPNAdapter *)adapter configureSockets];
 }
