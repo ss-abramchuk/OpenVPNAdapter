@@ -29,8 +29,8 @@
 
 #include <openvpn/log/logthread.hpp>
 #include <openvpn/common/action.hpp>
-#include <openvpn/applecrypto/cf/cftimer.hpp>
-#include <openvpn/apple/runloop.hpp>
+#include <openvpn/apple/cf/cftimer.hpp>
+#include <openvpn/apple/cf/cfrunloop.hpp>
 #include <openvpn/tun/mac/macdns.hpp>
 
 namespace openvpn {
@@ -183,7 +183,7 @@ namespace openvpn {
     // as well.
     void thread_func()
     {
-      runloop.reset(CFRunLoopGetCurrent(), CF::BORROW);
+      runloop.reset(CFRunLoopGetCurrent(), CF::GET);
       Log::Context logctx(logwrap);
 
       try {

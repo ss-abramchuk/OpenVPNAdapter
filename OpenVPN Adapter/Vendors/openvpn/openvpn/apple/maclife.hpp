@@ -28,11 +28,11 @@
 #include <thread>
 
 #include <openvpn/log/logthread.hpp>
-#include <openvpn/applecrypto/cf/cftimer.hpp>
-#include <openvpn/applecrypto/cf/cfhelper.hpp>
-#include <openvpn/applecrypto/util/reachable.hpp>
+#include <openvpn/apple/cf/cftimer.hpp>
+#include <openvpn/apple/cf/cfhelper.hpp>
+#include <openvpn/apple/cf/cfrunloop.hpp>
+#include <openvpn/apple/reachable.hpp>
 #include <openvpn/client/clilife.hpp>
-#include <openvpn/apple/runloop.hpp>
 #include <openvpn/apple/macsleep.hpp>
 #include <openvpn/apple/scdynstore.hpp>
 
@@ -126,7 +126,7 @@ namespace openvpn {
 
     void thread_func()
     {
-      runloop.reset(CFRunLoopGetCurrent(), CF::BORROW);
+      runloop.reset(CFRunLoopGetCurrent(), CF::GET);
       Log::Context logctx(logwrap);
       try {
 	// set up dynamic store query object

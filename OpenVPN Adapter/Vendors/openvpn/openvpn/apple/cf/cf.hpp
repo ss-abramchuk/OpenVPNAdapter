@@ -26,12 +26,10 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <utility>
+#include <exception>
 
 #include <CoreFoundation/CoreFoundation.h>
-
-#include <openvpn/common/size.hpp>
-#include <openvpn/common/exception.hpp>
-#include <openvpn/buffer/buffer.hpp>
 
 // Wrapper classes for Apple Core Foundation objects.
 
@@ -52,7 +50,7 @@
     { \
       CFTypeRef o = Type<cftype>::cast(obj); \
       if (o) \
-	return cls(cftype(o), BORROW);	\
+	return cls(cftype(o), GET);	\
       else \
 	return cls(); \
     }
@@ -60,9 +58,9 @@
 namespace openvpn {
   namespace CF
   {
-    enum Own {
-      OWN,
-      BORROW
+    enum Rule {
+      CREATE,    // create rule
+      GET        // get rule
     };
 
     template <typename T> struct Type {};
@@ -73,10 +71,9 @@ namespace openvpn {
     public:
       Wrap() : obj_(nullptr) {}
 
-      // Set own=BORROW if we don't currently own the object
-      explicit Wrap(T obj, const Own own=OWN)
+      explicit Wrap(T obj, const Rule rule=CREATE)
       {
-	if (own == BORROW && obj)
+	if (rule == GET && obj)
 	  CFRetain(obj);
 	obj_ = obj;
       }
@@ -118,9 +115,9 @@ namespace openvpn {
 	std::swap(obj_, other.obj_);
       }
 
-      void reset(T obj=nullptr, const Own own=OWN)
+      void reset(T obj=nullptr, const Rule rule=CREATE)
       {
-	if (own == BORROW && obj)
+	if (rule == GET && obj)
 	  CFRetain(obj);
 	if (obj_)
 	  CFRelease(obj_);
@@ -129,15 +126,20 @@ namespace openvpn {
 
       bool defined() const { return obj_ != nullptr; }
 
+      explicit operator bool() const noexcept
+      {
+	return defined();
+      }
+
       T operator()() const { return obj_; }
 
       CFTypeRef generic() const { return (CFTypeRef)obj_; }
 
       static T cast(CFTypeRef obj) { return T(Type<T>::cast(obj)); }
 
-      static Wrap from_generic(CFTypeRef obj, const Own own=OWN)
+      static Wrap from_generic(CFTypeRef obj, const Rule rule=CREATE)
       {
-	return Wrap(cast(obj), own);
+	return Wrap(cast(obj), rule);
       }
 
       T release()
@@ -155,7 +157,7 @@ namespace openvpn {
       }
 
       // Intended for use with Core Foundation methods that require
-      // a T* for saving a (non-borrowed) return value
+      // a T* for saving a create-rule return value
       T* mod_ref()
       {
 	if (obj_)
@@ -181,13 +183,10 @@ namespace openvpn {
       }
 
     private:
-      Wrap& operator=(T obj); // prevent use because no way to pass ownership parameter
+      Wrap& operator=(T obj) = delete; // prevent use because no way to pass rule parameter
 
       T obj_;
     };
-
-    // essentially a vector of void *, used as source for array and dictionary constructors
-    typedef BufferAllocatedType<CFTypeRef> SrcList;
 
     // common CF types
 
@@ -207,7 +206,7 @@ namespace openvpn {
 
     inline Generic generic_cast(CFTypeRef obj)
     {
-      return Generic(obj, BORROW);
+      return Generic(obj, GET);
     }
 
     // constructors
@@ -219,7 +218,7 @@ namespace openvpn {
 
     inline String string(CFStringRef str)
     {
-      return String(str, BORROW);
+      return String(str, GET);
     }
 
     inline String string(const String& str)
@@ -267,11 +266,6 @@ namespace openvpn {
       return Array(CFArrayCreate(kCFAllocatorDefault, values, numValues, &kCFTypeArrayCallBacks));
     }
 
-    inline Array array(const SrcList& values)
-    {
-      return array((const void **)values.c_data(), values.size());
-    }
-
     inline Dict dict(const void **keys, const void **values, CFIndex numValues)
     {
       return Dict(CFDictionaryCreate(kCFAllocatorDefault,
@@ -282,19 +276,14 @@ namespace openvpn {
 				     &kCFTypeDictionaryValueCallBacks));
     }
 
-    inline Dict dict(const SrcList& keys, const SrcList& values)
-    {
-      return dict((const void **)keys.c_data(), (const void **)values.c_data(), std::min(keys.size(), values.size()));
-    }
-
     inline Dict const_dict(MutableDict& mdict)
     {
-      return Dict(mdict(), CF::BORROW);
+      return Dict(mdict(), CF::GET);
     }
 
     inline Array const_array(MutableArray& marray)
     {
-      return Array(marray(), CF::BORROW);
+      return Array(marray(), CF::GET);
     }
 
     inline Dict empty_dict()
@@ -374,7 +363,13 @@ namespace openvpn {
 
     // string methods
 
-    OPENVPN_SIMPLE_EXCEPTION(cppstring_error);
+    struct cppstring_error : public std::exception
+    {
+      virtual const char* what() const throw()
+      {
+	return "cppstring_error";
+      }
+    };
 
     inline std::string cppstring(CFStringRef str)
     {
