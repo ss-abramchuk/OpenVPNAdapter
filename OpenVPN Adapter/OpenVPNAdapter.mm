@@ -272,6 +272,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         dispatch_semaphore_signal(sema);
     }];
     
+    // Wait 10 seconds
     dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC);
     if (dispatch_semaphore_wait(sema, timeout) != 0) {
         NSLog(@"Failed to establish tunnel in a reasonable time");
