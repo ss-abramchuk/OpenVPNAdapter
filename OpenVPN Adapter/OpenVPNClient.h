@@ -8,7 +8,6 @@
 
 #import <client/ovpncli.hpp>
 
-
 using namespace openvpn;
 
 class OpenVPNClient : public ClientAPI::OpenVPNClient

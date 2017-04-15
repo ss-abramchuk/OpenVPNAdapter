@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 extern NSString * __nonnull const OpenVPNAdapterErrorDomain;
 
 extern NSString * __nonnull const OpenVPNAdapterErrorFatalKey;

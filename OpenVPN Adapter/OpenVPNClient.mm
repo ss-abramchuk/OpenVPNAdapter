@@ -11,9 +11,7 @@
 #import <Foundation/Foundation.h>
 
 #import "OpenVPNAdapter+Internal.h"
-
 #import "OpenVPNClient.h"
-
 
 OpenVPNClient::OpenVPNClient(void *adapter) : ClientAPI::OpenVPNClient() {
     this->adapter = adapter;

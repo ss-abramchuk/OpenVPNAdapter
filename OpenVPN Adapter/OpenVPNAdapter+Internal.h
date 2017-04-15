@@ -10,7 +10,6 @@
 
 #import "OpenVPNAdapter.h"
 
-
 using namespace openvpn;
 
 @interface OpenVPNAdapter (Client)
