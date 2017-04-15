@@ -10,6 +10,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "TUNFactory.h"
 #import "OpenVPNAdapter+Internal.h"
 #import "OpenVPNClient.h"
 
@@ -18,7 +19,7 @@ OpenVPNClient::OpenVPNClient(void *adapter) : ClientAPI::OpenVPNClient() {
 }
 
 TunClientFactory* OpenVPNClient::new_tun_factory(const ExternalTun::Config& conf, const OptionList& opt) {
-    return nullptr;
+    return new TUNFactory();
 }
 
 bool OpenVPNClient::tun_builder_new() {
