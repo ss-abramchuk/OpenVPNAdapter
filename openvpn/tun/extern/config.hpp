@@ -19,34 +19,27 @@
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OPENVPN_APPLE_SCDYNSTORE_H
-#define OPENVPN_APPLE_SCDYNSTORE_H
+#ifndef OPENVPN_TUN_EXTERN_CONFIG_H
+#define OPENVPN_TUN_EXTERN_CONFIG_H
 
-#include <SystemConfiguration/SCDynamicStore.h>
-
-#include <openvpn/apple/cf/cf.hpp>
+// These includes are also intended to resolve forward references in fw.hpp
+#include <openvpn/common/options.hpp>
+#include <openvpn/tun/client/tunbase.hpp>
+#include <openvpn/tun/client/tunprop.hpp>
+#include <openvpn/frame/frame.hpp>
+#include <openvpn/log/sessionstats.hpp>
+#include <openvpn/common/stop.hpp>
 
 namespace openvpn {
-  namespace CF {
-    OPENVPN_CF_WRAP(DynamicStore, dynamic_store_cast, SCDynamicStoreRef, SCDynamicStoreGetTypeID)
-
-    template <typename RET, typename KEY>
-    inline RET DynamicStoreCopy(const DynamicStore& ds, const KEY& key)
+  namespace ExternalTun {
+    struct Config
     {
-      String keystr = string(key);
-      return RET(RET::cast(SCDynamicStoreCopyValue(ds(), keystr())));
-    }
-
-    template <typename KEY>
-    inline Dict DynamicStoreCopyDict(const DynamicStore& ds, const KEY& key)
-    {
-      Dict dict = DynamicStoreCopy<Dict>(ds, key);
-      if (dict.defined())
-	return dict;
-      else
-	return CF::empty_dict();
-    }
+      TunProp::Config tun_prop;
+      Frame::Ptr frame;
+      SessionStats::Ptr stats;
+      Stop* stop = nullptr;
+      bool tun_persist = false;
+    };
   }
 }
-
 #endif

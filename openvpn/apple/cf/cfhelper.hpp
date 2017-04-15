@@ -22,7 +22,8 @@
 #ifndef OPENVPN_APPLECRYPTO_CF_CFHELPER_H
 #define OPENVPN_APPLECRYPTO_CF_CFHELPER_H
 
-#include <openvpn/applecrypto/cf/cf.hpp>
+#include <openvpn/buffer/buffer.hpp>
+#include <openvpn/apple/cf/cf.hpp>
 
 // These methods build on the Wrapper classes for Apple Core Foundation objects
 // defined in cf.hpp.  They add additional convenience methods, such as dictionary
@@ -30,6 +31,19 @@
 
 namespace openvpn {
   namespace CF {
+
+    // essentially a vector of void *, used as source for array and dictionary constructors
+    typedef BufferAllocatedType<CFTypeRef> SrcList;
+
+    inline Array array(const SrcList& values)
+    {
+      return array((const void **)values.c_data(), values.size());
+    }
+
+    inline Dict dict(const SrcList& keys, const SrcList& values)
+    {
+      return dict((const void **)keys.c_data(), (const void **)values.c_data(), std::min(keys.size(), values.size()));
+    }
 
     inline CFTypeRef mutable_dict_new()
     {
