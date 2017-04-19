@@ -21,7 +21,7 @@ class OpenVPNAdapterTests: XCTestCase {
     }
     
     let configurations: [ConfigurationType : String] = [
-        .withoutCredentials: "free_openvpn_udp"
+        .withoutCredentials: "free_openvpn_udp_us"
     ]
     
     var expectations = [ExpectationsType : XCTestExpectation]()
