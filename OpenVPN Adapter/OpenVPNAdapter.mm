@@ -43,6 +43,9 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 @property (strong, nonatomic) NSString *remoteAddress;
 
+@property (strong, nonatomic) NSString *defaultGatewayIPv6;
+@property (strong, nonatomic) NSString *defaultGatewayIPv4;
+
 @property (strong, nonatomic) TUNConfiguration *tunConfigurationIPv6;
 @property (strong, nonatomic) TUNConfiguration *tunConfigurationIPv4;
 
@@ -122,12 +125,16 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             self.tunConfigurationIPv6.initialized = YES;
         }
         
+        self.defaultGatewayIPv6 = gateway;
+        
         [self.tunConfigurationIPv6.localAddresses addObject:address];
         [self.tunConfigurationIPv6.prefixLengths addObject:prefixLength];
     } else {
         if (!self.tunConfigurationIPv4.initialized) {
             self.tunConfigurationIPv4.initialized = YES;
         }
+        
+        self.defaultGatewayIPv4 = gateway;
         
         [self.tunConfigurationIPv4.localAddresses addObject:address];
         [self.tunConfigurationIPv4.prefixLengths addObject:prefixLength];
@@ -139,11 +146,15 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (BOOL)defaultGatewayRerouteIPv4:(BOOL)rerouteIPv4 rerouteIPv6:(BOOL)rerouteIPv6 {
     if (rerouteIPv6) {
         NEIPv6Route *includedRoute = [NEIPv6Route defaultRoute];
+        includedRoute.gatewayAddress = self.defaultGatewayIPv6;
+        
         [self.tunConfigurationIPv6.includedRoutes addObject:includedRoute];
     }
     
     if (rerouteIPv4) {
         NEIPv4Route *includedRoute = [NEIPv4Route defaultRoute];
+        includedRoute.gatewayAddress = self.defaultGatewayIPv4;
+        
         [self.tunConfigurationIPv4.includedRoutes addObject:includedRoute];
     }
     
@@ -157,10 +168,15 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     if (isIPv6) {
         NEIPv6Route *includedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:prefixLength];
+        includedRoute.gatewayAddress = self.defaultGatewayIPv6;
+        
         [self.tunConfigurationIPv6.includedRoutes addObject:includedRoute];
     } else {
         NSString *subnet = [self getSubnetFromPrefixLength:prefixLength];
+        
         NEIPv4Route *includedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
+        includedRoute.gatewayAddress = self.defaultGatewayIPv4;
+        
         [self.tunConfigurationIPv4.includedRoutes addObject:includedRoute];
     }
     
