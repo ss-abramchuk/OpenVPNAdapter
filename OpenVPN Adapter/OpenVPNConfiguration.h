@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+// TODO: Wrap ClientAPI::Config into Objective-C class
+
 @interface OpenVPNConfiguration : NSObject
+
+@property (nullable, nonatomic) NSData *fileContent;
 
 @end

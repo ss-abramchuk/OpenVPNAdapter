@@ -25,5 +25,12 @@
 
 @implementation OpenVPNConfiguration
 
+-(NSData *)fileContent {
+    return _config.content.size() != 0 ? [NSData dataWithBytes:_config.content.data() length:_config.content.size()] : nil;
+}
+
+- (void)setFileContent:(NSData *)fileContent {
+    _config.content = fileContent != nil ? std::string((const char *)fileContent.bytes) : "";
+}
 
 @end
