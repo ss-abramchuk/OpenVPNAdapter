@@ -32,7 +32,7 @@ using namespace openvpn;
 }
 
 - (void)setFileContent:(NSData *)fileContent {
-    _config.content = fileContent != nil ? std::string((const char *)fileContent.bytes) : "";
+    _config.content = fileContent ? std::string((const char *)fileContent.bytes) : "";
 }
 
 - (NSDictionary<NSString *,NSString *> *)settings {
@@ -54,6 +54,10 @@ using namespace openvpn;
 
 - (void)setSettings:(NSDictionary<NSString *,NSString *> *)settings {
     _config.contentList.clear();
+    
+    if (!settings) {
+        return;
+    }
     
     [settings enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string([key UTF8String]), std::string([obj UTF8String]));

@@ -75,15 +75,9 @@ class OpenVPNConfigurationTests: XCTestCase {
         
         configuration.settings = [:]
         XCTAssert(configuration.settings == nil, "Empty settings should return nil")
-    }
-    
-    func testCreateConfiguration() {
-        let configuration = OpenVPNConfiguration()
         
-        let some = configuration.fileContent
-        
-        let test = "Some String".data(using: .utf8)
-        configuration.fileContent = test
+        configuration.settings = nil
+        XCTAssert(configuration.settings == nil, "Empty settings should return nil")
     }
     
 }
