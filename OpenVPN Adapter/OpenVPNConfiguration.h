@@ -23,6 +23,11 @@
  */
 @property (nullable, nonatomic) NSDictionary<NSString *, NSString *> *settings;
 
-
+/**
+ Set to identity OpenVPN GUI version.
+ Format should be "<gui_identifier><space><version>"
+ Passed to server as IV_GUI_VER.
+ */
+@property (nullable, nonatomic) NSString *guiVersion;
 
 @end

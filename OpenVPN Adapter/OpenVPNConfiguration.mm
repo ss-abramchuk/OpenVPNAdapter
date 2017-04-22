@@ -65,4 +65,12 @@ using namespace openvpn;
     }];
 }
 
+- (NSString *)guiVersion {
+    return _config.guiVersion.size() != 0 ? [NSString stringWithUTF8String:_config.guiVersion.c_str()] : nil;
+}
+
+- (void)setGuiVersion:(NSString *)guiVersion {
+    _config.guiVersion = guiVersion ? std::string([guiVersion UTF8String]) : "";
+}
+
 @end
