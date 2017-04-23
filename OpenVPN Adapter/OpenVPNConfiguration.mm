@@ -121,4 +121,12 @@ using namespace openvpn;
     }
 }
 
+- (NSInteger)connectionTimeout {
+    return _config.connTimeout;
+}
+
+- (void)setConnectionTimeout:(NSInteger)connectionTimeout {
+    _config.connTimeout = connectionTimeout;
+}
+
 @end

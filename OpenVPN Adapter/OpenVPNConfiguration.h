@@ -12,14 +12,13 @@
 
 /**
  IPv6 preference options
-
- - IPv6PreferenceEnabled: request combined IPv4/IPv6 tunnel
- - IPv6PreferenceDisabled: disable IPv6, so tunnel will be IPv4-only
- - IPv6PreferenceDefault: leave decision to server
  */
 typedef NS_ENUM(NSInteger, IPv6Preference) {
+    /// Request combined IPv4/IPv6 tunnel
     IPv6PreferenceEnabled,
+    /// Disable IPv6, so tunnel will be IPv4-only
     IPv6PreferenceDisabled,
+    /// Leave decision to server
     IPv6PreferenceDefault
 };
 
@@ -59,5 +58,10 @@ typedef NS_ENUM(NSInteger, IPv6Preference) {
  IPv6 preference
  */
 @property (nonatomic) IPv6Preference ipv6;
+
+/**
+ Connection timeout in seconds, or 0 to retry indefinitely
+ */
+@property (nonatomic) NSInteger connectionTimeout;
 
 @end
