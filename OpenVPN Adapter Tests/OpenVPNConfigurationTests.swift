@@ -80,4 +80,21 @@ class OpenVPNConfigurationTests: XCTestCase {
         XCTAssert(configuration.settings == nil, "Empty settings should return nil")
     }
     
+    func testGetSetIPv6() {
+        let originalOption: IPv6Preference = .enabled
+        
+        let configuration = OpenVPNConfiguration()
+        
+        guard configuration.ipv6 == .default else {
+            XCTFail("IPv6 option should return default value")
+            return
+        }
+        
+        configuration.ipv6 = originalOption        
+        guard configuration.ipv6 == originalOption else {
+            XCTFail("IPv6 option should be equal to original value (enabled)")
+            return
+        }
+    }
+    
 }
