@@ -10,16 +10,23 @@
 
 // TODO: Wrap ClientAPI::Config into Objective-C class
 
+typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol) {
+    OpenVPNTransportProtocolUDP,
+    OpenVPNTransportProtocolTCP,
+    OpenVPNTransportProtocolAdaptive,
+    OpenVPNTransportProtocolDefault
+};
+
 /**
  IPv6 preference options
  */
-typedef NS_ENUM(NSInteger, IPv6Preference) {
+typedef NS_ENUM(NSInteger, OpenVPNIPv6Preference) {
     /// Request combined IPv4/IPv6 tunnel
-    IPv6PreferenceEnabled,
+    OpenVPNIPv6PreferenceEnabled,
     /// Disable IPv6, so tunnel will be IPv4-only
-    IPv6PreferenceDisabled,
+    OpenVPNIPv6PreferenceDisabled,
     /// Leave decision to server
-    IPv6PreferenceDefault
+    OpenVPNIPv6PreferenceDefault
 };
 
 @interface OpenVPNConfiguration : NSObject
@@ -46,18 +53,17 @@ typedef NS_ENUM(NSInteger, IPv6Preference) {
  Use a different server than that specified in "remote"
  option of profile
  */
-@property (nullable, nonatomic) NSString *serverOverride;
+@property (nullable, nonatomic) NSString *server;
 
 /**
  Force a given transport protocol
- Should be tcp, udp, or adaptive.
  */
-@property (nullable, nonatomic) NSString *protoOverride;
+@property (nonatomic) OpenVPNTransportProtocol proto;
 
 /**
  IPv6 preference
  */
-@property (nonatomic) IPv6Preference ipv6;
+@property (nonatomic) OpenVPNIPv6Preference ipv6;
 
 /**
  Connection timeout in seconds, or 0 to retry indefinitely
@@ -74,5 +80,10 @@ typedef NS_ENUM(NSInteger, IPv6Preference) {
  DNS servers, use the standard Google DNS servers.
  */
 @property (nonatomic) BOOL googleDNSFallback;
+
+/**
+ Enable autologin sessions
+ */
+@property (nonatomic) BOOL autologinSessions;
 
 @end

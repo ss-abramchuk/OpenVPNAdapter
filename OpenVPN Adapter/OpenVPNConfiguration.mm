@@ -73,28 +73,56 @@ using namespace openvpn;
     _config.guiVersion = guiVersion ? std::string([guiVersion UTF8String]) : "";
 }
 
-- (NSString *)serverOverride {
+- (NSString *)server {
     return _config.serverOverride.size() != 0 ? [NSString stringWithUTF8String:_config.serverOverride.c_str()] : nil;
 }
 
-- (void)setServerOverride:(NSString *)serverOverride {
+- (void)setServer:(NSString *)serverOverride {
     _config.serverOverride = serverOverride ? std::string([serverOverride UTF8String]) : "";
 }
 
-- (NSString *)protoOverride {
-    return _config.protoOverride.size() != 0 ? [NSString stringWithUTF8String:_config.protoOverride.c_str()] : nil;
-}
-
-- (void)setProtoOverride:(NSString *)protoOverride {
-    _config.protoOverride = protoOverride ? std::string([protoOverride UTF8String]) : "";
-}
-
-- (IPv6Preference)ipv6 {
+- (OpenVPNTransportProtocol)proto {
     NSDictionary *options = @{
-        @"yes": @(IPv6PreferenceEnabled),
-        @"no": @(IPv6PreferenceDisabled),
-        @"default": @(IPv6PreferenceDefault),
-        @"": @(IPv6PreferenceDefault)
+        @"udp": @(OpenVPNTransportProtocolUDP),
+        @"tcp": @(OpenVPNTransportProtocolTCP),
+        @"adaptive": @(OpenVPNTransportProtocolAdaptive),
+        @"": @(OpenVPNTransportProtocolDefault)
+    };
+    
+    NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
+    
+    NSNumber *transportProtocol = options[currentValue];
+    NSAssert(transportProtocol != nil, @"Incorrect ipv6 value");
+    
+    return (OpenVPNTransportProtocol)[transportProtocol integerValue];
+}
+
+- (void)setProto:(OpenVPNTransportProtocol)proto {
+    switch (proto) {
+        case OpenVPNTransportProtocolUDP:
+            _config.protoOverride = "udp";
+            break;
+            
+        case OpenVPNTransportProtocolTCP:
+            _config.protoOverride = "tcp";
+            break;
+            
+        case OpenVPNTransportProtocolAdaptive:
+            _config.protoOverride = "adaptive";
+            break;
+            
+        default:
+            _config.protoOverride = "";
+            break;
+    }
+}
+
+- (OpenVPNIPv6Preference)ipv6 {
+    NSDictionary *options = @{
+        @"yes": @(OpenVPNIPv6PreferenceEnabled),
+        @"no": @(OpenVPNIPv6PreferenceDisabled),
+        @"default": @(OpenVPNIPv6PreferenceDefault),
+        @"": @(OpenVPNIPv6PreferenceDefault)
     };
     
     NSString *currentValue = [NSString stringWithUTF8String:_config.ipv6.c_str()];
@@ -102,20 +130,20 @@ using namespace openvpn;
     NSNumber *preference = options[currentValue];
     NSAssert(preference != nil, @"Incorrect ipv6 value");
     
-    return (IPv6Preference)[preference integerValue];
+    return (OpenVPNIPv6Preference)[preference integerValue];
 }
 
-- (void)setIpv6:(IPv6Preference)ipv6 {
+- (void)setIpv6:(OpenVPNIPv6Preference)ipv6 {
     switch (ipv6) {
-        case IPv6PreferenceEnabled:
+        case OpenVPNIPv6PreferenceEnabled:
             _config.ipv6 = "yes";
             break;
         
-        case IPv6PreferenceDisabled:
+        case OpenVPNIPv6PreferenceDisabled:
             _config.ipv6 = "no";
             break;
             
-        case IPv6PreferenceDefault:
+        case OpenVPNIPv6PreferenceDefault:
             _config.ipv6 = "default";
             break;
             
@@ -147,6 +175,14 @@ using namespace openvpn;
 
 - (void)setGoogleDNSFallback:(BOOL)googleDNSFallback {
     _config.googleDnsFallback = googleDNSFallback;
+}
+
+- (BOOL)autologinSessions {
+    return _config.autologinSessions;
+}
+
+- (void)setAutologinSessions:(BOOL)autologinSessions {
+    _config.autologinSessions = autologinSessions;
 }
 
 @end
