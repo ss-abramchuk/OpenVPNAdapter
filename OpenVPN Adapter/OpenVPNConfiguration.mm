@@ -111,8 +111,12 @@ using namespace openvpn;
             _config.protoOverride = "adaptive";
             break;
             
-        default:
+        case OpenVPNTransportProtocolDefault:
             _config.protoOverride = "";
+            break;
+            
+        default:
+            NSAssert(NO, @"Incorrect OpenVPNTransportProtocol value");
             break;
     }
 }
@@ -148,7 +152,7 @@ using namespace openvpn;
             break;
             
         default:
-            NSAssert(NO, @"Incorrect IPv6Preference value");
+            NSAssert(NO, @"Incorrect OpenVPNIPv6Preference value");
             break;
     }
 }
