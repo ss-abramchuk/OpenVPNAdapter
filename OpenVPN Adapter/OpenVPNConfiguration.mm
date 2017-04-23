@@ -118,6 +118,10 @@ using namespace openvpn;
         case IPv6PreferenceDefault:
             _config.ipv6 = "default";
             break;
+            
+        default:
+            NSAssert(NO, @"Incorrect IPv6Preference value");
+            break;
     }
 }
 
@@ -127,6 +131,14 @@ using namespace openvpn;
 
 - (void)setConnectionTimeout:(NSInteger)connectionTimeout {
     _config.connTimeout = connectionTimeout;
+}
+
+- (BOOL)tunPersist {
+    return _config.tunPersist;
+}
+
+- (void)setTunPersist:(BOOL)tunPersist {
+    _config.tunPersist = tunPersist;
 }
 
 @end

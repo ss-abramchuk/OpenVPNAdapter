@@ -64,4 +64,9 @@ typedef NS_ENUM(NSInteger, IPv6Preference) {
  */
 @property (nonatomic) NSInteger connectionTimeout;
 
+/**
+ Keep tun interface active during pauses or reconnections
+ */
+@property (nonatomic) BOOL tunPersist;
+
 @end
