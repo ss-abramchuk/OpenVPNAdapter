@@ -69,4 +69,10 @@ typedef NS_ENUM(NSInteger, IPv6Preference) {
  */
 @property (nonatomic) BOOL tunPersist;
 
+/**
+ If true and a redirect-gateway profile doesn't also define
+ DNS servers, use the standard Google DNS servers.
+ */
+@property (nonatomic) BOOL googleDNSFallback;
+
 @end

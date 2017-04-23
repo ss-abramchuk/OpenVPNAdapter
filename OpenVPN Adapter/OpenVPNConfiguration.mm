@@ -141,4 +141,12 @@ using namespace openvpn;
     _config.tunPersist = tunPersist;
 }
 
+- (BOOL)googleDNSFallback {
+    return _config.googleDnsFallback;
+}
+
+- (void)setGoogleDNSFallback:(BOOL)googleDNSFallback {
+    _config.googleDnsFallback = googleDNSFallback;
+}
+
 @end
