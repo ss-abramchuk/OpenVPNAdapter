@@ -73,4 +73,20 @@ using namespace openvpn;
     _config.guiVersion = guiVersion ? std::string([guiVersion UTF8String]) : "";
 }
 
+- (NSString *)serverOverride {
+    return _config.serverOverride.size() != 0 ? [NSString stringWithUTF8String:_config.serverOverride.c_str()] : nil;
+}
+
+- (void)setServerOverride:(NSString *)serverOverride {
+    _config.serverOverride = serverOverride ? std::string([serverOverride UTF8String]) : "";
+}
+
+- (NSString *)protoOverride {
+    return _config.protoOverride.size() != 0 ? [NSString stringWithUTF8String:_config.protoOverride.c_str()] : nil;
+}
+
+- (void)setProtoOverride:(NSString *)protoOverride {
+    _config.protoOverride = protoOverride ? std::string([protoOverride UTF8String]) : "";
+}
+
 @end

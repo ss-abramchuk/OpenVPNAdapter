@@ -30,4 +30,16 @@
  */
 @property (nullable, nonatomic) NSString *guiVersion;
 
+/**
+ Use a different server than that specified in "remote"
+ option of profile
+ */
+@property (nullable, nonatomic) NSString *serverOverride;
+
+/**
+ Force a given transport protocol
+ Should be tcp, udp, or adaptive.
+ */
+@property (nullable, nonatomic) NSString *protoOverride;
+
 @end
