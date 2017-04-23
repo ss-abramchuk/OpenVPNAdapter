@@ -10,6 +10,19 @@
 
 // TODO: Wrap ClientAPI::Config into Objective-C class
 
+/**
+ IPv6 preference options
+
+ - IPv6PreferenceEnabled: request combined IPv4/IPv6 tunnel
+ - IPv6PreferenceDisabled: disable IPv6, so tunnel will be IPv4-only
+ - IPv6PreferenceDefault: leave decision to server
+ */
+typedef NS_ENUM(NSInteger, IPv6Preference) {
+    IPv6PreferenceEnabled,
+    IPv6PreferenceDisabled,
+    IPv6PreferenceDefault
+};
+
 @interface OpenVPNConfiguration : NSObject
 
 /**
@@ -41,5 +54,10 @@
  Should be tcp, udp, or adaptive.
  */
 @property (nullable, nonatomic) NSString *protoOverride;
+
+/**
+ IPv6 preference
+ */
+@property (nonatomic) IPv6Preference ipv6;
 
 @end

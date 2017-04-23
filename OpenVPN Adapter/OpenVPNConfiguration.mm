@@ -89,4 +89,36 @@ using namespace openvpn;
     _config.protoOverride = protoOverride ? std::string([protoOverride UTF8String]) : "";
 }
 
+- (IPv6Preference)ipv6 {
+    NSDictionary *options = @{
+        @"yes": @(IPv6PreferenceEnabled),
+        @"no": @(IPv6PreferenceDisabled),
+        @"default": @(IPv6PreferenceDefault),
+        @"": @(IPv6PreferenceDefault)
+    };
+    
+    NSString *currentValue = [NSString stringWithUTF8String:_config.ipv6.c_str()];
+    
+    NSNumber *preference = options[currentValue];
+    NSAssert(preference != nil, @"Incorrect ipv6 value");
+    
+    return (IPv6Preference)[preference integerValue];
+}
+
+- (void)setIpv6:(IPv6Preference)ipv6 {
+    switch (ipv6) {
+        case IPv6PreferenceEnabled:
+            _config.ipv6 = "yes";
+            break;
+        
+        case IPv6PreferenceDisabled:
+            _config.ipv6 = "no";
+            break;
+            
+        case IPv6PreferenceDefault:
+            _config.ipv6 = "default";
+            break;
+    }
+}
+
 @end
