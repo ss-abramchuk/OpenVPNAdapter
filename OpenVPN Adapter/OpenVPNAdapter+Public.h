@@ -7,9 +7,10 @@
 //
 
 #import "OpenVPNEvent.h"
-
 #import "OpenVPNAdapter.h"
 
+@class OpenVPNConfiguration;
+@class OpenVPNCredentials;
 @class NEPacketTunnelNetworkSettings;
 
 // TODO: Add documentation to properties and methods
@@ -88,28 +89,29 @@ NS_SWIFT_NAME(handle(logMessage:));
 /**
  <#Description#>
  */
-@property (strong, nonatomic, nullable) NSString *username;
-
-/**
- <#Description#>
- */
-@property (strong, nonatomic, nullable) NSString *password;
-
-/**
- <#Description#>
- */
 @property (weak, nonatomic, null_unspecified) id<OpenVPNAdapterDelegate> delegate;
 
 /**
  <#Description#>
 
- @param settings <#settings description#>
+ @param configuration <#configuration description#>
  @param error <#error description#>
  @return <#return value description#>
  */
-- (BOOL)configureUsingSettings:(nonnull NSData *)settings
-            error:(out NSError * __nullable * __nullable)error
-NS_SWIFT_NAME(configure(using:));
+- (BOOL)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration
+                     error:(out NSError * __nullable * __nullable)error
+NS_SWIFT_NAME(apply(configuration:));
+
+/**
+ <#Description#>
+
+ @param credentials <#credentials description#>
+ @param error <#error description#>
+ @return <#return value description#>
+ */
+- (BOOL)provideCredentials:(nonnull OpenVPNCredentials *)credentials
+                     error:(out NSError * __nullable * __nullable)error
+NS_SWIFT_NAME(provide(credentials:));
 
 /**
  Establish connection with the VPN server
