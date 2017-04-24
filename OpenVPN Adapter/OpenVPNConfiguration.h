@@ -50,6 +50,22 @@ typedef NS_ENUM(NSInteger, OpenVPNCompressionMode) {
     OpenVPNCompressionModeDefault
 };
 
+/**
+ Minimum TLS version options
+ */
+typedef NS_ENUM(NSInteger, OpenVPNMinTLSVersion) {
+    /// Don't specify a minimum, and disable any minimum specified in profile
+    OpenVPNMinTLSVersionDisabled,
+    /// Use TLS 1.0 minimum (overrides profile)
+    OpenVPNMinTLSVersion10,
+    /// Use TLS 1.1 minimum (overrides profile)
+    OpenVPNMinTLSVersion11,
+    /// Use TLS 1.2 minimum (overrides profile)
+    OpenVPNMinTLSVersion12,
+    /// Use profile minimum
+    OpenVPNMinTLSVersionDefault
+};
+
 @interface OpenVPNConfiguration : NSObject
 
 /**
@@ -133,5 +149,19 @@ typedef NS_ENUM(NSInteger, OpenVPNCompressionMode) {
  parameter defined in profile
  */
 @property (nonatomic) NSInteger keyDirection;
+
+/**
+ If YES, force ciphersuite to be one of:
+ 1. TLS_DHE_RSA_WITH_AES_256_CBC_SHA, or
+ 2. TLS_DHE_RSA_WITH_AES_128_CBC_SHA
+ and disable setting TLS minimum version.
+ This is intended for compatibility with legacy systems.
+ */
+@property (nonatomic) BOOL forceCiphersuitesAESCBC;
+
+/**
+ Override the minimum TLS version
+ */
+@property (nonatomic) OpenVPNMinTLSVersion minTLSVersion;
 
 @end

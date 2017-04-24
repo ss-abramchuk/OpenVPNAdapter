@@ -261,4 +261,58 @@ using namespace openvpn;
     _config.defaultKeyDirection = keyDirection;
 }
 
+- (BOOL)forceCiphersuitesAESCBC {
+    return _config.forceAesCbcCiphersuites;
+}
+
+-(void)setForceCiphersuitesAESCBC:(BOOL)forceCiphersuitesAESCBC {
+    _config.forceAesCbcCiphersuites = forceCiphersuitesAESCBC;
+}
+
+- (OpenVPNMinTLSVersion)minTLSVersion {
+    NSDictionary *options = @{
+        @"disabled": @(OpenVPNMinTLSVersionDisabled),
+        @"tls_1_0": @(OpenVPNMinTLSVersion10),
+        @"tls_1_1": @(OpenVPNMinTLSVersion11),
+        @"tls_1_2": @(OpenVPNMinTLSVersion12),
+        @"default": @(OpenVPNMinTLSVersionDefault),
+        @"": @(OpenVPNMinTLSVersionDefault)
+    };
+    
+    NSString *currentValue = [NSString stringWithUTF8String:_config.tlsVersionMinOverride.c_str()];
+    
+    NSNumber *preference = options[currentValue];
+    NSAssert(preference != nil, @"Incorrect minTLSVersion value");
+    
+    return (OpenVPNMinTLSVersion)[preference integerValue];
+}
+
+- (void)setMinTLSVersion:(OpenVPNMinTLSVersion)minTLSVersion {
+    switch (minTLSVersion) {
+        case OpenVPNMinTLSVersionDisabled:
+            _config.tlsVersionMinOverride = "disabled";
+            break;
+            
+        case OpenVPNMinTLSVersion10:
+            _config.tlsVersionMinOverride = "tls_1_0";
+            break;
+            
+        case OpenVPNMinTLSVersion11:
+            _config.tlsVersionMinOverride = "tls_1_1";
+            break;
+            
+        case OpenVPNMinTLSVersion12:
+            _config.tlsVersionMinOverride = "tls_1_2";
+            break;
+            
+        case OpenVPNMinTLSVersionDefault:
+            _config.tlsVersionMinOverride = "default";
+            break;
+            
+        default:
+            NSAssert(NO, @"Incorrect OpenVPNMinTLSVersion value");
+            break;
+    }
+}
+
 @end
