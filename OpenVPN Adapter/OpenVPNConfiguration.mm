@@ -84,78 +84,62 @@ using namespace openvpn;
 
 - (OpenVPNTransportProtocol)proto {
     NSDictionary *options = @{
-        @"udp": @(OpenVPNTransportProtocolUDP),
-        @"tcp": @(OpenVPNTransportProtocolTCP),
-        @"adaptive": @(OpenVPNTransportProtocolAdaptive),
-        @"": @(OpenVPNTransportProtocolDefault)
+        OpenVPNTransportProtocolUDPValue: @(OpenVPNTransportProtocolUDP),
+        OpenVPNTransportProtocolTCPValue: @(OpenVPNTransportProtocolTCP),
+        OpenVPNTransportProtocolAdaptiveValue: @(OpenVPNTransportProtocolAdaptive),
+        OpenVPNTransportProtocolDefaultValue: @(OpenVPNTransportProtocolDefault)
     };
     
-    NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
+    NSString *currentValue = _config.protoOverride.empty() ? OpenVPNTransportProtocolDefaultValue :
+        [NSString stringWithUTF8String:_config.protoOverride.c_str()];
     
     NSNumber *transportProtocol = options[currentValue];
-    NSAssert(transportProtocol != nil, @"Incorrect protoOverride value");
+    NSAssert(transportProtocol != nil, @"Incorrect protoOverride value: %@", currentValue);
     
     return (OpenVPNTransportProtocol)[transportProtocol integerValue];
 }
 
 - (void)setProto:(OpenVPNTransportProtocol)proto {
-    switch (proto) {
-        case OpenVPNTransportProtocolUDP:
-            _config.protoOverride = "udp";
-            break;
-            
-        case OpenVPNTransportProtocolTCP:
-            _config.protoOverride = "tcp";
-            break;
-            
-        case OpenVPNTransportProtocolAdaptive:
-            _config.protoOverride = "adaptive";
-            break;
-            
-        case OpenVPNTransportProtocolDefault:
-            _config.protoOverride = "";
-            break;
-            
-        default:
-            NSAssert(NO, @"Incorrect OpenVPNTransportProtocol value");
-            break;
-    }
+    NSDictionary *options = @{
+        @(OpenVPNTransportProtocolUDP): OpenVPNTransportProtocolUDPValue,
+        @(OpenVPNTransportProtocolTCP): OpenVPNTransportProtocolTCPValue,
+        @(OpenVPNTransportProtocolAdaptive): OpenVPNTransportProtocolAdaptiveValue,
+        @(OpenVPNTransportProtocolDefault): OpenVPNTransportProtocolDefaultValue
+    };
+    
+    NSString *value = options[@(proto)];
+    NSAssert(value != nil, @"Incorrect proto value: %li", (NSInteger)proto);
+    
+    _config.protoOverride = [value UTF8String];
 }
 
 - (OpenVPNIPv6Preference)ipv6 {
     NSDictionary *options = @{
-        @"yes": @(OpenVPNIPv6PreferenceEnabled),
-        @"no": @(OpenVPNIPv6PreferenceDisabled),
-        @"default": @(OpenVPNIPv6PreferenceDefault),
-        @"": @(OpenVPNIPv6PreferenceDefault)
+        OpenVPNIPv6PreferenceEnabledValue: @(OpenVPNIPv6PreferenceEnabled),
+        OpenVPNIPv6PreferenceDisabledValue: @(OpenVPNIPv6PreferenceDisabled),
+        OpenVPNIPv6PreferenceDefaultValue: @(OpenVPNIPv6PreferenceDefault)
     };
     
-    NSString *currentValue = [NSString stringWithUTF8String:_config.ipv6.c_str()];
+    NSString *currentValue = _config.ipv6.empty() ? OpenVPNIPv6PreferenceDefaultValue :
+        [NSString stringWithUTF8String:_config.ipv6.c_str()];
     
-    NSNumber *preference = options[currentValue];
-    NSAssert(preference != nil, @"Incorrect ipv6 value");
+    NSNumber *ipv6 = options[currentValue];
+    NSAssert(ipv6 != nil, @"Incorrect ipv6 value: %@", currentValue);
     
-    return (OpenVPNIPv6Preference)[preference integerValue];
+    return (OpenVPNIPv6Preference)[ipv6 integerValue];
 }
 
 - (void)setIpv6:(OpenVPNIPv6Preference)ipv6 {
-    switch (ipv6) {
-        case OpenVPNIPv6PreferenceEnabled:
-            _config.ipv6 = "yes";
-            break;
-        
-        case OpenVPNIPv6PreferenceDisabled:
-            _config.ipv6 = "no";
-            break;
-            
-        case OpenVPNIPv6PreferenceDefault:
-            _config.ipv6 = "default";
-            break;
-            
-        default:
-            NSAssert(NO, @"Incorrect OpenVPNIPv6Preference value");
-            break;
-    }
+    NSDictionary *options = @{
+        @(OpenVPNIPv6PreferenceEnabled): OpenVPNIPv6PreferenceEnabledValue,
+        @(OpenVPNIPv6PreferenceDisabled): OpenVPNIPv6PreferenceDisabledValue,
+        @(OpenVPNIPv6PreferenceDefault): OpenVPNIPv6PreferenceDefaultValue
+    };
+    
+    NSString *value = options[@(ipv6)];
+    NSAssert(value != nil, @"Incorrect ipv6 value: %li", (NSInteger)ipv6);
+    
+    _config.ipv6 = [value UTF8String];
 }
 
 - (NSInteger)connectionTimeout {
@@ -217,10 +201,10 @@ using namespace openvpn;
     NSString *currentValue = _config.compressionMode.empty() ? OpenVPNCompressionModeDefaultValue :
         [NSString stringWithUTF8String:_config.compressionMode.c_str()];
     
-    NSNumber *preference = options[currentValue];
-    NSAssert(preference != nil, @"Incorrect compressionMode value: %@", currentValue);
+    NSNumber *compressionMode = options[currentValue];
+    NSAssert(compressionMode != nil, @"Incorrect compressionMode value: %@", currentValue);
     
-    return (OpenVPNCompressionMode)[preference integerValue];
+    return (OpenVPNCompressionMode)[compressionMode integerValue];
 }
 
 - (void)setCompressionMode:(OpenVPNCompressionMode)compressionMode {
@@ -273,10 +257,10 @@ using namespace openvpn;
     NSString *currentValue = _config.tlsVersionMinOverride.empty() ? OpenVPNMinTLSVersionDefaultValue :
         [NSString stringWithUTF8String:_config.tlsVersionMinOverride.c_str()];
     
-    NSNumber *preference = options[currentValue];
-    NSAssert(preference != nil, @"Incorrect tlsVersionMinOverride value: %@", currentValue);
+    NSNumber *minTLSVersion = options[currentValue];
+    NSAssert(minTLSVersion != nil, @"Incorrect tlsVersionMinOverride value: %@", currentValue);
     
-    return (OpenVPNMinTLSVersion)[preference integerValue];
+    return (OpenVPNMinTLSVersion)[minTLSVersion integerValue];
 }
 
 - (void)setMinTLSVersion:(OpenVPNMinTLSVersion)minTLSVersion {
@@ -307,10 +291,10 @@ using namespace openvpn;
     NSString *currentValue = _config.tlsCertProfileOverride.empty() ? OpenVPNTLSCertProfileDefaultValue :
         [NSString stringWithUTF8String:_config.tlsCertProfileOverride.c_str()];
     
-    NSNumber *preference = options[currentValue];
-    NSAssert(preference != nil, @"Incorrect tlsCertProfileOverride value: %@", currentValue);
+    NSNumber *tlsCertProfile = options[currentValue];
+    NSAssert(tlsCertProfile != nil, @"Incorrect tlsCertProfileOverride value: %@", currentValue);
     
-    return (OpenVPNTLSCertProfile)[preference integerValue];
+    return (OpenVPNTLSCertProfile)[tlsCertProfile integerValue];
 }
 
 - (void)setTlsCertProfile:(OpenVPNTLSCertProfile)tlsCertProfile {

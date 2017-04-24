@@ -8,6 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString * __nonnull const OpenVPNTransportProtocolUDPValue;
+extern NSString * __nonnull const OpenVPNTransportProtocolTCPValue;
+extern NSString * __nonnull const OpenVPNTransportProtocolAdaptiveValue;
+extern NSString * __nonnull const OpenVPNTransportProtocolDefaultValue;
+
+extern NSString * __nonnull const OpenVPNIPv6PreferenceEnabledValue;
+extern NSString * __nonnull const OpenVPNIPv6PreferenceDisabledValue;
+extern NSString * __nonnull const OpenVPNIPv6PreferenceDefaultValue;
+
 extern NSString * __nonnull const OpenVPNCompressionModeEnabledValue;
 extern NSString * __nonnull const OpenVPNCompressionModeDisabledValue;
 extern NSString * __nonnull const OpenVPNCompressionModeAsymValue;

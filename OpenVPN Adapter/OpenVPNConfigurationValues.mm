@@ -8,6 +8,15 @@
 
 #import "OpenVPNConfigurationValues.h"
 
+NSString * const OpenVPNTransportProtocolUDPValue = @"udp";
+NSString * const OpenVPNTransportProtocolTCPValue = @"tcp";
+NSString * const OpenVPNTransportProtocolAdaptiveValue = @"adaptive";
+NSString * const OpenVPNTransportProtocolDefaultValue = @"";
+
+NSString * const OpenVPNIPv6PreferenceEnabledValue = @"yes";
+NSString * const OpenVPNIPv6PreferenceDisabledValue = @"no";
+NSString * const OpenVPNIPv6PreferenceDefaultValue = @"default";
+
 NSString * const OpenVPNCompressionModeEnabledValue = @"yes";
 NSString * const OpenVPNCompressionModeDisabledValue = @"no";
 NSString * const OpenVPNCompressionModeAsymValue = @"asym";

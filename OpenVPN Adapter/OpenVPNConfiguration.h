@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-// TODO: Wrap ClientAPI::Config into Objective-C class
-
 /**
  Transport protocol options
  */
@@ -66,6 +64,9 @@ typedef NS_ENUM(NSInteger, OpenVPNMinTLSVersion) {
     OpenVPNMinTLSVersionDefault
 };
 
+/**
+ Options of the tls-cert-profile setting
+ */
 typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile) {
     /// Allow 1024-bit RSA certs signed with SHA1
     OpenVPNTLSCertProfileLegacy,
