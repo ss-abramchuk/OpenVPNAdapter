@@ -6,7 +6,7 @@
 //
 //
 
-#import "ConfigurationValues.h"
+#import "OpenVPNConfigurationValues.h"
 #import "OpenVPNConfiguration.h"
 #import "OpenVPNConfiguration+Internal.h"
 
@@ -208,42 +208,33 @@ using namespace openvpn;
 
 - (OpenVPNCompressionMode)compressionMode {
     NSDictionary *options = @{
-        @"yes": @(OpenVPNCompressionModeEnabled),
-        @"no": @(OpenVPNCompressionModeDisabled),
-        @"asym": @(OpenVPNCompressionModeAsym),
-        @"": @(OpenVPNCompressionModeDefault)
+        OpenVPNCompressionModeEnabledValue: @(OpenVPNCompressionModeEnabled),
+        OpenVPNCompressionModeDisabledValue: @(OpenVPNCompressionModeDisabled),
+        OpenVPNCompressionModeAsymValue: @(OpenVPNCompressionModeAsym),
+        OpenVPNCompressionModeDefaultValue: @(OpenVPNCompressionModeDefault)
     };
     
-    NSString *currentValue = [NSString stringWithUTF8String:_config.compressionMode.c_str()];
+    NSString *currentValue = _config.compressionMode.empty() ? OpenVPNCompressionModeDefaultValue :
+        [NSString stringWithUTF8String:_config.compressionMode.c_str()];
     
     NSNumber *preference = options[currentValue];
-    NSAssert(preference != nil, @"Incorrect compressionMode value");
+    NSAssert(preference != nil, @"Incorrect compressionMode value: %@", currentValue);
     
     return (OpenVPNCompressionMode)[preference integerValue];
 }
 
 - (void)setCompressionMode:(OpenVPNCompressionMode)compressionMode {
-    switch (compressionMode) {
-        case OpenVPNCompressionModeEnabled:
-            _config.compressionMode = "yes";
-            break;
-            
-        case OpenVPNCompressionModeDisabled:
-            _config.compressionMode = "no";
-            break;
-            
-        case OpenVPNCompressionModeAsym:
-            _config.compressionMode = "asym";
-            break;
-            
-        case OpenVPNCompressionModeDefault:
-            _config.compressionMode = "";
-            break;
-            
-        default:
-            NSAssert(NO, @"Incorrect OpenVPNCompressionMode value");
-            break;
-    }
+    NSDictionary *options = @{
+        @(OpenVPNCompressionModeEnabled): OpenVPNCompressionModeEnabledValue,
+        @(OpenVPNCompressionModeDisabled): OpenVPNCompressionModeDisabledValue,
+        @(OpenVPNCompressionModeAsym): OpenVPNCompressionModeAsymValue,
+        @(OpenVPNCompressionModeDefault): OpenVPNCompressionModeDefaultValue
+    };
+    
+    NSString *value = options[@(compressionMode)];
+    NSAssert(value != nil, @"Incorrect compressionMode value: %li", (NSInteger)compressionMode);
+    
+    _config.compressionMode = [value UTF8String];
 }
 
 - (NSString *)privateKeyPassword {

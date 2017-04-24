@@ -1,5 +1,5 @@
 //
-//  ConfigurationValues.h
+//  OpenVPNConfigurationValues.h
 //  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 24.04.17.
@@ -7,6 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+
+extern NSString * __nonnull const OpenVPNCompressionModeEnabledValue;
+extern NSString * __nonnull const OpenVPNCompressionModeDisabledValue;
+extern NSString * __nonnull const OpenVPNCompressionModeAsymValue;
+extern NSString * __nonnull const OpenVPNCompressionModeDefaultValue;
 
 extern NSString * __nonnull const OpenVPNMinTLSVersionDisabledValue;
 extern NSString * __nonnull const OpenVPNMinTLSVersion10Value;
