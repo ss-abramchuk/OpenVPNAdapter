@@ -331,7 +331,7 @@ using namespace openvpn;
 }
 
 - (void)setPeerInfo:(NSDictionary<NSString *,NSString *> *)peerInfo {
-    _config.contentList.clear();
+    _config.peerInfo.clear();
     
     if (!peerInfo) {
         return;
