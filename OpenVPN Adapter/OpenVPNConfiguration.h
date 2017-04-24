@@ -122,4 +122,16 @@ typedef NS_ENUM(NSInteger, OpenVPNCompressionMode) {
  */
 @property (nonatomic) OpenVPNCompressionMode compressionMode;
 
+/**
+ Private key password
+ */
+@property (nullable, nonatomic) NSString *privateKeyPassword;
+
+/**
+ Default key direction parameter for tls-auth (0, 1, 
+ or -1 (bidirectional -- default)) if no key-direction 
+ parameter defined in profile
+ */
+@property (nonatomic) NSInteger keyDirection;
+
 @end

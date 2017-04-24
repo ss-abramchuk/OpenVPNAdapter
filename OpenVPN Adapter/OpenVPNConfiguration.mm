@@ -245,4 +245,20 @@ using namespace openvpn;
     }
 }
 
+- (NSString *)privateKeyPassword {
+    return !_config.privateKeyPassword.empty() ? [NSString stringWithUTF8String:_config.privateKeyPassword.c_str()] : nil;
+}
+
+- (void)setPrivateKeyPassword:(NSString *)privateKeyPassword {
+    _config.privateKeyPassword = privateKeyPassword ? std::string([privateKeyPassword UTF8String]) : "";
+}
+
+- (NSInteger)keyDirection {
+    return _config.defaultKeyDirection;
+}
+
+- (void)setKeyDirection:(NSInteger)keyDirection {
+    _config.defaultKeyDirection = keyDirection;
+}
+
 @end
