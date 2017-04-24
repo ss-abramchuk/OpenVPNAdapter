@@ -10,10 +10,17 @@
 
 // TODO: Wrap ClientAPI::Config into Objective-C class
 
+/**
+ Transport protocol options
+ */
 typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol) {
+    ///
     OpenVPNTransportProtocolUDP,
+    ///
     OpenVPNTransportProtocolTCP,
+    ///
     OpenVPNTransportProtocolAdaptive,
+    /// Use a transport protocol specified in the profile
     OpenVPNTransportProtocolDefault
 };
 
@@ -27,6 +34,20 @@ typedef NS_ENUM(NSInteger, OpenVPNIPv6Preference) {
     OpenVPNIPv6PreferenceDisabled,
     /// Leave decision to server
     OpenVPNIPv6PreferenceDefault
+};
+
+/**
+ Compression mode options
+ */
+typedef NS_ENUM(NSInteger, OpenVPNCompressionMode) {
+    /// Allow compression on both uplink and downlink
+    OpenVPNCompressionModeEnabled,
+    /// Support compression stubs only
+    OpenVPNCompressionModeDisabled,
+    /// Allow compression on downlink only (i.e. server -> client)
+    OpenVPNCompressionModeAsym,
+    /// Default behavior (support compression stubs only)
+    OpenVPNCompressionModeDefault
 };
 
 @interface OpenVPNConfiguration : NSObject
@@ -85,5 +106,20 @@ typedef NS_ENUM(NSInteger, OpenVPNIPv6Preference) {
  Enable autologin sessions
  */
 @property (nonatomic) BOOL autologinSessions;
+
+/**
+ If YES, don't send client cert/key to peer
+ */
+@property (nonatomic) BOOL disableClientCert;
+
+/**
+ SSL library debug level
+ */
+@property (nonatomic) NSInteger sslDebugLevel;
+
+/**
+ Compression mode
+ */
+@property (nonatomic) OpenVPNCompressionMode compressionMode;
 
 @end

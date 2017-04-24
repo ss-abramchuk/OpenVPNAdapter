@@ -28,7 +28,7 @@ using namespace openvpn;
 @implementation OpenVPNConfiguration
 
 - (NSData *)fileContent {
-    return _config.content.size() != 0 ? [NSData dataWithBytes:_config.content.data() length:_config.content.size()] : nil;
+    return !_config.content.empty() ? [NSData dataWithBytes:_config.content.data() length:_config.content.size()] : nil;
 }
 
 - (void)setFileContent:(NSData *)fileContent {
@@ -66,7 +66,7 @@ using namespace openvpn;
 }
 
 - (NSString *)guiVersion {
-    return _config.guiVersion.size() != 0 ? [NSString stringWithUTF8String:_config.guiVersion.c_str()] : nil;
+    return !_config.guiVersion.empty() ? [NSString stringWithUTF8String:_config.guiVersion.c_str()] : nil;
 }
 
 - (void)setGuiVersion:(NSString *)guiVersion {
@@ -74,7 +74,7 @@ using namespace openvpn;
 }
 
 - (NSString *)server {
-    return _config.serverOverride.size() != 0 ? [NSString stringWithUTF8String:_config.serverOverride.c_str()] : nil;
+    return !_config.serverOverride.empty() ? [NSString stringWithUTF8String:_config.serverOverride.c_str()] : nil;
 }
 
 - (void)setServer:(NSString *)serverOverride {
@@ -187,6 +187,62 @@ using namespace openvpn;
 
 - (void)setAutologinSessions:(BOOL)autologinSessions {
     _config.autologinSessions = autologinSessions;
+}
+
+- (BOOL)disableClientCert {
+    return _config.disableClientCert;
+}
+
+- (void)setDisableClientCert:(BOOL)disableClientCert {
+    _config.disableClientCert = disableClientCert;
+}
+
+- (NSInteger)sslDebugLevel {
+    return _config.sslDebugLevel;
+}
+
+- (void)setSslDebugLevel:(NSInteger)sslDebugLevel {
+    _config.sslDebugLevel = sslDebugLevel;
+}
+
+- (OpenVPNCompressionMode)compressionMode {
+    NSDictionary *options = @{
+        @"yes": @(OpenVPNCompressionModeEnabled),
+        @"no": @(OpenVPNCompressionModeDisabled),
+        @"asym": @(OpenVPNCompressionModeAsym),
+        @"": @(OpenVPNCompressionModeDefault)
+    };
+    
+    NSString *currentValue = [NSString stringWithUTF8String:_config.compressionMode.c_str()];
+    
+    NSNumber *preference = options[currentValue];
+    NSAssert(preference != nil, @"Incorrect compressionMode value");
+    
+    return (OpenVPNCompressionMode)[preference integerValue];
+}
+
+- (void)setCompressionMode:(OpenVPNCompressionMode)compressionMode {
+    switch (compressionMode) {
+        case OpenVPNCompressionModeEnabled:
+            _config.compressionMode = "yes";
+            break;
+            
+        case OpenVPNCompressionModeDisabled:
+            _config.compressionMode = "no";
+            break;
+            
+        case OpenVPNCompressionModeAsym:
+            _config.compressionMode = "asym";
+            break;
+            
+        case OpenVPNCompressionModeDefault:
+            _config.compressionMode = "";
+            break;
+            
+        default:
+            NSAssert(NO, @"Incorrect OpenVPNCompressionMode value");
+            break;
+    }
 }
 
 @end
