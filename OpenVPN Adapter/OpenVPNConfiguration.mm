@@ -6,6 +6,7 @@
 //
 //
 
+#import "ConfigurationValues.h"
 #import "OpenVPNConfiguration.h"
 #import "OpenVPNConfiguration+Internal.h"
 
@@ -92,7 +93,7 @@ using namespace openvpn;
     NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
     
     NSNumber *transportProtocol = options[currentValue];
-    NSAssert(transportProtocol != nil, @"Incorrect ipv6 value");
+    NSAssert(transportProtocol != nil, @"Incorrect protoOverride value");
     
     return (OpenVPNTransportProtocol)[transportProtocol integerValue];
 }
@@ -271,48 +272,100 @@ using namespace openvpn;
 
 - (OpenVPNMinTLSVersion)minTLSVersion {
     NSDictionary *options = @{
-        @"disabled": @(OpenVPNMinTLSVersionDisabled),
-        @"tls_1_0": @(OpenVPNMinTLSVersion10),
-        @"tls_1_1": @(OpenVPNMinTLSVersion11),
-        @"tls_1_2": @(OpenVPNMinTLSVersion12),
-        @"default": @(OpenVPNMinTLSVersionDefault),
-        @"": @(OpenVPNMinTLSVersionDefault)
+        OpenVPNMinTLSVersionDisabledValue: @(OpenVPNMinTLSVersionDisabled),
+        OpenVPNMinTLSVersion10Value: @(OpenVPNMinTLSVersion10),
+        OpenVPNMinTLSVersion11Value: @(OpenVPNMinTLSVersion11),
+        OpenVPNMinTLSVersion12Value: @(OpenVPNMinTLSVersion12),
+        OpenVPNMinTLSVersionDefaultValue: @(OpenVPNMinTLSVersionDefault)
     };
     
-    NSString *currentValue = [NSString stringWithUTF8String:_config.tlsVersionMinOverride.c_str()];
+    NSString *currentValue = _config.tlsVersionMinOverride.empty() ? OpenVPNMinTLSVersionDefaultValue :
+        [NSString stringWithUTF8String:_config.tlsVersionMinOverride.c_str()];
     
     NSNumber *preference = options[currentValue];
-    NSAssert(preference != nil, @"Incorrect minTLSVersion value");
+    NSAssert(preference != nil, @"Incorrect tlsVersionMinOverride value: %@", currentValue);
     
     return (OpenVPNMinTLSVersion)[preference integerValue];
 }
 
 - (void)setMinTLSVersion:(OpenVPNMinTLSVersion)minTLSVersion {
-    switch (minTLSVersion) {
-        case OpenVPNMinTLSVersionDisabled:
-            _config.tlsVersionMinOverride = "disabled";
-            break;
-            
-        case OpenVPNMinTLSVersion10:
-            _config.tlsVersionMinOverride = "tls_1_0";
-            break;
-            
-        case OpenVPNMinTLSVersion11:
-            _config.tlsVersionMinOverride = "tls_1_1";
-            break;
-            
-        case OpenVPNMinTLSVersion12:
-            _config.tlsVersionMinOverride = "tls_1_2";
-            break;
-            
-        case OpenVPNMinTLSVersionDefault:
-            _config.tlsVersionMinOverride = "default";
-            break;
-            
-        default:
-            NSAssert(NO, @"Incorrect OpenVPNMinTLSVersion value");
-            break;
+    NSDictionary *options = @{
+        @(OpenVPNMinTLSVersionDisabled): OpenVPNMinTLSVersionDisabledValue,
+        @(OpenVPNMinTLSVersion10): OpenVPNMinTLSVersion10Value,
+        @(OpenVPNMinTLSVersion11): OpenVPNMinTLSVersion11Value,
+        @(OpenVPNMinTLSVersion12): OpenVPNMinTLSVersion12Value,
+        @(OpenVPNMinTLSVersionDefault): OpenVPNMinTLSVersionDefaultValue
+    };
+    
+    NSString *value = options[@(minTLSVersion)];
+    NSAssert(value != nil, @"Incorrect minTLSVersion value: %li", (NSInteger)minTLSVersion);
+    
+    _config.tlsVersionMinOverride = [value UTF8String];
+}
+
+- (OpenVPNTLSCertProfile)tlsCertProfile {
+    NSDictionary *options = @{
+        OpenVPNTLSCertProfileLegacyValue: @(OpenVPNTLSCertProfileLegacy),
+        OpenVPNTLSCertProfilePreferredValue: @(OpenVPNTLSCertProfilePreferred),
+        OpenVPNTLSCertProfileSuiteBValue: @(OpenVPNTLSCertProfileSuiteB),
+        OpenVPNTLSCertProfileLegacyDefaultValue: @(OpenVPNTLSCertProfileLegacyDefault),
+        OpenVPNTLSCertProfilePreferredDefaultValue: @(OpenVPNTLSCertProfilePreferredDefault),
+        OpenVPNTLSCertProfileDefaultValue: @(OpenVPNTLSCertProfileDefault),
+    };
+    
+    NSString *currentValue = _config.tlsCertProfileOverride.empty() ? OpenVPNTLSCertProfileDefaultValue :
+        [NSString stringWithUTF8String:_config.tlsCertProfileOverride.c_str()];
+    
+    NSNumber *preference = options[currentValue];
+    NSAssert(preference != nil, @"Incorrect tlsCertProfileOverride value: %@", currentValue);
+    
+    return (OpenVPNTLSCertProfile)[preference integerValue];
+}
+
+- (void)setTlsCertProfile:(OpenVPNTLSCertProfile)tlsCertProfile {
+    NSDictionary *options = @{
+        @(OpenVPNTLSCertProfileLegacy): OpenVPNTLSCertProfileLegacyValue,
+        @(OpenVPNTLSCertProfilePreferred): OpenVPNTLSCertProfilePreferredValue,
+        @(OpenVPNTLSCertProfileSuiteB): OpenVPNTLSCertProfileSuiteBValue,
+        @(OpenVPNTLSCertProfileLegacyDefault): OpenVPNTLSCertProfileLegacyDefaultValue,
+        @(OpenVPNTLSCertProfilePreferredDefault): OpenVPNTLSCertProfilePreferredDefaultValue,
+        @(OpenVPNTLSCertProfileDefault): OpenVPNTLSCertProfileDefaultValue
+    };
+    
+    NSString *value = options[@(tlsCertProfile)];
+    NSAssert(value != nil, @"Incorrect tlsCertProfile value: %li", (NSInteger)tlsCertProfile);
+    
+    _config.tlsCertProfileOverride = [value UTF8String];
+}
+
+- (NSDictionary<NSString *,NSString *> *)peerInfo {
+    if (_config.peerInfo.size() == 0) {
+        return nil;
     }
+    
+    NSMutableDictionary *peerInfo = [NSMutableDictionary new];
+    
+    for (ClientAPI::KeyValue param : _config.peerInfo) {
+        NSString *key = [NSString stringWithCString:param.key.c_str() encoding:NSUTF8StringEncoding];
+        NSString *value = [NSString stringWithCString:param.value.c_str() encoding:NSUTF8StringEncoding];
+        
+        peerInfo[key] = value;
+    }
+    
+    return [peerInfo copy];
+}
+
+- (void)setPeerInfo:(NSDictionary<NSString *,NSString *> *)peerInfo {
+    _config.contentList.clear();
+    
+    if (!peerInfo) {
+        return;
+    }
+    
+    [peerInfo enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+        ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string([key UTF8String]), std::string([obj UTF8String]));
+        _config.peerInfo.push_back(param);
+    }];
 }
 
 @end
