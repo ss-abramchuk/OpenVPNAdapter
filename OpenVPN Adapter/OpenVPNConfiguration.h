@@ -190,4 +190,14 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile) {
  */
 @property (nullable, nonatomic) NSDictionary<NSString *, NSString *> *peerInfo;
 
+/**
+ Pass through pushed "echo" directives via "ECHO" event
+ */
+@property (nonatomic) BOOL echo;
+
+/**
+ Pass through control channel INFO notifications via "INFO" event
+ */
+@property (nonatomic) BOOL info;
+
 @end

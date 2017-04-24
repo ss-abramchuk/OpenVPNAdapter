@@ -241,7 +241,7 @@ using namespace openvpn;
     return _config.forceAesCbcCiphersuites;
 }
 
--(void)setForceCiphersuitesAESCBC:(BOOL)forceCiphersuitesAESCBC {
+- (void)setForceCiphersuitesAESCBC:(BOOL)forceCiphersuitesAESCBC {
     _config.forceAesCbcCiphersuites = forceCiphersuitesAESCBC;
 }
 
@@ -341,6 +341,22 @@ using namespace openvpn;
         ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string([key UTF8String]), std::string([obj UTF8String]));
         _config.peerInfo.push_back(param);
     }];
+}
+
+- (BOOL)echo {
+    return _config.echo;
+}
+
+- (void)setEcho:(BOOL)echo {
+    _config.echo = echo;
+}
+
+- (BOOL)info {
+    return _config.info;
+}
+
+- (void)setInfo:(BOOL)info {
+    _config.info = info;
 }
 
 @end
