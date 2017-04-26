@@ -6,7 +6,7 @@
 //
 //
 
-#import "OpenVPNConfigurationValues.h"
+#import "OpenVPNValues.h"
 
 NSString * const OpenVPNTransportProtocolUDPValue = @"udp";
 NSString * const OpenVPNTransportProtocolTCPValue = @"tcp";

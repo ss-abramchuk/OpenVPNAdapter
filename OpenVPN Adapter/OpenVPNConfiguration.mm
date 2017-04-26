@@ -6,7 +6,7 @@
 //
 //
 
-#import "OpenVPNConfigurationValues.h"
+#import "OpenVPNValues.h"
 #import "OpenVPNConfiguration.h"
 #import "OpenVPNConfiguration+Internal.h"
 
@@ -314,7 +314,7 @@ using namespace openvpn;
 }
 
 - (NSDictionary<NSString *,NSString *> *)peerInfo {
-    if (_config.peerInfo.size() == 0) {
+    if (_config.peerInfo.empty()) {
         return nil;
     }
     
