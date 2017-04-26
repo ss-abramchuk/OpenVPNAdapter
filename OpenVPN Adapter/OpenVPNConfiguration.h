@@ -8,79 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-/**
- Transport protocol options
- */
-typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol) {
-    ///
-    OpenVPNTransportProtocolUDP,
-    ///
-    OpenVPNTransportProtocolTCP,
-    ///
-    OpenVPNTransportProtocolAdaptive,
-    /// Use a transport protocol specified in the profile
-    OpenVPNTransportProtocolDefault
-};
-
-/**
- IPv6 preference options
- */
-typedef NS_ENUM(NSInteger, OpenVPNIPv6Preference) {
-    /// Request combined IPv4/IPv6 tunnel
-    OpenVPNIPv6PreferenceEnabled,
-    /// Disable IPv6, so tunnel will be IPv4-only
-    OpenVPNIPv6PreferenceDisabled,
-    /// Leave decision to server
-    OpenVPNIPv6PreferenceDefault
-};
-
-/**
- Compression mode options
- */
-typedef NS_ENUM(NSInteger, OpenVPNCompressionMode) {
-    /// Allow compression on both uplink and downlink
-    OpenVPNCompressionModeEnabled,
-    /// Support compression stubs only
-    OpenVPNCompressionModeDisabled,
-    /// Allow compression on downlink only (i.e. server -> client)
-    OpenVPNCompressionModeAsym,
-    /// Default behavior (support compression stubs only)
-    OpenVPNCompressionModeDefault
-};
-
-/**
- Minimum TLS version options
- */
-typedef NS_ENUM(NSInteger, OpenVPNMinTLSVersion) {
-    /// Don't specify a minimum, and disable any minimum specified in profile
-    OpenVPNMinTLSVersionDisabled,
-    /// Use TLS 1.0 minimum (overrides profile)
-    OpenVPNMinTLSVersion10,
-    /// Use TLS 1.1 minimum (overrides profile)
-    OpenVPNMinTLSVersion11,
-    /// Use TLS 1.2 minimum (overrides profile)
-    OpenVPNMinTLSVersion12,
-    /// Use profile minimum
-    OpenVPNMinTLSVersionDefault
-};
-
-/**
- Options of the tls-cert-profile setting
- */
-typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile) {
-    /// Allow 1024-bit RSA certs signed with SHA1
-    OpenVPNTLSCertProfileLegacy,
-    /// Require at least 2048-bit RSA certs signed with SHA256 or higher
-    OpenVPNTLSCertProfilePreferred,
-    /// Require NSA Suite-B
-    OpenVPNTLSCertProfileSuiteB,
-    /// Use legacy as the default if profile doesn't specify tls-cert-profile
-    OpenVPNTLSCertProfileLegacyDefault,
-    /// Use preferred as the default if profile doesn't specify tls-cert-profile
-    OpenVPNTLSCertProfilePreferredDefault,
-    /// Use profile default
-    OpenVPNTLSCertProfileDefault
-};
+#import "OpenVPNTransportProtocol.h"
+#import "OpenVPNIPv6Preference.h"
+#import "OpenVPNCompressionMode.h"
+#import "OpenVPNMinTLSVersion.h"
+#import "OpenVPNTLSCertProfile.h"
 
 /**
  Class used to pass configuration
