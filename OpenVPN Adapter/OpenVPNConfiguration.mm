@@ -359,4 +359,12 @@ using namespace openvpn;
     _config.info = info;
 }
 
+- (NSUInteger)clockTick {
+    return _config.clockTickMS;
+}
+
+- (void)setClockTick:(NSUInteger)clockTick {
+    _config.clockTickMS = clockTick;
+}
+
 @end

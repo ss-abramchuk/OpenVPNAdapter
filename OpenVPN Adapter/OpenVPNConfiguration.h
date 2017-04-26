@@ -82,6 +82,9 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile) {
     OpenVPNTLSCertProfileDefault
 };
 
+/**
+ Class used to pass configuration
+ */
 @interface OpenVPNConfiguration : NSObject
 
 /**
@@ -199,5 +202,12 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile) {
  Pass through control channel INFO notifications via "INFO" event
  */
 @property (nonatomic) BOOL info;
+
+/**
+ Periodic convenience clock tick in milliseconds. Will call 
+ [OpenVPNAdapterDelegate tick] at a frequency defined by this parameter.
+ Set to 0 to disable.
+ */
+@property (nonatomic) NSUInteger clockTick;
 
 @end
