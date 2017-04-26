@@ -33,6 +33,12 @@
 		C9657A2F1EB0B79500EFF210 /* OpenVPNTransportStats+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A291EB0B6FA00EFF210 /* OpenVPNTransportStats+Internal.h */; };
 		C9657A301EB0B7A600EFF210 /* OpenVPNTransportStats.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9657A241EB0B60200EFF210 /* OpenVPNTransportStats.mm */; };
 		C9657A311EB0B7A900EFF210 /* OpenVPNTransportStats.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9657A241EB0B60200EFF210 /* OpenVPNTransportStats.mm */; };
+		C9657A341EB0BA3900EFF210 /* OpenVPNInterfaceStats.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A321EB0BA3900EFF210 /* OpenVPNInterfaceStats.h */; };
+		C9657A351EB0BA3900EFF210 /* OpenVPNInterfaceStats.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A321EB0BA3900EFF210 /* OpenVPNInterfaceStats.h */; };
+		C9657A361EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9657A331EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm */; };
+		C9657A371EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9657A331EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm */; };
+		C9657A3A1EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A381EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h */; };
+		C9657A3B1EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A381EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h */; };
 		C98467A21EAA559B00272A9A /* local_key_auth.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C98467A11EAA559B00272A9A /* local_key_auth.ovpn */; };
 		C98467A31EAA559B00272A9A /* local_key_auth.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C98467A11EAA559B00272A9A /* local_key_auth.ovpn */; };
 		C98467A61EAA5B7700272A9A /* OpenVPNConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = C98467A41EAA5B7700272A9A /* OpenVPNConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -114,6 +120,9 @@
 		C9657A231EB0B60200EFF210 /* OpenVPNTransportStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNTransportStats.h; sourceTree = "<group>"; };
 		C9657A241EB0B60200EFF210 /* OpenVPNTransportStats.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNTransportStats.mm; sourceTree = "<group>"; };
 		C9657A291EB0B6FA00EFF210 /* OpenVPNTransportStats+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNTransportStats+Internal.h"; sourceTree = "<group>"; };
+		C9657A321EB0BA3900EFF210 /* OpenVPNInterfaceStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNInterfaceStats.h; sourceTree = "<group>"; };
+		C9657A331EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNInterfaceStats.mm; sourceTree = "<group>"; };
+		C9657A381EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNInterfaceStats+Internal.h"; sourceTree = "<group>"; };
 		C98467A11EAA559B00272A9A /* local_key_auth.ovpn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = local_key_auth.ovpn; sourceTree = "<group>"; };
 		C98467A41EAA5B7700272A9A /* OpenVPNConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNConfiguration.h; sourceTree = "<group>"; };
 		C98467A51EAA5B7700272A9A /* OpenVPNConfiguration.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNConfiguration.mm; sourceTree = "<group>"; };
@@ -292,6 +301,9 @@
 				C9657A231EB0B60200EFF210 /* OpenVPNTransportStats.h */,
 				C9657A291EB0B6FA00EFF210 /* OpenVPNTransportStats+Internal.h */,
 				C9657A241EB0B60200EFF210 /* OpenVPNTransportStats.mm */,
+				C9657A321EB0BA3900EFF210 /* OpenVPNInterfaceStats.h */,
+				C9657A381EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h */,
+				C9657A331EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm */,
 				C9BB477B1E7173C700F3F98C /* OpenVPNAdapter.h */,
 				C9BB477C1E7173C700F3F98C /* OpenVPNAdapter+Internal.h */,
 				C9BB477D1E7173C700F3F98C /* OpenVPNAdapter+Public.h */,
@@ -377,8 +389,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9BB47791E7171ED00F3F98C /* OpenVPNClient.h in Headers */,
+				C9657A3A1EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h in Headers */,
 				C9BB47721E7171A100F3F98C /* OpenVPNEvent.h in Headers */,
 				C9BB477F1E7173C700F3F98C /* OpenVPNAdapter.h in Headers */,
+				C9657A341EB0BA3900EFF210 /* OpenVPNInterfaceStats.h in Headers */,
 				C98467AB1EAA5BE100272A9A /* OpenVPNConfiguration+Internal.h in Headers */,
 				C98467A61EAA5B7700272A9A /* OpenVPNConfiguration.h in Headers */,
 				C93779CE1EAE17F50030A362 /* OpenVPNConfigurationValues.h in Headers */,
@@ -401,8 +415,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9D2ABE31EA20F99007EDF9D /* OpenVPNClient.h in Headers */,
+				C9657A3B1EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h in Headers */,
 				C9D2ABE41EA20F99007EDF9D /* OpenVPNEvent.h in Headers */,
 				C9D2ABE51EA20F99007EDF9D /* OpenVPNAdapter.h in Headers */,
+				C9657A351EB0BA3900EFF210 /* OpenVPNInterfaceStats.h in Headers */,
 				C98467AC1EAA5BE200272A9A /* OpenVPNConfiguration+Internal.h in Headers */,
 				C98467A71EAA5B7700272A9A /* OpenVPNConfiguration.h in Headers */,
 				C93779D01EAE18730030A362 /* OpenVPNConfigurationValues.h in Headers */,
@@ -620,6 +636,7 @@
 				C9BB477A1E7171ED00F3F98C /* OpenVPNClient.mm in Sources */,
 				C93779CF1EAE17F50030A362 /* OpenVPNConfigurationValues.mm in Sources */,
 				C9FD921B1E9A667600374FC4 /* ovpncli.cpp in Sources */,
+				C9657A361EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */,
 				C9657A211EB0ACAE00EFF210 /* OpenVPNConnectionInfo.mm in Sources */,
 				C93779D71EAE32670030A362 /* OpenVPNCredentials.mm in Sources */,
 			);
@@ -646,6 +663,7 @@
 				C9D2ABDC1EA20F99007EDF9D /* OpenVPNClient.mm in Sources */,
 				C9D2ABDE1EA20F99007EDF9D /* ovpncli.cpp in Sources */,
 				C93779D11EAE18760030A362 /* OpenVPNConfigurationValues.mm in Sources */,
+				C9657A371EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */,
 				C9657A221EB0ACAE00EFF210 /* OpenVPNConnectionInfo.mm in Sources */,
 				C93779D81EAE32670030A362 /* OpenVPNCredentials.mm in Sources */,
 			);
