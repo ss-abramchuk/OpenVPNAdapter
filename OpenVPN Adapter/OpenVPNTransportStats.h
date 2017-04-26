@@ -39,4 +39,6 @@
  */
 @property (readonly, nonatomic) NSInteger lastPacketReceived;
 
+- (nonnull instancetype) __unavailable init;
+
 @end

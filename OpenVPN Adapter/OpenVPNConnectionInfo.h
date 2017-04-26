@@ -26,4 +26,6 @@
 @property (nullable, readonly, nonatomic) NSString *clientIP;
 @property (nullable, readonly, nonatomic) NSString *tunName;
 
+- (nonnull instancetype) __unavailable init;
+
 @end

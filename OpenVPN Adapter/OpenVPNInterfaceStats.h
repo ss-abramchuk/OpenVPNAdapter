@@ -17,4 +17,6 @@
 @property (readonly, nonatomic) NSInteger errorsIn;
 @property (readonly, nonatomic) NSInteger errorsOut;
 
+- (nonnull instancetype) __unavailable init;
+
 @end
