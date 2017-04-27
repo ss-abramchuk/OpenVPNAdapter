@@ -1,6 +1,6 @@
 //
-//  OpenVPNAdapter+Provider.h
-//  OpenVPN iOS Client
+//  OpenVPNAdapter+Public.h
+//  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 11.02.17.
 //
@@ -10,6 +10,7 @@
 #import "OpenVPNAdapter.h"
 
 @class OpenVPNConfiguration;
+@class OpenVPNProperties;
 @class OpenVPNCredentials;
 @class NEPacketTunnelNetworkSettings;
 
@@ -71,6 +72,8 @@ NS_SWIFT_NAME(handle(event:message:));
 - (void)handleError:(nonnull NSError *)error
 NS_SWIFT_NAME(handle(error:));
 
+@optional
+
 /**
  <#Description#>
 
@@ -79,12 +82,17 @@ NS_SWIFT_NAME(handle(error:));
 - (void)handleLog:(nonnull NSString *)logMessage
 NS_SWIFT_NAME(handle(logMessage:));
 
+/**
+ <#Description#>
+ */
+- (void)tick;
+
 @end
 
 /**
  <#Description#>
  */
-@interface OpenVPNAdapter (Provider)
+@interface OpenVPNAdapter (Public)
 
 /**
  <#Description#>
@@ -98,7 +106,7 @@ NS_SWIFT_NAME(handle(logMessage:));
  @param error <#error description#>
  @return <#return value description#>
  */
-- (BOOL)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration
+- (nullable OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration
                      error:(out NSError * __nullable * __nullable)error
 NS_SWIFT_NAME(apply(configuration:));
 

@@ -12,7 +12,7 @@
 
 using namespace openvpn;
 
-@interface OpenVPNAdapter (Client)
+@interface OpenVPNAdapter (Internal)
 
 - (void)handleEvent:(const ClientAPI::Event *)event;
 - (void)handleLog:(const ClientAPI::LogInfo *)log;

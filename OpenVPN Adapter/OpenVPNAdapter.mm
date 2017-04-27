@@ -1,6 +1,6 @@
 //
 //  OpenVPNAdapter.m
-//  OpenVPN iOS Client
+//  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 11.02.17.
 //
@@ -16,8 +16,11 @@
 
 #import "OpenVPNError.h"
 #import "OpenVPNEvent.h"
+#import "OpenVPNConfiguration+Internal.h"
+#import "OpenVPNCredentials+Internal.h"
+#import "OpenVPNProperties+Internal.h"
+#import "OpenVPNConnectionInfo+Internal.h"
 #import "OpenVPNClient.h"
-
 #import "OpenVPNAdapter.h"
 #import "OpenVPNAdapter+Internal.h"
 #import "OpenVPNAdapter+Public.h"
@@ -28,9 +31,6 @@ NSString * const OpenVPNAdapterErrorFatalKey = @"me.ss-abramchuk.openvpn-adapter
 NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter.error-key.event";
 
 @interface OpenVPNAdapter () {
-    NSString *_username;
-    NSString *_password;
-    
     __weak id<OpenVPNAdapterDelegate> _delegate;
 }
 
@@ -42,7 +42,7 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 @end
 
-@implementation OpenVPNAdapter (Client)
+@implementation OpenVPNAdapter (Internal)
 
 #pragma mark Event and Log Handlers
 
@@ -125,22 +125,6 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 #pragma mark Properties
 
-- (void)setUsername:(NSString *)username {
-    _username = username;
-}
-
-- (NSString *)username {
-    return _username;
-}
-
-- (void)setPassword:(NSString *)password {
-    _password = password;
-}
-
-- (NSString *)password {
-    return _password;
-}
-
 - (void)setDelegate:(id<OpenVPNAdapterDelegate>)delegate {
     _delegate = delegate;
 }
@@ -151,33 +135,20 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 #pragma mark Client Configuration
 
-- (BOOL)configureUsingSettings:(NSData *)settings error:(out NSError * __autoreleasing _Nullable *)error {
-    NSString *vpnConfiguration = [[NSString alloc] initWithData:settings encoding:NSUTF8StringEncoding];
-    
-    if (vpnConfiguration == nil) {
-        if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
-            NSLocalizedDescriptionKey: @"Failed to read OpenVPN configuration file"
-        }];
-        return NO;
-    }
-    
-    ClientAPI::Config clientConfiguration;
-    clientConfiguration.content = std::string([vpnConfiguration UTF8String]);
-    clientConfiguration.connTimeout = 30;
-    
-    ClientAPI::EvalConfig eval = self.vpnClient->eval_config(clientConfiguration);
+- (OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration error:(out NSError * __nullable * __nullable)error {
+    ClientAPI::EvalConfig eval = self.vpnClient->eval_config(configuration.config);
     if (eval.error) {
         if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
             NSLocalizedDescriptionKey: [NSString stringWithUTF8String:eval.message.c_str()]
         }];
-        return NO;
+        return nil;
     }
-
-    ClientAPI::ProvideCreds creds;
-    creds.username = self.username == nil ? "" : [self.username UTF8String];
-    creds.password = self.password == nil ? "" : [self.password UTF8String];
     
-    ClientAPI::Status creds_status = self.vpnClient->provide_creds(creds);
+    return [[OpenVPNProperties alloc] initWithEvalConfig:eval];
+}
+
+- (BOOL)provideCredentials:(nonnull OpenVPNCredentials *)credentials error:(out NSError * __nullable * __nullable)error {
+    ClientAPI::Status creds_status = self.vpnClient->provide_creds(credentials.credentials);
     if (creds_status.error) {
         if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
             NSLocalizedDescriptionKey: [NSString stringWithUTF8String:creds_status.message.c_str()]
@@ -233,10 +204,7 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 {
     self = [super init];
     if (self) {
-        _username = nil;
-        _password = nil;
         _delegate = nil;
-        
         self.vpnClient = new OpenVPNClient((__bridge void *)self);
     }
     return self;
