@@ -6,11 +6,36 @@
 //
 //
 
-#import "OpenVPNValues.h"
-#import "OpenVPNConfiguration.h"
 #import "OpenVPNConfiguration+Internal.h"
 
 using namespace openvpn;
+
+NSString * const OpenVPNTransportProtocolUDPValue = @"udp";
+NSString * const OpenVPNTransportProtocolTCPValue = @"tcp";
+NSString * const OpenVPNTransportProtocolAdaptiveValue = @"adaptive";
+NSString * const OpenVPNTransportProtocolDefaultValue = @"";
+
+NSString * const OpenVPNIPv6PreferenceEnabledValue = @"yes";
+NSString * const OpenVPNIPv6PreferenceDisabledValue = @"no";
+NSString * const OpenVPNIPv6PreferenceDefaultValue = @"default";
+
+NSString * const OpenVPNCompressionModeEnabledValue = @"yes";
+NSString * const OpenVPNCompressionModeDisabledValue = @"no";
+NSString * const OpenVPNCompressionModeAsymValue = @"asym";
+NSString * const OpenVPNCompressionModeDefaultValue = @"";
+
+NSString * const OpenVPNMinTLSVersionDisabledValue = @"disabled";
+NSString * const OpenVPNMinTLSVersion10Value = @"tls_1_0";
+NSString * const OpenVPNMinTLSVersion11Value = @"tls_1_1";
+NSString * const OpenVPNMinTLSVersion12Value = @"tls_1_2";
+NSString * const OpenVPNMinTLSVersionDefaultValue = @"default";
+
+NSString * const OpenVPNTLSCertProfileLegacyValue = @"legacy";
+NSString * const OpenVPNTLSCertProfilePreferredValue = @"preferred";
+NSString * const OpenVPNTLSCertProfileSuiteBValue = @"suiteb";
+NSString * const OpenVPNTLSCertProfileLegacyDefaultValue = @"legacy-default";
+NSString * const OpenVPNTLSCertProfilePreferredDefaultValue = @"preferred-default";
+NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 @interface OpenVPNConfiguration () {
     ClientAPI::Config _config;
@@ -22,6 +47,94 @@ using namespace openvpn;
 
 - (ClientAPI::Config)config {
     return _config;
+}
+
++ (OpenVPNTransportProtocol)getTransportProtocolFromString:(NSString *)value {
+    NSDictionary *options = @{
+        OpenVPNTransportProtocolUDPValue: @(OpenVPNTransportProtocolUDP),
+        OpenVPNTransportProtocolTCPValue: @(OpenVPNTransportProtocolTCP),
+        OpenVPNTransportProtocolAdaptiveValue: @(OpenVPNTransportProtocolAdaptive),
+        OpenVPNTransportProtocolDefaultValue: @(OpenVPNTransportProtocolDefault)
+    };
+    
+    NSString *currentValue = [value length] == 0 ? OpenVPNTransportProtocolDefaultValue : value;
+    
+    NSNumber *transportProtocol = options[currentValue];
+    NSAssert(transportProtocol != nil, @"Incorrect protocol value: %@", currentValue);
+    
+    return (OpenVPNTransportProtocol)[transportProtocol integerValue];
+}
+
++ (nonnull NSString *)getStringFromTransportProtocol:(OpenVPNTransportProtocol)protocol {
+    NSDictionary *options = @{
+        @(OpenVPNTransportProtocolUDP): OpenVPNTransportProtocolUDPValue,
+        @(OpenVPNTransportProtocolTCP): OpenVPNTransportProtocolTCPValue,
+        @(OpenVPNTransportProtocolAdaptive): OpenVPNTransportProtocolAdaptiveValue,
+        @(OpenVPNTransportProtocolDefault): OpenVPNTransportProtocolDefaultValue
+    };
+    
+    NSString *value = options[@(protocol)];
+    NSAssert(value != nil, @"Incorrect protocol value: %li", (NSInteger)protocol);
+    
+    return value;
+}
+
++ (OpenVPNIPv6Preference)getIPv6PreferenceFromString:(nullable NSString *)value {
+    NSDictionary *options = @{
+        OpenVPNIPv6PreferenceEnabledValue: @(OpenVPNIPv6PreferenceEnabled),
+        OpenVPNIPv6PreferenceDisabledValue: @(OpenVPNIPv6PreferenceDisabled),
+        OpenVPNIPv6PreferenceDefaultValue: @(OpenVPNIPv6PreferenceDefault)
+    };
+    
+    NSString *currentValue = [value length] == 0 ? OpenVPNIPv6PreferenceDefaultValue : value;
+    
+    NSNumber *ipv6 = options[currentValue];
+    NSAssert(ipv6 != nil, @"Incorrect ipv6 value: %@", currentValue);
+    
+    return (OpenVPNIPv6Preference)[ipv6 integerValue];
+}
+
++ (nonnull NSString *)getStringFromIPv6Preference:(OpenVPNIPv6Preference)preference {
+    NSDictionary *options = @{
+        @(OpenVPNIPv6PreferenceEnabled): OpenVPNIPv6PreferenceEnabledValue,
+        @(OpenVPNIPv6PreferenceDisabled): OpenVPNIPv6PreferenceDisabledValue,
+        @(OpenVPNIPv6PreferenceDefault): OpenVPNIPv6PreferenceDefaultValue
+    };
+    
+    NSString *value = options[@(preference)];
+    NSAssert(value != nil, @"Incorrect ipv6 value: %li", (NSInteger)preference);
+    
+    return value;
+}
+
++ (OpenVPNCompressionMode)getCompressionModeFromString:(nullable NSString *)value {
+    NSDictionary *options = @{
+        OpenVPNCompressionModeEnabledValue: @(OpenVPNCompressionModeEnabled),
+        OpenVPNCompressionModeDisabledValue: @(OpenVPNCompressionModeDisabled),
+        OpenVPNCompressionModeAsymValue: @(OpenVPNCompressionModeAsym),
+        OpenVPNCompressionModeDefaultValue: @(OpenVPNCompressionModeDefault)
+    };
+    
+    NSString *currentValue = [value length] == 0 ? OpenVPNCompressionModeDefaultValue : value;
+    
+    NSNumber *compressionMode = options[currentValue];
+    NSAssert(compressionMode != nil, @"Incorrect compressionMode value: %@", currentValue);
+    
+    return (OpenVPNCompressionMode)[compressionMode integerValue];
+}
+
++ (nonnull NSString *)getStringFromCompressionMode:(OpenVPNCompressionMode)compressionMode {
+    NSDictionary *options = @{
+        @(OpenVPNCompressionModeEnabled): OpenVPNCompressionModeEnabledValue,
+        @(OpenVPNCompressionModeDisabled): OpenVPNCompressionModeDisabledValue,
+        @(OpenVPNCompressionModeAsym): OpenVPNCompressionModeAsymValue,
+        @(OpenVPNCompressionModeDefault): OpenVPNCompressionModeDefaultValue
+    };
+    
+    NSString *value = options[@(compressionMode)];
+    NSAssert(value != nil, @"Incorrect compressionMode value: %li", (NSInteger)compressionMode);
+    
+    return value;
 }
 
 @end
@@ -83,63 +196,23 @@ using namespace openvpn;
 }
 
 - (OpenVPNTransportProtocol)proto {
-    NSDictionary *options = @{
-        OpenVPNTransportProtocolUDPValue: @(OpenVPNTransportProtocolUDP),
-        OpenVPNTransportProtocolTCPValue: @(OpenVPNTransportProtocolTCP),
-        OpenVPNTransportProtocolAdaptiveValue: @(OpenVPNTransportProtocolAdaptive),
-        OpenVPNTransportProtocolDefaultValue: @(OpenVPNTransportProtocolDefault)
-    };
-    
-    NSString *currentValue = _config.protoOverride.empty() ? OpenVPNTransportProtocolDefaultValue :
-        [NSString stringWithUTF8String:_config.protoOverride.c_str()];
-    
-    NSNumber *transportProtocol = options[currentValue];
-    NSAssert(transportProtocol != nil, @"Incorrect protoOverride value: %@", currentValue);
-    
-    return (OpenVPNTransportProtocol)[transportProtocol integerValue];
+    NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
+    return [OpenVPNConfiguration getTransportProtocolFromString:currentValue];
 }
 
 - (void)setProto:(OpenVPNTransportProtocol)proto {
-    NSDictionary *options = @{
-        @(OpenVPNTransportProtocolUDP): OpenVPNTransportProtocolUDPValue,
-        @(OpenVPNTransportProtocolTCP): OpenVPNTransportProtocolTCPValue,
-        @(OpenVPNTransportProtocolAdaptive): OpenVPNTransportProtocolAdaptiveValue,
-        @(OpenVPNTransportProtocolDefault): OpenVPNTransportProtocolDefaultValue
-    };
-    
-    NSString *value = options[@(proto)];
-    NSAssert(value != nil, @"Incorrect proto value: %li", (NSInteger)proto);
-    
-    _config.protoOverride = [value UTF8String];
+    NSString *value = [OpenVPNConfiguration getStringFromTransportProtocol:proto];
+    _config.protoOverride = std::string([value UTF8String]);
 }
 
 - (OpenVPNIPv6Preference)ipv6 {
-    NSDictionary *options = @{
-        OpenVPNIPv6PreferenceEnabledValue: @(OpenVPNIPv6PreferenceEnabled),
-        OpenVPNIPv6PreferenceDisabledValue: @(OpenVPNIPv6PreferenceDisabled),
-        OpenVPNIPv6PreferenceDefaultValue: @(OpenVPNIPv6PreferenceDefault)
-    };
-    
-    NSString *currentValue = _config.ipv6.empty() ? OpenVPNIPv6PreferenceDefaultValue :
-        [NSString stringWithUTF8String:_config.ipv6.c_str()];
-    
-    NSNumber *ipv6 = options[currentValue];
-    NSAssert(ipv6 != nil, @"Incorrect ipv6 value: %@", currentValue);
-    
-    return (OpenVPNIPv6Preference)[ipv6 integerValue];
+    NSString *currentValue = [NSString stringWithUTF8String:_config.ipv6.c_str()];
+    return [OpenVPNConfiguration getIPv6PreferenceFromString:currentValue];
 }
 
 - (void)setIpv6:(OpenVPNIPv6Preference)ipv6 {
-    NSDictionary *options = @{
-        @(OpenVPNIPv6PreferenceEnabled): OpenVPNIPv6PreferenceEnabledValue,
-        @(OpenVPNIPv6PreferenceDisabled): OpenVPNIPv6PreferenceDisabledValue,
-        @(OpenVPNIPv6PreferenceDefault): OpenVPNIPv6PreferenceDefaultValue
-    };
-    
-    NSString *value = options[@(ipv6)];
-    NSAssert(value != nil, @"Incorrect ipv6 value: %li", (NSInteger)ipv6);
-    
-    _config.ipv6 = [value UTF8String];
+    NSString *value = [OpenVPNConfiguration getStringFromIPv6Preference:ipv6];
+    _config.ipv6 = std::string([value UTF8String]);
 }
 
 - (NSInteger)connectionTimeout {
@@ -191,34 +264,13 @@ using namespace openvpn;
 }
 
 - (OpenVPNCompressionMode)compressionMode {
-    NSDictionary *options = @{
-        OpenVPNCompressionModeEnabledValue: @(OpenVPNCompressionModeEnabled),
-        OpenVPNCompressionModeDisabledValue: @(OpenVPNCompressionModeDisabled),
-        OpenVPNCompressionModeAsymValue: @(OpenVPNCompressionModeAsym),
-        OpenVPNCompressionModeDefaultValue: @(OpenVPNCompressionModeDefault)
-    };
-    
-    NSString *currentValue = _config.compressionMode.empty() ? OpenVPNCompressionModeDefaultValue :
-        [NSString stringWithUTF8String:_config.compressionMode.c_str()];
-    
-    NSNumber *compressionMode = options[currentValue];
-    NSAssert(compressionMode != nil, @"Incorrect compressionMode value: %@", currentValue);
-    
-    return (OpenVPNCompressionMode)[compressionMode integerValue];
+    NSString *currentValue = [NSString stringWithUTF8String:_config.compressionMode.c_str()];
+    return [OpenVPNConfiguration getCompressionModeFromString:currentValue];
 }
 
 - (void)setCompressionMode:(OpenVPNCompressionMode)compressionMode {
-    NSDictionary *options = @{
-        @(OpenVPNCompressionModeEnabled): OpenVPNCompressionModeEnabledValue,
-        @(OpenVPNCompressionModeDisabled): OpenVPNCompressionModeDisabledValue,
-        @(OpenVPNCompressionModeAsym): OpenVPNCompressionModeAsymValue,
-        @(OpenVPNCompressionModeDefault): OpenVPNCompressionModeDefaultValue
-    };
-    
-    NSString *value = options[@(compressionMode)];
-    NSAssert(value != nil, @"Incorrect compressionMode value: %li", (NSInteger)compressionMode);
-    
-    _config.compressionMode = [value UTF8String];
+    NSString *value = [OpenVPNConfiguration getStringFromCompressionMode:compressionMode];
+    _config.compressionMode = std::string([value UTF8String]);
 }
 
 - (NSString *)privateKeyPassword {

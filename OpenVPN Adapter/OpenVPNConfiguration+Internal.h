@@ -16,4 +16,13 @@ using namespace openvpn;
 
 @property (readonly) ClientAPI::Config config;
 
++ (OpenVPNTransportProtocol)getTransportProtocolFromString:(nullable NSString *)value;
++ (nonnull NSString *)getStringFromTransportProtocol:(OpenVPNTransportProtocol)protocol;
+
++ (OpenVPNIPv6Preference)getIPv6PreferenceFromString:(nullable NSString *)value;
++ (nonnull NSString *)getStringFromIPv6Preference:(OpenVPNIPv6Preference)preference;
+
++ (OpenVPNCompressionMode)getCompressionModeFromString:(nullable NSString *)value;
++ (nonnull NSString *)getStringFromCompressionMode:(OpenVPNCompressionMode)compressionMode;
+
 @end
