@@ -16,13 +16,19 @@ using namespace openvpn;
 
 @property (readonly) ClientAPI::Config config;
 
-+ (OpenVPNTransportProtocol)getTransportProtocolFromString:(nullable NSString *)value;
-+ (nonnull NSString *)getStringFromTransportProtocol:(OpenVPNTransportProtocol)protocol;
++ (OpenVPNTransportProtocol)getTransportProtocolFromValue:(nullable NSString *)value;
++ (nonnull NSString *)getValueFromTransportProtocol:(OpenVPNTransportProtocol)protocol;
 
-+ (OpenVPNIPv6Preference)getIPv6PreferenceFromString:(nullable NSString *)value;
-+ (nonnull NSString *)getStringFromIPv6Preference:(OpenVPNIPv6Preference)preference;
++ (OpenVPNIPv6Preference)getIPv6PreferenceFromValue:(nullable NSString *)value;
++ (nonnull NSString *)getValueFromIPv6Preference:(OpenVPNIPv6Preference)preference;
 
-+ (OpenVPNCompressionMode)getCompressionModeFromString:(nullable NSString *)value;
-+ (nonnull NSString *)getStringFromCompressionMode:(OpenVPNCompressionMode)compressionMode;
++ (OpenVPNCompressionMode)getCompressionModeFromValue:(nullable NSString *)value;
++ (nonnull NSString *)getValueFromCompressionMode:(OpenVPNCompressionMode)compressionMode;
+
++ (OpenVPNMinTLSVersion)getMinTLSFromValue:(nullable NSString *)value;
++ (nonnull NSString *)getValueFromMinTLS:(OpenVPNMinTLSVersion)minTLS;
+
++ (OpenVPNTLSCertProfile)getTLSCertProfileFromValue:(nullable NSString *)value;
++ (nonnull NSString *)getValueFromTLSCertProfile:(OpenVPNTLSCertProfile)tlsCertProfile;
 
 @end

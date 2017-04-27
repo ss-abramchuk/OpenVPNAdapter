@@ -10,32 +10,32 @@
 
 using namespace openvpn;
 
-NSString * const OpenVPNTransportProtocolUDPValue = @"udp";
-NSString * const OpenVPNTransportProtocolTCPValue = @"tcp";
-NSString * const OpenVPNTransportProtocolAdaptiveValue = @"adaptive";
-NSString * const OpenVPNTransportProtocolDefaultValue = @"";
+NSString *const OpenVPNTransportProtocolUDPValue = @"udp";
+NSString *const OpenVPNTransportProtocolTCPValue = @"tcp";
+NSString *const OpenVPNTransportProtocolAdaptiveValue = @"adaptive";
+NSString *const OpenVPNTransportProtocolDefaultValue = @"";
 
-NSString * const OpenVPNIPv6PreferenceEnabledValue = @"yes";
-NSString * const OpenVPNIPv6PreferenceDisabledValue = @"no";
-NSString * const OpenVPNIPv6PreferenceDefaultValue = @"default";
+NSString *const OpenVPNIPv6PreferenceEnabledValue = @"yes";
+NSString *const OpenVPNIPv6PreferenceDisabledValue = @"no";
+NSString *const OpenVPNIPv6PreferenceDefaultValue = @"default";
 
-NSString * const OpenVPNCompressionModeEnabledValue = @"yes";
-NSString * const OpenVPNCompressionModeDisabledValue = @"no";
-NSString * const OpenVPNCompressionModeAsymValue = @"asym";
-NSString * const OpenVPNCompressionModeDefaultValue = @"";
+NSString *const OpenVPNCompressionModeEnabledValue = @"yes";
+NSString *const OpenVPNCompressionModeDisabledValue = @"no";
+NSString *const OpenVPNCompressionModeAsymValue = @"asym";
+NSString *const OpenVPNCompressionModeDefaultValue = @"";
 
-NSString * const OpenVPNMinTLSVersionDisabledValue = @"disabled";
-NSString * const OpenVPNMinTLSVersion10Value = @"tls_1_0";
-NSString * const OpenVPNMinTLSVersion11Value = @"tls_1_1";
-NSString * const OpenVPNMinTLSVersion12Value = @"tls_1_2";
-NSString * const OpenVPNMinTLSVersionDefaultValue = @"default";
+NSString *const OpenVPNMinTLSVersionDisabledValue = @"disabled";
+NSString *const OpenVPNMinTLSVersion10Value = @"tls_1_0";
+NSString *const OpenVPNMinTLSVersion11Value = @"tls_1_1";
+NSString *const OpenVPNMinTLSVersion12Value = @"tls_1_2";
+NSString *const OpenVPNMinTLSVersionDefaultValue = @"default";
 
-NSString * const OpenVPNTLSCertProfileLegacyValue = @"legacy";
-NSString * const OpenVPNTLSCertProfilePreferredValue = @"preferred";
-NSString * const OpenVPNTLSCertProfileSuiteBValue = @"suiteb";
-NSString * const OpenVPNTLSCertProfileLegacyDefaultValue = @"legacy-default";
-NSString * const OpenVPNTLSCertProfilePreferredDefaultValue = @"preferred-default";
-NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
+NSString *const OpenVPNTLSCertProfileLegacyValue = @"legacy";
+NSString *const OpenVPNTLSCertProfilePreferredValue = @"preferred";
+NSString *const OpenVPNTLSCertProfileSuiteBValue = @"suiteb";
+NSString *const OpenVPNTLSCertProfileLegacyDefaultValue = @"legacy-default";
+NSString *const OpenVPNTLSCertProfilePreferredDefaultValue = @"preferred-default";
+NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 @interface OpenVPNConfiguration () {
     ClientAPI::Config _config;
@@ -49,7 +49,7 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
     return _config;
 }
 
-+ (OpenVPNTransportProtocol)getTransportProtocolFromString:(NSString *)value {
++ (OpenVPNTransportProtocol)getTransportProtocolFromValue:(NSString *)value {
     NSDictionary *options = @{
         OpenVPNTransportProtocolUDPValue: @(OpenVPNTransportProtocolUDP),
         OpenVPNTransportProtocolTCPValue: @(OpenVPNTransportProtocolTCP),
@@ -65,7 +65,7 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
     return (OpenVPNTransportProtocol)[transportProtocol integerValue];
 }
 
-+ (nonnull NSString *)getStringFromTransportProtocol:(OpenVPNTransportProtocol)protocol {
++ (nonnull NSString *)getValueFromTransportProtocol:(OpenVPNTransportProtocol)protocol {
     NSDictionary *options = @{
         @(OpenVPNTransportProtocolUDP): OpenVPNTransportProtocolUDPValue,
         @(OpenVPNTransportProtocolTCP): OpenVPNTransportProtocolTCPValue,
@@ -79,7 +79,7 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
     return value;
 }
 
-+ (OpenVPNIPv6Preference)getIPv6PreferenceFromString:(nullable NSString *)value {
++ (OpenVPNIPv6Preference)getIPv6PreferenceFromValue:(nullable NSString *)value {
     NSDictionary *options = @{
         OpenVPNIPv6PreferenceEnabledValue: @(OpenVPNIPv6PreferenceEnabled),
         OpenVPNIPv6PreferenceDisabledValue: @(OpenVPNIPv6PreferenceDisabled),
@@ -94,7 +94,7 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
     return (OpenVPNIPv6Preference)[ipv6 integerValue];
 }
 
-+ (nonnull NSString *)getStringFromIPv6Preference:(OpenVPNIPv6Preference)preference {
++ (nonnull NSString *)getValueFromIPv6Preference:(OpenVPNIPv6Preference)preference {
     NSDictionary *options = @{
         @(OpenVPNIPv6PreferenceEnabled): OpenVPNIPv6PreferenceEnabledValue,
         @(OpenVPNIPv6PreferenceDisabled): OpenVPNIPv6PreferenceDisabledValue,
@@ -107,7 +107,7 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
     return value;
 }
 
-+ (OpenVPNCompressionMode)getCompressionModeFromString:(nullable NSString *)value {
++ (OpenVPNCompressionMode)getCompressionModeFromValue:(nullable NSString *)value {
     NSDictionary *options = @{
         OpenVPNCompressionModeEnabledValue: @(OpenVPNCompressionModeEnabled),
         OpenVPNCompressionModeDisabledValue: @(OpenVPNCompressionModeDisabled),
@@ -123,7 +123,7 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
     return (OpenVPNCompressionMode)[compressionMode integerValue];
 }
 
-+ (nonnull NSString *)getStringFromCompressionMode:(OpenVPNCompressionMode)compressionMode {
++ (nonnull NSString *)getValueFromCompressionMode:(OpenVPNCompressionMode)compressionMode {
     NSDictionary *options = @{
         @(OpenVPNCompressionModeEnabled): OpenVPNCompressionModeEnabledValue,
         @(OpenVPNCompressionModeDisabled): OpenVPNCompressionModeDisabledValue,
@@ -133,6 +133,72 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
     
     NSString *value = options[@(compressionMode)];
     NSAssert(value != nil, @"Incorrect compressionMode value: %li", (NSInteger)compressionMode);
+    
+    return value;
+}
+
++ (OpenVPNMinTLSVersion)getMinTLSFromValue:(nullable NSString *)value {
+    NSDictionary *options = @{
+        OpenVPNMinTLSVersionDisabledValue: @(OpenVPNMinTLSVersionDisabled),
+        OpenVPNMinTLSVersion10Value: @(OpenVPNMinTLSVersion10),
+        OpenVPNMinTLSVersion11Value: @(OpenVPNMinTLSVersion11),
+        OpenVPNMinTLSVersion12Value: @(OpenVPNMinTLSVersion12),
+        OpenVPNMinTLSVersionDefaultValue: @(OpenVPNMinTLSVersionDefault)
+    };
+    
+    NSString *currentValue = [value length] == 0 ? OpenVPNMinTLSVersionDefaultValue : value;
+    
+    NSNumber *minTLSVersion = options[currentValue];
+    NSAssert(minTLSVersion != nil, @"Incorrect minTLS value: %@", currentValue);
+    
+    return (OpenVPNMinTLSVersion)[minTLSVersion integerValue];
+}
+
++ (nonnull NSString *)getValueFromMinTLS:(OpenVPNMinTLSVersion)minTLS {
+    NSDictionary *options = @{
+        @(OpenVPNMinTLSVersionDisabled): OpenVPNMinTLSVersionDisabledValue,
+        @(OpenVPNMinTLSVersion10): OpenVPNMinTLSVersion10Value,
+        @(OpenVPNMinTLSVersion11): OpenVPNMinTLSVersion11Value,
+        @(OpenVPNMinTLSVersion12): OpenVPNMinTLSVersion12Value,
+        @(OpenVPNMinTLSVersionDefault): OpenVPNMinTLSVersionDefaultValue
+    };
+    
+    NSString *value = options[@(minTLS)];
+    NSAssert(value != nil, @"Incorrect minTLS value: %li", (NSInteger)minTLS);
+    
+    return value;
+}
+
++ (OpenVPNTLSCertProfile)getTLSCertProfileFromValue:(nullable NSString *)value {
+    NSDictionary *options = @{
+        OpenVPNTLSCertProfileLegacyValue: @(OpenVPNTLSCertProfileLegacy),
+        OpenVPNTLSCertProfilePreferredValue: @(OpenVPNTLSCertProfilePreferred),
+        OpenVPNTLSCertProfileSuiteBValue: @(OpenVPNTLSCertProfileSuiteB),
+        OpenVPNTLSCertProfileLegacyDefaultValue: @(OpenVPNTLSCertProfileLegacyDefault),
+        OpenVPNTLSCertProfilePreferredDefaultValue: @(OpenVPNTLSCertProfilePreferredDefault),
+        OpenVPNTLSCertProfileDefaultValue: @(OpenVPNTLSCertProfileDefault),
+    };
+    
+    NSString *currentValue = [value length] == 0 ? OpenVPNTLSCertProfileDefaultValue : value;
+    
+    NSNumber *tlsCertProfile = options[currentValue];
+    NSAssert(tlsCertProfile != nil, @"Incorrect tlsCertProfile value: %@", currentValue);
+    
+    return (OpenVPNTLSCertProfile)[tlsCertProfile integerValue];
+}
+
++ (nonnull NSString *)getValueFromTLSCertProfile:(OpenVPNTLSCertProfile)tlsCertProfile {
+    NSDictionary *options = @{
+        @(OpenVPNTLSCertProfileLegacy): OpenVPNTLSCertProfileLegacyValue,
+        @(OpenVPNTLSCertProfilePreferred): OpenVPNTLSCertProfilePreferredValue,
+        @(OpenVPNTLSCertProfileSuiteB): OpenVPNTLSCertProfileSuiteBValue,
+        @(OpenVPNTLSCertProfileLegacyDefault): OpenVPNTLSCertProfileLegacyDefaultValue,
+        @(OpenVPNTLSCertProfilePreferredDefault): OpenVPNTLSCertProfilePreferredDefaultValue,
+        @(OpenVPNTLSCertProfileDefault): OpenVPNTLSCertProfileDefaultValue
+    };
+    
+    NSString *value = options[@(tlsCertProfile)];
+    NSAssert(value != nil, @"Incorrect tlsCertProfile value: %li", (NSInteger)tlsCertProfile);
     
     return value;
 }
@@ -197,21 +263,21 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 - (OpenVPNTransportProtocol)proto {
     NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
-    return [OpenVPNConfiguration getTransportProtocolFromString:currentValue];
+    return [OpenVPNConfiguration getTransportProtocolFromValue:currentValue];
 }
 
 - (void)setProto:(OpenVPNTransportProtocol)proto {
-    NSString *value = [OpenVPNConfiguration getStringFromTransportProtocol:proto];
+    NSString *value = [OpenVPNConfiguration getValueFromTransportProtocol:proto];
     _config.protoOverride = std::string([value UTF8String]);
 }
 
 - (OpenVPNIPv6Preference)ipv6 {
     NSString *currentValue = [NSString stringWithUTF8String:_config.ipv6.c_str()];
-    return [OpenVPNConfiguration getIPv6PreferenceFromString:currentValue];
+    return [OpenVPNConfiguration getIPv6PreferenceFromValue:currentValue];
 }
 
 - (void)setIpv6:(OpenVPNIPv6Preference)ipv6 {
-    NSString *value = [OpenVPNConfiguration getStringFromIPv6Preference:ipv6];
+    NSString *value = [OpenVPNConfiguration getValueFromIPv6Preference:ipv6];
     _config.ipv6 = std::string([value UTF8String]);
 }
 
@@ -265,11 +331,11 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 - (OpenVPNCompressionMode)compressionMode {
     NSString *currentValue = [NSString stringWithUTF8String:_config.compressionMode.c_str()];
-    return [OpenVPNConfiguration getCompressionModeFromString:currentValue];
+    return [OpenVPNConfiguration getCompressionModeFromValue:currentValue];
 }
 
 - (void)setCompressionMode:(OpenVPNCompressionMode)compressionMode {
-    NSString *value = [OpenVPNConfiguration getStringFromCompressionMode:compressionMode];
+    NSString *value = [OpenVPNConfiguration getValueFromCompressionMode:compressionMode];
     _config.compressionMode = std::string([value UTF8String]);
 }
 
@@ -298,71 +364,23 @@ NSString * const OpenVPNTLSCertProfileDefaultValue = @"default";
 }
 
 - (OpenVPNMinTLSVersion)minTLSVersion {
-    NSDictionary *options = @{
-        OpenVPNMinTLSVersionDisabledValue: @(OpenVPNMinTLSVersionDisabled),
-        OpenVPNMinTLSVersion10Value: @(OpenVPNMinTLSVersion10),
-        OpenVPNMinTLSVersion11Value: @(OpenVPNMinTLSVersion11),
-        OpenVPNMinTLSVersion12Value: @(OpenVPNMinTLSVersion12),
-        OpenVPNMinTLSVersionDefaultValue: @(OpenVPNMinTLSVersionDefault)
-    };
-    
-    NSString *currentValue = _config.tlsVersionMinOverride.empty() ? OpenVPNMinTLSVersionDefaultValue :
-        [NSString stringWithUTF8String:_config.tlsVersionMinOverride.c_str()];
-    
-    NSNumber *minTLSVersion = options[currentValue];
-    NSAssert(minTLSVersion != nil, @"Incorrect tlsVersionMinOverride value: %@", currentValue);
-    
-    return (OpenVPNMinTLSVersion)[minTLSVersion integerValue];
+    NSString *currentValue = [NSString stringWithUTF8String:_config.tlsVersionMinOverride.c_str()];
+    return [OpenVPNConfiguration getMinTLSFromValue:currentValue];
 }
 
 - (void)setMinTLSVersion:(OpenVPNMinTLSVersion)minTLSVersion {
-    NSDictionary *options = @{
-        @(OpenVPNMinTLSVersionDisabled): OpenVPNMinTLSVersionDisabledValue,
-        @(OpenVPNMinTLSVersion10): OpenVPNMinTLSVersion10Value,
-        @(OpenVPNMinTLSVersion11): OpenVPNMinTLSVersion11Value,
-        @(OpenVPNMinTLSVersion12): OpenVPNMinTLSVersion12Value,
-        @(OpenVPNMinTLSVersionDefault): OpenVPNMinTLSVersionDefaultValue
-    };
-    
-    NSString *value = options[@(minTLSVersion)];
-    NSAssert(value != nil, @"Incorrect minTLSVersion value: %li", (NSInteger)minTLSVersion);
-    
-    _config.tlsVersionMinOverride = [value UTF8String];
+    NSString *value = [OpenVPNConfiguration getValueFromMinTLS:minTLSVersion];
+    _config.tlsVersionMinOverride = std::string([value UTF8String]);
 }
 
 - (OpenVPNTLSCertProfile)tlsCertProfile {
-    NSDictionary *options = @{
-        OpenVPNTLSCertProfileLegacyValue: @(OpenVPNTLSCertProfileLegacy),
-        OpenVPNTLSCertProfilePreferredValue: @(OpenVPNTLSCertProfilePreferred),
-        OpenVPNTLSCertProfileSuiteBValue: @(OpenVPNTLSCertProfileSuiteB),
-        OpenVPNTLSCertProfileLegacyDefaultValue: @(OpenVPNTLSCertProfileLegacyDefault),
-        OpenVPNTLSCertProfilePreferredDefaultValue: @(OpenVPNTLSCertProfilePreferredDefault),
-        OpenVPNTLSCertProfileDefaultValue: @(OpenVPNTLSCertProfileDefault),
-    };
-    
-    NSString *currentValue = _config.tlsCertProfileOverride.empty() ? OpenVPNTLSCertProfileDefaultValue :
-        [NSString stringWithUTF8String:_config.tlsCertProfileOverride.c_str()];
-    
-    NSNumber *tlsCertProfile = options[currentValue];
-    NSAssert(tlsCertProfile != nil, @"Incorrect tlsCertProfileOverride value: %@", currentValue);
-    
-    return (OpenVPNTLSCertProfile)[tlsCertProfile integerValue];
+    NSString *currentValue = [NSString stringWithUTF8String:_config.tlsCertProfileOverride.c_str()];
+    return [OpenVPNConfiguration getTLSCertProfileFromValue:currentValue];
 }
 
 - (void)setTlsCertProfile:(OpenVPNTLSCertProfile)tlsCertProfile {
-    NSDictionary *options = @{
-        @(OpenVPNTLSCertProfileLegacy): OpenVPNTLSCertProfileLegacyValue,
-        @(OpenVPNTLSCertProfilePreferred): OpenVPNTLSCertProfilePreferredValue,
-        @(OpenVPNTLSCertProfileSuiteB): OpenVPNTLSCertProfileSuiteBValue,
-        @(OpenVPNTLSCertProfileLegacyDefault): OpenVPNTLSCertProfileLegacyDefaultValue,
-        @(OpenVPNTLSCertProfilePreferredDefault): OpenVPNTLSCertProfilePreferredDefaultValue,
-        @(OpenVPNTLSCertProfileDefault): OpenVPNTLSCertProfileDefaultValue
-    };
-    
-    NSString *value = options[@(tlsCertProfile)];
-    NSAssert(value != nil, @"Incorrect tlsCertProfile value: %li", (NSInteger)tlsCertProfile);
-    
-    _config.tlsCertProfileOverride = [value UTF8String];
+    NSString *value = [OpenVPNConfiguration getValueFromTLSCertProfile:tlsCertProfile];
+    _config.tlsCertProfileOverride = std::string([value UTF8String]);
 }
 
 - (NSDictionary<NSString *,NSString *> *)peerInfo {

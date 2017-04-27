@@ -8,7 +8,7 @@
 
 #import <openvpn/common/number.hpp>
 
-#import "OpenVPNValuesConverter.h"
+#import "OpenVPNConfiguration+Internal.h"
 #import "OpenVPNServerEntry+Internal.h"
 #import "OpenVPNProperties.h"
 #import "OpenVPNProperties+Internal.h"
@@ -41,7 +41,7 @@ using namespace openvpn;
         _remotePort = port;
         
         NSString *currentProto = [NSString stringWithUTF8String:eval.remoteProto.c_str()];
-        _remoteProto = [OpenVPNPropertyConverter getTransportProtocolFromString:currentProto];
+        _remoteProto = [OpenVPNConfiguration getTransportProtocolFromValue:currentProto];
         
         _servers = nil;
         if (!eval.serverList.empty()) {
