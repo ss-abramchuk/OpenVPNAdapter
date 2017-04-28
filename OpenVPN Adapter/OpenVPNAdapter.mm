@@ -163,7 +163,7 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 - (void)connect {
     // TODO: Describe why we use async invocation here
-    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-ios-client.connection", NULL);
+    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-adapter.connection", NULL);
     dispatch_async(connectQueue, ^{
         OpenVPNClient::init_process();
         
