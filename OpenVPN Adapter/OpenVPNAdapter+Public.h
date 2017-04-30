@@ -13,6 +13,8 @@
 @class OpenVPNProperties;
 @class OpenVPNCredentials;
 @class OpenVPNConnectionInfo;
+@class OpenVPNTransportStats;
+@class OpenVPNInterfaceStats;
 @class NEPacketTunnelNetworkSettings;
 
 // TODO: Add documentation to properties and methods
@@ -102,9 +104,19 @@ NS_SWIFT_NAME(handle(logMessage:));
 
 /**
  Return information about the most recent connection. Will be available
- after an event of type "CONNECTED, otherwise return nil
+ after an event of type "CONNECTED, otherwise return nil.
  */
 @property (nullable, readonly, nonatomic) OpenVPNConnectionInfo *connectionInfo;
+
+/**
+ Return transport stats
+ */
+@property (nonnull, readonly, nonatomic) OpenVPNTransportStats *transportStats;
+
+/**
+ Return tun stats
+ */
+@property (nonnull, readonly, nonatomic) OpenVPNInterfaceStats *interfaceStats;
 
 /**
  <#Description#>

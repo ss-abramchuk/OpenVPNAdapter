@@ -14,13 +14,15 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
+#import "OpenVPNClient.h"
 #import "OpenVPNError.h"
 #import "OpenVPNEvent.h"
 #import "OpenVPNConfiguration+Internal.h"
 #import "OpenVPNCredentials+Internal.h"
 #import "OpenVPNProperties+Internal.h"
 #import "OpenVPNConnectionInfo+Internal.h"
-#import "OpenVPNClient.h"
+#import "OpenVPNTransportStats+Internal.h"
+#import "OpenVPNInterfaceStats+Internal.h"
 #import "OpenVPNAdapter.h"
 #import "OpenVPNAdapter+Internal.h"
 #import "OpenVPNAdapter+Public.h"
@@ -137,6 +139,16 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
     // TODO: Check correctness of using "defined" property
     ClientAPI::ConnectionInfo info = self.vpnClient->connection_info();
     return info.defined ? [[OpenVPNConnectionInfo alloc] initWithConnectionInfo:info] : nil;
+}
+
+- (OpenVPNTransportStats *)transportStats {
+    ClientAPI::TransportStats stats = self.vpnClient->transport_stats();
+    return [[OpenVPNTransportStats alloc] initWithTransportStats:stats];
+}
+
+- (OpenVPNInterfaceStats *)interfaceStats {
+    ClientAPI::InterfaceStats stats = self.vpnClient->tun_stats();
+    return [[OpenVPNInterfaceStats alloc] initWithInterfaceStats:stats];
 }
 
 #pragma mark Client Configuration
