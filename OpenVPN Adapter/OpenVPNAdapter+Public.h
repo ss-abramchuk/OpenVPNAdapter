@@ -125,6 +125,16 @@ NS_SWIFT_NAME(handle(logMessage:));
 @property (nonnull, readonly, nonatomic) OpenVPNInterfaceStats *interfaceStats;
 
 /**
+ Returns date/time of app expiration
+ */
++ (nonnull NSDate *)expiration;
+
+/**
+ Returns platform description
+ */
++ (nonnull NSString *)platform;
+
+/**
  <#Description#>
 
  @param configuration <#configuration description#>

@@ -158,6 +158,16 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
     return [[OpenVPNInterfaceStats alloc] initWithInterfaceStats:stats];
 }
 
++ (NSDate *)expiration {
+    NSNumber *time = [NSNumber numberWithInteger:OpenVPNClient::app_expire()];
+    return [NSDate dateWithTimeIntervalSince1970:[time doubleValue]];
+}
+
++ (NSString *)platform {
+    std::string platform = OpenVPNClient::platform();
+    return [NSString stringWithUTF8String:platform.c_str()];
+}
+
 #pragma mark Client Configuration
 
 - (OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration error:(out NSError * __nullable * __nullable)error {
