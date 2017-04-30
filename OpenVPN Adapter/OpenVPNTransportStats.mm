@@ -6,7 +6,6 @@
 //
 //
 
-#import "OpenVPNTransportStats.h"
 #import "OpenVPNTransportStats+Internal.h"
 
 using namespace openvpn;
