@@ -13,6 +13,7 @@
 @class OpenVPNProperties;
 @class OpenVPNCredentials;
 @class OpenVPNConnectionInfo;
+@class OpenVPNSessionToken;
 @class OpenVPNTransportStats;
 @class OpenVPNInterfaceStats;
 @class NEPacketTunnelNetworkSettings;
@@ -104,9 +105,14 @@ NS_SWIFT_NAME(handle(logMessage:));
 
 /**
  Return information about the most recent connection. Will be available
- after an event of type "CONNECTED, otherwise return nil.
+ after an event of type "OpenVPNEventConnected, otherwise return nil.
  */
 @property (nullable, readonly, nonatomic) OpenVPNConnectionInfo *connectionInfo;
+
+/**
+ Return current session token or nil if session token is unavailable
+ */
+@property (nullable, readonly, nonatomic) OpenVPNSessionToken *sessionToken;
 
 /**
  Return transport stats

@@ -21,6 +21,7 @@
 #import "OpenVPNCredentials+Internal.h"
 #import "OpenVPNProperties+Internal.h"
 #import "OpenVPNConnectionInfo+Internal.h"
+#import "OpenVPNSessionToken+Internal.h"
 #import "OpenVPNTransportStats+Internal.h"
 #import "OpenVPNInterfaceStats+Internal.h"
 #import "OpenVPNAdapter.h"
@@ -136,9 +137,15 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 }
 
 - (OpenVPNConnectionInfo *)connectionInfo {
-    // TODO: Check correctness of using "defined" property
     ClientAPI::ConnectionInfo info = self.vpnClient->connection_info();
     return info.defined ? [[OpenVPNConnectionInfo alloc] initWithConnectionInfo:info] : nil;
+}
+
+- (OpenVPNSessionToken *)sessionToken {
+    ClientAPI::SessionToken token;
+    bool gotToken = self.vpnClient->session_token(token);
+    
+    return gotToken ? [[OpenVPNSessionToken alloc] initWithSessionToken:token] : nil;
 }
 
 - (OpenVPNTransportStats *)transportStats {
