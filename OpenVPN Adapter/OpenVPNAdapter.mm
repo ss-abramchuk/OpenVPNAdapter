@@ -128,6 +128,11 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 #pragma mark Properties
 
++ (NSString *)copyright {
+    std::string copyright = OpenVPNClient::copyright();
+    return [NSString stringWithUTF8String:copyright.c_str()];
+}
+
 + (NSString *)platform {
     std::string platform = OpenVPNClient::platform();
     return [NSString stringWithUTF8String:platform.c_str()];
