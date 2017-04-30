@@ -99,6 +99,11 @@ NS_SWIFT_NAME(handle(logMessage:));
 @interface OpenVPNAdapter (Public)
 
 /**
+ Returns platform description
+ */
+@property (class, nonnull, readonly, nonatomic) NSString *platform;
+
+/**
  <#Description#>
  */
 @property (weak, nonatomic, null_unspecified) id<OpenVPNAdapterDelegate> delegate;
@@ -123,16 +128,6 @@ NS_SWIFT_NAME(handle(logMessage:));
  Return tun stats
  */
 @property (nonnull, readonly, nonatomic) OpenVPNInterfaceStats *interfaceStats;
-
-/**
- Returns date/time of app expiration
- */
-+ (nonnull NSDate *)expiration;
-
-/**
- Returns platform description
- */
-+ (nonnull NSString *)platform;
 
 /**
  <#Description#>
