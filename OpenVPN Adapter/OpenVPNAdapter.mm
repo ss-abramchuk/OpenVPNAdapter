@@ -121,7 +121,7 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 @end
 
-@implementation OpenVPNAdapter (Provider)
+@implementation OpenVPNAdapter (Public)
 
 #pragma mark Properties
 
@@ -131,6 +131,12 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 - (id<OpenVPNAdapterDelegate>)delegate {
     return _delegate;
+}
+
+- (OpenVPNConnectionInfo *)connectionInfo {
+    // TODO: Check correctness of using "defined" property
+    ClientAPI::ConnectionInfo info = self.vpnClient->connection_info();
+    return info.defined ? [[OpenVPNConnectionInfo alloc] initWithConnectionInfo:info] : nil;
 }
 
 #pragma mark Client Configuration
