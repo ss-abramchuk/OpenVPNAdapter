@@ -9,7 +9,7 @@
 import Foundation
 
 enum ProfileType: String {
-    case localKeyAuthentication = "local_key_auth"
+    case localVPNServer = "local_vpn_server"
 }
 
 struct ProfileLoader {
