@@ -79,8 +79,10 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 - (void)handleLog:(const ClientAPI::LogInfo *)log {
     NSAssert(self.delegate != nil, @"delegate property should not be nil");
     
-    NSString *message = [NSString stringWithCString:log->text.c_str() encoding:NSUTF8StringEncoding];
-    [self.delegate handleLog:message];
+    if ([self.delegate respondsToSelector:@selector(handleLog:)]) {
+        NSString *message = [NSString stringWithCString:log->text.c_str() encoding:NSUTF8StringEncoding];
+        [self.delegate handleLog:message];
+    }
 }
 
 - (OpenVPNEvent)getEventIdentifierByName:(NSString *)eventName {
