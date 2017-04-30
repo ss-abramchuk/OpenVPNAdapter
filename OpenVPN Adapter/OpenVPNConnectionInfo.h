@@ -13,7 +13,6 @@
  */
 @interface OpenVPNConnectionInfo : NSObject
 
-@property (readonly, nonatomic) BOOL defined;
 @property (nullable, readonly, nonatomic) NSString *user;
 @property (nullable, readonly, nonatomic) NSString *serverHost;
 @property (nullable, readonly, nonatomic) NSString *serverPort;

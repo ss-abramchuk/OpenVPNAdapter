@@ -17,7 +17,6 @@ using namespace openvpn;
 {
     self = [super init];
     if (self) {
-        _defined = info.defined;
         _user = !info.user.empty() ? [NSString stringWithUTF8String:info.user.c_str()] : nil;
         _serverHost = !info.serverHost.empty() ? [NSString stringWithUTF8String:info.serverHost.c_str()] : nil;
         _serverPort = !info.serverPort.empty() ? [NSString stringWithUTF8String:info.serverPort.c_str()] : nil;
