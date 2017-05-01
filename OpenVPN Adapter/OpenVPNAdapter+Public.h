@@ -176,6 +176,14 @@ NS_SWIFT_NAME(pause(reason:));
 - (void)resume;
 
 /**
+ Do a disconnect/reconnect cycle after given amount of seconds from now
+
+ @param interval <#interval description#>
+ */
+- (void)reconnectAfterTimeInterval:(NSInteger)interval
+NS_SWIFT_NAME(reconnect(interval:));
+
+/**
  Close connection with the VPN server
  */
 - (void)disconnect;

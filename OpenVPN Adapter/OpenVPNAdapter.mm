@@ -236,6 +236,10 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
     self.vpnClient->resume();
 }
 
+- (void)reconnectAfterTimeInterval:(NSInteger)interval {
+    self.vpnClient->reconnect(interval);
+}
+
 - (void)disconnect {
     self.vpnClient->stop();
 }
