@@ -99,12 +99,12 @@ NS_SWIFT_NAME(handle(logMessage:));
 @interface OpenVPNAdapter (Public)
 
 /**
- Returns core copyright
+ Return core copyright
  */
 @property (class, nonnull, readonly, nonatomic) NSString *copyright;
 
 /**
- Returns platform description
+ Return platform description
  */
 @property (class, nonnull, readonly, nonatomic) NSString *platform;
 

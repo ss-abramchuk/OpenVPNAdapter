@@ -28,6 +28,8 @@ public:
     virtual void event(const ClientAPI::Event& ev) override;
     virtual void log(const ClientAPI::LogInfo& log) override;
     
+    virtual void clock_tick() override;
+    
 private:
     void* adapter;
 };

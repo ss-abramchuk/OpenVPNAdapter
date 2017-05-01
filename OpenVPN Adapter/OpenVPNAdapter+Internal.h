@@ -16,5 +16,6 @@ using namespace openvpn;
 
 - (void)handleEvent:(const ClientAPI::Event *)event;
 - (void)handleLog:(const ClientAPI::LogInfo *)log;
+- (void)tick;
 
 @end

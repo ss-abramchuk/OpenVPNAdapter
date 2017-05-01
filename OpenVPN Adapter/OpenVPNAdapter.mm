@@ -41,6 +41,7 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 
 @property (weak, nonatomic) id<OpenVPNAdapterPacketFlow> packetFlow;
 
+- (OpenVPNEvent)getEventIdentifierByName:(NSString *)eventName;
 - (NSString *)getSubnetFromPrefixLength:(NSNumber *)prefixLength;
 
 @end
@@ -85,43 +86,14 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
     }
 }
 
-- (OpenVPNEvent)getEventIdentifierByName:(NSString *)eventName {
-    NSDictionary *events = @{
-        @"DISCONNECTED": @(OpenVPNEventDisconnected),
-        @"CONNECTED": @(OpenVPNEventConnected),
-        @"RECONNECTING": @(OpenVPNEventReconnecting),
-        @"RESOLVE": @(OpenVPNEventResolve),
-        @"WAIT": @(OpenVPNEventWait),
-        @"WAIT_PROXY": @(OpenVPNEventWaitProxy),
-        @"CONNECTING": @(OpenVPNEventConnecting),
-        @"GET_CONFIG": @(OpenVPNEventGetConfig),
-        @"ASSIGN_IP": @(OpenVPNEventAssignIP),
-        @"ADD_ROUTES": @(OpenVPNEventAddRoutes),
-        @"ECHO": @(OpenVPNEventEcho),
-        @"INFO": @(OpenVPNEventInfo),
-        @"PAUSE": @(OpenVPNEventPause),
-        @"RESUME": @(OpenVPNEventResume),
-        @"TRANSPORT_ERROR": @(OpenVPNEventTransportError),
-        @"TUN_ERROR": @(OpenVPNEventTunError),
-        @"CLIENT_RESTART": @(OpenVPNEventClientRestart),
-        @"AUTH_FAILED": @(OpenVPNEventAuthFailed),
-        @"CERT_VERIFY_FAIL": @(OpenVPNEventCertVerifyFail),
-        @"TLS_VERSION_MIN": @(OpenVPNEventTLSVersionMin),
-        @"CLIENT_HALT": @(OpenVPNEventClientHalt),
-        @"CONNECTION_TIMEOUT": @(OpenVPNEventConnectionTimeout),
-        @"INACTIVE_TIMEOUT": @(OpenVPNEventInactiveTimeout),
-        @"DYNAMIC_CHALLENGE": @(OpenVPNEventDynamicChallenge),
-        @"PROXY_NEED_CREDS": @(OpenVPNEventProxyNeedCreds),
-        @"PROXY_ERROR": @(OpenVPNEventProxyError),
-        @"TUN_SETUP_FAILED": @(OpenVPNEventTunSetupFailed),
-        @"TUN_IFACE_CREATE": @(OpenVPNEventTunIfaceCreate),
-        @"TUN_IFACE_DISABLED": @(OpenVPNEventTunIfaceDisabled),
-        @"EPKI_ERROR": @(OpenVPNEventEPKIError),
-        @"EPKI_INVALID_ALIAS": @(OpenVPNEventEPKIInvalidAlias),
-    };
+#pragma mark Clock Tick
+
+- (void)tick {
+    NSAssert(self.delegate != nil, @"delegate property should not be nil");
     
-    OpenVPNEvent event = events[eventName] != nil ? (OpenVPNEvent)[(NSNumber *)events[eventName] unsignedIntegerValue] : OpenVPNEventUnknown;
-    return event;
+    if ([self.delegate respondsToSelector:@selector(tick)]) {
+        [self.delegate tick];
+    }
 }
 
 @end
@@ -261,6 +233,45 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 }
 
 #pragma mark Utils
+
+- (OpenVPNEvent)getEventIdentifierByName:(NSString *)eventName {
+    NSDictionary *events = @{
+                             @"DISCONNECTED": @(OpenVPNEventDisconnected),
+                             @"CONNECTED": @(OpenVPNEventConnected),
+                             @"RECONNECTING": @(OpenVPNEventReconnecting),
+                             @"RESOLVE": @(OpenVPNEventResolve),
+                             @"WAIT": @(OpenVPNEventWait),
+                             @"WAIT_PROXY": @(OpenVPNEventWaitProxy),
+                             @"CONNECTING": @(OpenVPNEventConnecting),
+                             @"GET_CONFIG": @(OpenVPNEventGetConfig),
+                             @"ASSIGN_IP": @(OpenVPNEventAssignIP),
+                             @"ADD_ROUTES": @(OpenVPNEventAddRoutes),
+                             @"ECHO": @(OpenVPNEventEcho),
+                             @"INFO": @(OpenVPNEventInfo),
+                             @"PAUSE": @(OpenVPNEventPause),
+                             @"RESUME": @(OpenVPNEventResume),
+                             @"TRANSPORT_ERROR": @(OpenVPNEventTransportError),
+                             @"TUN_ERROR": @(OpenVPNEventTunError),
+                             @"CLIENT_RESTART": @(OpenVPNEventClientRestart),
+                             @"AUTH_FAILED": @(OpenVPNEventAuthFailed),
+                             @"CERT_VERIFY_FAIL": @(OpenVPNEventCertVerifyFail),
+                             @"TLS_VERSION_MIN": @(OpenVPNEventTLSVersionMin),
+                             @"CLIENT_HALT": @(OpenVPNEventClientHalt),
+                             @"CONNECTION_TIMEOUT": @(OpenVPNEventConnectionTimeout),
+                             @"INACTIVE_TIMEOUT": @(OpenVPNEventInactiveTimeout),
+                             @"DYNAMIC_CHALLENGE": @(OpenVPNEventDynamicChallenge),
+                             @"PROXY_NEED_CREDS": @(OpenVPNEventProxyNeedCreds),
+                             @"PROXY_ERROR": @(OpenVPNEventProxyError),
+                             @"TUN_SETUP_FAILED": @(OpenVPNEventTunSetupFailed),
+                             @"TUN_IFACE_CREATE": @(OpenVPNEventTunIfaceCreate),
+                             @"TUN_IFACE_DISABLED": @(OpenVPNEventTunIfaceDisabled),
+                             @"EPKI_ERROR": @(OpenVPNEventEPKIError),
+                             @"EPKI_INVALID_ALIAS": @(OpenVPNEventEPKIInvalidAlias),
+                             };
+    
+    OpenVPNEvent event = events[eventName] != nil ? (OpenVPNEvent)[(NSNumber *)events[eventName] unsignedIntegerValue] : OpenVPNEventUnknown;
+    return event;
+}
 
 - (NSString *)getSubnetFromPrefixLength:(NSNumber *)prefixLength {
     uint32_t bitmask = UINT_MAX << (sizeof(uint32_t) * 8 - prefixLength.integerValue);

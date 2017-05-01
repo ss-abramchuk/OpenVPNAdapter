@@ -33,7 +33,6 @@ bool OpenVPNClient::pause_on_connection_timeout() {
     return false;
 }
 
-// TODO: Provide interfacing with an OS-layer Keychain
 void OpenVPNClient::external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) { }
 void OpenVPNClient::external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) { }
 
@@ -43,4 +42,8 @@ void OpenVPNClient::event(const ClientAPI::Event& ev) {
 
 void OpenVPNClient::log(const ClientAPI::LogInfo& log) {
     [(__bridge OpenVPNAdapter* )adapter handleLog:&log];
+}
+
+void OpenVPNClient::clock_tick() {
+    [(__bridge OpenVPNAdapter* )adapter tick];
 }
