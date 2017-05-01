@@ -285,7 +285,7 @@
 			name = Configuration;
 			sourceTree = "<group>";
 		};
-		C9235AC51EB24F1100C7D303 /* Info */ = {
+		C9235AC51EB24F1100C7D303 /* Stats and Info */ = {
 			isa = PBXGroup;
 			children = (
 				C9657A151EB0A7F800EFF210 /* OpenVPNConnectionInfo.h */,
@@ -301,10 +301,10 @@
 				C9657A381EB0BAAB00EFF210 /* OpenVPNInterfaceStats+Internal.h */,
 				C9657A331EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm */,
 			);
-			name = Info;
+			name = "Stats and Info";
 			sourceTree = "<group>";
 		};
-		C9235AC61EB24F2A00C7D303 /* Types */ = {
+		C9235AC61EB24F2A00C7D303 /* Enums and Constants */ = {
 			isa = PBXGroup;
 			children = (
 				C9BB476F1E7171A100F3F98C /* OpenVPNError.h */,
@@ -315,7 +315,7 @@
 				C9657A661EB0D73200EFF210 /* OpenVPNMinTLSVersion.h */,
 				C9657A691EB0D75700EFF210 /* OpenVPNTLSCertProfile.h */,
 			);
-			name = Types;
+			name = "Enums and Constants";
 			sourceTree = "<group>";
 		};
 		C9B376B71EA53CE700B7F423 /* Client */ = {
@@ -330,6 +330,8 @@
 		C9BB475D1E71663A00F3F98C /* OpenVPN Adapter */ = {
 			isa = PBXGroup;
 			children = (
+				C9235AC41EB24F0100C7D303 /* Configuration */,
+				C9235AC51EB24F1100C7D303 /* Stats and Info */,
 				C9B376B71EA53CE700B7F423 /* Client */,
 				C9BB47671E7169F000F3F98C /* Adapter */,
 				C9BB47641E7169AF00F3F98C /* Libraries */,
@@ -341,6 +343,7 @@
 		C9BB47641E7169AF00F3F98C /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				C9FF73B71EB7421600E995AC /* Helpers */,
 				C9BB47681E716ABF00F3F98C /* Vendors */,
 			);
 			name = Libraries;
@@ -357,9 +360,6 @@
 		C9BB47671E7169F000F3F98C /* Adapter */ = {
 			isa = PBXGroup;
 			children = (
-				C9235AC61EB24F2A00C7D303 /* Types */,
-				C9235AC41EB24F0100C7D303 /* Configuration */,
-				C9235AC51EB24F1100C7D303 /* Info */,
 				C9BB477B1E7173C700F3F98C /* OpenVPNAdapter.h */,
 				C9BB477C1E7173C700F3F98C /* OpenVPNAdapter+Internal.h */,
 				C9BB477D1E7173C700F3F98C /* OpenVPNAdapter+Public.h */,
@@ -435,6 +435,14 @@
 				C9B03A7A1EABA6B500268B85 /* ProfileLoader.swift */,
 			);
 			name = Utils;
+			sourceTree = "<group>";
+		};
+		C9FF73B71EB7421600E995AC /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				C9235AC61EB24F2A00C7D303 /* Enums and Constants */,
+			);
+			name = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
