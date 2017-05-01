@@ -232,6 +232,10 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
     self.vpnClient->pause(reason);
 }
 
+- (void)resume {
+    self.vpnClient->resume();
+}
+
 - (void)disconnect {
     self.vpnClient->stop();
 }

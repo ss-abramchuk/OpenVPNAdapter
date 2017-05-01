@@ -167,7 +167,13 @@ NS_SWIFT_NAME(provide(credentials:));
 
  @param pauseReason <#reason description#>
  */
-- (void)pauseWithReason:(nullable NSString *)pauseReason;
+- (void)pauseWithReason:(nullable NSString *)pauseReason
+NS_SWIFT_NAME(pause(reason:));
+
+/**
+ Resume the client after it has been paused
+ */
+- (void)resume;
 
 /**
  Close connection with the VPN server
