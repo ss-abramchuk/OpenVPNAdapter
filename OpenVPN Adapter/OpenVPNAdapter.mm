@@ -227,6 +227,11 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
     });
 }
 
+- (void)pauseWithReason:(NSString *)pauseReason {
+    std::string reason = pauseReason ? std::string([pauseReason UTF8String]) : "";
+    self.vpnClient->pause(reason);
+}
+
 - (void)disconnect {
     self.vpnClient->stop();
 }

@@ -162,6 +162,14 @@ NS_SWIFT_NAME(provide(credentials:));
 - (void)connect;
 
 /**
+ Pause the client –- useful to avoid continuous reconnection attempts
+ when network is down
+
+ @param pauseReason <#reason description#>
+ */
+- (void)pauseWithReason:(nullable NSString *)pauseReason;
+
+/**
  Close connection with the VPN server
  */
 - (void)disconnect;
