@@ -6,8 +6,6 @@
 //
 //
 
-#import <sstream>
-
 #import <Foundation/Foundation.h>
 
 #import "OpenVPNAdapter+Internal.h"
