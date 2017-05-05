@@ -1,14 +1,14 @@
 //
-//  TUNConfiguration.m
+//  OpenVPNTunnelSettings.m
 //  OpenVPN iOS Client
 //
 //  Created by Sergey Abramchuk on 26.02.17.
 //
 //
 
-#import "TUNConfiguration.h"
+#import "OpenVPNTunnelSettings.h"
 
-@implementation TUNConfiguration
+@implementation OpenVPNTunnelSettings
 
 - (instancetype)init
 {

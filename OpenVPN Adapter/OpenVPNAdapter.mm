@@ -14,7 +14,7 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "TUNConfiguration.h"
+#import "OpenVPNTunnelSettings.h"
 #import "OpenVPNClient.h"
 #import "OpenVPNError.h"
 #import "OpenVPNEvent.h"
@@ -48,8 +48,8 @@ NSString * const OpenVPNAdapterErrorEventKey = @"me.ss-abramchuk.openvpn-adapter
 @property (strong, nonatomic) NSString *defaultGatewayIPv6;
 @property (strong, nonatomic) NSString *defaultGatewayIPv4;
 
-@property (strong, nonatomic) TUNConfiguration *tunConfigurationIPv6;
-@property (strong, nonatomic) TUNConfiguration *tunConfigurationIPv4;
+@property (strong, nonatomic) OpenVPNTunnelSettings *tunnelSettingsIPv6;
+@property (strong, nonatomic) OpenVPNTunnelSettings *tunnelSettingsIPv4;
 
 @property (strong, nonatomic) NSMutableArray *searchDomains;
 
@@ -124,23 +124,23 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }
     
     if (isIPv6) {
-        if (!self.tunConfigurationIPv6.initialized) {
-            self.tunConfigurationIPv6.initialized = YES;
+        if (!self.tunnelSettingsIPv6.initialized) {
+            self.tunnelSettingsIPv6.initialized = YES;
         }
         
         self.defaultGatewayIPv6 = gateway;
         
-        [self.tunConfigurationIPv6.localAddresses addObject:address];
-        [self.tunConfigurationIPv6.prefixLengths addObject:prefixLength];
+        [self.tunnelSettingsIPv6.localAddresses addObject:address];
+        [self.tunnelSettingsIPv6.prefixLengths addObject:prefixLength];
     } else {
-        if (!self.tunConfigurationIPv4.initialized) {
-            self.tunConfigurationIPv4.initialized = YES;
+        if (!self.tunnelSettingsIPv4.initialized) {
+            self.tunnelSettingsIPv4.initialized = YES;
         }
         
         self.defaultGatewayIPv4 = gateway;
         
-        [self.tunConfigurationIPv4.localAddresses addObject:address];
-        [self.tunConfigurationIPv4.prefixLengths addObject:prefixLength];
+        [self.tunnelSettingsIPv4.localAddresses addObject:address];
+        [self.tunnelSettingsIPv4.prefixLengths addObject:prefixLength];
     }
     
     return YES;
@@ -151,14 +151,14 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         NEIPv6Route *includedRoute = [NEIPv6Route defaultRoute];
         includedRoute.gatewayAddress = self.defaultGatewayIPv6;
         
-        [self.tunConfigurationIPv6.includedRoutes addObject:includedRoute];
+        [self.tunnelSettingsIPv6.includedRoutes addObject:includedRoute];
     }
     
     if (rerouteIPv4) {
         NEIPv4Route *includedRoute = [NEIPv4Route defaultRoute];
         includedRoute.gatewayAddress = self.defaultGatewayIPv4;
         
-        [self.tunConfigurationIPv4.includedRoutes addObject:includedRoute];
+        [self.tunnelSettingsIPv4.includedRoutes addObject:includedRoute];
     }
     
     return YES;
@@ -173,14 +173,14 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         NEIPv6Route *includedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:prefixLength];
         includedRoute.gatewayAddress = self.defaultGatewayIPv6;
         
-        [self.tunConfigurationIPv6.includedRoutes addObject:includedRoute];
+        [self.tunnelSettingsIPv6.includedRoutes addObject:includedRoute];
     } else {
         NSString *subnet = [self getSubnetFromPrefixLength:prefixLength];
         
         NEIPv4Route *includedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
         includedRoute.gatewayAddress = self.defaultGatewayIPv4;
         
-        [self.tunConfigurationIPv4.includedRoutes addObject:includedRoute];
+        [self.tunnelSettingsIPv4.includedRoutes addObject:includedRoute];
     }
     
     return YES;
@@ -193,11 +193,11 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     if (isIPv6) {
         NEIPv6Route *excludedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:prefixLength];
-        [self.tunConfigurationIPv6.excludedRoutes addObject:excludedRoute];
+        [self.tunnelSettingsIPv6.excludedRoutes addObject:excludedRoute];
     } else {
         NSString *subnet = [self getSubnetFromPrefixLength:prefixLength];
         NEIPv4Route *excludedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnet];
-        [self.tunConfigurationIPv4.excludedRoutes addObject:excludedRoute];
+        [self.tunnelSettingsIPv4.excludedRoutes addObject:excludedRoute];
     }
     
     return YES;
@@ -209,9 +209,9 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }
     
     if (isIPv6) {
-        [self.tunConfigurationIPv6.dnsAddresses addObject:address];
+        [self.tunnelSettingsIPv6.dnsAddresses addObject:address];
     } else {
-        [self.tunConfigurationIPv4.dnsAddresses addObject:address];
+        [self.tunnelSettingsIPv4.dnsAddresses addObject:address];
     }
     
     return YES;
@@ -238,25 +238,25 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.remoteAddress];
     
     // Configure IPv6 addresses and routes
-    if (self.tunConfigurationIPv6.initialized) {
-        NEIPv6Settings *settingsIPv6 = [[NEIPv6Settings alloc] initWithAddresses:self.tunConfigurationIPv6.localAddresses networkPrefixLengths:self.tunConfigurationIPv6.prefixLengths];
-        settingsIPv6.includedRoutes = self.tunConfigurationIPv6.includedRoutes;
-        settingsIPv6.excludedRoutes = self.tunConfigurationIPv6.excludedRoutes;
+    if (self.tunnelSettingsIPv6.initialized) {
+        NEIPv6Settings *settingsIPv6 = [[NEIPv6Settings alloc] initWithAddresses:self.tunnelSettingsIPv6.localAddresses networkPrefixLengths:self.tunnelSettingsIPv6.prefixLengths];
+        settingsIPv6.includedRoutes = self.tunnelSettingsIPv6.includedRoutes;
+        settingsIPv6.excludedRoutes = self.tunnelSettingsIPv6.excludedRoutes;
         
         networkSettings.IPv6Settings = settingsIPv6;
     }
     
     // Configure IPv4 addresses and routes
-    if (self.tunConfigurationIPv4.initialized) {
+    if (self.tunnelSettingsIPv4.initialized) {
         NSMutableArray *subnets = [NSMutableArray new];
-        [self.tunConfigurationIPv4.prefixLengths enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.tunnelSettingsIPv4.prefixLengths enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             NSString *subnet = [self getSubnetFromPrefixLength:obj];
             [subnets addObject:subnet];
         }];
         
-        NEIPv4Settings *ipSettings = [[NEIPv4Settings alloc] initWithAddresses:self.tunConfigurationIPv4.localAddresses subnetMasks:subnets];
-        ipSettings.includedRoutes = self.tunConfigurationIPv4.includedRoutes;
-        ipSettings.excludedRoutes = self.tunConfigurationIPv4.excludedRoutes;
+        NEIPv4Settings *ipSettings = [[NEIPv4Settings alloc] initWithAddresses:self.tunnelSettingsIPv4.localAddresses subnetMasks:subnets];
+        ipSettings.includedRoutes = self.tunnelSettingsIPv4.includedRoutes;
+        ipSettings.excludedRoutes = self.tunnelSettingsIPv4.excludedRoutes;
         
         networkSettings.IPv4Settings = ipSettings;
     }
@@ -264,12 +264,12 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     // Configure DNS addresses and search domains
     NSMutableArray *dnsAddresses = [NSMutableArray new];
     
-    if (self.tunConfigurationIPv6.dnsAddresses.count > 0) {
-        [dnsAddresses addObjectsFromArray:self.tunConfigurationIPv6.dnsAddresses];
+    if (self.tunnelSettingsIPv6.dnsAddresses.count > 0) {
+        [dnsAddresses addObjectsFromArray:self.tunnelSettingsIPv6.dnsAddresses];
     }
     
-    if (self.tunConfigurationIPv4.dnsAddresses.count > 0) {
-        [dnsAddresses addObjectsFromArray:self.tunConfigurationIPv4.dnsAddresses];
+    if (self.tunnelSettingsIPv4.dnsAddresses.count > 0) {
+        [dnsAddresses addObjectsFromArray:self.tunnelSettingsIPv4.dnsAddresses];
     }
     
     if (dnsAddresses.count > 0) {
@@ -433,8 +433,8 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     dispatch_async(connectQueue, ^{
         OpenVPNClient::init_process();
         
-        self.tunConfigurationIPv6 = [TUNConfiguration new];
-        self.tunConfigurationIPv4 = [TUNConfiguration new];
+        self.tunnelSettingsIPv6 = [OpenVPNTunnelSettings new];
+        self.tunnelSettingsIPv4 = [OpenVPNTunnelSettings new];
         
         self.searchDomains = [NSMutableArray new];
         
@@ -459,8 +459,8 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         
         self.remoteAddress = nil;
         
-        self.tunConfigurationIPv6 = nil;
-        self.tunConfigurationIPv4 = nil;
+        self.tunnelSettingsIPv6 = nil;
+        self.tunnelSettingsIPv4 = nil;
         
         self.searchDomains = nil;
         

@@ -1,5 +1,5 @@
 //
-//  TUNConfiguration.h
+//  OpenVPNTunnelSettings.h
 //  OpenVPN iOS Client
 //
 //  Created by Sergey Abramchuk on 26.02.17.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface TUNConfiguration : NSObject
+@interface OpenVPNTunnelSettings : NSObject
 
 @property (nonatomic) BOOL initialized;
 
