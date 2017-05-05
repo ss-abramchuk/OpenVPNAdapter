@@ -15,9 +15,6 @@ extern NSString * __nonnull const OpenVPNAdapterErrorEventKey;
 
 /**
  <#Description#>
-
- - OpenVPNErrorConfigurationFailure: <#OpenVPNErrorConfigurationFailure description#>
- - OpenVPNErrorClientFailure: <#OpenVPNErrorClientFailure description#>
  */
 typedef NS_ENUM(NSUInteger, OpenVPNError) {
     OpenVPNErrorConfigurationFailure,
