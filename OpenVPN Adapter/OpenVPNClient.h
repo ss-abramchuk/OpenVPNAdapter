@@ -6,8 +6,8 @@
 //
 //
 
+#import <openvpn/tun/client/tunbase.hpp>
 #import <client/ovpncli.hpp>
-
 
 using namespace openvpn;
 
@@ -62,8 +62,8 @@ public:
     virtual void event(const ClientAPI::Event& ev) override;
     virtual void log(const ClientAPI::LogInfo& log) override;
     
-private:
-    std::string get_subnet(int prefix_length);
+    virtual void clock_tick() override;
     
-    void *adapter;
+private:
+    void* adapter;
 };

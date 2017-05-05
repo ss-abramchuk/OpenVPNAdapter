@@ -1,15 +1,21 @@
 //
-//  OpenVPNAdapter+Provider.h
-//  OpenVPN iOS Client
+//  OpenVPNAdapter+Public.h
+//  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 11.02.17.
 //
 //
 
 #import "OpenVPNEvent.h"
-
 #import "OpenVPNAdapter.h"
 
+@class OpenVPNConfiguration;
+@class OpenVPNProperties;
+@class OpenVPNCredentials;
+@class OpenVPNConnectionInfo;
+@class OpenVPNSessionToken;
+@class OpenVPNTransportStats;
+@class OpenVPNInterfaceStats;
 @class NEPacketTunnelNetworkSettings;
 
 // TODO: Add documentation to properties and methods
@@ -70,6 +76,8 @@ NS_SWIFT_NAME(handle(event:message:));
 - (void)handleError:(nonnull NSError *)error
 NS_SWIFT_NAME(handle(error:));
 
+@optional
+
 /**
  <#Description#>
 
@@ -78,22 +86,27 @@ NS_SWIFT_NAME(handle(error:));
 - (void)handleLog:(nonnull NSString *)logMessage
 NS_SWIFT_NAME(handle(logMessage:));
 
+/**
+ <#Description#>
+ */
+- (void)tick;
+
 @end
 
 /**
  <#Description#>
  */
-@interface OpenVPNAdapter (Provider)
+@interface OpenVPNAdapter (Public)
 
 /**
- <#Description#>
+ Return core copyright
  */
-@property (strong, nonatomic, nullable) NSString *username;
+@property (class, nonnull, readonly, nonatomic) NSString *copyright;
 
 /**
- <#Description#>
+ Return platform description
  */
-@property (strong, nonatomic, nullable) NSString *password;
+@property (class, nonnull, readonly, nonatomic) NSString *platform;
 
 /**
  <#Description#>
@@ -101,20 +114,74 @@ NS_SWIFT_NAME(handle(logMessage:));
 @property (weak, nonatomic, null_unspecified) id<OpenVPNAdapterDelegate> delegate;
 
 /**
+ Return information about the most recent connection. Will be available
+ after an event of type "OpenVPNEventConnected, otherwise return nil.
+ */
+@property (nullable, readonly, nonatomic) OpenVPNConnectionInfo *connectionInfo;
+
+/**
+ Return current session token or nil if session token is unavailable
+ */
+@property (nullable, readonly, nonatomic) OpenVPNSessionToken *sessionToken;
+
+/**
+ Return transport stats
+ */
+@property (nonnull, readonly, nonatomic) OpenVPNTransportStats *transportStats;
+
+/**
+ Return tun stats
+ */
+@property (nonnull, readonly, nonatomic) OpenVPNInterfaceStats *interfaceStats;
+
+/**
  <#Description#>
 
- @param settings <#settings description#>
+ @param configuration <#configuration description#>
  @param error <#error description#>
  @return <#return value description#>
  */
-- (BOOL)configureUsingSettings:(nonnull NSData *)settings
-            error:(out NSError * __nullable * __nullable)error
-NS_SWIFT_NAME(configure(using:));
+- (nullable OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration
+                     error:(out NSError * __nullable * __nullable)error
+NS_SWIFT_NAME(apply(configuration:));
+
+/**
+ <#Description#>
+
+ @param credentials <#credentials description#>
+ @param error <#error description#>
+ @return <#return value description#>
+ */
+- (BOOL)provideCredentials:(nonnull OpenVPNCredentials *)credentials
+                     error:(out NSError * __nullable * __nullable)error
+NS_SWIFT_NAME(provide(credentials:));
 
 /**
  Establish connection with the VPN server
  */
 - (void)connect;
+
+/**
+ Pause the client –- useful to avoid continuous reconnection attempts
+ when network is down
+
+ @param pauseReason <#reason description#>
+ */
+- (void)pauseWithReason:(nullable NSString *)pauseReason
+NS_SWIFT_NAME(pause(reason:));
+
+/**
+ Resume the client after it has been paused
+ */
+- (void)resume;
+
+/**
+ Do a disconnect/reconnect cycle after given amount of seconds from now
+
+ @param interval <#interval description#>
+ */
+- (void)reconnectAfterTimeInterval:(NSInteger)interval
+NS_SWIFT_NAME(reconnect(interval:));
 
 /**
  Close connection with the VPN server

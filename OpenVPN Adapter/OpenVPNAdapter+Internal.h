@@ -10,10 +10,9 @@
 
 #import "OpenVPNAdapter.h"
 
-
 using namespace openvpn;
 
-@interface OpenVPNAdapter (Client)
+@interface OpenVPNAdapter (Internal)
 
 - (BOOL)configureSockets;
 
@@ -34,5 +33,7 @@ using namespace openvpn;
 
 - (void)handleEvent:(const ClientAPI::Event *)event;
 - (void)handleLog:(const ClientAPI::LogInfo *)log;
+
+- (void)tick;
 
 @end

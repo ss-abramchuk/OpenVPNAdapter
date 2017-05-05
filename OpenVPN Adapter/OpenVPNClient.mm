@@ -6,14 +6,10 @@
 //
 //
 
-#import <sstream>
-
 #import <Foundation/Foundation.h>
 
 #import "OpenVPNAdapter+Internal.h"
-
 #import "OpenVPNClient.h"
-
 
 OpenVPNClient::OpenVPNClient(void *adapter) : ClientAPI::OpenVPNClient() {
     this->adapter = adapter;
@@ -49,7 +45,7 @@ bool OpenVPNClient::tun_builder_exclude_route(const std::string& address, int pr
     return [(__bridge OpenVPNAdapter *)adapter excludeRoute:route prefixLength:@(prefix_length) isIPv6:ipv6];
 }
 
-bool OpenVPNClient::tun_builder_add_dns_server(const std::string& address, bool ipv6) {    
+bool OpenVPNClient::tun_builder_add_dns_server(const std::string& address, bool ipv6) {
     NSString *dnsAddress = [NSString stringWithUTF8String:address.c_str()];
     return [(__bridge OpenVPNAdapter *)adapter addDNSAddress:dnsAddress isIPv6:ipv6];
 }
@@ -95,30 +91,29 @@ bool OpenVPNClient::tun_builder_persist() {
     return true;
 }
 
-void OpenVPNClient::tun_builder_establish_lite() {
-    
-}
+void OpenVPNClient::tun_builder_establish_lite() { }
 
-void OpenVPNClient::tun_builder_teardown(bool disconnect) {
-    
-}
+void OpenVPNClient::tun_builder_teardown(bool disconnect) { }
 
 bool OpenVPNClient::socket_protect(int socket) {
     return true;
 }
 
-// TODO: Provide interfacing with an OS-layer Keychain
-void OpenVPNClient::external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) { }
-void OpenVPNClient::external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) { }
-
 bool OpenVPNClient::pause_on_connection_timeout() {
     return false;
 }
 
+void OpenVPNClient::external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) { }
+void OpenVPNClient::external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) { }
+
 void OpenVPNClient::event(const ClientAPI::Event& ev) {
-    [(__bridge OpenVPNAdapter *)adapter handleEvent:&ev];
+    [(__bridge OpenVPNAdapter* )adapter handleEvent:&ev];
 }
 
 void OpenVPNClient::log(const ClientAPI::LogInfo& log) {
-    [(__bridge OpenVPNAdapter *)adapter handleLog:&log];
+    [(__bridge OpenVPNAdapter* )adapter handleLog:&log];
+}
+
+void OpenVPNClient::clock_tick() {
+    [(__bridge OpenVPNAdapter* )adapter tick];
 }
