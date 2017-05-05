@@ -9,6 +9,8 @@
 import XCTest
 @testable import OpenVPNAdapter
 
+// TODO: Test getting/setting of all properties of OpenVPNConfiguration
+
 class OpenVPNConfigurationTests: XCTestCase {
     
     override func setUp() {
@@ -22,7 +24,7 @@ class OpenVPNConfigurationTests: XCTestCase {
     }
     
     func testGetSetProfile() {
-        let originalProfile = ProfileLoader.getVPNProfile(type: .localKeyAuthentication)
+        let originalProfile = ProfileLoader.getVPNProfile(type: .localVPNServer)
         
         let configuration = OpenVPNConfiguration()
         
@@ -80,8 +82,25 @@ class OpenVPNConfigurationTests: XCTestCase {
         XCTAssert(configuration.settings == nil, "Empty settings should return nil")
     }
     
-    func testGetSetIPv6() {
-        let originalOption: IPv6Preference = .enabled
+    func testGetSetProto() {
+        let originalOption: OpenVPNTransportProtocol = .UDP
+        
+        let configuration = OpenVPNConfiguration()
+        
+        guard configuration.proto == .default else {
+            XCTFail("proto option should return default value")
+            return
+        }
+        
+        configuration.proto = originalOption
+        guard configuration.proto == originalOption else {
+            XCTFail("proto option should be equal to original value (enabled)")
+            return
+        }
+    }
+    
+    func testGetSetIPv6() {  
+        let originalOption: OpenVPNIPv6Preference = .enabled
         
         let configuration = OpenVPNConfiguration()
         
@@ -90,9 +109,26 @@ class OpenVPNConfigurationTests: XCTestCase {
             return
         }
         
-        configuration.ipv6 = originalOption        
+        configuration.ipv6 = originalOption
         guard configuration.ipv6 == originalOption else {
             XCTFail("IPv6 option should be equal to original value (enabled)")
+            return
+        }
+    }
+    
+    func testGetSetTLSCertProfile() {
+        let originalOption: OpenVPNTLSCertProfile = .preferred
+        
+        let configuration = OpenVPNConfiguration()
+        
+        guard configuration.tlsCertProfile == .default else {
+            XCTFail("TLS Cert Profile option should return default value")
+            return
+        }
+        
+        configuration.tlsCertProfile = originalOption
+        guard configuration.tlsCertProfile == originalOption else {
+            XCTFail("TLS Cert Profile option should be equal to original value (preferred)")
             return
         }
     }
