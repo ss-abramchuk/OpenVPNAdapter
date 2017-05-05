@@ -536,7 +536,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             
             NSMutableData *packet = [NSMutableData new];
             [packet appendBytes:&prefix length:sizeof(prefix)];
-            [packet appendData:packet];
+            [packet appendData:data];
             
             // Send data to the VPN server
             CFSocketSendData(self.vpnSocket, NULL, (CFDataRef)packet, 0.05);
