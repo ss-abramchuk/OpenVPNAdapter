@@ -26,9 +26,29 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C9D2ABF21EA212A3007EDF9D"
+               BuildableName = "OpenVPN Adapter macOS Tests.xctest"
+               BlueprintName = "OpenVPN Adapter macOS Tests"
+               ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C9D2ABD81EA20F99007EDF9D"
+            BuildableName = "OpenVPNAdapter.framework"
+            BlueprintName = "OpenVPN Adapter macOS"
+            ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
