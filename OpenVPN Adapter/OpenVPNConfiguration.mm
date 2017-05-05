@@ -74,7 +74,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     };
     
     NSString *value = options[@(protocol)];
-    NSAssert(value != nil, @"Incorrect protocol value: %li", (NSInteger)protocol);
+    NSAssert(value != nil, @"Incorrect protocol value: %li", (long)protocol);
     
     return value;
 }
@@ -102,7 +102,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     };
     
     NSString *value = options[@(preference)];
-    NSAssert(value != nil, @"Incorrect ipv6 value: %li", (NSInteger)preference);
+    NSAssert(value != nil, @"Incorrect ipv6 value: %li", (long)preference);
     
     return value;
 }
@@ -132,7 +132,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     };
     
     NSString *value = options[@(compressionMode)];
-    NSAssert(value != nil, @"Incorrect compressionMode value: %li", (NSInteger)compressionMode);
+    NSAssert(value != nil, @"Incorrect compressionMode value: %li", (long)compressionMode);
     
     return value;
 }
@@ -164,7 +164,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     };
     
     NSString *value = options[@(minTLS)];
-    NSAssert(value != nil, @"Incorrect minTLS value: %li", (NSInteger)minTLS);
+    NSAssert(value != nil, @"Incorrect minTLS value: %li", (long)minTLS);
     
     return value;
 }
@@ -198,7 +198,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     };
     
     NSString *value = options[@(tlsCertProfile)];
-    NSAssert(value != nil, @"Incorrect tlsCertProfile value: %li", (NSInteger)tlsCertProfile);
+    NSAssert(value != nil, @"Incorrect tlsCertProfile value: %li", (long)tlsCertProfile);
     
     return value;
 }
