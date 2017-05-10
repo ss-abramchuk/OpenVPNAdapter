@@ -40,7 +40,7 @@ using namespace openvpn;
         
         _remotePort = port;
         
-        NSString *currentProto = [NSString stringWithUTF8String:eval.remoteProto.c_str()];
+        NSString *currentProto = [[[NSString stringWithUTF8String:eval.remoteProto.c_str()] componentsSeparatedByString:@"-"] firstObject];
         _remoteProto = [OpenVPNConfiguration getTransportProtocolFromValue:currentProto];
         
         _servers = nil;
