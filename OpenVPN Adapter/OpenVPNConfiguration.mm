@@ -57,7 +57,8 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
         OpenVPNTransportProtocolDefaultValue: @(OpenVPNTransportProtocolDefault)
     };
     
-    NSString *currentValue = [value length] == 0 ? OpenVPNTransportProtocolDefaultValue : value;
+    NSString *currentValue = [value length] == 0 ? OpenVPNTransportProtocolDefaultValue :
+        [[value componentsSeparatedByString:@"-"] firstObject];
     
     NSNumber *transportProtocol = options[currentValue];
     NSAssert(transportProtocol != nil, @"Incorrect protocol value: %@", currentValue);

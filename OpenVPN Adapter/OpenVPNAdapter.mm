@@ -88,6 +88,11 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         return NO;
     }
     
+    if (![self configureBufferSizeForSocket: sockets[0]] || ![self configureBufferSizeForSocket: sockets[1]]) {
+        NSLog(@"Failed to configure buffer size of the sockets");
+        return NO;
+    }
+    
     CFSocketContext socketCtxt = {0, (__bridge void *)self, NULL, NULL, NULL};
     
     self.vpnSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, &socketCallback, &socketCtxt);
@@ -102,6 +107,23 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     CFRunLoopAddSource(CFRunLoopGetMain(), tunSocketSource, kCFRunLoopDefaultMode);
     
     CFRelease(tunSocketSource);
+    
+    return YES;
+}
+
+- (BOOL)configureBufferSizeForSocket:(int)socket {
+    int buf_value = 65536;
+    socklen_t buf_len = sizeof(buf_value);
+    
+    if (setsockopt(socket, SOL_SOCKET, SO_RCVBUF, &buf_value, buf_len) == -1) {
+        NSLog(@"Failed to setup buffer size for input: %@", [NSString stringWithUTF8String:strerror(errno)]);
+        return NO;
+    }
+    
+    if (setsockopt(socket, SOL_SOCKET, SO_SNDBUF, &buf_value, buf_len) == -1) {
+        NSLog(@"Failed to setup buffer size for output: %@", [NSString stringWithUTF8String:strerror(errno)]);
+        return NO;
+    }
     
     return YES;
 }
