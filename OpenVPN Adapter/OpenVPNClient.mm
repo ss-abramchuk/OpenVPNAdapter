@@ -26,7 +26,7 @@ bool OpenVPNClient::tun_builder_set_remote_address(const std::string &address, b
 
 bool OpenVPNClient::tun_builder_add_address(const std::string &address, int prefix_length, const std::string &gateway, bool ipv6, bool net30) {
     NSString *localAddress = [NSString stringWithUTF8String:address.c_str()];
-    NSString *gatewayAddress = [NSString stringWithUTF8String:gateway.c_str()];
+    NSString *gatewayAddress = !gateway.empty() && gateway.compare("UNSPEC") != 0 ? [NSString stringWithUTF8String:gateway.c_str()] : nil;
     
     return [(__bridge OpenVPNAdapter *)adapter addLocalAddress:localAddress prefixLength:@(prefix_length) gateway:gatewayAddress isIPv6:ipv6];
 }
