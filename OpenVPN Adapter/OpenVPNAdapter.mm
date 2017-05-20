@@ -145,12 +145,14 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         return NO;
     }
     
+    NSString *defaultGateway = [gateway length] == 0 || [gateway isEqualToString:@"UNSPEC"] ? nil : gateway;
+    
     if (isIPv6) {
         if (!self.tunnelSettingsIPv6.initialized) {
             self.tunnelSettingsIPv6.initialized = YES;
         }
         
-        self.defaultGatewayIPv6 = gateway;
+        self.defaultGatewayIPv6 = defaultGateway
         
         [self.tunnelSettingsIPv6.localAddresses addObject:address];
         [self.tunnelSettingsIPv6.prefixLengths addObject:prefixLength];
@@ -159,7 +161,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             self.tunnelSettingsIPv4.initialized = YES;
         }
         
-        self.defaultGatewayIPv4 = gateway;
+        self.defaultGatewayIPv4 = defaultGateway;
         
         [self.tunnelSettingsIPv4.localAddresses addObject:address];
         [self.tunnelSettingsIPv4.prefixLengths addObject:prefixLength];
