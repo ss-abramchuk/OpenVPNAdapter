@@ -152,7 +152,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             self.tunnelSettingsIPv6.initialized = YES;
         }
         
-        self.defaultGatewayIPv6 = defaultGateway
+        self.defaultGatewayIPv6 = defaultGateway;
         
         [self.tunnelSettingsIPv6.localAddresses addObject:address];
         [self.tunnelSettingsIPv6.prefixLengths addObject:prefixLength];
