@@ -1,8 +1,6 @@
 SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx
 TARGETED_DEVICE_FAMILY = 1,2
 
-ENABLE_BITCODE = NO
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 // iOS-specific settings
