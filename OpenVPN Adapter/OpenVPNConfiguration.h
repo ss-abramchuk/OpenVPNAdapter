@@ -64,7 +64,7 @@
 @property (nonatomic) BOOL tunPersist;
 
 /**
- If true and a redirect-gateway profile doesn't also define
+ If YES and a redirect-gateway profile doesn't also define
  DNS servers, use the standard Google DNS servers.
  */
 @property (nonatomic) BOOL googleDNSFallback;
