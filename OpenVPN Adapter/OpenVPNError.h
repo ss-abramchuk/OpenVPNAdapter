@@ -11,7 +11,7 @@
 extern NSString * __nonnull const OpenVPNAdapterErrorDomain;
 
 extern NSString * __nonnull const OpenVPNAdapterErrorFatalKey;
-extern NSString * __nonnull const OpenVPNAdapterErrorEventKey;
+extern NSString * __nonnull const OpenVPNAdapterErrorEventIdentifierKey;
 
 /**
  <#Description#>
