@@ -627,21 +627,21 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 - (NSString *)getDescriptionForErrorEvent:(OpenVPNEvent)event {
     switch (event) {
-        case OpenVPNEventTransportError: return @"General transport error";
-        case OpenVPNEventTunError: return @"General tun error";
-        case OpenVPNEventClientRestart: return @"RESTART message from server received";
-        case OpenVPNEventAuthFailed: return @"General authentication failure";
-        case OpenVPNEventCertVerifyFail: return @"Peer certificate verification failure";
-        case OpenVPNEventTLSVersionMin: return @"Peer cannot handshake at our minimum required TLS version";
-        case OpenVPNEventClientHalt: return @"HALT message from server received";
-        case OpenVPNEventConnectionTimeout: return @"Connection failed to establish within given time";
-        case OpenVPNEventInactiveTimeout: return @"Disconnected due to inactive timer";
-        case OpenVPNEventProxyNeedCreds: return @"HTTP proxy needs credentials";
-        case OpenVPNEventProxyError: return @"HTTP proxy error";
-        case OpenVPNEventTunSetupFailed: return @"Error setting up TUN interface";
-        case OpenVPNEventTunIfaceCreate: return @"Error creating TUN interface";
-        case OpenVPNEventTunIfaceDisabled: return @"TUN interface is disabled";
-        case OpenVPNEventRelayError: return @"RELAY error";
+        case OpenVPNEventTransportError: return @"General transport error.";
+        case OpenVPNEventTunError: return @"General tun error.";
+        case OpenVPNEventClientRestart: return @"RESTART message from server received.";
+        case OpenVPNEventAuthFailed: return @"General authentication failure.";
+        case OpenVPNEventCertVerifyFail: return @"Peer certificate verification failure.";
+        case OpenVPNEventTLSVersionMin: return @"Peer cannot handshake at our minimum required TLS version.";
+        case OpenVPNEventClientHalt: return @"HALT message from server received.";
+        case OpenVPNEventConnectionTimeout: return @"Connection failed to establish within given time.";
+        case OpenVPNEventInactiveTimeout: return @"Disconnected due to inactive timer.";
+        case OpenVPNEventProxyNeedCreds: return @"HTTP proxy needs credentials.";
+        case OpenVPNEventProxyError: return @"HTTP proxy error.";
+        case OpenVPNEventTunSetupFailed: return @"Error setting up TUN interface.";
+        case OpenVPNEventTunIfaceCreate: return @"Error creating TUN interface.";
+        case OpenVPNEventTunIfaceDisabled: return @"TUN interface is disabled.";
+        case OpenVPNEventRelayError: return @"RELAY error.";
             
         default: return nil;
     }
