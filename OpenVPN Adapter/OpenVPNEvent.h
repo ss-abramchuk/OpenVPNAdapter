@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, OpenVPNEvent) {
     OpenVPNEventInfo,
     OpenVPNEventPause,
     OpenVPNEventResume,
+    OpenVPNEventRelay,
     OpenVPNEventTransportError,
     OpenVPNEventTunError,
     OpenVPNEventClientRestart,
@@ -43,6 +44,7 @@ typedef NS_ENUM(NSUInteger, OpenVPNEvent) {
     OpenVPNEventTunIfaceDisabled,
     OpenVPNEventEPKIError,
     OpenVPNEventEPKIInvalidAlias,
+    OpenVPNEventRelayError,
     OpenVPNEventInitializationFailed,
     OpenVPNEventConnectionFailed,
     OpenVPNEventUnknown
