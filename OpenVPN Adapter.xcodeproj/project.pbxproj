@@ -315,7 +315,7 @@
 			name = "Stats and Info";
 			sourceTree = "<group>";
 		};
-		C9235AC61EB24F2A00C7D303 /* Enums and Constants */ = {
+		C9235AC61EB24F2A00C7D303 /* Types and Constants */ = {
 			isa = PBXGroup;
 			children = (
 				C9BB476F1E7171A100F3F98C /* OpenVPNError.h */,
@@ -327,7 +327,7 @@
 				C9657A661EB0D73200EFF210 /* OpenVPNMinTLSVersion.h */,
 				C9657A691EB0D75700EFF210 /* OpenVPNTLSCertProfile.h */,
 			);
-			name = "Enums and Constants";
+			name = "Types and Constants";
 			sourceTree = "<group>";
 		};
 		C9B376B71EA53CE700B7F423 /* Client */ = {
@@ -452,7 +452,7 @@
 		C9FF73B71EB7421600E995AC /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				C9235AC61EB24F2A00C7D303 /* Enums and Constants */,
+				C9235AC61EB24F2A00C7D303 /* Types and Constants */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
