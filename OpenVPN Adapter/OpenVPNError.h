@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString * __nonnull const OpenVPNAdapterErrorDomain;
+FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorDomain;
 
-extern NSString * __nonnull const OpenVPNAdapterErrorFatalKey;
-extern NSString * __nonnull const OpenVPNAdapterErrorEventIdentifierKey;
+FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorFatalKey;
+FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorEventIdentifierKey;
 
 /**
  <#Description#>
