@@ -593,10 +593,11 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         return;
     }
     
-    uint32_t protocol = UINT32_MAX;
-    [data getBytes:&protocol length:prefixSize];
-
-    protocol = CFSwapInt32BigToHost(protocol);
+    uint32_t version = UINT32_MAX;
+    [data getBytes:&version length:prefixSize];
+    version = CFSwapInt32BigToHost(version);
+    
+    uint8_t protocol = [self getProtocolFamily:version];
     
     NSData *packet = [data subdataWithRange:NSMakeRange(prefixSize, data.length - prefixSize)];
 #else
@@ -604,7 +605,10 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     uint8_t header = 0;
     [data getBytes:&header length:1];
     
-    uint32_t protocol = openvpn::IPHeader::version(header);
+    uint32_t version = openvpn::IPHeader::version(header);
+    
+    uint8_t protocol = [self getProtocolFamily:version];
+    
     NSData *packet = data;
 #endif
     
@@ -684,6 +688,14 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return [NSString stringWithUTF8String:subnet.c_str()];
 }
 
+- (uint8_t)getProtocolFamily:(uint32_t)version {
+    switch (version) {
+        case 4: return PF_INET;
+        case 6: return PF_INET6;
+        default: return PF_UNSPEC;
+    }
+}
+    
 - (void)performAsyncBlock:(void (^)())block {
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
     dispatch_async(mainQueue, block);
