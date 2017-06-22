@@ -599,7 +599,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     protocol = CFSwapInt32BigToHost(protocol);
     
     NSData *packet = [data subdataWithRange:NSMakeRange(prefixSize, data.length - prefixSize)];
-#elif TARGET_OS_MAC
+#else
     // Get network protocol from header
     uint8_t header = 0;
     [data getBytes:&header length:1];
