@@ -560,12 +560,16 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (void)readTUNPackets {
     [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols) {
         [packets enumerateObjectsUsingBlock:^(NSData * data, NSUInteger idx, BOOL * stop) {
-            // Prepend data with network protocol. It should be done because OpenVPN uses uint32_t prefixes containing network protocol.
+            NSMutableData *packet = [NSMutableData new];
+            
+#if TARGET_OS_IPHONE
+            // Prepend data with network protocol. It should be done because OpenVPN on iOS uses uint32_t prefixes containing network protocol.
             NSNumber *protocol = protocols[idx];
             uint32_t prefix = CFSwapInt32HostToBig((uint32_t)[protocol unsignedIntegerValue]);
             
-            NSMutableData *packet = [NSMutableData new];
             [packet appendBytes:&prefix length:sizeof(prefix)];
+#endif
+            
             [packet appendData:data];
             
             // Send data to the VPN server
