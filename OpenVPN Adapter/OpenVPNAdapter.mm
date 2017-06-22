@@ -14,6 +14,7 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
+#import <openvpn/ip/ip.hpp>
 #import <openvpn/addr/ipv4.hpp>
 
 #import "OpenVPNTunnelSettings.h"
@@ -583,7 +584,8 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark OpenVPN -> TUN
 
 - (void)readVPNData:(NSData *)data {
-    // Get network protocol from data
+#if TARGET_OS_IPHONE
+    // Get network protocol from prefix
     NSUInteger prefixSize = sizeof(uint32_t);
     
     if (data.length < prefixSize) {
@@ -593,11 +595,20 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     uint32_t protocol = UINT32_MAX;
     [data getBytes:&protocol length:prefixSize];
-    
+
     protocol = CFSwapInt32BigToHost(protocol);
     
-    // Send the packet to the TUN interface
     NSData *packet = [data subdataWithRange:NSMakeRange(prefixSize, data.length - prefixSize)];
+#elif TARGET_OS_MAC
+    // Get network protocol from header
+    uint8_t header = 0;
+    [data getBytes:&header length:1];
+    
+    uint32_t protocol = openvpn::IPHeader::version(header);
+    NSData *packet = data;
+#endif
+    
+    // Send the packet to the TUN interface
     if (![self.packetFlow writePackets:@[packet] withProtocols:@[@(protocol)]]) {
         NSLog(@"Failed to send OpenVPN packet to the TUN interface");
     }
