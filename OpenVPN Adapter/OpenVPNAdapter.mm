@@ -14,6 +14,7 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
+#import <openvpn/ip/ip.hpp>
 #import <openvpn/addr/ipv4.hpp>
 
 #import "OpenVPNTunnelSettings.h"
@@ -560,12 +561,16 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (void)readTUNPackets {
     [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols) {
         [packets enumerateObjectsUsingBlock:^(NSData * data, NSUInteger idx, BOOL * stop) {
-            // Prepend data with network protocol. It should be done because OpenVPN uses uint32_t prefixes containing network protocol.
+            NSMutableData *packet = [NSMutableData new];
+            
+#if TARGET_OS_IPHONE
+            // Prepend data with network protocol. It should be done because OpenVPN on iOS uses uint32_t prefixes containing network protocol.
             NSNumber *protocol = protocols[idx];
             uint32_t prefix = CFSwapInt32HostToBig((uint32_t)[protocol unsignedIntegerValue]);
             
-            NSMutableData *packet = [NSMutableData new];
             [packet appendBytes:&prefix length:sizeof(prefix)];
+#endif
+            
             [packet appendData:data];
             
             // Send data to the VPN server
@@ -579,7 +584,8 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark OpenVPN -> TUN
 
 - (void)readVPNData:(NSData *)data {
-    // Get network protocol from data
+#if TARGET_OS_IPHONE
+    // Get network protocol from prefix
     NSUInteger prefixSize = sizeof(uint32_t);
     
     if (data.length < prefixSize) {
@@ -587,13 +593,26 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         return;
     }
     
-    uint32_t protocol = UINT32_MAX;
-    [data getBytes:&protocol length:prefixSize];
+    uint32_t version = UINT32_MAX;
+    [data getBytes:&version length:prefixSize];
+    version = CFSwapInt32BigToHost(version);
     
-    protocol = CFSwapInt32BigToHost(protocol);
+    uint8_t protocol = [self getProtocolFamily:version];
+    
+    NSData *packet = [data subdataWithRange:NSMakeRange(prefixSize, data.length - prefixSize)];
+#else
+    // Get network protocol from header
+    uint8_t header = 0;
+    [data getBytes:&header length:1];
+    
+    uint32_t version = openvpn::IPHeader::version(header);
+    
+    uint8_t protocol = [self getProtocolFamily:version];
+    
+    NSData *packet = data;
+#endif
     
     // Send the packet to the TUN interface
-    NSData *packet = [data subdataWithRange:NSMakeRange(prefixSize, data.length - prefixSize)];
     if (![self.packetFlow writePackets:@[packet] withProtocols:@[@(protocol)]]) {
         NSLog(@"Failed to send OpenVPN packet to the TUN interface");
     }
@@ -669,6 +688,14 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return [NSString stringWithUTF8String:subnet.c_str()];
 }
 
+- (uint8_t)getProtocolFamily:(uint32_t)version {
+    switch (version) {
+        case 4: return PF_INET;
+        case 6: return PF_INET6;
+        default: return PF_UNSPEC;
+    }
+}
+    
 - (void)performAsyncBlock:(void (^)())block {
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
     dispatch_async(mainQueue, block);
