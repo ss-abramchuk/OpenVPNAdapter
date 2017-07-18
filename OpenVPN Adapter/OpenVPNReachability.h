@@ -12,8 +12,9 @@
 @interface OpenVPNReachability : NSObject
 
 @property (readonly, nonatomic) OpenVPNReachabilityStatus reachabilityStatus;
+@property (copy, nonatomic) void (^ _Nullable reachabilityStatusChangedBlock)(OpenVPNReachabilityStatus reachabilityStatus);
 
-- (nonnull instancetype)initWatchingWWAN:(BOOL)watchWWAN watchingWiFi:(BOOL)watchWiFi;
+- (nonnull instancetype)init;
 
 - (void)startTracking;
 - (void)stopTracking;

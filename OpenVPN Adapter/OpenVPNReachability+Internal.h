@@ -11,8 +11,6 @@
 
 @interface OpenVPNReachability (Internal)
 
-@property OpenVPNReachabilityTracker *reachabilityTracker;
-
 - (void)updateReachabilityStatus:(OpenVPNReachabilityStatus)status;
 
 @end
