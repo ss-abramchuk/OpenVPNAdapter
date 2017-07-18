@@ -43,11 +43,17 @@
 }
 
 - (void)startTracking {
-    self.reachabilityTracker->reachability_tracker_schedule();
+    dispatch_queue_t main = dispatch_get_main_queue();
+    dispatch_sync(main, ^{
+        self.reachabilityTracker->reachability_tracker_schedule();
+    });
 }
 
 - (void)stopTracking {
-    self.reachabilityTracker->reachability_tracker_cancel();
+    dispatch_queue_t main = dispatch_get_main_queue();
+    dispatch_sync(main, ^{
+        self.reachabilityTracker->reachability_tracker_cancel();
+    });
 }
 
 - (void)dealloc {
