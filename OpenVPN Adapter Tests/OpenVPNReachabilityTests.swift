@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import CoreWLAN
 @testable import OpenVPNAdapter
 
 class OpenVPNReachabilityTests: XCTestCase {
@@ -22,16 +23,32 @@ class OpenVPNReachabilityTests: XCTestCase {
     }
     
     func testReachability() {
+        let wifiClient = CWWiFiClient.shared()
+        guard let interface = wifiClient.interface() else {
+            XCTFail()
+            return
+        }
+        
         let reachabilityExpectation = expectation(description: "me.ss-abramchuk.openvpn-adapter.reachability")
         
         let reachability = OpenVPNReachability()
         reachability.reachabilityStatusChangedBlock = { status in
-            print("Current Status: \(status.rawValue)")
+            if case OpenVPNReachabilityStatus.reachableViaWiFi = status {
+                reachabilityExpectation.fulfill()
+            }
         }
         
         reachability.startTracking()
         
-        waitForExpectations(timeout: 120.0, handler: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now()) { 
+            try? interface.setPower(false)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            try? interface.setPower(true)
+        }
+        
+        waitForExpectations(timeout: 30.0, handler: nil)
     }
     
 }
