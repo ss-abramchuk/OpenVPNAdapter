@@ -52,7 +52,7 @@
 
 - (void)startTracking {
     dispatch_queue_t main = dispatch_get_main_queue();
-    dispatch_sync(main, ^{
+    dispatch_async(main, ^{
         self.reachabilityTracker->reachability_tracker_schedule();
     });
     _isTracking = YES;
@@ -60,7 +60,7 @@
 
 - (void)stopTracking {
     dispatch_queue_t main = dispatch_get_main_queue();
-    dispatch_sync(main, ^{
+    dispatch_async(main, ^{
         self.reachabilityTracker->reachability_tracker_cancel();
     });
     _isTracking = NO;
