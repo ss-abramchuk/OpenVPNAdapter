@@ -10,6 +10,7 @@
 #import "OpenVPNReachability+Internal.h"
 
 @interface OpenVPNReachability () {
+    BOOL _isTracking;
     OpenVPNReachabilityStatus _reachabilityStatus;
 }
 
@@ -30,6 +31,10 @@
 
 @implementation OpenVPNReachability
 
+- (BOOL)isTracking {
+    return _isTracking;
+}
+
 - (OpenVPNReachabilityStatus)reachabilityStatus {
     return _reachabilityStatus;
 }
@@ -37,6 +42,9 @@
 - (nonnull instancetype)init {
     self = [super init];
     if (self) {
+        _isTracking = NO;
+        _reachabilityStatus = OpenVPNReachabilityStatusNotReachable;
+        
         self.reachabilityTracker = new OpenVPNReachabilityTracker(true, false, (__bridge void *)self);
     }
     return self;
@@ -47,6 +55,7 @@
     dispatch_sync(main, ^{
         self.reachabilityTracker->reachability_tracker_schedule();
     });
+    _isTracking = YES;
 }
 
 - (void)stopTracking {
@@ -54,6 +63,7 @@
     dispatch_sync(main, ^{
         self.reachabilityTracker->reachability_tracker_cancel();
     });
+    _isTracking = NO;
 }
 
 - (void)dealloc {

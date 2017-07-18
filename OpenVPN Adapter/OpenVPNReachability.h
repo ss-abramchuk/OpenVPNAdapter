@@ -11,6 +11,7 @@
 
 @interface OpenVPNReachability : NSObject
 
+@property (readonly, nonatomic) BOOL isTracking;
 @property (readonly, nonatomic) OpenVPNReachabilityStatus reachabilityStatus;
 @property (copy, nonatomic) void (^ _Nullable reachabilityStatusChangedBlock)(OpenVPNReachabilityStatus reachabilityStatus);
 
