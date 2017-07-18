@@ -36,7 +36,7 @@
     __weak id<OpenVPNAdapterDelegate> _delegate;
 }
 
-@property OpenVPNClient *vpnClient;
+@property (assign, nonatomic) OpenVPNClient *vpnClient;
 
 @property CFSocketRef vpnSocket;
 @property CFSocketRef tunSocket;
