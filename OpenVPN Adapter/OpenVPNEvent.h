@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 
 /**
- <#Description#>
+ OpenVPN event codes
  */
-typedef NS_ENUM(NSUInteger, OpenVPNEvent) {
+typedef NS_ENUM(NSInteger, OpenVPNEvent) {
     OpenVPNEventDisconnected,
     OpenVPNEventConnected,
     OpenVPNEventReconnecting,
@@ -27,25 +27,5 @@ typedef NS_ENUM(NSUInteger, OpenVPNEvent) {
     OpenVPNEventPause,
     OpenVPNEventResume,
     OpenVPNEventRelay,
-    OpenVPNEventTransportError,
-    OpenVPNEventTunError,
-    OpenVPNEventClientRestart,
-    OpenVPNEventAuthFailed,
-    OpenVPNEventCertVerifyFail,
-    OpenVPNEventTLSVersionMin,
-    OpenVPNEventClientHalt,
-    OpenVPNEventConnectionTimeout,
-    OpenVPNEventInactiveTimeout,
-    OpenVPNEventDynamicChallenge,
-    OpenVPNEventProxyNeedCreds,
-    OpenVPNEventProxyError,
-    OpenVPNEventTunSetupFailed,
-    OpenVPNEventTunIfaceCreate,
-    OpenVPNEventTunIfaceDisabled,
-    OpenVPNEventEPKIError,
-    OpenVPNEventEPKIInvalidAlias,
-    OpenVPNEventRelayError,
-    OpenVPNEventInitializationFailed,
-    OpenVPNEventConnectionFailed,
     OpenVPNEventUnknown
 };
