@@ -343,19 +343,15 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     if (event->error) {
         OpenVPNError errorCode = [self errorByName:name];
+        NSString *errorReason = [self reasonForError:errorCode];
         
         NSMutableDictionary *userInfo = [NSMutableDictionary new];
         
         [userInfo setObject:@"OpenVPN error occured." forKey:NSLocalizedDescriptionKey];
         [userInfo setObject:@(event->fatal) forKey:OpenVPNAdapterErrorFatalKey];
-        
-        NSString *errorReason = [self reasonForError:errorCode];
         [userInfo setObject:errorReason != nil ? errorReason : @"See error message." forKey:NSLocalizedFailureReasonErrorKey];
         [userInfo setObject:errorReason != nil ? @(YES) : @(NO) forKey:OpenVPNAdapterErrorContainsReasonKey];
-        
-        if (message != nil && ![message isEqualToString:@""]) {
-            [userInfo setObject:message forKey:OpenVPNAdapterErrorMessageKey];
-        }
+        [userInfo setObject:message != nil ? message : @"" forKey:OpenVPNAdapterErrorMessageKey];
         
         NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
                                              code:errorCode
