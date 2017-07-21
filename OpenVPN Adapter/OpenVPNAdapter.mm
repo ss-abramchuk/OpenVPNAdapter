@@ -345,17 +345,12 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         OpenVPNError errorCode = [self errorByName:name];
         NSString *errorReason = [self reasonForError:errorCode];
         
-        NSMutableDictionary *userInfo = [NSMutableDictionary new];
-        
-        [userInfo setObject:@"OpenVPN error occured." forKey:NSLocalizedDescriptionKey];
-        [userInfo setObject:@(event->fatal) forKey:OpenVPNAdapterErrorFatalKey];
-        [userInfo setObject:errorReason != nil ? errorReason : @"See error message." forKey:NSLocalizedFailureReasonErrorKey];
-        [userInfo setObject:errorReason != nil ? @(YES) : @(NO) forKey:OpenVPNAdapterErrorContainsReasonKey];
-        [userInfo setObject:message != nil ? message : @"" forKey:OpenVPNAdapterErrorMessageKey];
-        
         NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
                                              code:errorCode
-                                         userInfo:[userInfo copy]];
+                                         userInfo:@{ NSLocalizedDescriptionKey: @"OpenVPN error occured.",
+                                                     NSLocalizedFailureReasonErrorKey: errorReason,
+                                                     OpenVPNAdapterErrorMessageKey: message != nil ? message : @"",
+                                                     OpenVPNAdapterErrorFatalKey: @(event->fatal) }];
         
         [self performAsyncBlock:^{
             [self.delegate handleError:error];
@@ -442,10 +437,11 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration error:(out NSError * __nullable * __nullable)error {
     ClientAPI::EvalConfig eval = self.vpnClient->eval_config(configuration.config);
     if (eval.error) {
+        NSString *errorReason = [self reasonForError:OpenVPNErrorConfigurationFailure];
+        
         if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
             NSLocalizedDescriptionKey: @"Failed to apply OpenVPN configuration.",
-            NSLocalizedFailureReasonErrorKey: @"See error message.",
-            OpenVPNAdapterErrorContainsReasonKey: @(NO),
+            NSLocalizedFailureReasonErrorKey: errorReason,
             OpenVPNAdapterErrorMessageKey: [NSString stringWithUTF8String:eval.message.c_str()],
             OpenVPNAdapterErrorFatalKey: @(YES)
         }];
@@ -464,8 +460,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             
             *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:@{
                 NSLocalizedDescriptionKey: @"Failed to provide OpenVPN credentials.",
-                NSLocalizedFailureReasonErrorKey: errorReason != nil ? errorReason : @"See error message.",
-                OpenVPNAdapterErrorContainsReasonKey: errorReason != nil ? @(YES) : @(NO),
+                NSLocalizedFailureReasonErrorKey: errorReason,
                 OpenVPNAdapterErrorMessageKey: [NSString stringWithUTF8String:status.message.c_str()],
                 OpenVPNAdapterErrorFatalKey: @(YES)
             }];
@@ -496,8 +491,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
                                                  code:errorCode
                                              userInfo:@{ NSLocalizedDescriptionKey: @"Failed to establish connection with OpenVPN server.",
-                                                         NSLocalizedFailureReasonErrorKey: errorReason != nil ? errorReason : @"See error message.",
-                                                         OpenVPNAdapterErrorContainsReasonKey: errorReason != nil ? @(YES) : @(NO),
+                                                         NSLocalizedFailureReasonErrorKey: errorReason,
                                                          OpenVPNAdapterErrorMessageKey: [NSString stringWithUTF8String:status.message.c_str()],
                                                          OpenVPNAdapterErrorFatalKey: @(YES) }];
             [self performAsyncBlock:^{
@@ -723,11 +717,13 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     OpenVPNError error = errors[errorName] != nil ? (OpenVPNError)[errors[errorName] integerValue] : OpenVPNErrorUnknown;
     return error;
-
 }
 
 - (NSString *)reasonForError:(OpenVPNError)error {
+    // TODO: Add missing error reasons
     switch (error) {
+        case OpenVPNErrorConfigurationFailure: return @"See OpenVPN error message for more details.";
+        case OpenVPNErrorCredentialsFailure: return @"See OpenVPN error message for more details.";
         case OpenVPNErrorNetworkRecvError: return @"Errors receiving on network socket.";
         case OpenVPNErrorNetworkEOFError: return @"EOF received on TCP network socket.";
         case OpenVPNErrorNetworkSendError: return @"Errors sending on network socket";
@@ -774,11 +770,24 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         case OpenVPNErrorClientRestart: return @"RESTART message from server received.";
         case OpenVPNErrorRelay: return @"RELAY message from server received.";
         case OpenVPNErrorRelayError: return @"RELAY error.";
+        case OpenVPNErrorPauseNumber: return @"";
+        case OpenVPNErrorReconnectNumber: return @"";
+        case OpenVPNErrorKeyLimitRenegNumber: return @"";
         case OpenVPNErrorKeyStateError: return @"Received packet didn't match expected key state.";
         case OpenVPNErrorProxyError: return @"HTTP proxy error.";
         case OpenVPNErrorProxyNeedCreds: return @"HTTP proxy needs credentials.";
-        case OpenVPNErrorUnknown: return @"Occured unknown error.";
-        default: return nil;
+        case OpenVPNErrorKevNegotiateError: return @"";
+        case OpenVPNErrorKevPendingError: return @"";
+        case OpenVPNErrorKevExpireNumber: return @"";
+        case OpenVPNErrorPKTIDInvalid: return @"";
+        case OpenVPNErrorPKTIDBacktrack: return @"";
+        case OpenVPNErrorPKTIDExpire: return @"";
+        case OpenVPNErrorPKTIDReplay: return @"";
+        case OpenVPNErrorPKTIDTimeBacktrack: return @"";
+        case OpenVPNErrorDynamicChallenge: return @"";
+        case OpenVPNErrorEPKIError: return @"";
+        case OpenVPNErrorEPKIInvalidAlias: return @"";
+        case OpenVPNErrorUnknown: return @"Unknown error.";
     }
 }
 

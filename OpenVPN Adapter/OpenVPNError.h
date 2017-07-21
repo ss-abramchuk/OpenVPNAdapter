@@ -12,7 +12,6 @@ FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorDomain;
 
 FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorFatalKey;
 FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorMessageKey;
-FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorContainsReasonKey;
 
 /**
  OpenVPN error codes
