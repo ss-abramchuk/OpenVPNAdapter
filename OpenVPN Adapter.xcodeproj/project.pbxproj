@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AB82E0951F41B13800D16942 /* OpenVPNContentPair.h in Headers */ = {isa = PBXBuildFile; fileRef = AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */; };
-		AB82E0961F41B13800D16942 /* OpenVPNContentPair.h in Headers */ = {isa = PBXBuildFile; fileRef = AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */; };
+		AB82E0951F41B13800D16942 /* OpenVPNContentPair.h in Headers */ = {isa = PBXBuildFile; fileRef = AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AB82E0961F41B13800D16942 /* OpenVPNContentPair.h in Headers */ = {isa = PBXBuildFile; fileRef = AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AB82E0971F41B13800D16942 /* OpenVPNContentPair.m in Sources */ = {isa = PBXBuildFile; fileRef = AB82E0941F41B13800D16942 /* OpenVPNContentPair.m */; };
 		AB82E0981F41B13800D16942 /* OpenVPNContentPair.m in Sources */ = {isa = PBXBuildFile; fileRef = AB82E0941F41B13800D16942 /* OpenVPNContentPair.m */; };
 		C90BAD311E73FF6C00DEFB32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C90BAD301E73FF6C00DEFB32 /* SystemConfiguration.framework */; };
