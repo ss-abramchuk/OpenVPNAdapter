@@ -14,21 +14,23 @@
 #import "OpenVPNMinTLSVersion.h"
 #import "OpenVPNTLSCertProfile.h"
 
+@class OpenVPNContentPair;
+
 /**
  Class used to pass configuration
  */
-@interface OpenVPNConfiguration : NSObject
+@interface OpenVPNConfiguration : NSObject <NSCopying, NSSecureCoding>
 
 /**
- OpenVPN profile as a NSData
+ OpenVPN profile as an NSString
  */
-@property (nullable, nonatomic) NSData *fileContent;
+@property (nullable, nonatomic) NSString *content;
 
 /**
  OpenVPN profile as series of key/value pairs (may be provided exclusively
  or in addition to file content).
  */
-@property (nullable, nonatomic) NSDictionary<NSString *, NSString *> *settings;
+@property (nonnull, nonatomic) NSArray <OpenVPNContentPair *> *contentList;
 
 /**
  Set to identity OpenVPN GUI version.
@@ -46,7 +48,7 @@
 /**
  Force a given transport protocol
  */
-@property (nonatomic) OpenVPNTransportProtocol proto;
+@property (nonatomic) OpenVPNTransportProtocol transportProtocol;
 
 /**
  IPv6 preference
@@ -113,7 +115,7 @@
 /**
  Override the minimum TLS version
  */
-@property (nonatomic) OpenVPNMinTLSVersion minTLSVersion;
+@property (nonatomic) OpenVPNMinTLSVersion minimumTLSVersion;
 
 /**
  Override or default the tls-cert-profile setting
@@ -123,7 +125,7 @@
 /**
  Pass custom key/value pairs to OpenVPN server
  */
-@property (nullable, nonatomic) NSDictionary<NSString *, NSString *> *peerInfo;
+@property (nonnull, nonatomic) NSArray <OpenVPNContentPair *> *peerInfo;
 
 /**
  Pass through pushed "echo" directives via "ECHO" event
