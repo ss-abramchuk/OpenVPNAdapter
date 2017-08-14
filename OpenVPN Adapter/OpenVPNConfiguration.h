@@ -79,7 +79,7 @@
 /**
  If YES, don't send client cert/key to peer
  */
-@property (nonatomic) BOOL disableClientCert;
+@property (nonatomic) BOOL disableClientCertificate;
 
 /**
  SSL library debug level
@@ -120,7 +120,7 @@
 /**
  Override or default the tls-cert-profile setting
  */
-@property (nonatomic) OpenVPNTLSCertProfile tlsCertProfile;
+@property (nonatomic) OpenVPNTLSCertProfile tlsCertificateProfile;
 
 /**
  Pass custom key/value pairs to OpenVPN server
