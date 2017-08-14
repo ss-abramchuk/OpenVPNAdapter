@@ -304,12 +304,12 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.autologinSessions = autologinSessions;
 }
 
-- (BOOL)disableClientCert {
+- (BOOL)disableClientCertificate {
     return _config.disableClientCert;
 }
 
-- (void)setDisableClientCert:(BOOL)disableClientCert {
-    _config.disableClientCert = disableClientCert;
+- (void)setDisableClientCertificate:(BOOL)disableClientCertificate {
+    _config.disableClientCert = disableClientCertificate;
 }
 
 - (NSInteger)sslDebugLevel {
@@ -364,12 +364,12 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.tlsVersionMinOverride = std::string([value UTF8String]);
 }
 
-- (OpenVPNTLSCertProfile)tlsCertProfile {
+- (OpenVPNTLSCertProfile)tlsCertificateProfile {
     NSString *currentValue = [NSString stringWithUTF8String:_config.tlsCertProfileOverride.c_str()];
     return [OpenVPNConfiguration getTLSCertProfileFromValue:currentValue];
 }
 
-- (void)setTlsCertProfile:(OpenVPNTLSCertProfile)tlsCertProfile {
+- (void)setTlsCertifiateProfile:(OpenVPNTLSCertProfile)tlsCertProfile {
     NSString *value = [OpenVPNConfiguration getValueFromTLSCertProfile:tlsCertProfile];
     _config.tlsCertProfileOverride = std::string([value UTF8String]);
 }
@@ -430,14 +430,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     configuration.tunPersist = self.tunPersist;
     configuration.googleDNSFallback = self.googleDNSFallback;
     configuration.autologinSessions = self.autologinSessions;
-    configuration.disableClientCert = self.disableClientCert;
+    configuration.disableClientCertificate = self.disableClientCertificate;
     configuration.sslDebugLevel = self.sslDebugLevel;
     configuration.compressionMode = self.compressionMode;
     configuration.privateKeyPassword = [self.privateKeyPassword copyWithZone:zone];
     configuration.keyDirection = self.keyDirection;
     configuration.forceCiphersuitesAESCBC = self.forceCiphersuitesAESCBC;
     configuration.minimumTLSVersion = self.minimumTLSVersion;
-    configuration.tlsCertProfile = self.tlsCertProfile;
+    configuration.tlsCertificateProfile = self.tlsCertificateProfile;
     configuration.peerInfo = [self.peerInfo copyWithZone:zone];
     configuration.echo = self.echo;
     configuration.info = self.info;
@@ -457,14 +457,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
         self.tunPersist = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(tunPersist))];
         self.googleDNSFallback = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(googleDNSFallback))];
         self.autologinSessions = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(autologinSessions))];
-        self.disableClientCert = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(disableClientCert))];
+        self.disableClientCertificate = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(disableClientCertificate))];
         self.sslDebugLevel = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(sslDebugLevel))];
         self.compressionMode = (OpenVPNCompressionMode)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(compressionMode))];
         self.privateKeyPassword = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(privateKeyPassword))];
         self.keyDirection = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(keyDirection))];
         self.forceCiphersuitesAESCBC = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(forceCiphersuitesAESCBC))];
         self.minimumTLSVersion = (OpenVPNMinTLSVersion)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(minimumTLSVersion))];
-        self.tlsCertProfile = (OpenVPNTLSCertProfile)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(tlsCertProfile))];
+        self.tlsCertificateProfile = (OpenVPNTLSCertProfile)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(tlsCertificateProfile))];
         self.peerInfo = [aDecoder decodeObjectOfClass:[NSArray class] forKey:NSStringFromSelector(@selector(peerInfo))];
         self.echo = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(echo))];
         self.info = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(info))];
@@ -484,14 +484,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     [aCoder encodeBool:self.tunPersist forKey:NSStringFromSelector(@selector(tunPersist))];
     [aCoder encodeBool:self.googleDNSFallback forKey:NSStringFromSelector(@selector(googleDNSFallback))];
     [aCoder encodeBool:self.autologinSessions forKey:NSStringFromSelector(@selector(autologinSessions))];
-    [aCoder encodeBool:self.disableClientCert forKey:NSStringFromSelector(@selector(disableClientCert))];
+    [aCoder encodeBool:self.disableClientCertificate forKey:NSStringFromSelector(@selector(disableClientCertificate))];
     [aCoder encodeInteger:self.sslDebugLevel forKey:NSStringFromSelector(@selector(sslDebugLevel))];
     [aCoder encodeInteger:self.compressionMode forKey:NSStringFromSelector(@selector(compressionMode))];
     [aCoder encodeObject:self.privateKeyPassword forKey:NSStringFromSelector(@selector(privateKeyPassword))];
     [aCoder encodeInteger:self.keyDirection forKey:NSStringFromSelector(@selector(keyDirection))];
     [aCoder encodeBool:self.forceCiphersuitesAESCBC forKey:NSStringFromSelector(@selector(forceCiphersuitesAESCBC))];
     [aCoder encodeInteger:self.minimumTLSVersion forKey:NSStringFromSelector(@selector(minimumTLSVersion))];
-    [aCoder encodeInteger:self.tlsCertProfile forKey:NSStringFromSelector(@selector(tlsCertProfile))];
+    [aCoder encodeInteger:self.tlsCertificateProfile forKey:NSStringFromSelector(@selector(tlsCertificateProfile))];
     [aCoder encodeObject:self.peerInfo forKey:NSStringFromSelector(@selector(peerInfo))];
     [aCoder encodeBool:self.echo forKey:NSStringFromSelector(@selector(echo))];
     [aCoder encodeBool:self.info forKey:NSStringFromSelector(@selector(info))];
