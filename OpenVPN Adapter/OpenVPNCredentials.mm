@@ -27,6 +27,14 @@ using namespace openvpn;
 
 @implementation OpenVPNCredentials
 
+- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password {
+    if (self = [self init]) {
+        self.username = username;
+        self.password = password;
+    }
+    return self;
+}
+
 - (NSString *)username {
     return !_credentials.username.empty() ? [NSString stringWithUTF8String:_credentials.username.c_str()] : nil;
 }

@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  Class used to pass credentials
  */
@@ -50,4 +52,8 @@
  */
 @property (nonatomic) BOOL cachePassword;
 
+- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password;
+
 @end
+
+NS_ASSUME_NONNULL_END
