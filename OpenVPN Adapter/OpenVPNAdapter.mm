@@ -452,6 +452,16 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 }
 
 - (BOOL)provideCredentials:(nonnull OpenVPNCredentials *)credentials error:(out NSError * __nullable * __nullable)error {
+    if (!(credentials.username.length && credentials.password.length)) {
+        if (error) {
+            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
+                                         code:OpenVPNErrorCredentialsFailure
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Failed to provide OpenVPN credentials.",
+                                                NSLocalizedFailureReasonErrorKey: @"Credentials are empty.",
+                                                OpenVPNAdapterErrorFatalKey: @YES}];
+        }
+        return NO;
+    }
     ClientAPI::Status status = self.vpnClient->provide_creds(credentials.credentials);
     if (status.error) {
         if (error) {
