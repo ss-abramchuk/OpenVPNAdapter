@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB82E0951F41B13800D16942 /* OpenVPNContentPair.h in Headers */ = {isa = PBXBuildFile; fileRef = AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AB82E0961F41B13800D16942 /* OpenVPNContentPair.h in Headers */ = {isa = PBXBuildFile; fileRef = AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AB82E0971F41B13800D16942 /* OpenVPNContentPair.m in Sources */ = {isa = PBXBuildFile; fileRef = AB82E0941F41B13800D16942 /* OpenVPNContentPair.m */; };
+		AB82E0981F41B13800D16942 /* OpenVPNContentPair.m in Sources */ = {isa = PBXBuildFile; fileRef = AB82E0941F41B13800D16942 /* OpenVPNContentPair.m */; };
 		C90BAD311E73FF6C00DEFB32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C90BAD301E73FF6C00DEFB32 /* SystemConfiguration.framework */; };
 		C912BB251E7C3339002B9414 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C912BB241E7C3339002B9414 /* NetworkExtension.framework */; };
 		C9354F451F1E4A4500F4C935 /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B795681F1D219C00CF35FE /* OpenVPNReachabilityStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -142,6 +146,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNContentPair.h; sourceTree = "<group>"; };
+		AB82E0941F41B13800D16942 /* OpenVPNContentPair.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenVPNContentPair.m; sourceTree = "<group>"; };
 		C90BAD261E73F47E00DEFB32 /* Info-Framework.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework.plist"; sourceTree = "<group>"; };
 		C90BAD271E73F47E00DEFB32 /* Info-Tests.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Tests.plist"; sourceTree = "<group>"; };
 		C90BAD291E73F56800DEFB32 /* Framework.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Framework.xcconfig; sourceTree = "<group>"; };
@@ -312,6 +318,8 @@
 				C9657A4A1EB0CD6C00EFF210 /* OpenVPNProperties.h */,
 				C9657A501EB0CD9200EFF210 /* OpenVPNProperties+Internal.h */,
 				C9657A4B1EB0CD6C00EFF210 /* OpenVPNProperties.mm */,
+				AB82E0931F41B13800D16942 /* OpenVPNContentPair.h */,
+				AB82E0941F41B13800D16942 /* OpenVPNContentPair.m */,
 			);
 			name = Configuration;
 			sourceTree = "<group>";
@@ -520,6 +528,7 @@
 				C9657A671EB0D73200EFF210 /* OpenVPNMinTLSVersion.h in Headers */,
 				C93779D51EAE32670030A362 /* OpenVPNCredentials.h in Headers */,
 				C9657A641EB0D6C200EFF210 /* OpenVPNCompressionMode.h in Headers */,
+				AB82E0951F41B13800D16942 /* OpenVPNContentPair.h in Headers */,
 				C9FD921A1E9A667600374FC4 /* ovpncli.hpp in Headers */,
 				C93779DB1EAE32880030A362 /* OpenVPNCredentials+Internal.h in Headers */,
 				C9657A6A1EB0D75700EFF210 /* OpenVPNTLSCertProfile.h in Headers */,
@@ -561,6 +570,7 @@
 				C9657A681EB0D73200EFF210 /* OpenVPNMinTLSVersion.h in Headers */,
 				C93779D61EAE32670030A362 /* OpenVPNCredentials.h in Headers */,
 				C9657A651EB0D6C200EFF210 /* OpenVPNCompressionMode.h in Headers */,
+				AB82E0961F41B13800D16942 /* OpenVPNContentPair.h in Headers */,
 				C9D2ABEA1EA20F99007EDF9D /* ovpncli.hpp in Headers */,
 				C93779DC1EAE32880030A362 /* OpenVPNCredentials+Internal.h in Headers */,
 				C9657A6B1EB0D75700EFF210 /* OpenVPNTLSCertProfile.h in Headers */,
@@ -775,6 +785,7 @@
 				C9FD921B1E9A667600374FC4 /* ovpncli.cpp in Sources */,
 				C9657A361EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */,
 				C9657A211EB0ACAE00EFF210 /* OpenVPNConnectionInfo.mm in Sources */,
+				AB82E0971F41B13800D16942 /* OpenVPNContentPair.m in Sources */,
 				C93A4F621EE18009004DC561 /* OpenVPNError.m in Sources */,
 				C93779D71EAE32670030A362 /* OpenVPNCredentials.mm in Sources */,
 				C9B795601F1D16AA00CF35FE /* OpenVPNReachability.mm in Sources */,
@@ -808,6 +819,7 @@
 				C9D2ABDE1EA20F99007EDF9D /* ovpncli.cpp in Sources */,
 				C9657A371EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */,
 				C9657A221EB0ACAE00EFF210 /* OpenVPNConnectionInfo.mm in Sources */,
+				AB82E0981F41B13800D16942 /* OpenVPNContentPair.m in Sources */,
 				C93A4F631EE18009004DC561 /* OpenVPNError.m in Sources */,
 				C93779D81EAE32670030A362 /* OpenVPNCredentials.mm in Sources */,
 				C9B795611F1D16AA00CF35FE /* OpenVPNReachability.mm in Sources */,

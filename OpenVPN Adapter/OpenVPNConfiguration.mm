@@ -8,6 +8,8 @@
 
 #import "OpenVPNConfiguration+Internal.h"
 
+#import "OpenVPNContentPair.h"
+
 using namespace openvpn;
 
 NSString *const OpenVPNTransportProtocolUDPValue = @"udp";
@@ -207,42 +209,31 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 @implementation OpenVPNConfiguration
 
-- (NSData *)fileContent {
-    return !_config.content.empty() ? [NSData dataWithBytes:_config.content.data() length:_config.content.size()] : nil;
+- (NSString *)content {
+    return !_config.content.empty() ? [NSString stringWithUTF8String:_config.content.c_str()] : nil;
 }
 
-- (void)setFileContent:(NSData *)fileContent {
-    _config.content = fileContent ? std::string((const char *)fileContent.bytes) : "";
+- (void)setContent:(NSString *)fileContent {
+    _config.content = fileContent ? std::string(fileContent.UTF8String) : "";
 }
 
-- (NSDictionary<NSString *,NSString *> *)settings {
-    if (_config.contentList.size() == 0) {
-        return nil;
-    }
-    
-    NSMutableDictionary *settings = [NSMutableDictionary new];
+- (NSArray <OpenVPNContentPair *> *)contentList {
+    NSMutableArray *contentList = [[NSMutableArray alloc] init];
     
     for (ClientAPI::KeyValue param : _config.contentList) {
-        NSString *key = [NSString stringWithCString:param.key.c_str() encoding:NSUTF8StringEncoding];
-        NSString *value = [NSString stringWithCString:param.value.c_str() encoding:NSUTF8StringEncoding];
-        
-        settings[key] = value;
+        [contentList addObject:[[OpenVPNContentPair alloc] initWithKey:[NSString stringWithCString:param.key.c_str() encoding:NSUTF8StringEncoding] value:[NSString stringWithCString:param.value.c_str() encoding:NSUTF8StringEncoding]]];
     }
     
-    return [settings copy];
+    return [contentList copy];
 }
 
-- (void)setSettings:(NSDictionary<NSString *,NSString *> *)settings {
+- (void)setContentList:(NSArray <OpenVPNContentPair *> *)contentList {
     _config.contentList.clear();
     
-    if (!settings) {
-        return;
-    }
-    
-    [settings enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-        ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string([key UTF8String]), std::string([obj UTF8String]));
+    for (OpenVPNContentPair *pair in contentList) {
+        ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string(pair.key.UTF8String), std::string((pair.value ?: @"").UTF8String));
         _config.contentList.push_back(param);
-    }];
+    }
 }
 
 - (NSString *)guiVersion {
@@ -261,12 +252,12 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.serverOverride = serverOverride ? std::string([serverOverride UTF8String]) : "";
 }
 
-- (OpenVPNTransportProtocol)proto {
+- (OpenVPNTransportProtocol)transportProtocol {
     NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
     return [OpenVPNConfiguration getTransportProtocolFromValue:currentValue];
 }
 
-- (void)setProto:(OpenVPNTransportProtocol)proto {
+- (void)setTransportProtocol:(OpenVPNTransportProtocol)proto {
     NSString *value = [OpenVPNConfiguration getValueFromTransportProtocol:proto];
     _config.protoOverride = std::string([value UTF8String]);
 }
@@ -313,12 +304,12 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.autologinSessions = autologinSessions;
 }
 
-- (BOOL)disableClientCert {
+- (BOOL)disableClientCertificate {
     return _config.disableClientCert;
 }
 
-- (void)setDisableClientCert:(BOOL)disableClientCert {
-    _config.disableClientCert = disableClientCert;
+- (void)setDisableClientCertificate:(BOOL)disableClientCertificate {
+    _config.disableClientCert = disableClientCertificate;
 }
 
 - (NSInteger)sslDebugLevel {
@@ -363,55 +354,45 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.forceAesCbcCiphersuites = forceCiphersuitesAESCBC;
 }
 
-- (OpenVPNMinTLSVersion)minTLSVersion {
+- (OpenVPNMinTLSVersion)minimumTLSVersion {
     NSString *currentValue = [NSString stringWithUTF8String:_config.tlsVersionMinOverride.c_str()];
     return [OpenVPNConfiguration getMinTLSFromValue:currentValue];
 }
 
-- (void)setMinTLSVersion:(OpenVPNMinTLSVersion)minTLSVersion {
+- (void)setMinimumTLSVersion:(OpenVPNMinTLSVersion)minTLSVersion {
     NSString *value = [OpenVPNConfiguration getValueFromMinTLS:minTLSVersion];
     _config.tlsVersionMinOverride = std::string([value UTF8String]);
 }
 
-- (OpenVPNTLSCertProfile)tlsCertProfile {
+- (OpenVPNTLSCertProfile)tlsCertificateProfile {
     NSString *currentValue = [NSString stringWithUTF8String:_config.tlsCertProfileOverride.c_str()];
     return [OpenVPNConfiguration getTLSCertProfileFromValue:currentValue];
 }
 
-- (void)setTlsCertProfile:(OpenVPNTLSCertProfile)tlsCertProfile {
+- (void)setTlsCertifiateProfile:(OpenVPNTLSCertProfile)tlsCertProfile {
     NSString *value = [OpenVPNConfiguration getValueFromTLSCertProfile:tlsCertProfile];
     _config.tlsCertProfileOverride = std::string([value UTF8String]);
 }
 
-- (NSDictionary<NSString *,NSString *> *)peerInfo {
-    if (_config.peerInfo.empty()) {
-        return nil;
-    }
-    
-    NSMutableDictionary *peerInfo = [NSMutableDictionary new];
+- (NSArray <OpenVPNContentPair *> *)peerInfo {
+    NSMutableArray *contentList = [[NSMutableArray alloc] init];
     
     for (ClientAPI::KeyValue param : _config.peerInfo) {
-        NSString *key = [NSString stringWithCString:param.key.c_str() encoding:NSUTF8StringEncoding];
-        NSString *value = [NSString stringWithCString:param.value.c_str() encoding:NSUTF8StringEncoding];
-        
-        peerInfo[key] = value;
+        [contentList addObject:[[OpenVPNContentPair alloc] initWithKey:[NSString stringWithCString:param.key.c_str() encoding:NSUTF8StringEncoding] value:[NSString stringWithCString:param.value.c_str() encoding:NSUTF8StringEncoding]]];
     }
     
-    return [peerInfo copy];
+    return [contentList copy];
 }
 
-- (void)setPeerInfo:(NSDictionary<NSString *,NSString *> *)peerInfo {
+- (void)setPeerInfo:(NSArray <OpenVPNContentPair *> *)peerInfo {
     _config.peerInfo.clear();
     
-    if (!peerInfo) {
-        return;
-    }
-    
-    [peerInfo enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-        ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string([key UTF8String]), std::string([obj UTF8String]));
+    for (OpenVPNContentPair *pair in peerInfo) {
+        ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string(pair.key.UTF8String), std::string((pair.value ?: @"").UTF8String));
         _config.peerInfo.push_back(param);
-    }];
+    }
 }
+
 
 - (BOOL)echo {
     return _config.echo;
@@ -435,6 +416,90 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 - (void)setClockTick:(NSUInteger)clockTick {
     _config.clockTickMS = clockTick;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    OpenVPNConfiguration *configuration = [[OpenVPNConfiguration allocWithZone:zone] init];
+    configuration.content = [self.content copyWithZone:zone];
+    configuration.contentList = [self.contentList copyWithZone:zone];
+    configuration.guiVersion = [self.guiVersion copyWithZone:zone];
+    configuration.server = [self.server copyWithZone:zone];
+    configuration.transportProtocol = self.transportProtocol;
+    configuration.ipv6 = self.ipv6;
+    configuration.connectionTimeout = self.connectionTimeout;
+    configuration.tunPersist = self.tunPersist;
+    configuration.googleDNSFallback = self.googleDNSFallback;
+    configuration.autologinSessions = self.autologinSessions;
+    configuration.disableClientCertificate = self.disableClientCertificate;
+    configuration.sslDebugLevel = self.sslDebugLevel;
+    configuration.compressionMode = self.compressionMode;
+    configuration.privateKeyPassword = [self.privateKeyPassword copyWithZone:zone];
+    configuration.keyDirection = self.keyDirection;
+    configuration.forceCiphersuitesAESCBC = self.forceCiphersuitesAESCBC;
+    configuration.minimumTLSVersion = self.minimumTLSVersion;
+    configuration.tlsCertificateProfile = self.tlsCertificateProfile;
+    configuration.peerInfo = [self.peerInfo copyWithZone:zone];
+    configuration.echo = self.echo;
+    configuration.info = self.info;
+    configuration.clockTick = self.clockTick;
+    return configuration;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [self init]) {
+        self.content = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(content))];
+        self.contentList = [aDecoder decodeObjectOfClass:[NSArray class] forKey:NSStringFromSelector(@selector(contentList))];
+        self.guiVersion = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(guiVersion))];
+        self.server = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(server))];
+        self.transportProtocol = (OpenVPNTransportProtocol)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(transportProtocol))];
+        self.ipv6 = (OpenVPNIPv6Preference)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(ipv6))];
+        self.connectionTimeout = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(connectionTimeout))];
+        self.tunPersist = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(tunPersist))];
+        self.googleDNSFallback = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(googleDNSFallback))];
+        self.autologinSessions = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(autologinSessions))];
+        self.disableClientCertificate = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(disableClientCertificate))];
+        self.sslDebugLevel = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(sslDebugLevel))];
+        self.compressionMode = (OpenVPNCompressionMode)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(compressionMode))];
+        self.privateKeyPassword = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(privateKeyPassword))];
+        self.keyDirection = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(keyDirection))];
+        self.forceCiphersuitesAESCBC = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(forceCiphersuitesAESCBC))];
+        self.minimumTLSVersion = (OpenVPNMinTLSVersion)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(minimumTLSVersion))];
+        self.tlsCertificateProfile = (OpenVPNTLSCertProfile)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(tlsCertificateProfile))];
+        self.peerInfo = [aDecoder decodeObjectOfClass:[NSArray class] forKey:NSStringFromSelector(@selector(peerInfo))];
+        self.echo = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(echo))];
+        self.info = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(info))];
+        self.clockTick = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(clockTick))];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:self.content forKey:NSStringFromSelector(@selector(content))];
+    [aCoder encodeObject:self.contentList forKey:NSStringFromSelector(@selector(contentList))];
+    [aCoder encodeObject:self.guiVersion forKey:NSStringFromSelector(@selector(guiVersion))];
+    [aCoder encodeObject:self.server forKey:NSStringFromSelector(@selector(server))];
+    [aCoder encodeInteger:self.transportProtocol forKey:NSStringFromSelector(@selector(transportProtocol))];
+    [aCoder encodeInteger:self.ipv6 forKey:NSStringFromSelector(@selector(ipv6))];
+    [aCoder encodeInteger:self.connectionTimeout forKey:NSStringFromSelector(@selector(connectionTimeout))];
+    [aCoder encodeBool:self.tunPersist forKey:NSStringFromSelector(@selector(tunPersist))];
+    [aCoder encodeBool:self.googleDNSFallback forKey:NSStringFromSelector(@selector(googleDNSFallback))];
+    [aCoder encodeBool:self.autologinSessions forKey:NSStringFromSelector(@selector(autologinSessions))];
+    [aCoder encodeBool:self.disableClientCertificate forKey:NSStringFromSelector(@selector(disableClientCertificate))];
+    [aCoder encodeInteger:self.sslDebugLevel forKey:NSStringFromSelector(@selector(sslDebugLevel))];
+    [aCoder encodeInteger:self.compressionMode forKey:NSStringFromSelector(@selector(compressionMode))];
+    [aCoder encodeObject:self.privateKeyPassword forKey:NSStringFromSelector(@selector(privateKeyPassword))];
+    [aCoder encodeInteger:self.keyDirection forKey:NSStringFromSelector(@selector(keyDirection))];
+    [aCoder encodeBool:self.forceCiphersuitesAESCBC forKey:NSStringFromSelector(@selector(forceCiphersuitesAESCBC))];
+    [aCoder encodeInteger:self.minimumTLSVersion forKey:NSStringFromSelector(@selector(minimumTLSVersion))];
+    [aCoder encodeInteger:self.tlsCertificateProfile forKey:NSStringFromSelector(@selector(tlsCertificateProfile))];
+    [aCoder encodeObject:self.peerInfo forKey:NSStringFromSelector(@selector(peerInfo))];
+    [aCoder encodeBool:self.echo forKey:NSStringFromSelector(@selector(echo))];
+    [aCoder encodeBool:self.info forKey:NSStringFromSelector(@selector(info))];
+    [aCoder encodeInteger:self.clockTick forKey:NSStringFromSelector(@selector(clockTick))];
+}
+
++ (BOOL)supportsSecureCoding {
+    return YES;
 }
 
 @end

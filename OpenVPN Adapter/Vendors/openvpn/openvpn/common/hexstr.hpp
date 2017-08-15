@@ -180,7 +180,7 @@ namespace openvpn {
 	dest.push_back((high<<4) + low);
       }
     if (i != len)
-      throw parse_hex_error(); // straggler char
+      throw parse_hex_error(); // straggler char      
   }
 
   // note -- currently doesn't detect overflow
