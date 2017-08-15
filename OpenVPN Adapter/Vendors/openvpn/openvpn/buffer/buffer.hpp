@@ -449,6 +449,14 @@ namespace openvpn {
 	}
     }
 
+    void swap(BufferType& other)
+    {
+      std::swap(data_, other.data_);
+      std::swap(offset_, other.offset_);
+      std::swap(size_, other.size_);
+      std::swap(capacity_, other.capacity_);
+    }
+
     void write(const T* data, const size_t size)
     {
       std::memcpy(write_alloc(size), data, size * sizeof(T));
