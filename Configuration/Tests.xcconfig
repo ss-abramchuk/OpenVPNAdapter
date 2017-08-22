@@ -1,4 +1,5 @@
+PRODUCT_NAME = OpenVPNAdapterTests
+PRODUCT_BUNDLE_IDENTIFIER = me.ss-abramchuk.openvpn-adapter.tests
 INFOPLIST_FILE = Configuration/Info-Tests.plist
-PRODUCT_BUNDLE_IDENTIFIER = me.ss-abramchuk.openvpn-adapter.test
 SWIFT_OPTIMIZATION_LEVEL = -Onone
 ONLY_ACTIVE_ARCH = YES
