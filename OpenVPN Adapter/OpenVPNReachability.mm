@@ -15,6 +15,7 @@
 }
 
 @property (assign, nonatomic) OpenVPNReachabilityTracker *reachabilityTracker;
+@property (copy, nonatomic) void (^ reachabilityStatusChangedBlock)(OpenVPNReachabilityStatus);
 
 @end
 
@@ -50,7 +51,9 @@
     return self;
 }
 
-- (void)startTracking {
+- (void)startTrackingWithCallback:(void (^)(OpenVPNReachabilityStatus))callback {
+    self.reachabilityStatusChangedBlock = callback;
+    
     dispatch_queue_t main = dispatch_get_main_queue();
     dispatch_async(main, ^{
         self.reachabilityTracker->reachability_tracker_schedule();

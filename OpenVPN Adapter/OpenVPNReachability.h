@@ -13,11 +13,10 @@
 
 @property (readonly, nonatomic) BOOL isTracking;
 @property (readonly, nonatomic) OpenVPNReachabilityStatus reachabilityStatus;
-@property (copy, nonatomic) void (^ _Nullable reachabilityStatusChangedBlock)(OpenVPNReachabilityStatus reachabilityStatus);
 
 - (nonnull instancetype)init;
 
-- (void)startTracking;
+- (void)startTrackingWithCallback:(nullable void (^)(OpenVPNReachabilityStatus))callback;
 - (void)stopTracking;
 
 @end
