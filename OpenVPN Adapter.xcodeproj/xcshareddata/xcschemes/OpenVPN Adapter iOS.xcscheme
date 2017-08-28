@@ -34,7 +34,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C9BB478D1E71821A00F3F98C"
-               BuildableName = "OpenVPN Adapter iOS Tests.xctest"
+               BuildableName = "OpenVPNAdapterTests.xctest"
                BlueprintName = "OpenVPN Adapter iOS Tests"
                ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
             </BuildableReference>
