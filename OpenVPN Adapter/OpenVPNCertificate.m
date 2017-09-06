@@ -35,6 +35,10 @@
     
     int result = mbedtls_x509_crt_parse(certificate.crt, (const unsigned char *)pemString.UTF8String, pemData.length + 1);
     if (result != 0) {
+        if (error) {
+            // TODO: Return parse error
+        }
+        
         return nil;
     }
     
@@ -44,7 +48,14 @@
 + (OpenVPNCertificate *)certificateWithDER:(NSData *)derData error:(out NSError * __nullable * __nullable)error {
     OpenVPNCertificate *certificate = [OpenVPNCertificate new];
     
-    // TODO: Parse DER data
+    int result = mbedtls_x509_crt_parse_der(certificate.crt, derData.bytes, derData.length);
+    if (result != 0) {
+        if (error) {
+            // TODO: Return parse error
+        }
+        
+        return nil;
+    }
     
     return certificate;
 }
