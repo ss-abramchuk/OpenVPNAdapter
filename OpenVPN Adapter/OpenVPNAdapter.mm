@@ -474,7 +474,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark Connection Control
 
 - (void)connect {
-    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-adapter.connection", NULL);
+    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-adapter.connection-queue", NULL);
     dispatch_async(connectQueue, ^{
         OpenVPNClient::init_process();
         
