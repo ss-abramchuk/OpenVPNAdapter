@@ -17,7 +17,7 @@ FOUNDATION_EXPORT const unsigned char OpenVPNAdapterVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <OpenVPNAdapter/PublicHeader.h>
 
 #import <OpenVPNAdapter/OpenVPNError.h>
-#import <OpenVPNAdapter/OpenVPNEvent.h>
+#import <OpenVPNAdapter/OpenVPNAdapterEvent.h>
 #import <OpenVPNAdapter/OpenVPNTransportProtocol.h>
 #import <OpenVPNAdapter/OpenVPNIPv6Preference.h>
 #import <OpenVPNAdapter/OpenVPNCompressionMode.h>
