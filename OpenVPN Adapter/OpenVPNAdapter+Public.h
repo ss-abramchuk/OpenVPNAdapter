@@ -6,7 +6,7 @@
 //
 //
 
-#import "OpenVPNEvent.h"
+#import "OpenVPNAdapterEvent.h"
 #import "OpenVPNAdapter.h"
 
 @class OpenVPNConfiguration;
@@ -64,7 +64,7 @@ NS_SWIFT_NAME(configureTunnel(settings:callback:));
  @param event <#event description#>
  @param message <#message description#>
  */
-- (void)handleEvent:(OpenVPNEvent)event
+- (void)handleEvent:(OpenVPNAdapterEvent)event
             message:(nullable NSString *)message
 NS_SWIFT_NAME(handle(event:message:));
 
@@ -115,7 +115,7 @@ NS_SWIFT_NAME(handle(logMessage:));
 
 /**
  Return information about the most recent connection. Will be available
- after an event of type "OpenVPNEventConnected, otherwise return nil.
+ after an event of type "OpenVPNAdapterEventConnected, otherwise return nil.
  */
 @property (nullable, readonly, nonatomic) OpenVPNConnectionInfo *connectionInfo;
 

@@ -113,7 +113,7 @@ extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
         callback(self)
     }
     
-    func handle(event: OpenVPNEvent, message: String?) {
+    func handle(event: OpenVPNAdapterEvent, message: String?) {
         switch event {
         case .connected:
             guard let connectionExpectation = expectations[.connection] else { return }

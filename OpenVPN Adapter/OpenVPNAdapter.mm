@@ -20,7 +20,7 @@
 #import "OpenVPNTunnelSettings.h"
 #import "OpenVPNClient.h"
 #import "OpenVPNError.h"
-#import "OpenVPNEvent.h"
+#import "OpenVPNAdapterEvent.h"
 #import "OpenVPNConfiguration+Internal.h"
 #import "OpenVPNCredentials+Internal.h"
 #import "OpenVPNProperties+Internal.h"
@@ -57,7 +57,7 @@
 
 - (void)readTUNPackets;
 - (void)readVPNPacket:(NSData *)packet;
-- (OpenVPNEvent)eventByName:(NSString *)eventName;
+- (OpenVPNAdapterEvent)eventByName:(NSString *)eventName;
 - (OpenVPNAdapterError)errorByName:(NSString *)errorName;
 - (NSString *)reasonForError:(OpenVPNAdapterError)error;
 - (NSString *)subnetFromPrefixLength:(NSNumber *)prefixLength;
@@ -356,7 +356,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             [self.delegate handleError:error];
         }];
     } else {
-        OpenVPNEvent eventIdentifier = [self eventByName:name];
+        OpenVPNAdapterEvent eventIdentifier = [self eventByName:name];
         [self performAsyncBlock:^{
             [self.delegate handleEvent:eventIdentifier message:message == nil || [message isEqualToString:@""] ? nil : message];
         }];
@@ -625,26 +625,26 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 #pragma mark Utils
 
-- (OpenVPNEvent)eventByName:(NSString *)eventName {
+- (OpenVPNAdapterEvent)eventByName:(NSString *)eventName {
     NSDictionary *events = @{
-        @"DISCONNECTED": @(OpenVPNEventDisconnected),
-        @"CONNECTED": @(OpenVPNEventConnected),
-        @"RECONNECTING": @(OpenVPNEventReconnecting),
-        @"RESOLVE": @(OpenVPNEventResolve),
-        @"WAIT": @(OpenVPNEventWait),
-        @"WAIT_PROXY": @(OpenVPNEventWaitProxy),
-        @"CONNECTING": @(OpenVPNEventConnecting),
-        @"GET_CONFIG": @(OpenVPNEventGetConfig),
-        @"ASSIGN_IP": @(OpenVPNEventAssignIP),
-        @"ADD_ROUTES": @(OpenVPNEventAddRoutes),
-        @"ECHO": @(OpenVPNEventEcho),
-        @"INFO": @(OpenVPNEventInfo),
-        @"PAUSE": @(OpenVPNEventPause),
-        @"RESUME": @(OpenVPNEventResume),
-        @"RELAY": @(OpenVPNEventRelay)
+        @"DISCONNECTED": @(OpenVPNAdapterEventDisconnected),
+        @"CONNECTED": @(OpenVPNAdapterEventConnected),
+        @"RECONNECTING": @(OpenVPNAdapterEventReconnecting),
+        @"RESOLVE": @(OpenVPNAdapterEventResolve),
+        @"WAIT": @(OpenVPNAdapterEventWait),
+        @"WAIT_PROXY": @(OpenVPNAdapterEventWaitProxy),
+        @"CONNECTING": @(OpenVPNAdapterEventConnecting),
+        @"GET_CONFIG": @(OpenVPNAdapterEventGetConfig),
+        @"ASSIGN_IP": @(OpenVPNAdapterEventAssignIP),
+        @"ADD_ROUTES": @(OpenVPNAdapterEventAddRoutes),
+        @"ECHO": @(OpenVPNAdapterEventEcho),
+        @"INFO": @(OpenVPNAdapterEventInfo),
+        @"PAUSE": @(OpenVPNAdapterEventPause),
+        @"RESUME": @(OpenVPNAdapterEventResume),
+        @"RELAY": @(OpenVPNAdapterEventRelay)
     };
     
-    OpenVPNEvent event = events[eventName] != nil ? (OpenVPNEvent)[events[eventName] integerValue] : OpenVPNEventUnknown;
+    OpenVPNAdapterEvent event = events[eventName] != nil ? (OpenVPNAdapterEvent)[events[eventName] integerValue] : OpenVPNAdapterEventUnknown;
     return event;
 }
 
