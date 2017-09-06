@@ -1,6 +1,6 @@
 //
-//  OpenVPNClient+Internal.h
-//  OpenVPN iOS Client
+//  OpenVPNClient.h
+//  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 11.02.17.
 //

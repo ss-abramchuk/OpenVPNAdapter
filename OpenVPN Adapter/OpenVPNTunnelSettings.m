@@ -1,6 +1,6 @@
 //
 //  OpenVPNTunnelSettings.m
-//  OpenVPN iOS Client
+//  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 26.02.17.
 //
