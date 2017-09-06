@@ -41,7 +41,7 @@
         if (error) {
             NSString *reason = [NSError reasonFromResult:result];
             *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
-                NSLocalizedDescriptionKey: @"Failed to parse PEM data.",
+                NSLocalizedDescriptionKey: @"Failed to read PEM data.",
                 NSLocalizedFailureReasonErrorKey: reason
             }];
         }
@@ -60,7 +60,7 @@
         if (error) {
             NSString *reason = [NSError reasonFromResult:result];
             *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
-                NSLocalizedDescriptionKey: @"Failed to parse DER data.",
+                NSLocalizedDescriptionKey: @"Failed to read DER data.",
                 NSLocalizedFailureReasonErrorKey: reason
             }];
         }
