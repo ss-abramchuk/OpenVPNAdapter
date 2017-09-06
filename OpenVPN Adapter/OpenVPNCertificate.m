@@ -12,7 +12,7 @@
 
 @interface OpenVPNCertificate ()
 
-@property (nonatomic) mbedtls_x509_crt *crt;
+@property (nonatomic, assign) mbedtls_x509_crt *crt;
 
 @end
 
