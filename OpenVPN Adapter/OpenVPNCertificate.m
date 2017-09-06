@@ -8,6 +8,8 @@
 
 #import <mbedtls/x509_crt.h>
 
+#import "NSError+Message.h"
+#import "OpenVPNError.h"
 #import "OpenVPNCertificate.h"
 
 @interface OpenVPNCertificate ()
@@ -34,9 +36,13 @@
     NSString *pemString = [[NSString alloc] initWithData:pemData encoding:NSUTF8StringEncoding];
     
     int result = mbedtls_x509_crt_parse(certificate.crt, (const unsigned char *)pemString.UTF8String, pemData.length + 1);
-    if (result != 0) {
+    if (result < 0) {
         if (error) {
-            // TODO: Return parse error
+            NSString *reason = [NSError reasonFromResult:result];
+            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
+                NSLocalizedDescriptionKey: @"Failed to parse PEM data.",
+                NSLocalizedFailureReasonErrorKey: reason
+            }];
         }
         
         return nil;
@@ -49,9 +55,13 @@
     OpenVPNCertificate *certificate = [OpenVPNCertificate new];
     
     int result = mbedtls_x509_crt_parse_der(certificate.crt, derData.bytes, derData.length);
-    if (result != 0) {
+    if (result < 0) {
         if (error) {
-            // TODO: Return parse error
+            NSString *reason = [NSError reasonFromResult:result];
+            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
+                NSLocalizedDescriptionKey: @"Failed to parse DER data.",
+                NSLocalizedFailureReasonErrorKey: reason
+            }];
         }
         
         return nil;
