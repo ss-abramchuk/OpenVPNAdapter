@@ -71,10 +71,8 @@
 }
 
 - (void)dealloc {
-    if (self.crt) {
-        mbedtls_x509_crt_free(self.crt);
-        free(self.crt);
-    }
+    mbedtls_x509_crt_free(self.crt);
+    free(self.crt);
 }
 
 @end
