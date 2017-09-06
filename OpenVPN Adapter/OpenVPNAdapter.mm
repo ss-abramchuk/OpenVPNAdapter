@@ -58,8 +58,8 @@
 - (void)readTUNPackets;
 - (void)readVPNPacket:(NSData *)packet;
 - (OpenVPNEvent)eventByName:(NSString *)eventName;
-- (OpenVPNError)errorByName:(NSString *)errorName;
-- (NSString *)reasonForError:(OpenVPNError)error;
+- (OpenVPNAdapterError)errorByName:(NSString *)errorName;
+- (NSString *)reasonForError:(OpenVPNAdapterError)error;
 - (NSString *)subnetFromPrefixLength:(NSNumber *)prefixLength;
 - (void)performAsyncBlock:(void (^)())block;
 
@@ -342,7 +342,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     NSString *message = [NSString stringWithUTF8String:event->info.c_str()];
     
     if (event->error) {
-        OpenVPNError errorCode = [self errorByName:name];
+        OpenVPNAdapterError errorCode = [self errorByName:name];
         NSString *errorReason = [self reasonForError:errorCode];
         
         NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
@@ -437,9 +437,9 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration error:(out NSError * __nullable * __nullable)error {
     ClientAPI::EvalConfig eval = self.vpnClient->eval_config(configuration.config);
     if (eval.error) {
-        NSString *errorReason = [self reasonForError:OpenVPNErrorConfigurationFailure];
+        NSString *errorReason = [self reasonForError:OpenVPNAdapterErrorConfigurationFailure];
         
-        if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNErrorConfigurationFailure userInfo:@{
+        if (error) *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNAdapterErrorConfigurationFailure userInfo:@{
             NSLocalizedDescriptionKey: @"Failed to apply OpenVPN configuration.",
             NSLocalizedFailureReasonErrorKey: errorReason,
             OpenVPNAdapterErrorMessageKey: [NSString stringWithUTF8String:eval.message.c_str()],
@@ -455,7 +455,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     ClientAPI::Status status = self.vpnClient->provide_creds(credentials.credentials);
     if (status.error) {
         if (error) {
-            OpenVPNError errorCode = !status.status.empty() ? [self errorByName:[NSString stringWithUTF8String:status.status.c_str()]] : OpenVPNErrorCredentialsFailure;
+            OpenVPNAdapterError errorCode = !status.status.empty() ? [self errorByName:[NSString stringWithUTF8String:status.status.c_str()]] : OpenVPNAdapterErrorCredentialsFailure;
             NSString *errorReason = [self reasonForError:errorCode];
             
             *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:@{
@@ -485,7 +485,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         
         ClientAPI::Status status = self.vpnClient->connect();
         if (status.error) {
-            OpenVPNError errorCode = !status.status.empty() ? [self errorByName:[NSString stringWithUTF8String:status.status.c_str()]] : OpenVPNErrorUnknown;
+            OpenVPNAdapterError errorCode = !status.status.empty() ? [self errorByName:[NSString stringWithUTF8String:status.status.c_str()]] : OpenVPNAdapterErrorUnknown;
             NSString *errorReason = [self reasonForError:errorCode];
             
             NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
@@ -648,146 +648,146 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return event;
 }
 
-- (OpenVPNError)errorByName:(NSString *)errorName {
+- (OpenVPNAdapterError)errorByName:(NSString *)errorName {
     NSDictionary *errors = @{
-        @"NETWORK_RECV_ERROR": @(OpenVPNErrorNetworkRecvError),
-        @"NETWORK_EOF_ERROR": @(OpenVPNErrorNetworkEOFError),
-        @"NETWORK_SEND_ERROR": @(OpenVPNErrorNetworkSendError),
-        @"NETWORK_UNAVAILABLE": @(OpenVPNErrorNetworkUnavailable),
-        @"DECRYPT_ERROR": @(OpenVPNErrorDecryptError),
-        @"HMAC_ERROR": @(OpenVPNErrorDecryptError),
-        @"REPLAY_ERROR": @(OpenVPNErrorReplayError),
-        @"BUFFER_ERROR": @(OpenVPNErrorBufferError),
-        @"CC_ERROR": @(OpenVPNErrorCCError),
-        @"BAD_SRC_ADDR": @(OpenVPNErrorBadSrcAddr),
-        @"COMPRESS_ERROR": @(OpenVPNErrorCompressError),
-        @"RESOLVE_ERROR": @(OpenVPNErrorResolveError),
-        @"SOCKET_PROTECT_ERROR": @(OpenVPNErrorSocketProtectError),
-        @"TUN_READ_ERROR": @(OpenVPNErrorTUNReadError),
-        @"TUN_WRITE_ERROR": @(OpenVPNErrorTUNWriteError),
-        @"TUN_FRAMING_ERROR": @(OpenVPNErrorTUNFramingError),
-        @"TUN_SETUP_FAILED": @(OpenVPNErrorTUNSetupFailed),
-        @"TUN_IFACE_CREATE": @(OpenVPNErrorTUNIfaceCreate),
-        @"TUN_IFACE_DISABLED": @(OpenVPNErrorTUNIfaceDisabled),
-        @"TUN_ERROR": @(OpenVPNErrorTUNError),
-        @"TAP_NOT_SUPPORTED": @(OpenVPNErrorTAPNotSupported),
-        @"REROUTE_GW_NO_DNS": @(OpenVPNErrorRerouteGatewayNoDns),
-        @"TRANSPORT_ERROR": @(OpenVPNErrorTransportError),
-        @"TCP_OVERFLOW": @(OpenVPNErrorTCPOverflow),
-        @"TCP_SIZE_ERROR": @(OpenVPNErrorTCPSizeError),
-        @"TCP_CONNECT_ERROR": @(OpenVPNErrorTCPConnectError),
-        @"UDP_CONNECT_ERROR": @(OpenVPNErrorUDPConnectError),
-        @"SSL_ERROR": @(OpenVPNErrorSSLError),
-        @"SSL_PARTIAL_WRITE": @(OpenVPNErrorSSLPartialWrite),
-        @"ENCAPSULATION_ERROR": @(OpenVPNErrorEncapsulationError),
-        @"EPKI_CERT_ERROR": @(OpenVPNErrorEPKICertError),
-        @"EPKI_SIGN_ERROR": @(OpenVPNErrorEPKISignError),
-        @"HANDSHAKE_TIMEOUT": @(OpenVPNErrorHandshakeTimeout),
-        @"KEEPALIVE_TIMEOUT": @(OpenVPNErrorKeepaliveTimeout),
-        @"INACTIVE_TIMEOUT": @(OpenVPNErrorInactiveTimeout),
-        @"CONNECTION_TIMEOUT": @(OpenVPNErrorConnectionTimeout),
-        @"PRIMARY_EXPIRE": @(OpenVPNErrorPrimaryExpire),
-        @"TLS_VERSION_MIN": @(OpenVPNErrorTLSVersionMin),
-        @"TLS_AUTH_FAIL": @(OpenVPNErrorTLSAuthFail),
-        @"CERT_VERIFY_FAIL": @(OpenVPNErrorCertVerifyFail),
-        @"PEM_PASSWORD_FAIL": @(OpenVPNErrorPEMPasswordFail),
-        @"AUTH_FAILED": @(OpenVPNErrorAuthFailed),
-        @"CLIENT_HALT": @(OpenVPNErrorClientHalt),
-        @"CLIENT_RESTART": @(OpenVPNErrorClientRestart),
-        @"RELAY": @(OpenVPNErrorRelay),
-        @"RELAY_ERROR": @(OpenVPNErrorRelayError),
-        @"N_PAUSE": @(OpenVPNErrorPauseNumber),
-        @"N_RECONNECT": @(OpenVPNErrorReconnectNumber),
-        @"N_KEY_LIMIT_RENEG": @(OpenVPNErrorKeyLimitRenegNumber),
-        @"KEY_STATE_ERROR": @(OpenVPNErrorKeyStateError),
-        @"PROXY_ERROR": @(OpenVPNErrorProxyError),
-        @"PROXY_NEED_CREDS": @(OpenVPNErrorProxyNeedCreds),
-        @"KEV_NEGOTIATE_ERROR": @(OpenVPNErrorKevNegotiateError),
-        @"KEV_PENDING_ERROR": @(OpenVPNErrorKevPendingError),
-        @"N_KEV_EXPIRE": @(OpenVPNErrorKevExpireNumber),
-        @"PKTID_INVALID": @(OpenVPNErrorPKTIDInvalid),
-        @"PKTID_BACKTRACK": @(OpenVPNErrorPKTIDBacktrack),
-        @"PKTID_EXPIRE": @(OpenVPNErrorPKTIDExpire),
-        @"PKTID_REPLAY": @(OpenVPNErrorPKTIDReplay),
-        @"PKTID_TIME_BACKTRACK": @(OpenVPNErrorPKTIDTimeBacktrack),
-        @"DYNAMIC_CHALLENGE": @(OpenVPNErrorDynamicChallenge),
-        @"EPKI_ERROR": @(OpenVPNErrorEPKIError),
-        @"EPKI_INVALID_ALIAS": @(OpenVPNErrorEPKIInvalidAlias),
+        @"NETWORK_RECV_ERROR": @(OpenVPNAdapterErrorNetworkRecvError),
+        @"NETWORK_EOF_ERROR": @(OpenVPNAdapterErrorNetworkEOFError),
+        @"NETWORK_SEND_ERROR": @(OpenVPNAdapterErrorNetworkSendError),
+        @"NETWORK_UNAVAILABLE": @(OpenVPNAdapterErrorNetworkUnavailable),
+        @"DECRYPT_ERROR": @(OpenVPNAdapterErrorDecryptError),
+        @"HMAC_ERROR": @(OpenVPNAdapterErrorDecryptError),
+        @"REPLAY_ERROR": @(OpenVPNAdapterErrorReplayError),
+        @"BUFFER_ERROR": @(OpenVPNAdapterErrorBufferError),
+        @"CC_ERROR": @(OpenVPNAdapterErrorCCError),
+        @"BAD_SRC_ADDR": @(OpenVPNAdapterErrorBadSrcAddr),
+        @"COMPRESS_ERROR": @(OpenVPNAdapterErrorCompressError),
+        @"RESOLVE_ERROR": @(OpenVPNAdapterErrorResolveError),
+        @"SOCKET_PROTECT_ERROR": @(OpenVPNAdapterErrorSocketProtectError),
+        @"TUN_READ_ERROR": @(OpenVPNAdapterErrorTUNReadError),
+        @"TUN_WRITE_ERROR": @(OpenVPNAdapterErrorTUNWriteError),
+        @"TUN_FRAMING_ERROR": @(OpenVPNAdapterErrorTUNFramingError),
+        @"TUN_SETUP_FAILED": @(OpenVPNAdapterErrorTUNSetupFailed),
+        @"TUN_IFACE_CREATE": @(OpenVPNAdapterErrorTUNIfaceCreate),
+        @"TUN_IFACE_DISABLED": @(OpenVPNAdapterErrorTUNIfaceDisabled),
+        @"TUN_ERROR": @(OpenVPNAdapterErrorTUNError),
+        @"TAP_NOT_SUPPORTED": @(OpenVPNAdapterErrorTAPNotSupported),
+        @"REROUTE_GW_NO_DNS": @(OpenVPNAdapterErrorRerouteGatewayNoDns),
+        @"TRANSPORT_ERROR": @(OpenVPNAdapterErrorTransportError),
+        @"TCP_OVERFLOW": @(OpenVPNAdapterErrorTCPOverflow),
+        @"TCP_SIZE_ERROR": @(OpenVPNAdapterErrorTCPSizeError),
+        @"TCP_CONNECT_ERROR": @(OpenVPNAdapterErrorTCPConnectError),
+        @"UDP_CONNECT_ERROR": @(OpenVPNAdapterErrorUDPConnectError),
+        @"SSL_ERROR": @(OpenVPNAdapterErrorSSLError),
+        @"SSL_PARTIAL_WRITE": @(OpenVPNAdapterErrorSSLPartialWrite),
+        @"ENCAPSULATION_ERROR": @(OpenVPNAdapterErrorEncapsulationError),
+        @"EPKI_CERT_ERROR": @(OpenVPNAdapterErrorEPKICertError),
+        @"EPKI_SIGN_ERROR": @(OpenVPNAdapterErrorEPKISignError),
+        @"HANDSHAKE_TIMEOUT": @(OpenVPNAdapterErrorHandshakeTimeout),
+        @"KEEPALIVE_TIMEOUT": @(OpenVPNAdapterErrorKeepaliveTimeout),
+        @"INACTIVE_TIMEOUT": @(OpenVPNAdapterErrorInactiveTimeout),
+        @"CONNECTION_TIMEOUT": @(OpenVPNAdapterErrorConnectionTimeout),
+        @"PRIMARY_EXPIRE": @(OpenVPNAdapterErrorPrimaryExpire),
+        @"TLS_VERSION_MIN": @(OpenVPNAdapterErrorTLSVersionMin),
+        @"TLS_AUTH_FAIL": @(OpenVPNAdapterErrorTLSAuthFail),
+        @"CERT_VERIFY_FAIL": @(OpenVPNAdapterErrorCertVerifyFail),
+        @"PEM_PASSWORD_FAIL": @(OpenVPNAdapterErrorPEMPasswordFail),
+        @"AUTH_FAILED": @(OpenVPNAdapterErrorAuthFailed),
+        @"CLIENT_HALT": @(OpenVPNAdapterErrorClientHalt),
+        @"CLIENT_RESTART": @(OpenVPNAdapterErrorClientRestart),
+        @"RELAY": @(OpenVPNAdapterErrorRelay),
+        @"RELAY_ERROR": @(OpenVPNAdapterErrorRelayError),
+        @"N_PAUSE": @(OpenVPNAdapterErrorPauseNumber),
+        @"N_RECONNECT": @(OpenVPNAdapterErrorReconnectNumber),
+        @"N_KEY_LIMIT_RENEG": @(OpenVPNAdapterErrorKeyLimitRenegNumber),
+        @"KEY_STATE_ERROR": @(OpenVPNAdapterErrorKeyStateError),
+        @"PROXY_ERROR": @(OpenVPNAdapterErrorProxyError),
+        @"PROXY_NEED_CREDS": @(OpenVPNAdapterErrorProxyNeedCreds),
+        @"KEV_NEGOTIATE_ERROR": @(OpenVPNAdapterErrorKevNegotiateError),
+        @"KEV_PENDING_ERROR": @(OpenVPNAdapterErrorKevPendingError),
+        @"N_KEV_EXPIRE": @(OpenVPNAdapterErrorKevExpireNumber),
+        @"PKTID_INVALID": @(OpenVPNAdapterErrorPKTIDInvalid),
+        @"PKTID_BACKTRACK": @(OpenVPNAdapterErrorPKTIDBacktrack),
+        @"PKTID_EXPIRE": @(OpenVPNAdapterErrorPKTIDExpire),
+        @"PKTID_REPLAY": @(OpenVPNAdapterErrorPKTIDReplay),
+        @"PKTID_TIME_BACKTRACK": @(OpenVPNAdapterErrorPKTIDTimeBacktrack),
+        @"DYNAMIC_CHALLENGE": @(OpenVPNAdapterErrorDynamicChallenge),
+        @"EPKI_ERROR": @(OpenVPNAdapterErrorEPKIError),
+        @"EPKI_INVALID_ALIAS": @(OpenVPNAdapterErrorEPKIInvalidAlias),
     };
     
-    OpenVPNError error = errors[errorName] != nil ? (OpenVPNError)[errors[errorName] integerValue] : OpenVPNErrorUnknown;
+    OpenVPNAdapterError error = errors[errorName] != nil ? (OpenVPNAdapterError)[errors[errorName] integerValue] : OpenVPNAdapterErrorUnknown;
     return error;
 }
 
-- (NSString *)reasonForError:(OpenVPNError)error {
+- (NSString *)reasonForError:(OpenVPNAdapterError)error {
     // TODO: Add missing error reasons
     switch (error) {
-        case OpenVPNErrorConfigurationFailure: return @"See OpenVPN error message for more details.";
-        case OpenVPNErrorCredentialsFailure: return @"See OpenVPN error message for more details.";
-        case OpenVPNErrorNetworkRecvError: return @"Errors receiving on network socket.";
-        case OpenVPNErrorNetworkEOFError: return @"EOF received on TCP network socket.";
-        case OpenVPNErrorNetworkSendError: return @"Errors sending on network socket";
-        case OpenVPNErrorNetworkUnavailable: return @"Network unavailable.";
-        case OpenVPNErrorDecryptError: return @"Data channel encrypt/decrypt error.";
-        case OpenVPNErrorHMACError: return @"HMAC verification failure.";
-        case OpenVPNErrorReplayError: return @"Error from PacketIDReceive.";
-        case OpenVPNErrorBufferError: return @"Exception thrown in Buffer methods.";
-        case OpenVPNErrorCCError: return @"General control channel errors.";
-        case OpenVPNErrorBadSrcAddr: return @"Packet from unknown source address.";
-        case OpenVPNErrorCompressError: return @"Compress/Decompress errors on data channel.";
-        case OpenVPNErrorResolveError: return @"DNS resolution error.";
-        case OpenVPNErrorSocketProtectError: return @"Error calling protect() method on socket.";
-        case OpenVPNErrorTUNReadError: return @"Read errors on TUN/TAP interface.";
-        case OpenVPNErrorTUNWriteError: return @"Write errors on TUN/TAP interface.";
-        case OpenVPNErrorTUNFramingError: return @"Error with tun PF_INET/PF_INET6 prefix.";
-        case OpenVPNErrorTUNSetupFailed: return @"Error setting up TUN/TAP interface.";
-        case OpenVPNErrorTUNIfaceCreate: return @"Error creating TUN/TAP interface.";
-        case OpenVPNErrorTUNIfaceDisabled: return @"TUN/TAP interface is disabled.";
-        case OpenVPNErrorTUNError: return @"General tun error.";
-        case OpenVPNErrorTAPNotSupported: return @"Dev TAP is present in profile but not supported.";
-        case OpenVPNErrorRerouteGatewayNoDns: return @"redirect-gateway specified without alt DNS servers.";
-        case OpenVPNErrorTransportError: return @"General transport error";
-        case OpenVPNErrorTCPOverflow: return @"TCP output queue overflow.";
-        case OpenVPNErrorTCPSizeError: return @"Bad embedded uint16_t TCP packet size.";
-        case OpenVPNErrorTCPConnectError: return @"Client error on TCP connect.";
-        case OpenVPNErrorUDPConnectError: return @"Client error on UDP connect.";
-        case OpenVPNErrorSSLError: return @"Errors resulting from read/write on SSL object.";
-        case OpenVPNErrorSSLPartialWrite: return @"SSL object did not process all written cleartext.";
-        case OpenVPNErrorEncapsulationError: return @"Exceptions thrown during packet encapsulation.";
-        case OpenVPNErrorEPKICertError: return @"Error obtaining certificate from External PKI provider.";
-        case OpenVPNErrorEPKISignError: return @"Error obtaining RSA signature from External PKI provider.";
-        case OpenVPNErrorHandshakeTimeout: return @"Handshake failed to complete within given time frame.";
-        case OpenVPNErrorKeepaliveTimeout: return @"Lost contact with peer.";
-        case OpenVPNErrorInactiveTimeout: return @"Disconnected due to inactive timer.";
-        case OpenVPNErrorConnectionTimeout: return @"Connection failed to establish within given time.";
-        case OpenVPNErrorPrimaryExpire: return @"Primary key context expired.";
-        case OpenVPNErrorTLSVersionMin: return @"Peer cannot handshake at our minimum required TLS version.";
-        case OpenVPNErrorTLSAuthFail: return @"tls-auth HMAC verification failed.";
-        case OpenVPNErrorCertVerifyFail: return @"Peer certificate verification failure.";
-        case OpenVPNErrorPEMPasswordFail: return @"Incorrect or missing PEM private key decryption password.";
-        case OpenVPNErrorAuthFailed: return @"General authentication failure";
-        case OpenVPNErrorClientHalt: return @"HALT message from server received.";
-        case OpenVPNErrorClientRestart: return @"RESTART message from server received.";
-        case OpenVPNErrorRelay: return @"RELAY message from server received.";
-        case OpenVPNErrorRelayError: return @"RELAY error.";
-        case OpenVPNErrorPauseNumber: return @"";
-        case OpenVPNErrorReconnectNumber: return @"";
-        case OpenVPNErrorKeyLimitRenegNumber: return @"";
-        case OpenVPNErrorKeyStateError: return @"Received packet didn't match expected key state.";
-        case OpenVPNErrorProxyError: return @"HTTP proxy error.";
-        case OpenVPNErrorProxyNeedCreds: return @"HTTP proxy needs credentials.";
-        case OpenVPNErrorKevNegotiateError: return @"";
-        case OpenVPNErrorKevPendingError: return @"";
-        case OpenVPNErrorKevExpireNumber: return @"";
-        case OpenVPNErrorPKTIDInvalid: return @"";
-        case OpenVPNErrorPKTIDBacktrack: return @"";
-        case OpenVPNErrorPKTIDExpire: return @"";
-        case OpenVPNErrorPKTIDReplay: return @"";
-        case OpenVPNErrorPKTIDTimeBacktrack: return @"";
-        case OpenVPNErrorDynamicChallenge: return @"";
-        case OpenVPNErrorEPKIError: return @"";
-        case OpenVPNErrorEPKIInvalidAlias: return @"";
-        case OpenVPNErrorUnknown: return @"Unknown error.";
+        case OpenVPNAdapterErrorConfigurationFailure: return @"See OpenVPN error message for more details.";
+        case OpenVPNAdapterErrorCredentialsFailure: return @"See OpenVPN error message for more details.";
+        case OpenVPNAdapterErrorNetworkRecvError: return @"Errors receiving on network socket.";
+        case OpenVPNAdapterErrorNetworkEOFError: return @"EOF received on TCP network socket.";
+        case OpenVPNAdapterErrorNetworkSendError: return @"Errors sending on network socket";
+        case OpenVPNAdapterErrorNetworkUnavailable: return @"Network unavailable.";
+        case OpenVPNAdapterErrorDecryptError: return @"Data channel encrypt/decrypt error.";
+        case OpenVPNAdapterErrorHMACError: return @"HMAC verification failure.";
+        case OpenVPNAdapterErrorReplayError: return @"Error from PacketIDReceive.";
+        case OpenVPNAdapterErrorBufferError: return @"Exception thrown in Buffer methods.";
+        case OpenVPNAdapterErrorCCError: return @"General control channel errors.";
+        case OpenVPNAdapterErrorBadSrcAddr: return @"Packet from unknown source address.";
+        case OpenVPNAdapterErrorCompressError: return @"Compress/Decompress errors on data channel.";
+        case OpenVPNAdapterErrorResolveError: return @"DNS resolution error.";
+        case OpenVPNAdapterErrorSocketProtectError: return @"Error calling protect() method on socket.";
+        case OpenVPNAdapterErrorTUNReadError: return @"Read errors on TUN/TAP interface.";
+        case OpenVPNAdapterErrorTUNWriteError: return @"Write errors on TUN/TAP interface.";
+        case OpenVPNAdapterErrorTUNFramingError: return @"Error with tun PF_INET/PF_INET6 prefix.";
+        case OpenVPNAdapterErrorTUNSetupFailed: return @"Error setting up TUN/TAP interface.";
+        case OpenVPNAdapterErrorTUNIfaceCreate: return @"Error creating TUN/TAP interface.";
+        case OpenVPNAdapterErrorTUNIfaceDisabled: return @"TUN/TAP interface is disabled.";
+        case OpenVPNAdapterErrorTUNError: return @"General tun error.";
+        case OpenVPNAdapterErrorTAPNotSupported: return @"Dev TAP is present in profile but not supported.";
+        case OpenVPNAdapterErrorRerouteGatewayNoDns: return @"redirect-gateway specified without alt DNS servers.";
+        case OpenVPNAdapterErrorTransportError: return @"General transport error";
+        case OpenVPNAdapterErrorTCPOverflow: return @"TCP output queue overflow.";
+        case OpenVPNAdapterErrorTCPSizeError: return @"Bad embedded uint16_t TCP packet size.";
+        case OpenVPNAdapterErrorTCPConnectError: return @"Client error on TCP connect.";
+        case OpenVPNAdapterErrorUDPConnectError: return @"Client error on UDP connect.";
+        case OpenVPNAdapterErrorSSLError: return @"Errors resulting from read/write on SSL object.";
+        case OpenVPNAdapterErrorSSLPartialWrite: return @"SSL object did not process all written cleartext.";
+        case OpenVPNAdapterErrorEncapsulationError: return @"Exceptions thrown during packet encapsulation.";
+        case OpenVPNAdapterErrorEPKICertError: return @"Error obtaining certificate from External PKI provider.";
+        case OpenVPNAdapterErrorEPKISignError: return @"Error obtaining RSA signature from External PKI provider.";
+        case OpenVPNAdapterErrorHandshakeTimeout: return @"Handshake failed to complete within given time frame.";
+        case OpenVPNAdapterErrorKeepaliveTimeout: return @"Lost contact with peer.";
+        case OpenVPNAdapterErrorInactiveTimeout: return @"Disconnected due to inactive timer.";
+        case OpenVPNAdapterErrorConnectionTimeout: return @"Connection failed to establish within given time.";
+        case OpenVPNAdapterErrorPrimaryExpire: return @"Primary key context expired.";
+        case OpenVPNAdapterErrorTLSVersionMin: return @"Peer cannot handshake at our minimum required TLS version.";
+        case OpenVPNAdapterErrorTLSAuthFail: return @"tls-auth HMAC verification failed.";
+        case OpenVPNAdapterErrorCertVerifyFail: return @"Peer certificate verification failure.";
+        case OpenVPNAdapterErrorPEMPasswordFail: return @"Incorrect or missing PEM private key decryption password.";
+        case OpenVPNAdapterErrorAuthFailed: return @"General authentication failure";
+        case OpenVPNAdapterErrorClientHalt: return @"HALT message from server received.";
+        case OpenVPNAdapterErrorClientRestart: return @"RESTART message from server received.";
+        case OpenVPNAdapterErrorRelay: return @"RELAY message from server received.";
+        case OpenVPNAdapterErrorRelayError: return @"RELAY error.";
+        case OpenVPNAdapterErrorPauseNumber: return @"";
+        case OpenVPNAdapterErrorReconnectNumber: return @"";
+        case OpenVPNAdapterErrorKeyLimitRenegNumber: return @"";
+        case OpenVPNAdapterErrorKeyStateError: return @"Received packet didn't match expected key state.";
+        case OpenVPNAdapterErrorProxyError: return @"HTTP proxy error.";
+        case OpenVPNAdapterErrorProxyNeedCreds: return @"HTTP proxy needs credentials.";
+        case OpenVPNAdapterErrorKevNegotiateError: return @"";
+        case OpenVPNAdapterErrorKevPendingError: return @"";
+        case OpenVPNAdapterErrorKevExpireNumber: return @"";
+        case OpenVPNAdapterErrorPKTIDInvalid: return @"";
+        case OpenVPNAdapterErrorPKTIDBacktrack: return @"";
+        case OpenVPNAdapterErrorPKTIDExpire: return @"";
+        case OpenVPNAdapterErrorPKTIDReplay: return @"";
+        case OpenVPNAdapterErrorPKTIDTimeBacktrack: return @"";
+        case OpenVPNAdapterErrorDynamicChallenge: return @"";
+        case OpenVPNAdapterErrorEPKIError: return @"";
+        case OpenVPNAdapterErrorEPKIInvalidAlias: return @"";
+        case OpenVPNAdapterErrorUnknown: return @"Unknown error.";
     }
 }
 
