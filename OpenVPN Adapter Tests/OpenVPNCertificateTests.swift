@@ -39,5 +39,18 @@ class OpenVPNCertificateTests: XCTestCase {
             return
         }
     }
+    
+    func testCertificateFromEmptyPEM() {
+        let caData = Data(count: 1024)
+        
+        let certificate: OpenVPNCertificate
+        do {
+            certificate = try OpenVPNCertificate(pem: caData)
+        } catch {
+            return
+        }
+        
+        XCTFail("Initialization with empty PEM data should fail")
+    }
 
 }
