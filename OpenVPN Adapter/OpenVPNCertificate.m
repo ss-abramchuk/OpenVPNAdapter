@@ -7,6 +7,7 @@
 //
 
 #import <mbedtls/x509_crt.h>
+#import <mbedtls/pem.h>
 
 #import "NSError+Message.h"
 #import "OpenVPNError.h"
@@ -68,6 +69,31 @@
     }
     
     return certificate;
+}
+
+- (NSData *)pemData:(out NSError **)error {
+    NSString *header = @"-----BEGIN CERTIFICATE-----\n";
+    NSString *footer = @"-----END CERTIFICATE-----\n";
+    
+    size_t buffer_length = self.crt->raw.len * 2;
+    unsigned char *pem_buffer = malloc(buffer_length);
+    
+    size_t output_length = 0;
+    
+    int result = mbedtls_pem_write_buffer(header.UTF8String, footer.UTF8String, self.crt->raw.p, self.crt->raw.len, pem_buffer, buffer_length, &output_length);
+    if (result < 0) {
+        if (error) {
+            NSString *reason = [NSError reasonFromResult:result];
+            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
+                NSLocalizedDescriptionKey: @"Failed to write PEM data.",
+                NSLocalizedFailureReasonErrorKey: reason
+            }];
+        }
+        
+        return nil;
+    }
+    
+    return [NSData dataWithBytes:pem_buffer length:output_length];
 }
 
 - (void)dealloc {
