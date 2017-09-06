@@ -30,7 +30,7 @@
     return self;
 }
 
-+ (OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData error:(out NSError * __nullable * __nullable)error {
++ (OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData error:(out NSError **)error {
     OpenVPNCertificate *certificate = [OpenVPNCertificate new];
     
     NSString *pemString = [[NSString alloc] initWithData:pemData encoding:NSUTF8StringEncoding];
@@ -51,7 +51,7 @@
     return certificate;
 }
 
-+ (OpenVPNCertificate *)certificateWithDER:(NSData *)derData error:(out NSError * __nullable * __nullable)error {
++ (OpenVPNCertificate *)certificateWithDER:(NSData *)derData error:(out NSError **)error {
     OpenVPNCertificate *certificate = [OpenVPNCertificate new];
     
     int result = mbedtls_x509_crt_parse_der(certificate.crt, derData.bytes, derData.length);
