@@ -96,6 +96,19 @@
     return [NSData dataWithBytes:pem_buffer length:output_length];
 }
 
+- (NSData *)derData:(out NSError **)error {
+    if (self.crt->raw.p == NULL || self.crt->raw.len == 0) {
+        *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:MBEDTLS_ERR_X509_BAD_INPUT_DATA userInfo:@{
+            NSLocalizedDescriptionKey: @"Failed to write DER data.",
+            NSLocalizedFailureReasonErrorKey: @"Input invalid"
+        }];
+        
+        return nil;
+    }
+    
+    return [NSData dataWithBytes:self.crt->raw.p length:self.crt->raw.len];
+}
+
 - (void)dealloc {
     mbedtls_x509_crt_free(self.crt);
     free(self.crt);

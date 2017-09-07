@@ -19,5 +19,6 @@
 - (nonnull instancetype) __unavailable init;
 
 - (nullable NSData *)pemData:(out NSError * __nullable * __nullable)error;
+- (nullable NSData *)derData:(out NSError * __nullable * __nullable)error;
 
 @end
