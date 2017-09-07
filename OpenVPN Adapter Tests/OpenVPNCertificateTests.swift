@@ -23,7 +23,7 @@ class OpenVPNCertificateTests: XCTestCase {
 
     func testCertificatePEMandDER() {
         guard
-            let caURL = Bundle.current.url(forResource: "ca", withExtension: "crt"),
+            let caURL = Bundle.current.url(forResource: "test-ca", withExtension: "crt"),
             let caOriginalPEMData = try? Data(contentsOf: caURL)
         else {
             XCTFail()
