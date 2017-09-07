@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorDomain;
+FOUNDATION_EXPORT NSString * __nonnull const OpenVPNIdentityErrorDomain;
 
 FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorFatalKey;
 FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorMessageKey;

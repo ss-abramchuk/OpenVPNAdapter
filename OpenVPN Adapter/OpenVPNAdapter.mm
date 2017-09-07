@@ -434,7 +434,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 #pragma mark Client Configuration
 
-- (OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration error:(out NSError * __nullable * __nullable)error {
+- (OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration error:(out NSError **)error {
     ClientAPI::EvalConfig eval = self.vpnClient->eval_config(configuration.config);
     if (eval.error) {
         NSString *errorReason = [self reasonForError:OpenVPNAdapterErrorConfigurationFailure];
@@ -451,7 +451,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return [[OpenVPNProperties alloc] initWithEvalConfig:eval];
 }
 
-- (BOOL)provideCredentials:(nonnull OpenVPNCredentials *)credentials error:(out NSError * __nullable * __nullable)error {
+- (BOOL)provideCredentials:(nonnull OpenVPNCredentials *)credentials error:(out NSError **)error {
     ClientAPI::Status status = self.vpnClient->provide_creds(credentials.credentials);
     if (status.error) {
         if (error) {
