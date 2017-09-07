@@ -75,7 +75,7 @@
     NSString *header = @"-----BEGIN CERTIFICATE-----\n";
     NSString *footer = @"-----END CERTIFICATE-----\n";
     
-    size_t buffer_length = self.crt->raw.len * 2;
+    size_t buffer_length = self.crt->raw.len * 10;
     unsigned char *pem_buffer = malloc(buffer_length);
     
     size_t output_length = 0;
