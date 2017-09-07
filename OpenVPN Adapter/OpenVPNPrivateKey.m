@@ -42,7 +42,10 @@
     
     NSString *pemString = [[NSString alloc] initWithData:pemData encoding:NSUTF8StringEncoding];
     
-    int result = mbedtls_pk_parse_key(key.ctx, (const unsigned char *)pemString.UTF8String, pemData.length + 1, (const unsigned char *)password.UTF8String, password.length + 1);
+    size_t pem_length = strlen(pemString.UTF8String) + 1;
+    size_t password_length = password != nil ? strlen(password.UTF8String) : 0;
+    
+    int result = mbedtls_pk_parse_key(key.ctx, (const unsigned char *)pemString.UTF8String, pem_length, (const unsigned char *)password.UTF8String, password_length);
     if (result < 0) {
         if (error) {
             NSString *reason = [NSError reasonFromResult:result];
@@ -61,7 +64,9 @@
 + (nullable OpenVPNPrivateKey *)keyWithDER:(NSData *)derData password:(NSString *)password error:(out NSError **)error {
     OpenVPNPrivateKey *key = [OpenVPNPrivateKey new];
     
-    int result = mbedtls_pk_parse_key(key.ctx, derData.bytes, derData.length, (const unsigned char *)password.UTF8String, password.length + 1);
+    size_t password_length = password != nil ? strlen(password.UTF8String) : 0;
+    
+    int result = mbedtls_pk_parse_key(key.ctx, derData.bytes, derData.length, (const unsigned char *)password.UTF8String, password_length);
     if (result < 0) {
         if (error) {
             NSString *reason = [NSError reasonFromResult:result];
@@ -78,8 +83,8 @@
 }
 
 - (NSData *)pemData:(out NSError **)error {
-    size_t buffer_length = (self.size / 8) * 2;
-    unsigned char *pem_buffer = malloc(buffer_length);
+    size_t buffer_length = mbedtls_pk_get_len(self.ctx) * 10;
+    unsigned char *pem_buffer = calloc(buffer_length, sizeof(unsigned char));
     
     int result = mbedtls_pk_write_key_pem(self.ctx, pem_buffer, buffer_length);
     if (result < 0) {
@@ -102,8 +107,8 @@
 }
 
 - (NSData *)derData:(out NSError **)error {
-    size_t buffer_length = (self.size / 8) * 2;
-    unsigned char *der_buffer = malloc(buffer_length);
+    size_t buffer_length = mbedtls_pk_get_len(self.ctx) * 10;
+    unsigned char *der_buffer = calloc(buffer_length, sizeof(unsigned char));
     
     int result = mbedtls_pk_write_key_der(self.ctx, der_buffer, buffer_length);
     if (result < 0) {
