@@ -90,10 +90,14 @@
             }];
         }
         
+        free(pem_buffer);
         return nil;
     }
     
-    return [NSData dataWithBytes:pem_buffer length:output_length - 1];
+    NSData *pemData = [NSData dataWithBytes:pem_buffer length:output_length - 1];
+    
+    free(pem_buffer);    
+    return pemData;
 }
 
 - (NSData *)derData:(out NSError **)error {
