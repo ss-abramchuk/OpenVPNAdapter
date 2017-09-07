@@ -98,9 +98,10 @@
 
 - (NSData *)derData:(out NSError **)error {
     if (self.crt->raw.p == NULL || self.crt->raw.len == 0) {
+        NSString *reason = [NSError reasonFromResult:MBEDTLS_ERR_X509_BAD_INPUT_DATA];
         *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:MBEDTLS_ERR_X509_BAD_INPUT_DATA userInfo:@{
             NSLocalizedDescriptionKey: @"Failed to write DER data.",
-            NSLocalizedFailureReasonErrorKey: @"Input invalid"
+            NSLocalizedFailureReasonErrorKey:reason
         }];
         
         return nil;
