@@ -29,6 +29,10 @@
     return self;
 }
 
+- (NSInteger)size {
+    return mbedtls_pk_get_bitlen(self.ctx);
+}
+
 + (nullable OpenVPNPrivateKey *)keyWithPEM:(NSData *)pemData password:(NSString *)password error:(out NSError **)error {
     OpenVPNPrivateKey *key = [OpenVPNPrivateKey new];
     

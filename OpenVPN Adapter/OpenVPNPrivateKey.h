@@ -20,6 +20,8 @@
 
 - (nonnull instancetype) __unavailable init;
 
+@property (nonatomic, readonly) NSInteger size;
+
 - (nullable NSData *)pemData:(out NSError * __nullable * __nullable)error;
 - (nullable NSData *)derData:(out NSError * __nullable * __nullable)error;
 
