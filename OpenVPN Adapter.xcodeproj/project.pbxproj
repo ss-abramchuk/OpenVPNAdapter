@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		C90BAD311E73FF6C00DEFB32 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C90BAD301E73FF6C00DEFB32 /* SystemConfiguration.framework */; };
 		C912BB251E7C3339002B9414 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C912BB241E7C3339002B9414 /* NetworkExtension.framework */; };
-		C915F1F41F612F3300B3DF23 /* OpenVPNPrivateKey.h in Headers */ = {isa = PBXBuildFile; fileRef = C915F1F21F612F3300B3DF23 /* OpenVPNPrivateKey.h */; };
-		C915F1F51F612F3300B3DF23 /* OpenVPNPrivateKey.h in Headers */ = {isa = PBXBuildFile; fileRef = C915F1F21F612F3300B3DF23 /* OpenVPNPrivateKey.h */; };
+		C915F1F41F612F3300B3DF23 /* OpenVPNPrivateKey.h in Headers */ = {isa = PBXBuildFile; fileRef = C915F1F21F612F3300B3DF23 /* OpenVPNPrivateKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C915F1F51F612F3300B3DF23 /* OpenVPNPrivateKey.h in Headers */ = {isa = PBXBuildFile; fileRef = C915F1F21F612F3300B3DF23 /* OpenVPNPrivateKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C915F1F61F612F3300B3DF23 /* OpenVPNPrivateKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C915F1F31F612F3300B3DF23 /* OpenVPNPrivateKey.m */; };
 		C915F1F71F612F3300B3DF23 /* OpenVPNPrivateKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C915F1F31F612F3300B3DF23 /* OpenVPNPrivateKey.m */; };
 		C915F1F91F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C915F1F81F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift */; };
