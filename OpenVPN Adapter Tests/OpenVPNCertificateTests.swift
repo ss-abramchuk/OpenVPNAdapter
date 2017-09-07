@@ -21,23 +21,48 @@ class OpenVPNCertificateTests: XCTestCase {
         super.tearDown()
     }
 
-    func testCertificateFromPEM() {
+    func testCertificatePEMandDER() {
         guard
             let caURL = Bundle.current.url(forResource: "ca", withExtension: "crt"),
-            let caData = try? Data(contentsOf: caURL)
-//            let caContent = try? String(contentsOf: caURL, encoding: .utf8).cString(using: .utf8)
+            let caOriginalPEMData = try? Data(contentsOf: caURL)
         else {
-            XCTFail("")
+            XCTFail()
             return
         }
         
-        let certificate: OpenVPNCertificate
+        let certificateFromPEM: OpenVPNCertificate
         do {
-            certificate = try OpenVPNCertificate(pem: caData)
+            certificateFromPEM = try OpenVPNCertificate(pem: caOriginalPEMData)
         } catch {
             XCTFail(error.localizedDescription)
             return
         }
+        
+        let caDERData: Data
+        do {
+            caDERData = try certificateFromPEM.derData()
+        } catch {
+            XCTFail(error.localizedDescription)
+            return
+        }
+        
+        let certificateFromDER: OpenVPNCertificate
+        do {
+            certificateFromDER = try OpenVPNCertificate(der: caDERData)
+        } catch {
+            XCTFail(error.localizedDescription)
+            return
+        }
+        
+        let caGeneratedPEMData: Data
+        do {
+            caGeneratedPEMData = try certificateFromDER.pemData()
+        } catch {
+            XCTFail(error.localizedDescription)
+            return
+        }
+        
+        XCTAssert(caGeneratedPEMData.elementsEqual(caOriginalPEMData))
     }
     
     func testCertificateFromEmptyPEM() {
