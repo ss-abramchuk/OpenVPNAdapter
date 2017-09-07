@@ -77,6 +77,57 @@
     return key;
 }
 
+- (NSData *)pemData:(out NSError **)error {
+    size_t buffer_length = (self.size / 8) * 2;
+    unsigned char *pem_buffer = malloc(buffer_length);
+    
+    int result = mbedtls_pk_write_key_pem(self.ctx, pem_buffer, buffer_length);
+    if (result < 0) {
+        if (error) {
+            NSString *reason = [NSError reasonFromResult:result];
+            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
+                NSLocalizedDescriptionKey: @"Failed to write PEM data.",
+                NSLocalizedFailureReasonErrorKey: reason
+            }];
+        }
+        
+        free(pem_buffer);
+        return nil;
+    }
+    
+    NSData *pemData = [[NSString stringWithCString:(const char *)pem_buffer encoding:NSUTF8StringEncoding] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    free(pem_buffer);
+    return pemData;
+}
+
+- (NSData *)derData:(out NSError **)error {
+    size_t buffer_length = (self.size / 8) * 2;
+    unsigned char *der_buffer = malloc(buffer_length);
+    
+    int result = mbedtls_pk_write_key_der(self.ctx, der_buffer, buffer_length);
+    if (result < 0) {
+        if (error) {
+            NSString *reason = [NSError reasonFromResult:result];
+            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
+                NSLocalizedDescriptionKey: @"Failed to write DER data.",
+                NSLocalizedFailureReasonErrorKey: reason
+            }];
+        }
+        
+        free(der_buffer);
+        return nil;
+    }
+    
+    NSUInteger location = buffer_length - result;
+    NSRange range = NSMakeRange(location, result);
+    
+    NSData *derData = [[NSData dataWithBytes:der_buffer length:buffer_length] subdataWithRange:range];
+    
+    free(der_buffer);
+    return derData;
+}
+
 - (void)dealloc {
     mbedtls_pk_free(self.ctx);
     free(self.ctx);
