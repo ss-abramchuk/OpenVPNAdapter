@@ -93,7 +93,7 @@
         return nil;
     }
     
-    return [NSData dataWithBytes:pem_buffer length:output_length];
+    return [NSData dataWithBytes:pem_buffer length:output_length - 1];
 }
 
 - (NSData *)derData:(out NSError **)error {
