@@ -33,6 +33,10 @@
     return mbedtls_pk_get_bitlen(self.ctx);
 }
 
+- (OpenVPNKeyType)type {
+    return (OpenVPNKeyType)mbedtls_pk_get_type(self.ctx);
+}
+
 + (nullable OpenVPNPrivateKey *)keyWithPEM:(NSData *)pemData password:(NSString *)password error:(out NSError **)error {
     OpenVPNPrivateKey *key = [OpenVPNPrivateKey new];
     
