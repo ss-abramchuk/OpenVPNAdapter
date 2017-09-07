@@ -84,7 +84,7 @@
 
 - (NSData *)pemData:(out NSError **)error {
     size_t buffer_length = mbedtls_pk_get_len(self.ctx) * 10;
-    unsigned char *pem_buffer = calloc(buffer_length, sizeof(unsigned char));
+    unsigned char *pem_buffer = malloc(buffer_length);
     
     int result = mbedtls_pk_write_key_pem(self.ctx, pem_buffer, buffer_length);
     if (result < 0) {
@@ -108,7 +108,7 @@
 
 - (NSData *)derData:(out NSError **)error {
     size_t buffer_length = mbedtls_pk_get_len(self.ctx) * 10;
-    unsigned char *der_buffer = calloc(buffer_length, sizeof(unsigned char));
+    unsigned char *der_buffer = malloc(buffer_length);
     
     int result = mbedtls_pk_write_key_der(self.ctx, der_buffer, buffer_length);
     if (result < 0) {
