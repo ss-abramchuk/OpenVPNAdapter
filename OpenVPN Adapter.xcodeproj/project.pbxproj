@@ -13,6 +13,8 @@
 		C915F1F51F612F3300B3DF23 /* OpenVPNPrivateKey.h in Headers */ = {isa = PBXBuildFile; fileRef = C915F1F21F612F3300B3DF23 /* OpenVPNPrivateKey.h */; };
 		C915F1F61F612F3300B3DF23 /* OpenVPNPrivateKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C915F1F31F612F3300B3DF23 /* OpenVPNPrivateKey.m */; };
 		C915F1F71F612F3300B3DF23 /* OpenVPNPrivateKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C915F1F31F612F3300B3DF23 /* OpenVPNPrivateKey.m */; };
+		C915F1F91F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C915F1F81F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift */; };
+		C915F1FA1F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C915F1F81F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift */; };
 		C9354F451F1E4A4500F4C935 /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B795681F1D219C00CF35FE /* OpenVPNReachabilityStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9354F461F1E4A4600F4C935 /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B795681F1D219C00CF35FE /* OpenVPNReachabilityStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9354F471F1E4AE200F4C935 /* OpenVPNReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9354F431F1E49A500F4C935 /* OpenVPNReachabilityTests.swift */; };
@@ -171,6 +173,7 @@
 		C912BB241E7C3339002B9414 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		C915F1F21F612F3300B3DF23 /* OpenVPNPrivateKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNPrivateKey.h; sourceTree = "<group>"; };
 		C915F1F31F612F3300B3DF23 /* OpenVPNPrivateKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenVPNPrivateKey.m; sourceTree = "<group>"; };
+		C915F1F81F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNPrivateKeyTests.swift; sourceTree = "<group>"; };
 		C9354F431F1E49A500F4C935 /* OpenVPNReachabilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNReachabilityTests.swift; sourceTree = "<group>"; };
 		C93779D31EAE32670030A362 /* OpenVPNCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCredentials.h; sourceTree = "<group>"; };
 		C93779D41EAE32670030A362 /* OpenVPNCredentials.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNCredentials.mm; sourceTree = "<group>"; };
@@ -475,6 +478,7 @@
 			isa = PBXGroup;
 			children = (
 				C9CA4DE01F603A5300C4F184 /* OpenVPNCertificateTests.swift */,
+				C915F1F81F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift */,
 				C9354F431F1E49A500F4C935 /* OpenVPNReachabilityTests.swift */,
 				C94605E81EAA656B00971516 /* OpenVPNConfigurationTests.swift */,
 				C9BB47901E71821A00F3F98C /* OpenVPNAdapterTests.swift */,
@@ -852,6 +856,7 @@
 			files = (
 				C94605E91EAA656B00971516 /* OpenVPNConfigurationTests.swift in Sources */,
 				C9BB47911E71821A00F3F98C /* OpenVPNAdapterTests.swift in Sources */,
+				C915F1F91F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */,
 				C9B03A7C1EABA82200268B85 /* ProfileLoader.swift in Sources */,
 				C9CA4DE11F603A5300C4F184 /* OpenVPNCertificateTests.swift in Sources */,
 				C9BB47A21E7183DB00F3F98C /* Bundle.swift in Sources */,
@@ -891,6 +896,7 @@
 				C9D2ABF61EA212A3007EDF9D /* OpenVPNAdapterTests.swift in Sources */,
 				C9CA4DE21F603A5300C4F184 /* OpenVPNCertificateTests.swift in Sources */,
 				C9354F471F1E4AE200F4C935 /* OpenVPNReachabilityTests.swift in Sources */,
+				C915F1FA1F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */,
 				C9B03A7D1EABA82300268B85 /* ProfileLoader.swift in Sources */,
 				C9D2ABF71EA212A3007EDF9D /* Bundle.swift in Sources */,
 			);
