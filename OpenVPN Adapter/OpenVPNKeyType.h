@@ -16,4 +16,4 @@ typedef NS_ENUM(NSInteger, OpenVPNKeyType) {
     OpenVPNKeyTypeECDSA,
     OpenVPNKeyTypeRSAALT,
     OpenVPNKeyTypeRSASSAPSS,
-}
+};
