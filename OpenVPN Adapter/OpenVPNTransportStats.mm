@@ -15,7 +15,7 @@ using namespace openvpn;
 @property (readwrite, nonatomic) NSInteger bytesOut;
 @property (readwrite, nonatomic) NSInteger packetsIn;
 @property (readwrite, nonatomic) NSInteger packetsOut;
-@property (readwrite, nonatomic) NSDate *lastPacketReceived;
+@property (readwrite, nonatomic) NSInteger lastPacketReceived;
 @end
 
 @implementation OpenVPNTransportStats
@@ -26,7 +26,7 @@ using namespace openvpn;
         self.bytesOut = stats.bytesOut;
         self.packetsIn = stats.packetsIn;
         self.packetsOut = stats.packetsOut;
-        self.lastPacketReceived = stats.lastPacketReceived >= 0 ? [NSDate dateWithTimeIntervalSinceNow:stats.lastPacketReceived / -1024.0] : nil;
+        self.lastPacketReceived = stats.lastPacketReceived;
     }
     return self;
 }
@@ -37,7 +37,7 @@ using namespace openvpn;
     statistics.bytesOut = self.bytesOut;
     statistics.packetsIn = self.packetsIn;
     statistics.packetsOut = self.packetsOut;
-    statistics.lastPacketReceived = [self.lastPacketReceived copyWithZone:zone];
+    statistics.lastPacketReceived = self.lastPacketReceived;
     return statistics;
 }
 
@@ -46,7 +46,7 @@ using namespace openvpn;
     [aCoder encodeInteger:self.bytesOut forKey:NSStringFromSelector(@selector(bytesOut))];
     [aCoder encodeInteger:self.packetsIn forKey:NSStringFromSelector(@selector(packetsIn))];
     [aCoder encodeInteger:self.packetsOut forKey:NSStringFromSelector(@selector(packetsOut))];
-    [aCoder encodeObject:self.lastPacketReceived forKey:NSStringFromSelector(@selector(lastPacketReceived))];
+    [aCoder encodeInteger:self.lastPacketReceived forKey:NSStringFromSelector(@selector(lastPacketReceived))];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
@@ -55,7 +55,7 @@ using namespace openvpn;
         self.bytesOut = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(bytesOut))];
         self.packetsIn = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(packetsIn))];
         self.packetsOut = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(packetsOut))];
-        self.lastPacketReceived = [aDecoder decodeObjectOfClass:[NSDate class] forKey:NSStringFromSelector(@selector(lastPacketReceived))];
+        self.lastPacketReceived = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(lastPacketReceived))];
     }
     return self;
 }
