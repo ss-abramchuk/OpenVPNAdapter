@@ -11,7 +11,7 @@
 /**
  Class used to provide extra details about successful connection
  */
-@interface OpenVPNConnectionInfo : NSObject
+@interface OpenVPNConnectionInfo : NSObject <NSCopying, NSSecureCoding>
 
 @property (nullable, readonly, nonatomic) NSString *user;
 @property (nullable, readonly, nonatomic) NSString *serverHost;
@@ -24,7 +24,5 @@
 @property (nullable, readonly, nonatomic) NSString *gatewayIPv6;
 @property (nullable, readonly, nonatomic) NSString *clientIP;
 @property (nullable, readonly, nonatomic) NSString *tunName;
-
-- (nonnull instancetype) __unavailable init;
 
 @end

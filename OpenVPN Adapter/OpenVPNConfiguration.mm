@@ -437,4 +437,88 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.clockTickMS = clockTick;
 }
 
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    OpenVPNConfiguration *configuration = [[OpenVPNConfiguration allocWithZone:zone] init];
+    configuration.fileContent = [self.fileContent copyWithZone:zone];
+    configuration.settings = [self.settings copyWithZone:zone];
+    configuration.guiVersion = [self.guiVersion copyWithZone:zone];
+    configuration.server = [self.server copyWithZone:zone];
+    configuration.proto = self.proto;
+    configuration.ipv6 = self.ipv6;
+    configuration.connectionTimeout = self.connectionTimeout;
+    configuration.tunPersist = self.tunPersist;
+    configuration.googleDNSFallback = self.googleDNSFallback;
+    configuration.autologinSessions = self.autologinSessions;
+    configuration.disableClientCert = self.disableClientCert;
+    configuration.sslDebugLevel = self.sslDebugLevel;
+    configuration.compressionMode = self.compressionMode;
+    configuration.privateKeyPassword = [self.privateKeyPassword copyWithZone:zone];
+    configuration.keyDirection = self.keyDirection;
+    configuration.forceCiphersuitesAESCBC = self.forceCiphersuitesAESCBC;
+    configuration.minTLSVersion = self.minTLSVersion;
+    configuration.tlsCertProfile = self.tlsCertProfile;
+    configuration.peerInfo = [self.peerInfo copyWithZone:zone];
+    configuration.echo = self.echo;
+    configuration.info = self.info;
+    configuration.clockTick = self.clockTick;
+    return configuration;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:self.fileContent forKey:NSStringFromSelector(@selector(fileContent))];
+    [aCoder encodeObject:self.settings forKey:NSStringFromSelector(@selector(settings))];
+    [aCoder encodeObject:self.guiVersion forKey:NSStringFromSelector(@selector(guiVersion))];
+    [aCoder encodeObject:self.server forKey:NSStringFromSelector(@selector(server))];
+    [aCoder encodeInteger:self.proto forKey:NSStringFromSelector(@selector(proto))];
+    [aCoder encodeInteger:self.ipv6 forKey:NSStringFromSelector(@selector(ipv6))];
+    [aCoder encodeInteger:self.connectionTimeout forKey:NSStringFromSelector(@selector(connectionTimeout))];
+    [aCoder encodeBool:self.tunPersist forKey:NSStringFromSelector(@selector(tunPersist))];
+    [aCoder encodeBool:self.googleDNSFallback forKey:NSStringFromSelector(@selector(googleDNSFallback))];
+    [aCoder encodeBool:self.autologinSessions forKey:NSStringFromSelector(@selector(autologinSessions))];
+    [aCoder encodeBool:self.disableClientCert forKey:NSStringFromSelector(@selector(disableClientCert))];
+    [aCoder encodeInteger:self.sslDebugLevel forKey:NSStringFromSelector(@selector(sslDebugLevel))];
+    [aCoder encodeInteger:self.compressionMode forKey:NSStringFromSelector(@selector(compressionMode))];
+    [aCoder encodeObject:self.privateKeyPassword forKey:NSStringFromSelector(@selector(privateKeyPassword))];
+    [aCoder encodeInteger:self.keyDirection forKey:NSStringFromSelector(@selector(keyDirection))];
+    [aCoder encodeBool:self.forceCiphersuitesAESCBC forKey:NSStringFromSelector(@selector(forceCiphersuitesAESCBC))];
+    [aCoder encodeInteger:self.minTLSVersion forKey:NSStringFromSelector(@selector(minTLSVersion))];
+    [aCoder encodeInteger:self.tlsCertProfile forKey:NSStringFromSelector(@selector(tlsCertProfile))];
+    [aCoder encodeObject:self.peerInfo forKey:NSStringFromSelector(@selector(peerInfo))];
+    [aCoder encodeBool:self.echo forKey:NSStringFromSelector(@selector(echo))];
+    [aCoder encodeBool:self.info forKey:NSStringFromSelector(@selector(info))];
+    [aCoder encodeInteger:self.clockTick forKey:NSStringFromSelector(@selector(clockTick))];
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [self init])) {
+        self.fileContent = [aDecoder decodeObjectOfClass:[NSData class] forKey:NSStringFromSelector(@selector(fileContent))];
+        self.settings = [aDecoder decodeObjectOfClass:[NSDictionary class] forKey:NSStringFromSelector(@selector(settings))];
+        self.guiVersion = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(guiVersion))];
+        self.server = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(server))];
+        self.proto = (OpenVPNTransportProtocol)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(proto))];
+        self.ipv6 = (OpenVPNIPv6Preference)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(ipv6))];
+        self.connectionTimeout = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(connectionTimeout))];
+        self.tunPersist = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(tunPersist))];
+        self.googleDNSFallback = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(googleDNSFallback))];
+        self.autologinSessions = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(autologinSessions))];
+        self.disableClientCert = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(disableClientCert))];
+        self.sslDebugLevel = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(sslDebugLevel))];
+        self.compressionMode = (OpenVPNCompressionMode)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(compressionMode))];
+        self.privateKeyPassword = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(privateKeyPassword))];
+        self.keyDirection = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(keyDirection))];
+        self.forceCiphersuitesAESCBC = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(forceCiphersuitesAESCBC))];
+        self.minTLSVersion = (OpenVPNMinTLSVersion)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(minTLSVersion))];
+        self.tlsCertProfile = (OpenVPNTLSCertProfile)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(tlsCertProfile))];
+        self.peerInfo = [aDecoder decodeObjectOfClass:[NSDictionary class] forKey:NSStringFromSelector(@selector(peerInfo))];
+        self.echo = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(echo))];
+        self.info = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(info))];
+        self.clockTick = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(clockTick))];
+    }
+    return self;
+}
+
 @end

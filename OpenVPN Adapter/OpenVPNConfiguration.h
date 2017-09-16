@@ -17,7 +17,7 @@
 /**
  Class used to pass configuration
  */
-@interface OpenVPNConfiguration : NSObject
+@interface OpenVPNConfiguration : NSObject <NSCopying, NSSecureCoding>
 
 /**
  OpenVPN profile as a NSData
