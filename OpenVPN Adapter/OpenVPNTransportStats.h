@@ -34,8 +34,9 @@
 @property (readonly, nonatomic) NSInteger packetsOut;
 
 /**
- Date when last packet was received, or nil if undefined
+ Number of binary milliseconds (1/1024th of a second) since
+ last packet was received, or -1 if undefined
  */
-@property (readonly, nonatomic, nullable) NSDate *lastPacketReceived;
+@property (readonly, nonatomic) NSInteger lastPacketReceived;
 
 @end
