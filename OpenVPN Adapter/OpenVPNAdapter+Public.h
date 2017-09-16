@@ -117,22 +117,22 @@ NS_SWIFT_NAME(handle(logMessage:));
  Return information about the most recent connection. Will be available
  after an event of type "OpenVPNAdapterEventConnected, otherwise return nil.
  */
-@property (nullable, readonly, nonatomic) OpenVPNConnectionInfo *connectionInfo;
+@property (nullable, readonly, nonatomic, copy) OpenVPNConnectionInfo *connectionInfo;
 
 /**
  Return current session token or nil if session token is unavailable
  */
-@property (nullable, readonly, nonatomic) OpenVPNSessionToken *sessionToken;
+@property (nullable, readonly, nonatomic, copy) OpenVPNSessionToken *sessionToken;
 
 /**
  Return transport stats
  */
-@property (nonnull, readonly, nonatomic) OpenVPNTransportStats *transportStats;
+@property (nonnull, readonly, nonatomic, copy) OpenVPNTransportStats *transportStats;
 
 /**
  Return tun stats
  */
-@property (nonnull, readonly, nonatomic) OpenVPNInterfaceStats *interfaceStats;
+@property (nonnull, readonly, nonatomic, copy) OpenVPNInterfaceStats *interfaceStats;
 
 /**
  <#Description#>

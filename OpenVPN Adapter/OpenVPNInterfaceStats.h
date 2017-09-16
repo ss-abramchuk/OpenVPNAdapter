@@ -11,7 +11,7 @@
 /**
  Class used to provide stats for an interface
  */
-@interface OpenVPNInterfaceStats : NSObject
+@interface OpenVPNInterfaceStats : NSObject <NSCopying, NSSecureCoding>
 
 /**
  Amount of received bytes
@@ -19,7 +19,7 @@
 @property (readonly, nonatomic) NSInteger bytesIn;
 
 /**
- Amout of sent bytes
+ Amount of sent bytes
  */
 @property (readonly, nonatomic) NSInteger bytesOut;
 
@@ -29,7 +29,7 @@
 @property (readonly, nonatomic) NSInteger packetsIn;
 
 /**
- Amout of sent packets
+ Amount of sent packets
  */
 @property (readonly, nonatomic) NSInteger packetsOut;
 
@@ -42,7 +42,5 @@
  Amount of outgoing packets handling errors
  */
 @property (readonly, nonatomic) NSInteger errorsOut;
-
-- (nonnull instancetype) __unavailable init;
 
 @end

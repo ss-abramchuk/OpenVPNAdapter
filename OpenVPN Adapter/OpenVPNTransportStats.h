@@ -11,7 +11,7 @@
 /**
  Class used to provide basic transport stats
  */
-@interface OpenVPNTransportStats : NSObject
+@interface OpenVPNTransportStats : NSObject <NSCopying, NSSecureCoding>
 
 /**
  Amount of received bytes
@@ -34,11 +34,8 @@
 @property (readonly, nonatomic) NSInteger packetsOut;
 
 /**
- Number of binary milliseconds (1/1024th of a second) since
- last packet was received, or -1 if undefined
+ Date when last packet was received, or nil if undefined
  */
-@property (readonly, nonatomic) NSInteger lastPacketReceived;
-
-- (nonnull instancetype) __unavailable init;
+@property (readonly, nonatomic, nullable) NSDate *lastPacketReceived;
 
 @end
