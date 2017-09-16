@@ -325,12 +325,24 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         return -1;
     }
     
+    [self resetTunnelSettings];
+    
     if (self.packetFlow) {
         [self readTUNPackets];
         return CFSocketGetNative(self.tunSocket);
     } else {
         return -1;
     }
+}
+
+- (void)resetTunnelSettings {
+    self.remoteAddress = nil;
+    self.defaultGatewayIPv6 = nil;
+    self.defaultGatewayIPv4 = nil;
+    self.tunnelSettingsIPv6 = [[OpenVPNTunnelSettings alloc] init];
+    self.tunnelSettingsIPv4 = [[OpenVPNTunnelSettings alloc] init];
+    self.searchDomains = [[NSMutableArray alloc] init];
+    self.mtu = nil;
 }
 
 #pragma mark Event and Log Handlers
@@ -499,14 +511,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             }];
         }
         
-        self.remoteAddress = nil;
-        
-        self.tunnelSettingsIPv6 = nil;
-        self.tunnelSettingsIPv4 = nil;
-        
-        self.searchDomains = nil;
-        
-        self.mtu = nil;
+        [self resetTunnelSettings];
         
         if (self.vpnSocket) {
             CFSocketInvalidate(self.vpnSocket);
