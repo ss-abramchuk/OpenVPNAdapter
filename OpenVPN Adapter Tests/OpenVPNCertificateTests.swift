@@ -68,9 +68,8 @@ class OpenVPNCertificateTests: XCTestCase {
     func testCertificateFromEmptyPEM() {
         let caData = Data(count: 1024)
         
-        let certificate: OpenVPNCertificate
         do {
-            certificate = try OpenVPNCertificate(pem: caData)
+            let _ = try OpenVPNCertificate(pem: caData)
         } catch {
             return
         }
