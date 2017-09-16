@@ -19,7 +19,7 @@
 @property (readonly, nonatomic) NSInteger bytesIn;
 
 /**
- Amount of sent bytes
+ Amout of sent bytes
  */
 @property (readonly, nonatomic) NSInteger bytesOut;
 
@@ -29,7 +29,7 @@
 @property (readonly, nonatomic) NSInteger packetsIn;
 
 /**
- Amount of sent packets
+ Amout of sent packets
  */
 @property (readonly, nonatomic) NSInteger packetsOut;
 
