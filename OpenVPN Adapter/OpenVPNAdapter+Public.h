@@ -144,7 +144,7 @@ NS_SWIFT_NAME(handle(logMessage:));
  @return <#return value description#>
  */
 - (nullable OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration
-                     error:(out NSError * __nullable * __nullable)error
+                     error:(out NSError * _Nullable * _Nullable)error
 NS_SWIFT_NAME(apply(configuration:));
 
 /**
@@ -155,7 +155,7 @@ NS_SWIFT_NAME(apply(configuration:));
  @return <#return value description#>
  */
 - (BOOL)provideCredentials:(OpenVPNCredentials *)credentials
-                     error:(out NSError * __nullable * __nullable)error
+                     error:(out NSError * _Nullable * _Nullable)error
 NS_SWIFT_NAME(provide(credentials:));
 
 /**
