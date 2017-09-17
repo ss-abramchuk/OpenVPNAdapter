@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OpenVPNTunnelSettings : NSObject
 
 @property (nonatomic) BOOL initialized;
@@ -21,3 +23,5 @@
 @property (readonly, strong, nonatomic) NSMutableArray *dnsAddresses;
 
 @end
+
+NS_ASSUME_NONNULL_END
