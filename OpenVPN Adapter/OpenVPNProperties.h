@@ -10,6 +10,8 @@
 
 #import "OpenVPNTransportProtocol.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class OpenVPNServerEntry;
 
 @interface OpenVPNProperties : NSObject
@@ -74,6 +76,8 @@
  */
 @property (nullable, readonly, nonatomic) NSArray<OpenVPNServerEntry *> *servers;
 
-- (nonnull instancetype) __unavailable init;
+- (instancetype) __unavailable init;
 
 @end
+
+NS_ASSUME_NONNULL_END

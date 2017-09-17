@@ -8,11 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OpenVPNServerEntry : NSObject
 
 @property (nullable, readonly, nonatomic) NSString *server;
 @property (nullable, readonly, nonatomic) NSString *friendlyName;
 
-- (nonnull instancetype) __unavailable init;
+- (instancetype) __unavailable init;
 
 @end
+
+NS_ASSUME_NONNULL_END

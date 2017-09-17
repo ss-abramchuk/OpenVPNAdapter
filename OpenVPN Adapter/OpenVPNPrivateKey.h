@@ -10,17 +10,19 @@
 
 #import "OpenVPNKeyType.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OpenVPNPrivateKey : NSObject
 
-+ (nullable OpenVPNPrivateKey *)keyWithPEM:(nonnull NSData *)pemData
++ (nullable OpenVPNPrivateKey *)keyWithPEM:(NSData *)pemData
                                   password:(nullable NSString *)password
                                      error:(out NSError * __nullable * __nullable)error;
 
-+ (nullable OpenVPNPrivateKey *)keyWithDER:(nonnull NSData *)derData
++ (nullable OpenVPNPrivateKey *)keyWithDER:(NSData *)derData
                                   password:(nullable NSString *)password
                                      error:(out NSError * __nullable * __nullable)error;
 
-- (nonnull instancetype) __unavailable init;
+- (instancetype) __unavailable init;
 
 @property (nonatomic, readonly) NSInteger size;
 @property (nonatomic, readonly) OpenVPNKeyType type;
@@ -29,3 +31,5 @@
 - (nullable NSData *)derData:(out NSError * __nullable * __nullable)error;
 
 @end
+
+NS_ASSUME_NONNULL_END
