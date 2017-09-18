@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable OpenVPNCertificate *)certificateWithDER:(NSData *)derData
                                               error:(out NSError * _Nullable * _Nullable)error;
 
-- (instancetype) __unavailable init;
+- (instancetype)init NS_UNAVAILABLE;
 
 - (nullable NSData *)pemData:(out NSError * _Nullable * _Nullable)error;
 - (nullable NSData *)derData:(out NSError * _Nullable * _Nullable)error;

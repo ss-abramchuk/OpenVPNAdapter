@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, readonly, nonatomic) NSArray<OpenVPNServerEntry *> *servers;
 
-- (instancetype) __unavailable init;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   password:(nullable NSString *)password
                                      error:(out NSError * _Nullable * _Nullable)error;
 
-- (instancetype) __unavailable init;
+- (instancetype)init NS_UNAVAILABLE;
 
 @property (nonatomic, readonly) NSInteger size;
 @property (nonatomic, readonly) OpenVPNKeyType type;
