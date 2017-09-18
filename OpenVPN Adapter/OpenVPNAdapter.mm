@@ -33,13 +33,12 @@
 #import "OpenVPNAdapter+Public.h"
 
 @interface OpenVPNAdapter () {
+    CFSocketRef _tunSocket;
+    CFSocketRef _vpnSocket;
     __weak id<OpenVPNAdapterDelegate> _delegate;
 }
 
 @property (assign, nonatomic) OpenVPNClient *vpnClient;
-
-@property CFSocketRef vpnSocket;
-@property CFSocketRef tunSocket;
 
 @property (strong, nonatomic) NSString *remoteAddress;
 
@@ -55,17 +54,9 @@
 
 @property (weak, nonatomic) id<OpenVPNAdapterPacketFlow> packetFlow;
 
-- (void)readTUNPackets;
-- (void)readVPNPacket:(NSData *)packet;
-- (OpenVPNAdapterEvent)eventByName:(NSString *)eventName;
-- (OpenVPNAdapterError)errorByName:(NSString *)errorName;
-- (NSString *)reasonForError:(OpenVPNAdapterError)error;
-- (NSString *)subnetFromPrefixLength:(NSNumber *)prefixLength;
-- (void)performAsyncBlock:(void (^)())block;
-
 @end
 
-@implementation OpenVPNAdapter (Internal)
+@implementation OpenVPNAdapter
 
 #pragma mark Sockets Configuration
 
@@ -96,15 +87,15 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     CFSocketContext socketCtxt = {0, (__bridge void *)self, NULL, NULL, NULL};
     
-    self.vpnSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, &socketCallback, &socketCtxt);
-    self.tunSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
+    _vpnSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, &socketCallback, &socketCtxt);
+    _tunSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
     
-    if (!self.vpnSocket || !self.tunSocket) {
+    if (!_vpnSocket || !_tunSocket) {
         NSLog(@"Failed to create core foundation sockets from native sockets");
         return NO;
     }
     
-    CFRunLoopSourceRef tunSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, self.vpnSocket, 0);
+    CFRunLoopSourceRef tunSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _vpnSocket, 0);
     CFRunLoopAddSource(CFRunLoopGetMain(), tunSocketSource, kCFRunLoopDefaultMode);
     
     CFRelease(tunSocketSource);
@@ -327,7 +318,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     
     if (self.packetFlow) {
         [self readTUNPackets];
-        return CFSocketGetNative(self.tunSocket);
+        return CFSocketGetNative(_tunSocket);
     } else {
         return -1;
     }
@@ -385,10 +376,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         }];
     }
 }
-
-@end
-
-@implementation OpenVPNAdapter (Public)
 
 #pragma mark Properties
 
@@ -508,14 +495,14 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         
         self.mtu = nil;
         
-        if (self.vpnSocket) {
-            CFSocketInvalidate(self.vpnSocket);
-            CFRelease(self.vpnSocket);
+        if (_vpnSocket) {
+            CFSocketInvalidate(_vpnSocket);
+            CFRelease(_vpnSocket);
         }
         
-        if (self.tunSocket) {
-            CFSocketInvalidate(self.tunSocket);
-            CFRelease(self.tunSocket);
+        if (_tunSocket) {
+            CFSocketInvalidate(_tunSocket);
+            CFRelease(_tunSocket);
         }
         
         OpenVPNClient::uninit_process();
@@ -538,10 +525,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (void)disconnect {
     self.vpnClient->stop();
 }
-
-@end
-
-@implementation OpenVPNAdapter
 
 #pragma mark Initialization
 
@@ -570,7 +553,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         NSData *packet = [self prepareVPNPacket:data protocol:protocols[idx]];
         
         // Send data to the VPN server
-        CFSocketSendData(self.vpnSocket, NULL, (CFDataRef)packet, 0.05);
+        CFSocketSendData(_vpnSocket, NULL, (CFDataRef)packet, 0.05);
     }];
 }
 
