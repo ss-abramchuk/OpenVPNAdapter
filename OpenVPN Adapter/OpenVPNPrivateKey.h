@@ -16,19 +16,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable OpenVPNPrivateKey *)keyWithPEM:(NSData *)pemData
                                   password:(nullable NSString *)password
-                                     error:(out NSError * _Nullable * _Nullable)error;
+                                     error:(NSError **)error;
 
 + (nullable OpenVPNPrivateKey *)keyWithDER:(NSData *)derData
                                   password:(nullable NSString *)password
-                                     error:(out NSError * _Nullable * _Nullable)error;
+                                     error:(NSError **)error;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 @property (nonatomic, readonly) NSInteger size;
 @property (nonatomic, readonly) OpenVPNKeyType type;
 
-- (nullable NSData *)pemData:(out NSError * _Nullable * _Nullable)error;
-- (nullable NSData *)derData:(out NSError * _Nullable * _Nullable)error;
+- (nullable NSData *)pemData:(NSError **)error;
+- (nullable NSData *)derData:(NSError **)error;
 
 @end
 

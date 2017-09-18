@@ -13,15 +13,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OpenVPNCertificate : NSObject
 
 + (nullable OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData
-                                              error:(out NSError * _Nullable * _Nullable)error;
+                                              error:(NSError **)error;
 
 + (nullable OpenVPNCertificate *)certificateWithDER:(NSData *)derData
-                                              error:(out NSError * _Nullable * _Nullable)error;
+                                              error:(NSError **)error;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (nullable NSData *)pemData:(out NSError * _Nullable * _Nullable)error;
-- (nullable NSData *)derData:(out NSError * _Nullable * _Nullable)error;
+- (nullable NSData *)pemData:(NSError **)error;
+- (nullable NSData *)derData:(NSError **)error;
 
 @end
 
