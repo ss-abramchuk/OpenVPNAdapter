@@ -19,7 +19,7 @@ FOUNDATION_EXPORT NSString * const OpenVPNAdapterErrorMessageKey;
 /**
  OpenVPN error codes
  */
-typedef NS_ENUM(NSInteger, OpenVPNAdapterError) {
+typedef NS_ERROR_ENUM(OpenVPNAdapterErrorDomain, OpenVPNAdapterError) {
     OpenVPNAdapterErrorConfigurationFailure = 1,
     OpenVPNAdapterErrorCredentialsFailure,
     OpenVPNAdapterErrorNetworkRecvError,
