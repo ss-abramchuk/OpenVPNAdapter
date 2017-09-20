@@ -325,14 +325,16 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         return -1;
     }
     
-    [self resetTunnelSettings];
-    
     if (self.packetFlow) {
         [self readTUNPackets];
         return CFSocketGetNative(self.tunSocket);
     } else {
         return -1;
     }
+}
+
+- (void)teardownTunnel:(BOOL)disconnect {
+    [self resetTunnelSettings];
 }
 
 - (void)resetTunnelSettings {
@@ -510,8 +512,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
                 [self.delegate handleError:error];
             }];
         }
-        
-        [self resetTunnelSettings];
         
         if (self.vpnSocket) {
             CFSocketInvalidate(self.vpnSocket);
