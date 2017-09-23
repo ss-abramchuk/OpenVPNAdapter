@@ -327,16 +327,16 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 - (void)teardownTunnel:(BOOL)disconnect {
     [self resetTunnelSettings];
     
-    if (self.vpnSocket) {
-        CFSocketInvalidate(self.vpnSocket);
-        CFRelease(self.vpnSocket);
-        self.vpnSocket = nil;
+    if (_vpnSocket) {
+        CFSocketInvalidate(_vpnSocket);
+        CFRelease(_vpnSocket);
+        _vpnSocket = nil;
     }
     
-    if (self.tunSocket) {
-        CFSocketInvalidate(self.tunSocket);
-        CFRelease(self.tunSocket);
-        self.tunSocket = nil;
+    if (_tunSocket) {
+        CFSocketInvalidate(_tunSocket);
+        CFRelease(_tunSocket);
+        _tunSocket = nil;
     }
 }
 
@@ -556,7 +556,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 - (void)writeVPNPackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols {
     [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
-        if (!self.vpnSocket) {
+        if (!_vpnSocket) {
             *stop = YES;
             return;
         }
