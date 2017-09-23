@@ -9,6 +9,8 @@
 #import "OpenVPNAdapterEvent.h"
 #import "OpenVPNAdapter.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class OpenVPNConfiguration;
 @class OpenVPNProperties;
 @class OpenVPNCredentials;
@@ -30,7 +32,7 @@
 
  @param completionHandler <#completionHandler description#>
  */
-- (void)readPacketsWithCompletionHandler:(nonnull void (^)(NSArray<NSData *> * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols))completionHandler;
+- (void)readPacketsWithCompletionHandler:(void (^)(NSArray<NSData *> *packets, NSArray<NSNumber *> *protocols))completionHandler;
 
 /**
  <#Description#>
@@ -39,7 +41,7 @@
  @param protocols <#protocols description#>
  @return <#return value description#>
  */
-- (BOOL)writePackets:(nonnull NSArray<NSData *> *)packets withProtocols:(nonnull NSArray<NSNumber *> *)protocols;
+- (BOOL)writePackets:(NSArray<NSData *> *)packets withProtocols:(NSArray<NSNumber *> *)protocols;
 
 @end
 
@@ -54,8 +56,8 @@
  @param settings <#settings description#>
  @param callback <#callback description#>
  */
-- (void)configureTunnelWithSettings:(nonnull NEPacketTunnelNetworkSettings *)settings
-                 callback:(nonnull void (^)(id<OpenVPNAdapterPacketFlow> _Nullable flow))callback
+- (void)configureTunnelWithSettings:(NEPacketTunnelNetworkSettings *)settings
+                 callback:(void (^)(id<OpenVPNAdapterPacketFlow> _Nullable flow))callback
 NS_SWIFT_NAME(configureTunnel(settings:callback:));
 
 /**
@@ -73,7 +75,7 @@ NS_SWIFT_NAME(handle(event:message:));
 
  @param error <#error description#>
  */
-- (void)handleError:(nonnull NSError *)error
+- (void)handleError:(NSError *)error
 NS_SWIFT_NAME(handle(error:));
 
 @optional
@@ -83,7 +85,7 @@ NS_SWIFT_NAME(handle(error:));
 
  @param logMessage <#logMessage description#>
  */
-- (void)handleLog:(nonnull NSString *)logMessage
+- (void)handleLog:(NSString *)logMessage
 NS_SWIFT_NAME(handle(logMessage:));
 
 /**
@@ -101,12 +103,12 @@ NS_SWIFT_NAME(handle(logMessage:));
 /**
  Return core copyright
  */
-@property (class, nonnull, readonly, nonatomic) NSString *copyright;
+@property (class, readonly, nonatomic) NSString *copyright;
 
 /**
  Return platform description
  */
-@property (class, nonnull, readonly, nonatomic) NSString *platform;
+@property (class, readonly, nonatomic) NSString *platform;
 
 /**
  <#Description#>
@@ -127,12 +129,12 @@ NS_SWIFT_NAME(handle(logMessage:));
 /**
  Return transport stats
  */
-@property (nonnull, readonly, nonatomic) OpenVPNTransportStats *transportStats;
+@property (readonly, nonatomic) OpenVPNTransportStats *transportStats;
 
 /**
  Return tun stats
  */
-@property (nonnull, readonly, nonatomic) OpenVPNInterfaceStats *interfaceStats;
+@property (readonly, nonatomic) OpenVPNInterfaceStats *interfaceStats;
 
 /**
  <#Description#>
@@ -141,8 +143,8 @@ NS_SWIFT_NAME(handle(logMessage:));
  @param error <#error description#>
  @return <#return value description#>
  */
-- (nullable OpenVPNProperties *)applyConfiguration:(nonnull OpenVPNConfiguration *)configuration
-                     error:(out NSError * __nullable * __nullable)error
+- (nullable OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration
+                     error:(NSError **)error
 NS_SWIFT_NAME(apply(configuration:));
 
 /**
@@ -152,8 +154,8 @@ NS_SWIFT_NAME(apply(configuration:));
  @param error <#error description#>
  @return <#return value description#>
  */
-- (BOOL)provideCredentials:(nonnull OpenVPNCredentials *)credentials
-                     error:(out NSError * __nullable * __nullable)error
+- (BOOL)provideCredentials:(OpenVPNCredentials *)credentials
+                     error:(NSError **)error
 NS_SWIFT_NAME(provide(credentials:));
 
 /**
@@ -189,3 +191,5 @@ NS_SWIFT_NAME(reconnect(interval:));
 - (void)disconnect;
 
 @end
+
+NS_ASSUME_NONNULL_END

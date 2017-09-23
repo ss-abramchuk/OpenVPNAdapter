@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorDomain;
-FOUNDATION_EXPORT NSString * __nonnull const OpenVPNIdentityErrorDomain;
+NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorFatalKey;
-FOUNDATION_EXPORT NSString * __nonnull const OpenVPNAdapterErrorMessageKey;
+FOUNDATION_EXPORT NSString * const OpenVPNAdapterErrorDomain;
+FOUNDATION_EXPORT NSString * const OpenVPNIdentityErrorDomain;
+
+FOUNDATION_EXPORT NSString * const OpenVPNAdapterErrorFatalKey;
+FOUNDATION_EXPORT NSString * const OpenVPNAdapterErrorMessageKey;
 
 /**
  OpenVPN error codes
@@ -85,3 +87,5 @@ typedef NS_ERROR_ENUM(OpenVPNAdapterErrorDomain, OpenVPNAdapterError) {
     OpenVPNAdapterErrorEPKIInvalidAlias,
     OpenVPNAdapterErrorUnknown
 };
+
+NS_ASSUME_NONNULL_END
