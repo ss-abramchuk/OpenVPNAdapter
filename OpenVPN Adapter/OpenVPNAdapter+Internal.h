@@ -30,6 +30,7 @@ using namespace openvpn;
 - (BOOL)setMTU:(NSNumber *)mtu;
 
 - (CFSocketNativeHandle)establishTunnel;
+- (void)teardownTunnel:(BOOL)disconnect;
 
 - (void)handleEvent:(const ClientAPI::Event *)event;
 - (void)handleLog:(const ClientAPI::LogInfo *)log;
