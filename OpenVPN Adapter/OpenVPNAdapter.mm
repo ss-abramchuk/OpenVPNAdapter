@@ -248,7 +248,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return YES;
 }
 
-- (NSInteger)establishTunnel {
+- (CFSocketNativeHandle)establishTunnel {
     NSAssert(self.delegate != nil, @"delegate property should not be nil");
     
     NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.remoteAddress];

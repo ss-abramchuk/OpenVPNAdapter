@@ -29,7 +29,7 @@ using namespace openvpn;
 
 - (BOOL)setMTU:(NSNumber *)mtu;
 
-- (NSInteger)establishTunnel;
+- (CFSocketNativeHandle)establishTunnel;
 - (void)teardownTunnel:(BOOL)disconnect;
 
 - (void)handleEvent:(const ClientAPI::Event *)event;
