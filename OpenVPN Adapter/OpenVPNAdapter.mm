@@ -38,8 +38,8 @@
 
 @property (assign, nonatomic) OpenVPNClient *vpnClient;
 
-@property CFSocketRef vpnSocket;
-@property CFSocketRef tunSocket;
+@property (assign, nonatomic) CFSocketRef vpnSocket;
+@property (assign, nonatomic) CFSocketRef tunSocket;
 
 @property (strong, nonatomic) NSString *remoteAddress;
 
@@ -333,6 +333,32 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }
 }
 
+- (void)teardownTunnel:(BOOL)disconnect {
+    [self resetTunnelSettings];
+    
+    if (self.vpnSocket) {
+        CFSocketInvalidate(self.vpnSocket);
+        CFRelease(self.vpnSocket);
+        self.vpnSocket = nil;
+    }
+    
+    if (self.tunSocket) {
+        CFSocketInvalidate(self.tunSocket);
+        CFRelease(self.tunSocket);
+        self.tunSocket = nil;
+    }
+}
+
+- (void)resetTunnelSettings {
+    self.remoteAddress = nil;
+    self.defaultGatewayIPv6 = nil;
+    self.defaultGatewayIPv4 = nil;
+    self.tunnelSettingsIPv6 = [[OpenVPNTunnelSettings alloc] init];
+    self.tunnelSettingsIPv4 = [[OpenVPNTunnelSettings alloc] init];
+    self.searchDomains = [[NSMutableArray alloc] init];
+    self.mtu = nil;
+}
+
 #pragma mark Event and Log Handlers
 
 - (void)handleEvent:(const ClientAPI::Event *)event {
@@ -499,25 +525,6 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             }];
         }
         
-        self.remoteAddress = nil;
-        
-        self.tunnelSettingsIPv6 = nil;
-        self.tunnelSettingsIPv4 = nil;
-        
-        self.searchDomains = nil;
-        
-        self.mtu = nil;
-        
-        if (self.vpnSocket) {
-            CFSocketInvalidate(self.vpnSocket);
-            CFRelease(self.vpnSocket);
-        }
-        
-        if (self.tunSocket) {
-            CFSocketInvalidate(self.tunSocket);
-            CFRelease(self.tunSocket);
-        }
-        
         OpenVPNClient::uninit_process();
     });
 }
@@ -565,7 +572,12 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 }
 
 - (void)writeVPNPackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols {
-    [packets enumerateObjectsUsingBlock:^(NSData * data, NSUInteger idx, BOOL * stop) {
+    [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
+        if (!self.vpnSocket) {
+            *stop = YES;
+            return;
+        }
+        
         // Prepare data for sending
         NSData *packet = [self prepareVPNPacket:data protocol:protocols[idx]];
         
