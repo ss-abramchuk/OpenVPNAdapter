@@ -93,7 +93,9 @@ bool OpenVPNClient::tun_builder_persist() {
 
 void OpenVPNClient::tun_builder_establish_lite() { }
 
-void OpenVPNClient::tun_builder_teardown(bool disconnect) { }
+void OpenVPNClient::tun_builder_teardown(bool disconnect) {
+    [(__bridge OpenVPNAdapter *)adapter teardownTunnel:disconnect];
+}
 
 bool OpenVPNClient::socket_protect(int socket) {
     return true;
