@@ -9,8 +9,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OpenVPNAdapter;
 @class OpenVPNConfiguration;
+@class OpenVPNConnectionInfo;
 @class OpenVPNCredentials;
+@class OpenVPNConnectionInfo;
+@class OpenVPNInterfaceStats;
+@class OpenVPNSessionToken;
+@class OpenVPNTransportStats;
 
 extern NSString * const OpenVPNTunnelProviderConfigurationKey;
 
@@ -29,6 +35,26 @@ extern NSString * const OpenVPNTunnelProviderConfigurationKey;
  * @note Only username/password or client certificate authentication is supported when using OpenVPNTunnelProvider.
  */
 @interface OpenVPNTunnelProvider : NEPacketTunnelProvider
+
+/**
+ Returns information about the most recent connection once the tunnel connection state is connected, otherwise nil.
+ */
+@property (nonatomic, readonly, nullable) OpenVPNConnectionInfo *connectionInformation;
+
+/**
+ Return current session token if available, otherwise nil.
+ */
+@property (nonatomic, readonly, nullable) OpenVPNSessionToken *sessionToken;
+
+/**
+ Return transport statistics.
+ */
+@property (nonatomic, readonly) OpenVPNTransportStats *transportStatistics;
+
+/**
+ Return tunnel interface statistics.
+ */
+@property (nonatomic, readonly) OpenVPNInterfaceStats *interfaceStatistics;
 
 @end
            

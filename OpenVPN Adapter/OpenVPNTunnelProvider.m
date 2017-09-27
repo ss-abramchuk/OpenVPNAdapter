@@ -141,6 +141,22 @@ NSString * const OpenVPNTunnelProviderConfigurationKey = @"OpenVPNTunnelProvider
     return credentials;
 }
 
+- (OpenVPNConnectionInfo *)connectionInformation {
+    return self.adapter.connectionInfo;
+}
+
+- (OpenVPNInterfaceStats *)interfaceStatistics {
+    return self.adapter.interfaceStats;
+}
+
+- (OpenVPNSessionToken *)sessionToken {
+    return self.adapter.sessionToken;
+}
+
+- (OpenVPNTransportStats *)transportStatistics {
+    return self.adapter.transportStats;
+}
+
 - (OpenVPNAdapter *)adapter {
     if (!_adapter) {
         _adapter = [[OpenVPNAdapter alloc] init];
