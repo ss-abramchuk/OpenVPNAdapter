@@ -5,7 +5,7 @@
 //  Created by Jonathan Downing on 26/09/2017.
 //
 
-#import <NetworkExtension/NetworkExtension.h>
+@import NetworkExtension;
 
 NS_ASSUME_NONNULL_BEGIN
 
