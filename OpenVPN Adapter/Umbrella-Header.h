@@ -38,3 +38,4 @@ FOUNDATION_EXPORT const unsigned char OpenVPNAdapterVersionString[];
 #import <OpenVPNAdapter/OpenVPNPrivateKey.h>
 #import <OpenVPNAdapter/OpenVPNReachabilityStatus.h>
 #import <OpenVPNAdapter/OpenVPNReachability.h>
+#import <OpenVPNAdapter/OpenVPNTunnelProvider.h>
