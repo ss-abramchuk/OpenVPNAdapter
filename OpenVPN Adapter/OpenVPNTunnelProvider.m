@@ -69,6 +69,7 @@ NSString * const OpenVPNTunnelProviderConfigurationKey = @"OpenVPNTunnelProvider
 
 - (void)stopTunnelWithReason:(NEProviderStopReason)reason completionHandler:(void (^)(void))completionHandler {
     self.stopCompletionHandler = completionHandler;
+    [self.reachability stopTracking];
     [self.adapter disconnect];
 }
 
