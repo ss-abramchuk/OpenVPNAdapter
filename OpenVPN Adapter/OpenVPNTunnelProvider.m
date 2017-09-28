@@ -7,6 +7,7 @@
 
 #import "OpenVPNTunnelProvider.h"
 
+#import "NEVPNProtocol+OpenVPNAdapter.h"
 #import "OpenVPNAdapter.h"
 #import "OpenVPNAdapter+Public.h"
 #import "OpenVPNConfiguration.h"
@@ -14,8 +15,6 @@
 #import "OpenVPNError.h"
 #import "OpenVPNProperties.h"
 #import "OpenVPNReachability.h"
-
-NSString * const OpenVPNTunnelProviderConfigurationKey = @"OpenVPNTunnelProviderConfigurationKey";
 
 @interface NEPacketTunnelFlow () <OpenVPNAdapterPacketFlow>
 @end
@@ -32,12 +31,12 @@ NSString * const OpenVPNTunnelProviderConfigurationKey = @"OpenVPNTunnelProvider
 - (void)startTunnelWithOptions:(NSDictionary<NSString *,NSObject *> *)options completionHandler:(void (^)(NSError * _Nullable))completionHandler {
     NSError *error;
     
-    if (!self.configuration) {
+    if (!self.protocolConfiguration.openVPNConfiguration) {
         completionHandler([NSError errorWithDomain:NEVPNErrorDomain code:NEVPNErrorConfigurationInvalid userInfo:nil]);
         return;
     }
     
-    OpenVPNProperties *properties = [self.adapter applyConfiguration:self.configuration error:&error];
+    OpenVPNProperties *properties = [self.adapter applyConfiguration:self.protocolConfiguration.openVPNConfiguration error:&error];
     
     if (!properties) {
         completionHandler(error);
@@ -45,10 +44,10 @@ NSString * const OpenVPNTunnelProviderConfigurationKey = @"OpenVPNTunnelProvider
     }
     
     if (!properties.autologin) {
-        if (!self.credentials) {
+        if (!self.protocolConfiguration.openVPNCredentials) {
             completionHandler([NSError errorWithDomain:NEVPNErrorDomain code:NEVPNErrorConfigurationInvalid userInfo:nil]);
             return;
-        } else if (![self.adapter provideCredentials:self.credentials error:&error]) {
+        } else if (![self.adapter provideCredentials:self.protocolConfiguration.openVPNCredentials error:&error]) {
             completionHandler(error);
             return;
         }
@@ -111,34 +110,6 @@ NSString * const OpenVPNTunnelProviderConfigurationKey = @"OpenVPNTunnelProvider
     } else {
         [self cancelTunnelWithError:error];
     }
-}
-
-- (OpenVPNConfiguration *)configuration {
-    if (![self.protocolConfiguration isKindOfClass:[NETunnelProviderProtocol class]]) return nil;
-    id configurationData = ((NETunnelProviderProtocol *)self.protocolConfiguration).providerConfiguration[OpenVPNTunnelProviderConfigurationKey];
-    if (![configurationData isKindOfClass:[NSData class]]) return nil;
-    id configuration = [NSKeyedUnarchiver unarchiveObjectWithData:configurationData];
-    if (![configuration isKindOfClass:[OpenVPNConfiguration class]]) return nil;
-    return configuration;
-}
-
-- (OpenVPNCredentials *)credentials {
-    if (!self.protocolConfiguration.username.length) return nil;
-    if (!self.protocolConfiguration.passwordReference) return nil;
-    
-    CFTypeRef reference;
-    NSDictionary *query = @{(id)kSecClass: (id)kSecClassGenericPassword,
-                            (id)kSecReturnData: (id)kCFBooleanTrue,
-                            (id)kSecValuePersistentRef: self.protocolConfiguration.passwordReference};
-    if (SecItemCopyMatching((__bridge CFDictionaryRef)query, &reference) != errSecSuccess) return nil;
-    
-    NSString *password = [[NSString alloc] initWithData:(__bridge NSData *)reference encoding:NSUTF8StringEncoding];
-    if (!password.length) return nil;
-    
-    OpenVPNCredentials *credentials = [[OpenVPNCredentials alloc] init];
-    credentials.username = self.protocolConfiguration.username;
-    credentials.password = password;
-    return credentials;
 }
 
 - (OpenVPNConnectionInfo *)connectionInformation {

@@ -9,16 +9,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OpenVPNAdapter;
-@class OpenVPNConfiguration;
-@class OpenVPNConnectionInfo;
-@class OpenVPNCredentials;
 @class OpenVPNConnectionInfo;
 @class OpenVPNInterfaceStats;
 @class OpenVPNSessionToken;
 @class OpenVPNTransportStats;
-
-extern NSString * const OpenVPNTunnelProviderConfigurationKey;
 
 /*!
  * @interface OpenVPNTunnelProvider
@@ -26,12 +20,9 @@ extern NSString * const OpenVPNTunnelProviderConfigurationKey;
  *
  * OpenVPNTunnelProvider is a subclass of NEPacketTunnelProvider which provides all the necessary logic to establish an OpenVPN tunnel via a Packet Tunnel Provider Extension.
  *
- * In order to provide an OpenVPNConfiguration object to OpenVPNTunnelProvider, the following procedure must be followed:
- * 1) Create a valid OpenVPNConfiguration object with the desired configuration,
- * 2) Convert it to an NSData object via NSKeyedArchiver
- * 3) Add this data object to the providerConfiguration dictionary on NETunnelProviderProtocol using OpenVPNTunnelProviderConfigurationKey as the key.
+ * In order to provide an OpenVPNConfiguration object to OpenVPNTunnelProvider, set the openVPNConfiguration property on NEVPNProtocol.
  *
- * Credentials are aquired using the username and passwordReference properties on NETunnelProviderProtocol.
+ * Credentials are aquired using the username and passwordReference properties on NEVPNProtocol.
  * @note Only username/password or client certificate authentication is supported when using OpenVPNTunnelProvider.
  */
 @interface OpenVPNTunnelProvider : NEPacketTunnelProvider
