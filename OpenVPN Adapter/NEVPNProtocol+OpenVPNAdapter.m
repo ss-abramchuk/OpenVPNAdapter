@@ -14,7 +14,7 @@ NSString * const OpenVPNAdapterConfigurationKey = @"OpenVPNAdapterConfigurationK
 
 @implementation NEVPNProtocol (OpenVPNAdapter)
 
-- (id)providerObjectOfClass:(Class)class ForKey:(NSString *)key {
+- (id)providerObjectOfClass:(Class)class forKey:(NSString *)key {
     if (![self isKindOfClass:[NETunnelProviderProtocol class]]) return nil;
     id data = ((NETunnelProviderProtocol *)self).providerConfiguration[key];
     if (![data isKindOfClass:[NSData class]]) return nil;
@@ -31,7 +31,7 @@ NSString * const OpenVPNAdapterConfigurationKey = @"OpenVPNAdapterConfigurationK
 }
 
 - (OpenVPNConfiguration *)openVPNConfiguration {
-    return [self providerObjectOfClass:[OpenVPNConfiguration class] ForKey:OpenVPNAdapterConfigurationKey];
+    return [self providerObjectOfClass:[OpenVPNConfiguration class] forKey:OpenVPNAdapterConfigurationKey];
 }
 
 - (void)setOpenVPNConfiguration:(OpenVPNConfiguration *)openVPNConfiguration {
