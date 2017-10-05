@@ -16,7 +16,7 @@
 
 - (nonnull instancetype)init;
 
-- (void)startTrackingWithCallback:(nullable void (^)(OpenVPNReachabilityStatus))callback;
+- (void)startTrackingWithCallback:(nonnull void (^)(OpenVPNReachabilityStatus))callback;
 - (void)stopTracking;
 
 @end
