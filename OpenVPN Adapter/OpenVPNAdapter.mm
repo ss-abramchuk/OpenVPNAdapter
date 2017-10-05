@@ -364,7 +364,7 @@ static void socketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         
         NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
                                              code:errorCode
-                                         userInfo:@{ NSLocalizedDescriptionKey: @"OpenVPN error occured.",
+                                         userInfo:@{ NSLocalizedDescriptionKey: @"OpenVPN error occurred.",
                                                      NSLocalizedFailureReasonErrorKey: errorReason,
                                                      OpenVPNAdapterErrorMessageKey: message != nil ? message : @"",
                                                      OpenVPNAdapterErrorFatalKey: @(event->fatal) }];
