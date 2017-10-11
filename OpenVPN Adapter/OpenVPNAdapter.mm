@@ -31,20 +31,28 @@ class Client;
     CFSocketRef _tunSocket;
     CFSocketRef _vpnSocket;
 }
+
 @property (nonatomic) Client *client;
+
 @property (nonatomic) NEPacketTunnelFlow *packetFlow;
+
 @property (nonatomic) NSString *remoteAddress;
+
 @property (nonatomic) NSString *ipv4DefaultGateway;
 @property (nonatomic) NSString *ipv6DefaultGateway;
+
 @property (nonatomic) NSNumber *mtu;
+
 @property (nonatomic) NSMutableArray<NSString *> *ipv4LocalAddresses;
 @property (nonatomic) NSMutableArray<NSString *> *ipv4SubnetMasks;
 @property (nonatomic) NSMutableArray<NEIPv4Route *> *ipv4IncludedRoutes;
 @property (nonatomic) NSMutableArray<NEIPv4Route *> *ipv4ExcludedRoutes;
+
 @property (nonatomic) NSMutableArray<NSString *> *ipv6LocalAddresses;
 @property (nonatomic) NSMutableArray<NSNumber *> *ipv6NetworkPrefixLengths;
 @property (nonatomic) NSMutableArray<NEIPv6Route *> *ipv6IncludedRoutes;
 @property (nonatomic) NSMutableArray<NEIPv6Route *> *ipv6ExcludedRoutes;
+
 @property (nonatomic) NSMutableArray<NSString *> *dnsServers;
 @property (nonatomic) NSMutableArray<NSString *> *searchDomains;
 @property (nonatomic) NSMutableArray<NSString *> *proxyExceptionList;
@@ -55,13 +63,19 @@ class Client;
 @property (nonatomic) NEProxyServer *httpProxyServer;
 @property (nonatomic) BOOL httpsProxyServerEnabled;
 @property (nonatomic) NEProxyServer *httpsProxyServer;
+
 @property (nonatomic, readonly) NEPacketTunnelNetworkSettings *networkSettings;
+
 - (CFSocketNativeHandle)configureSockets;
+
 - (void)readTUNPackets;
+
 - (void)teardownTunnel:(BOOL)disconnect;
+
 - (OpenVPNAdapterError)errorByName:(NSString *)errorName;
 - (OpenVPNAdapterEvent)eventByName:(NSString *)errorName;
 - (NSString *)reasonForError:(OpenVPNAdapterError)error;
+
 @end
 
 using namespace openvpn;
