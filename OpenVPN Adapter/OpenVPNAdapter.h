@@ -34,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter configureTunnelWithNetworkSettings:(NEPacketTunnelNetworkSettings *)networkSettings completionHandler:(void (^)(NEPacketTunnelFlow * _Nullable packetFlow))completionHandler NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
-
 /**
  Informs the receiver that an OpenVPN error has occurred.
  Some errors are fatal and should trigger the diconnection of the tunnel, check for fatal errors with the OpenVPNAdapterErrorFatalKey.
@@ -43,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
  @param error The error which has occurred.
  */
 - (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter handleError:(NSError *)error;
-
 
 /**
  Informs the receiver that an OpenVPN event has occurred.
