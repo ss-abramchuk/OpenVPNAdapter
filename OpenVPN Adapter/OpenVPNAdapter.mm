@@ -475,7 +475,8 @@ static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type,
     proxySettings.HTTPEnabled = self.httpProxyServerEnabled;
     proxySettings.HTTPSServer = self.httpsProxyServer;
     proxySettings.HTTPSEnabled = self.httpsProxyServerEnabled;
-    
+    networkSettings.proxySettings = proxySettings;
+
     networkSettings.MTU = self.mtu;
     
     return networkSettings;
