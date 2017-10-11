@@ -109,11 +109,11 @@ class OpenVPNAdapterTests: XCTestCase {
 
 extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
     
-    func configureTunnel(settings: NEPacketTunnelNetworkSettings, callback: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
-        callback(self)
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (NEPacketTunnelFlow?) -> Void) {
+        completionHandler(NEPacketTunnelFlow())
     }
     
-    func handle(event: OpenVPNAdapterEvent, message: String?) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?) {
         switch event {
         case .connected:
             guard let connectionExpectation = expectations[.connection] else { return }
@@ -127,23 +127,15 @@ extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
         }
     }
     
-    func handle(error: Error) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleError error: Error) {
         if let connectionExpectation = expectations[.connection] {
             XCTFail("Failed to establish conection. \(error.localizedDescription)")
             connectionExpectation.fulfill()
         }
     }
     
-    func handle(logMessage: String) {
-        print("\(logMessage)")
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleLogMessage logMessage: String) {
+        print(logMessage)
     }
-    
-}
-
-extension OpenVPNAdapterTests: OpenVPNAdapterPacketFlow {
-    
-    func readPackets(completionHandler: @escaping ([Data], [NSNumber]) -> Void) { }
-    
-    func writePackets(_ packets: [Data], withProtocols protocols: [NSNumber]) -> Bool { return true }
     
 }
