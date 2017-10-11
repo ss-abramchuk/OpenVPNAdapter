@@ -6,15 +6,18 @@
 //
 //
 
+#import <openvpn/apple/reachable.hpp>
+
 #import "OpenVPNReachability.h"
 #import "OpenVPNReachability+Internal.h"
 
 @interface OpenVPNReachability () {
     BOOL _isTracking;
-    OpenVPNReachabilityStatus _reachabilityStatus;
 }
 
-@property (assign, nonatomic) OpenVPNReachabilityTracker *reachabilityTracker;
+@property (assign, nonatomic) OpenVPNReachabilityTracker *tracker;
+@property (assign, nonatomic) Reachability *reachability;
+
 @property (copy, nonatomic) void (^ reachabilityStatusChangedBlock)(OpenVPNReachabilityStatus);
 
 @end
@@ -22,10 +25,7 @@
 @implementation OpenVPNReachability (Internal)
 
 - (void)updateReachabilityStatus:(OpenVPNReachabilityStatus)status {
-    _reachabilityStatus = status;
-    if (self.reachabilityStatusChangedBlock) {
-        self.reachabilityStatusChangedBlock(status);
-    }
+    if (self.reachabilityStatusChangedBlock) { self.reachabilityStatusChangedBlock(status); }
 }
 
 @end
@@ -37,16 +37,21 @@
 }
 
 - (OpenVPNReachabilityStatus)reachabilityStatus {
-    return _reachabilityStatus;
+    ReachabilityInterface::Status status = self.reachability->reachable();
+    switch (status) {
+        case ReachabilityInterface::NotReachable: return OpenVPNReachabilityStatusNotReachable;
+        case ReachabilityInterface::ReachableViaWiFi: return OpenVPNReachabilityStatusReachableViaWiFi;
+        case ReachabilityInterface::ReachableViaWWAN: return OpenVPNReachabilityStatusReachableViaWWAN;
+    }
 }
 
 - (nonnull instancetype)init {
     self = [super init];
     if (self) {
         _isTracking = NO;
-        _reachabilityStatus = OpenVPNReachabilityStatusNotReachable;
-        
-        self.reachabilityTracker = new OpenVPNReachabilityTracker(true, false, (__bridge void *)self);
+
+        self.tracker = new OpenVPNReachabilityTracker(true, false, (__bridge void *)self);
+        self.reachability = new Reachability(true, true);
     }
     return self;
 }
@@ -56,21 +61,24 @@
     
     dispatch_queue_t main = dispatch_get_main_queue();
     dispatch_async(main, ^{
-        self.reachabilityTracker->reachability_tracker_schedule();
+        self.tracker->reachability_tracker_schedule();
     });
+    
     _isTracking = YES;
 }
 
 - (void)stopTracking {
     dispatch_queue_t main = dispatch_get_main_queue();
     dispatch_async(main, ^{
-        self.reachabilityTracker->reachability_tracker_cancel();
+        self.tracker->reachability_tracker_cancel();
     });
+    
     _isTracking = NO;
 }
 
 - (void)dealloc {
-    delete self.reachabilityTracker;
+    delete self.tracker;
+    delete self.reachability;
 }
 
 @end
