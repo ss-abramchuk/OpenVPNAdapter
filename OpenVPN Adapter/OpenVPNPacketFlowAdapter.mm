@@ -86,7 +86,7 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
     
     CFOptionFlags sockopt = CFSocketGetSocketFlags(socket);
     
-    sockopt |= kCFSocketCloseOnInvalidate;
+    sockopt |= kCFSocketCloseOnInvalidate | kCFSocketAutomaticallyReenableDataCallBack;
     CFSocketSetSocketFlags(socket, sockopt);
     
     return YES;
