@@ -48,11 +48,6 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
         return NO;
     }
     
-    if (![self configureBufferSizeForSocket:sockets[0]] || ![self configureBufferSizeForSocket:sockets[1]]) {
-        NSLog(@"Failed to configure buffer size of the sockets");
-        return NO;
-    }
-    
     CFSocketContext socketCtxt = {0, (__bridge void *)self, NULL, NULL, NULL};
     
     _packetFlowSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, PacketFlowSocketCallback, &socketCtxt);
@@ -63,6 +58,11 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
         return NO;
     }
     
+    if (![self configureOptionsForSocket:_packetFlowSocket] || ![self configureOptionsForSocket:_openVPNClientSocket]) {
+        NSLog(@"Failed to configure buffer size of the sockets");
+        return NO;
+    }
+    
     CFRunLoopSourceRef packetFlowSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _packetFlowSocket, 0);
     CFRunLoopAddSource(CFRunLoopGetMain(), packetFlowSocketSource, kCFRunLoopDefaultMode);
     CFRelease(packetFlowSocketSource);
@@ -70,37 +70,41 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
     return YES;
 }
 
-- (BOOL)configureBufferSizeForSocket:(int)socket {
+- (BOOL)configureOptionsForSocket:(CFSocketRef)socket {
+    CFSocketNativeHandle socketHandle = CFSocketGetNative(socket);
+    
     int buf_value = 65536;
     socklen_t buf_len = sizeof(buf_value);
     
-    if (setsockopt(socket, SOL_SOCKET, SO_RCVBUF, &buf_value, buf_len) == -1) {
+    if (setsockopt(socketHandle, SOL_SOCKET, SO_RCVBUF, &buf_value, buf_len) == -1) {
         NSLog(@"Failed to setup buffer size for input: %@", [NSString stringWithUTF8String:strerror(errno)]);
         return NO;
     }
     
-    if (setsockopt(socket, SOL_SOCKET, SO_SNDBUF, &buf_value, buf_len) == -1) {
+    if (setsockopt(socketHandle, SOL_SOCKET, SO_SNDBUF, &buf_value, buf_len) == -1) {
         NSLog(@"Failed to setup buffer size for output: %@", [NSString stringWithUTF8String:strerror(errno)]);
         return NO;
     }
+    
+    CFOptionFlags sockopt = CFSocketGetSocketFlags(socket);
+    
+    sockopt |= kCFSocketCloseOnInvalidate | kCFSocketAutomaticallyReenableReadCallBack;
+    CFSocketSetSocketFlags(socket, sockopt);
     
     return YES;
 }
 
 - (void)readPacketFlowPackets {
+    __weak typeof(self) weakSelf = self;
     [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols) {
-        [self writeVPNPackets:packets protocols:protocols];
-        [self readPacketFlowPackets];
+        typeof(self) strongSelf = weakSelf;
+        [strongSelf writeVPNPackets:packets protocols:protocols];
+        [strongSelf readPacketFlowPackets];
     }];
 }
 
 - (void)writeVPNPackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols {
     [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
-        if (!_packetFlowSocket) {
-            *stop = YES;
-            return;
-        }
-        
         // Prepare data for sending
         NSData *packet = [self prepareVPNPacket:data protocol:protocols[idx]];
         
@@ -165,15 +169,11 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
 }
 
 - (void)dealloc {
-    if (_packetFlowSocket) {
-        CFSocketInvalidate(_packetFlowSocket);
-        CFRelease(_packetFlowSocket);
-    }
+    CFSocketInvalidate(_openVPNClientSocket);
+    CFRelease(_openVPNClientSocket);
     
-    if (_openVPNClientSocket) {
-        CFSocketInvalidate(_openVPNClientSocket);
-        CFRelease(_openVPNClientSocket);
-    }
+    CFSocketInvalidate(_packetFlowSocket);
+    CFRelease(_packetFlowSocket);
 }
 
 @end
