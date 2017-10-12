@@ -12,8 +12,6 @@
 
 #import <client/ovpncli.hpp>
 #import <openvpn/tun/client/tunbase.hpp>
-#import <openvpn/ip/ip.hpp>
-#import <openvpn/addr/ipv4.hpp>
 #import <NetworkExtension/NetworkExtension.h>
 #import "OpenVPNAdapterEvent.h"
 #import "OpenVPNCredentials+Internal.h"
@@ -21,56 +19,23 @@
 #import "OpenVPNConnectionInfo+Internal.h"
 #import "OpenVPNError.h"
 #import "OpenVPNInterfaceStats+Internal.h"
+#import "OpenVPNNetworkSettingsBuilder.h"
+#import "OpenVPNPacketFlowAdapter.h"
 #import "OpenVPNProperties+Internal.h"
 #import "OpenVPNSessionToken+Internal.h"
 #import "OpenVPNTransportStats+Internal.h"
 
 class Client;
 
-@interface OpenVPNAdapter () {
-    CFSocketRef _tunSocket;
-    CFSocketRef _vpnSocket;
-}
+@interface OpenVPNAdapter ()
 
 @property (nonatomic) Client *client;
 
-@property (nonatomic) NEPacketTunnelFlow *packetFlow;
-
-@property (nonatomic) NSString *remoteAddress;
-
-@property (nonatomic) NSString *ipv4DefaultGateway;
-@property (nonatomic) NSString *ipv6DefaultGateway;
-
-@property (nonatomic) NSNumber *mtu;
-
-@property (nonatomic) NSMutableArray<NSString *> *ipv4LocalAddresses;
-@property (nonatomic) NSMutableArray<NSString *> *ipv4SubnetMasks;
-@property (nonatomic) NSMutableArray<NEIPv4Route *> *ipv4IncludedRoutes;
-@property (nonatomic) NSMutableArray<NEIPv4Route *> *ipv4ExcludedRoutes;
-
-@property (nonatomic) NSMutableArray<NSString *> *ipv6LocalAddresses;
-@property (nonatomic) NSMutableArray<NSNumber *> *ipv6NetworkPrefixLengths;
-@property (nonatomic) NSMutableArray<NEIPv6Route *> *ipv6IncludedRoutes;
-@property (nonatomic) NSMutableArray<NEIPv6Route *> *ipv6ExcludedRoutes;
-
-@property (nonatomic) NSMutableArray<NSString *> *dnsServers;
-@property (nonatomic) NSMutableArray<NSString *> *searchDomains;
-@property (nonatomic) NSMutableArray<NSString *> *proxyExceptionList;
 @property (nonatomic) NSString *sessionName;
-@property (nonatomic) BOOL autoProxyConfigurationEnabled;
-@property (nonatomic) NSURL *proxyAutoConfigurationURL;
-@property (nonatomic) BOOL httpProxyServerEnabled;
-@property (nonatomic) NEProxyServer *httpProxyServer;
-@property (nonatomic) BOOL httpsProxyServerEnabled;
-@property (nonatomic) NEProxyServer *httpsProxyServer;
 
-@property (nonatomic, readonly) NEPacketTunnelNetworkSettings *networkSettings;
+@property (nonatomic) OpenVPNNetworkSettingsBuilder *networkSettingsBuilder;
 
-- (CFSocketNativeHandle)configureSockets;
-
-- (void)readTUNPackets;
-
-- (void)teardownTunnel:(BOOL)disconnect;
+@property (nonatomic) OpenVPNPacketFlowAdapter *packetFlowAdapter;
 
 - (OpenVPNAdapterError)errorByName:(NSString *)errorName;
 - (OpenVPNAdapterEvent)eventByName:(NSString *)errorName;
@@ -88,7 +53,7 @@ public:
     
     bool tun_builder_set_remote_address(const std::string& address, bool ipv6) override {
         NSString *remoteAddress = [[NSString alloc] initWithUTF8String:address.c_str()];
-        client.remoteAddress = remoteAddress;
+        client.networkSettingsBuilder.remoteAddress = remoteAddress;
         return true;
     }
     
@@ -97,14 +62,14 @@ public:
         NSString *gatewayAddress = [[NSString alloc] initWithUTF8String:gateway.c_str()];
         NSString *defaultGateway = gatewayAddress.length == 0 || [gatewayAddress isEqualToString:@"UNSPEC"] ? nil : gatewayAddress;
         if (ipv6) {
-            client.ipv6DefaultGateway = defaultGateway;
-            [client.ipv6LocalAddresses addObject:localAddress];
-            [client.ipv6NetworkPrefixLengths addObject:@(prefix_length)];
+            client.networkSettingsBuilder.ipv6DefaultGateway = defaultGateway;
+            [client.networkSettingsBuilder.ipv6LocalAddresses addObject:localAddress];
+            [client.networkSettingsBuilder.ipv6NetworkPrefixLengths addObject:@(prefix_length)];
         } else {
             NSString *subnetMask = [[NSString alloc] initWithUTF8String:IPv4::Addr::netmask_from_prefix_len(prefix_length).to_string().c_str()];
-            client.ipv4DefaultGateway = defaultGateway;
-            [client.ipv4LocalAddresses addObject:localAddress];
-            [client.ipv4SubnetMasks addObject:subnetMask];
+            client.networkSettingsBuilder.ipv4DefaultGateway = defaultGateway;
+            [client.networkSettingsBuilder.ipv4LocalAddresses addObject:localAddress];
+            [client.networkSettingsBuilder.ipv4SubnetMasks addObject:subnetMask];
         }
         return true;
     }
@@ -112,13 +77,13 @@ public:
     bool tun_builder_reroute_gw(bool ipv4, bool ipv6, unsigned int flags) override {
         if (ipv4) {
             NEIPv4Route *includedRoute = [NEIPv4Route defaultRoute];
-            includedRoute.gatewayAddress = client.ipv4DefaultGateway;
-            [client.ipv4IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv4DefaultGateway;
+            [client.networkSettingsBuilder.ipv4IncludedRoutes addObject:includedRoute];
         }
         if (ipv6) {
             NEIPv6Route *includedRoute = [NEIPv6Route defaultRoute];
-            includedRoute.gatewayAddress = client.ipv6DefaultGateway;
-            [client.ipv6IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv6DefaultGateway;
+            [client.networkSettingsBuilder.ipv6IncludedRoutes addObject:includedRoute];
         }
         return true;
     }
@@ -127,13 +92,13 @@ public:
         NSString *route = [[NSString alloc] initWithUTF8String:address.c_str()];
         if (ipv6) {
             NEIPv6Route *includedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:@(prefix_length)];
-            includedRoute.gatewayAddress = client.ipv6DefaultGateway;
-            [client.ipv6IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv6DefaultGateway;
+            [client.networkSettingsBuilder.ipv6IncludedRoutes addObject:includedRoute];
         } else {
             NSString *subnetMask = [[NSString alloc] initWithUTF8String:IPv4::Addr::netmask_from_prefix_len(prefix_length).to_string().c_str()];
             NEIPv4Route *includedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnetMask];
-            includedRoute.gatewayAddress = client.ipv4DefaultGateway;
-            [client.ipv4IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv4DefaultGateway;
+            [client.networkSettingsBuilder.ipv4IncludedRoutes addObject:includedRoute];
         }
         return true;
     }
@@ -142,29 +107,29 @@ public:
         NSString *route = [[NSString alloc] initWithUTF8String:address.c_str()];
         if (ipv6) {
             NEIPv6Route *excludedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:@(prefix_length)];
-            [client.ipv6ExcludedRoutes addObject:excludedRoute];
+            [client.networkSettingsBuilder.ipv6ExcludedRoutes addObject:excludedRoute];
         } else {
             NSString *subnetMask = [[NSString alloc] initWithUTF8String:IPv4::Addr::netmask_from_prefix_len(prefix_length).to_string().c_str()];
             NEIPv4Route *excludedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnetMask];
-            [client.ipv4ExcludedRoutes addObject:excludedRoute];
+            [client.networkSettingsBuilder.ipv4ExcludedRoutes addObject:excludedRoute];
         }
         return true;
     }
     
     bool tun_builder_add_dns_server(const std::string& address, bool ipv6) override {
         NSString *dnsAddress = [[NSString alloc] initWithUTF8String:address.c_str()];
-        [client.dnsServers addObject:dnsAddress];
+        [client.networkSettingsBuilder.dnsServers addObject:dnsAddress];
         return true;
     }
     
     bool tun_builder_add_search_domain(const std::string& domain) override {
         NSString *searchDomain = [[NSString alloc] initWithUTF8String:domain.c_str()];
-        [client.searchDomains addObject:searchDomain];
+        [client.networkSettingsBuilder.searchDomains addObject:searchDomain];
         return true;
     }
     
     bool tun_builder_set_mtu(int mtu) override {
-        client.mtu = @(mtu);
+        client.networkSettingsBuilder.mtu = @(mtu);
         return true;
     }
     
@@ -175,28 +140,28 @@ public:
     
     bool tun_builder_add_proxy_bypass(const std::string& bypass_host) override {
         NSString *bypassHost = [[NSString alloc] initWithUTF8String:bypass_host.c_str()];
-        [client.proxyExceptionList addObject:bypassHost];
+        [client.networkSettingsBuilder.proxyExceptionList addObject:bypassHost];
         return true;
     }
     
     bool tun_builder_set_proxy_auto_config_url(const std::string& urlString) override {
         NSURL *url = [[NSURL alloc] initWithString:[[NSString alloc] initWithUTF8String:urlString.c_str()]];
-        client.autoProxyConfigurationEnabled = url != nil;
-        client.proxyAutoConfigurationURL = url;
+        client.networkSettingsBuilder.autoProxyConfigurationEnabled = url != nil;
+        client.networkSettingsBuilder.proxyAutoConfigurationURL = url;
         return true;
     }
     
     bool tun_builder_set_proxy_http(const std::string& host, int port) override {
         NSString *address = [[NSString alloc] initWithUTF8String:host.c_str()];
-        client.httpProxyServerEnabled = YES;
-        client.httpProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
+        client.networkSettingsBuilder.httpProxyServerEnabled = YES;
+        client.networkSettingsBuilder.httpProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
         return true;
     }
     
     bool tun_builder_set_proxy_https(const std::string& host, int port) override {
         NSString *address = [[NSString alloc] initWithUTF8String:host.c_str()];
-        client.httpsProxyServerEnabled = YES;
-        client.httpsProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
+        client.networkSettingsBuilder.httpsProxyServerEnabled = YES;
+        client.networkSettingsBuilder.httpsProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
         return true;
     }
     
@@ -205,29 +170,38 @@ public:
     }
     
     bool tun_builder_new() override {
-        reset_network_parameters();
+        reset_tun();
         return true;
     }
     
     int tun_builder_establish() override {
+        NEPacketTunnelNetworkSettings *networkSettings = client.networkSettingsBuilder.networkSettings;
+        if (!networkSettings) {
+            return -1;
+        }
+        
+        __block NEPacketTunnelFlow *packetFlow;
+        
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [client.delegate openVPNAdapter:client configureTunnelWithNetworkSettings:client.networkSettings completionHandler:^(NEPacketTunnelFlow * _Nullable packetFlow) {
-            client.packetFlow = packetFlow;
+        [client.delegate openVPNAdapter:client configureTunnelWithNetworkSettings:networkSettings completionHandler:^(NEPacketTunnelFlow * _Nullable flow) {
+            packetFlow = flow;
             dispatch_semaphore_signal(semaphore);
         }];
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
         
-        if (client.packetFlow) {
-            [client readTUNPackets];
-            return [client configureSockets];
+        if (packetFlow) {
+            client.packetFlowAdapter = [[OpenVPNPacketFlowAdapter alloc] initWithPacketFlow:packetFlow];
+        }
+        
+        if (client.packetFlowAdapter) {
+            return client.packetFlowAdapter.socketHandle;
         } else {
             return -1;
         }
     }
     
     void tun_builder_teardown(bool disconnect) override {
-        reset_network_parameters();
-        [client teardownTunnel:disconnect];
+        reset_tun();
     }
     
     bool tun_builder_persist() override {
@@ -277,35 +251,18 @@ public:
         }
     }
     
-    void reset_network_parameters() {
-        client.remoteAddress = nil;
-        client.ipv4DefaultGateway = nil;
-        client.ipv6DefaultGateway = nil;
-        client.mtu = nil;
-        client.ipv4LocalAddresses = nil;
-        client.ipv4SubnetMasks = nil;
-        client.ipv4IncludedRoutes = nil;
-        client.ipv4ExcludedRoutes = nil;
-        client.ipv6LocalAddresses = nil;
-        client.ipv6NetworkPrefixLengths = nil;
-        client.ipv6IncludedRoutes = nil;
-        client.ipv6ExcludedRoutes = nil;
-        client.dnsServers = nil;
-        client.searchDomains = nil;
+    void reset_tun() {
+        client.packetFlowAdapter = nil;
+        client.networkSettingsBuilder = nil;
         client.sessionName = nil;
-        client.proxyExceptionList = nil;
-        client.autoProxyConfigurationEnabled = NO;
-        client.proxyAutoConfigurationURL = nil;
-        client.httpProxyServerEnabled = NO;
-        client.httpProxyServer = nil;
-        client.httpsProxyServerEnabled = NO;
-        client.httpsProxyServer = nil;
     }
 private:
     OpenVPNAdapter *client;
 };
 
 @implementation OpenVPNAdapter
+
+#pragma mark - Initialization
 
 - (instancetype)init {
     if ((self = [super init])) {
@@ -314,216 +271,11 @@ private:
     return self;
 }
 
-static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *info) {
-    if (type == kCFSocketDataCallBack) {
-        [(__bridge OpenVPNAdapter *)info readVPNPacket:(__bridge NSData *)data];
-    }
-}
-
-- (CFSocketNativeHandle)configureSockets {
-    [self invalidateSockets];
-    
-    int sockets[2];
-    if (socketpair(PF_LOCAL, SOCK_DGRAM, IPPROTO_IP, sockets) == -1) {
-        NSLog(@"Failed to create a pair of connected sockets: %@", [NSString stringWithUTF8String:strerror(errno)]);
-        return NO;
-    }
-    
-    if (![self configureBufferSizeForSocket: sockets[0]] || ![self configureBufferSizeForSocket: sockets[1]]) {
-        NSLog(@"Failed to configure buffer size of the sockets");
-        return NO;
-    }
-    
-    CFSocketContext socketCtxt = {0, (__bridge void *)self, NULL, NULL, NULL};
-    
-    _vpnSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, SocketCallback, &socketCtxt);
-    _tunSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
-    
-    if (!_vpnSocket || !_tunSocket) {
-        [self invalidateSockets];
-        NSLog(@"Failed to create core foundation sockets from native sockets");
-        return NO;
-    }
-    
-    CFRunLoopSourceRef tunSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _vpnSocket, 0);
-    CFRunLoopAddSource(CFRunLoopGetMain(), tunSocketSource, kCFRunLoopDefaultMode);
-    CFRelease(tunSocketSource);
-    
-    return CFSocketGetNative(_tunSocket);
-}
-
-- (void)teardownTunnel:(BOOL)disconnect {
-    [self invalidateSockets];
-}
-
-- (void)invalidateSockets {
-    if (_vpnSocket) {
-        CFSocketInvalidate(_vpnSocket);
-        CFRelease(_vpnSocket);
-        _vpnSocket = nil;
-    }
-    
-    if (_tunSocket) {
-        CFSocketInvalidate(_tunSocket);
-        CFRelease(_tunSocket);
-        _tunSocket = nil;
-    }
-}
-
-- (BOOL)configureBufferSizeForSocket:(int)socket {
-    int buf_value = 65536;
-    socklen_t buf_len = sizeof(buf_value);
-    
-    if (setsockopt(socket, SOL_SOCKET, SO_RCVBUF, &buf_value, buf_len) == -1) {
-        NSLog(@"Failed to setup buffer size for input: %@", [NSString stringWithUTF8String:strerror(errno)]);
-        return NO;
-    }
-    
-    if (setsockopt(socket, SOL_SOCKET, SO_SNDBUF, &buf_value, buf_len) == -1) {
-        NSLog(@"Failed to setup buffer size for output: %@", [NSString stringWithUTF8String:strerror(errno)]);
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)readTUNPackets {
-    [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols) {
-        [self writeVPNPackets:packets protocols:protocols];
-        [self readTUNPackets];
-    }];
-}
-
-- (void)writeVPNPackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols {
-    [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
-        if (!_vpnSocket) {
-            *stop = YES;
-            return;
-        }
-        
-        // Prepare data for sending
-        NSData *packet = [self prepareVPNPacket:data protocol:protocols[idx]];
-        
-        // Send data to the VPN server
-        CFSocketSendData(_vpnSocket, NULL, (CFDataRef)packet, 0.05);
-    }];
-}
-
-- (NSData *)prepareVPNPacket:(NSData *)packet protocol:(NSNumber *)protocol {
-    NSMutableData *data = [NSMutableData new];
-    
-#if TARGET_OS_IPHONE
-    // Prepend data with network protocol. It should be done because OpenVPN on iOS uses uint32_t prefixes containing network protocol.
-    uint32_t prefix = CFSwapInt32HostToBig((uint32_t)[protocol unsignedIntegerValue]);
-    [data appendBytes:&prefix length:sizeof(prefix)];
-#endif
-    
-    [data appendData:packet];
-    
-    return [data copy];
-}
-
-- (void)readVPNPacket:(NSData *)packet {
-#if TARGET_OS_IPHONE
-    // Get network protocol from prefix
-    NSUInteger prefixSize = sizeof(uint32_t);
-    
-    if (packet.length < prefixSize) {
-        NSLog(@"Incorrect OpenVPN packet size");
-        return;
-    }
-    
-    uint32_t protocol = PF_UNSPEC;
-    [packet getBytes:&protocol length:prefixSize];
-    protocol = CFSwapInt32BigToHost(protocol);
-    
-    NSRange range = NSMakeRange(prefixSize, packet.length - prefixSize);
-    NSData *data = [packet subdataWithRange:range];
-#else
-    // Get network protocol from header
-    uint8_t header = 0;
-    [packet getBytes:&header length:1];
-    
-    uint32_t version = openvpn::IPHeader::version(header);
-    uint8_t protocol = [self protocolFamilyForVersion:version];
-    
-    NSData *data = packet;
-#endif
-    
-    // Send the packet to the TUN interface
-    if (![self.packetFlow writePackets:@[data] withProtocols:@[@(protocol)]]) {
-        NSLog(@"Failed to send OpenVPN packet to the TUN interface");
-    }
-}
-
-- (uint8_t)protocolFamilyForVersion:(uint32_t)version {
-    switch (version) {
-        case 4: return PF_INET;
-        case 6: return PF_INET6;
-        default: return PF_UNSPEC;
-    }
-}
-
-- (NEPacketTunnelNetworkSettings *)networkSettings {
-    NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.remoteAddress];
-    
-    NEIPv4Settings *ipv4Settings = [[NEIPv4Settings alloc] initWithAddresses:self.ipv4LocalAddresses subnetMasks:self.ipv4SubnetMasks];
-    ipv4Settings.includedRoutes = self.ipv4IncludedRoutes;
-    ipv4Settings.excludedRoutes = self.ipv4ExcludedRoutes;
-    networkSettings.IPv4Settings = ipv4Settings;
-    
-    NEIPv6Settings *ipv6Settings = [[NEIPv6Settings alloc] initWithAddresses:self.ipv6LocalAddresses networkPrefixLengths:self.ipv6NetworkPrefixLengths];
-    ipv6Settings.includedRoutes = self.ipv6IncludedRoutes;
-    ipv6Settings.excludedRoutes = self.ipv6ExcludedRoutes;
-    networkSettings.IPv6Settings = ipv6Settings;
-    
-    NEDNSSettings *dnsSettings = [[NEDNSSettings alloc] initWithServers:self.dnsServers];
-    dnsSettings.searchDomains = self.searchDomains;
-    networkSettings.DNSSettings = dnsSettings;
-    
-    NEProxySettings *proxySettings = [[NEProxySettings alloc] init];
-    proxySettings.autoProxyConfigurationEnabled = self.autoProxyConfigurationEnabled;
-    proxySettings.proxyAutoConfigurationURL = self.proxyAutoConfigurationURL;
-    proxySettings.exceptionList = self.proxyExceptionList;
-    proxySettings.HTTPServer = self.httpProxyServer;
-    proxySettings.HTTPEnabled = self.httpProxyServerEnabled;
-    proxySettings.HTTPSServer = self.httpsProxyServer;
-    proxySettings.HTTPSEnabled = self.httpsProxyServerEnabled;
-    networkSettings.proxySettings = proxySettings;
-
-    networkSettings.MTU = self.mtu;
-    
-    return networkSettings;
-}
-
-+ (NSString *)copyright {
-    return [[NSString alloc] initWithUTF8String:Client::copyright().c_str()];
-}
-
-+ (NSString *)platform {
-    return [[NSString alloc] initWithUTF8String:Client::platform().c_str()];
-}
-
-- (OpenVPNConnectionInfo *)connectionInformation {
-    ClientAPI::ConnectionInfo information = self.client->connection_info();
-    return information.defined ? [[OpenVPNConnectionInfo alloc] initWithConnectionInfo:information] : nil;
-}
-
-- (OpenVPNInterfaceStats *)interfaceStatistics {
-    return [[OpenVPNInterfaceStats alloc] initWithInterfaceStats:self.client->tun_stats()];
-}
-
-- (OpenVPNSessionToken *)sessionToken {
-    ClientAPI::SessionToken token;
-    return self.client->session_token(token) ? [[OpenVPNSessionToken alloc] initWithSessionToken:token] : nil;
-}
-
-- (OpenVPNTransportStats *)transportStatistics {
-    return [[OpenVPNTransportStats alloc] initWithTransportStats:self.client->transport_stats()];
-}
+#pragma mark - OpenVPNClient Lifecycle
 
 - (OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * _Nullable __autoreleasing *)error {
     ClientAPI::EvalConfig eval = self.client->eval_config(configuration.config);
+    
     if (eval.error) {
         if (error) {
             NSString *errorReason = [self reasonForError:OpenVPNAdapterErrorConfigurationFailure];
@@ -556,17 +308,9 @@ static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type,
     dispatch_async(connectQueue, ^{
         Client::init_process();
         ClientAPI::Status status = self.client->connect();
-        [self handleStatus:status];
+        [self handleConnectionStatus:status];
         Client::uninit_process();
     });
-}
-
-- (void)pauseWithReason:(NSString *)reason {
-    self.client->pause(std::string(reason.UTF8String));
-}
-
-- (void)resume {
-    self.client->resume();
 }
 
 - (void)reconnectAfterTimeInterval:(NSTimeInterval)timeInterval {
@@ -577,7 +321,15 @@ static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type,
     self.client->stop();
 }
 
-- (void)handleStatus:(ClientAPI::Status)status {
+- (void)pauseWithReason:(NSString *)reason {
+    self.client->pause(std::string(reason.UTF8String));
+}
+
+- (void)resume {
+    self.client->resume();
+}
+
+- (void)handleConnectionStatus:(ClientAPI::Status)status {
     if (!status.error) {
         return;
     }
@@ -587,6 +339,36 @@ static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type,
     NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:@{NSLocalizedDescriptionKey: @"Failed to establish connection with OpenVPN server.", NSLocalizedFailureReasonErrorKey: errorReason, OpenVPNAdapterErrorMessageKey: [[NSString alloc] initWithUTF8String:status.message.c_str()], OpenVPNAdapterErrorFatalKey: @YES}];
     [self.delegate openVPNAdapter:self handleError:error];
 }
+
+#pragma mark - OpenVPNClient Information
+
++ (NSString *)copyright {
+    return [[NSString alloc] initWithUTF8String:Client::copyright().c_str()];
+}
+
++ (NSString *)platform {
+    return [[NSString alloc] initWithUTF8String:Client::platform().c_str()];
+}
+
+- (OpenVPNConnectionInfo *)connectionInformation {
+    ClientAPI::ConnectionInfo information = self.client->connection_info();
+    return information.defined ? [[OpenVPNConnectionInfo alloc] initWithConnectionInfo:information] : nil;
+}
+
+- (OpenVPNInterfaceStats *)interfaceStatistics {
+    return [[OpenVPNInterfaceStats alloc] initWithInterfaceStats:self.client->tun_stats()];
+}
+
+- (OpenVPNSessionToken *)sessionToken {
+    ClientAPI::SessionToken token;
+    return self.client->session_token(token) ? [[OpenVPNSessionToken alloc] initWithSessionToken:token] : nil;
+}
+
+- (OpenVPNTransportStats *)transportStatistics {
+    return [[OpenVPNTransportStats alloc] initWithTransportStats:self.client->transport_stats()];
+}
+
+#pragma mark - OpenVPNAdapterEvent Helpers
 
 - (OpenVPNAdapterEvent)eventByName:(NSString *)eventName {
     NSDictionary *events = @{@"DISCONNECTED": @(OpenVPNAdapterEventDisconnected),
@@ -608,6 +390,8 @@ static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type,
     OpenVPNAdapterEvent event = events[eventName] != nil ? (OpenVPNAdapterEvent)[events[eventName] integerValue] : OpenVPNAdapterEventUnknown;
     return event;
 }
+
+#pragma mark - OpenVPNAdapterError Helpers
 
 - (OpenVPNAdapterError)errorByName:(NSString *)errorName {
     NSDictionary *errors = @{@"NETWORK_RECV_ERROR": @(OpenVPNAdapterErrorNetworkRecvError),
@@ -679,6 +463,7 @@ static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type,
 }
 
 - (NSString *)reasonForError:(OpenVPNAdapterError)error {
+    // TODO: Add missing error reasons
     switch (error) {
         case OpenVPNAdapterErrorConfigurationFailure: return @"See OpenVPN error message for more details.";
         case OpenVPNAdapterErrorCredentialsFailure: return @"See OpenVPN error message for more details.";
@@ -749,82 +534,16 @@ static inline void SocketCallback(CFSocketRef socket, CFSocketCallBackType type,
     }
 }
 
-- (NSMutableArray<NSString *> *)ipv4LocalAddresses {
-    if (!_ipv4LocalAddresses) {
-        _ipv4LocalAddresses = [[NSMutableArray alloc] init];
+#pragma mark - Lazy Initialization
+
+- (OpenVPNNetworkSettingsBuilder *)networkSettingsBuilder {
+    if (!_networkSettingsBuilder) {
+        _networkSettingsBuilder = [[OpenVPNNetworkSettingsBuilder alloc] init];
     }
-    return _ipv4LocalAddresses;
+    return _networkSettingsBuilder;
 }
 
-- (NSMutableArray<NSString *> *)ipv4SubnetMasks {
-    if (!_ipv4SubnetMasks) {
-        _ipv4SubnetMasks = [[NSMutableArray alloc] init];
-    }
-    return _ipv4SubnetMasks;
-}
-
-- (NSMutableArray<NEIPv4Route *> *)ipv4IncludedRoutes {
-    if (!_ipv4IncludedRoutes) {
-        _ipv4IncludedRoutes = [[NSMutableArray alloc] init];
-    }
-    return _ipv4IncludedRoutes;
-}
-
-- (NSMutableArray<NEIPv4Route *> *)ipv4ExcludedRoutes {
-    if (!_ipv4ExcludedRoutes) {
-        _ipv4ExcludedRoutes = [[NSMutableArray alloc] init];
-    }
-    return _ipv4ExcludedRoutes;
-}
-
-- (NSMutableArray<NSString *> *)ipv6LocalAddresses {
-    if (!_ipv6LocalAddresses) {
-        _ipv6LocalAddresses = [[NSMutableArray alloc] init];
-    }
-    return _ipv6LocalAddresses;
-}
-
-- (NSMutableArray<NSNumber *> *)ipv6NetworkPrefixLengths {
-    if (!_ipv6NetworkPrefixLengths) {
-        _ipv6NetworkPrefixLengths = [[NSMutableArray alloc] init];
-    }
-    return _ipv6NetworkPrefixLengths;
-}
-
-- (NSMutableArray<NEIPv6Route *> *)ipv6IncludedRoutes {
-    if (!_ipv6IncludedRoutes) {
-        _ipv6IncludedRoutes = [[NSMutableArray alloc] init];
-    }
-    return _ipv6IncludedRoutes;
-}
-
-- (NSMutableArray<NEIPv6Route *> *)ipv6ExcludedRoutes {
-    if (!_ipv6ExcludedRoutes) {
-        _ipv6ExcludedRoutes = [[NSMutableArray alloc] init];
-    }
-    return _ipv6ExcludedRoutes;
-}
-
-- (NSMutableArray<NSString *> *)dnsServers {
-    if (!_dnsServers) {
-        _dnsServers = [[NSMutableArray alloc] init];
-    }
-    return _dnsServers;
-}
-
-- (NSMutableArray<NSString *> *)searchDomains {
-    if (!_searchDomains) {
-        _searchDomains = [[NSMutableArray alloc] init];
-    }
-    return _searchDomains;
-}
-
-- (NSMutableArray<NSString *> *)proxyExceptionList {
-    if (!_proxyExceptionList) {
-        _proxyExceptionList = [[NSMutableArray alloc] init];
-    }
-    return _proxyExceptionList;
-}
+#pragma mark - Dealloc
 
 - (void)dealloc {
     delete _client;
