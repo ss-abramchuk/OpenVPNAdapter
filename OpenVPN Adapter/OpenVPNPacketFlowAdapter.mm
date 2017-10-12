@@ -35,10 +35,8 @@
     return CFSocketGetNative(_openVPNClientSocket);
 }
 
-static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *info) {
-    if (type == kCFSocketDataCallBack) {
-        [(__bridge OpenVPNPacketFlowAdapter *)info writeDataToPacketFlow:(__bridge NSData *)data];
-    }
+static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *adapter) {
+    [(__bridge OpenVPNPacketFlowAdapter *)adapter writeDataToPacketFlow:(__bridge NSData *)data];
 }
 
 - (BOOL)configureSockets {
@@ -53,12 +51,12 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
     _packetFlowSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, PacketFlowSocketCallback, &socketCtxt);
     _openVPNClientSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
     
-    if (!_packetFlowSocket || !_openVPNClientSocket) {
+    if (!(_packetFlowSocket && _openVPNClientSocket)) {
         NSLog(@"Failed to create core foundation sockets from native sockets");
         return NO;
     }
     
-    if (![self configureOptionsForSocket:_packetFlowSocket] || ![self configureOptionsForSocket:_openVPNClientSocket]) {
+    if (!([self configureOptionsForSocket:_packetFlowSocket] && [self configureOptionsForSocket:_openVPNClientSocket])) {
         NSLog(@"Failed to configure buffer size of the sockets");
         return NO;
     }
@@ -88,7 +86,7 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
     
     CFOptionFlags sockopt = CFSocketGetSocketFlags(socket);
     
-    sockopt |= kCFSocketCloseOnInvalidate | kCFSocketAutomaticallyReenableReadCallBack;
+    sockopt |= kCFSocketCloseOnInvalidate;
     CFSocketSetSocketFlags(socket, sockopt);
     
     return YES;
@@ -96,71 +94,72 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
 
 - (void)readPacketFlowPackets {
     __weak typeof(self) weakSelf = self;
-    [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> * _Nonnull packets, NSArray<NSNumber *> * _Nonnull protocols) {
+    [self.packetFlow readPacketObjectsWithCompletionHandler:^(NSArray<NEPacket *> * _Nonnull packets) {
         typeof(self) strongSelf = weakSelf;
-        [strongSelf writeVPNPackets:packets protocols:protocols];
+        [strongSelf writeVPNPacketObjects:packets];
         [strongSelf readPacketFlowPackets];
     }];
 }
 
-- (void)writeVPNPackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols {
-    [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
-        // Prepare data for sending
-        NSData *packet = [self prepareVPNPacket:data protocol:protocols[idx]];
-        
-        // Send data to the VPN server
-        CFSocketSendData(_packetFlowSocket, NULL, (CFDataRef)packet, 0.05);
-    }];
+- (void)writeVPNPacketObjects:(NSArray<NEPacket *> *)packets {
+    for (NEPacket *packet in packets) {
+        CFSocketSendData(_packetFlowSocket, NULL, (CFDataRef)[self dataFromPacket:packet], 0.05);
+    }
 }
 
-- (NSData *)prepareVPNPacket:(NSData *)packet protocol:(NSNumber *)protocol {
-    NSMutableData *data = [NSMutableData new];
-    
+- (NSData *)dataFromPacket:(NEPacket *)packet {
 #if TARGET_OS_IPHONE
     // Prepend data with network protocol. It should be done because OpenVPN on iOS uses uint32_t prefixes containing network protocol.
-    uint32_t prefix = CFSwapInt32HostToBig((uint32_t)[protocol unsignedIntegerValue]);
+    uint32_t prefix = CFSwapInt32HostToBig((uint32_t)packet.protocolFamily);
+    NSMutableData *data = [[NSMutableData alloc] initWithCapacity:sizeof(prefix) + packet.data.length];
     [data appendBytes:&prefix length:sizeof(prefix)];
+    [data appendData:packet.data];
+    return data;
+#else
+    return packet.data;
 #endif
-    
-    [data appendData:packet];
-    
-    return [data copy];
 }
 
-- (void)writeDataToPacketFlow:(NSData *)packet {
+- (NEPacket *)packetFromData:(NSData *)data {
 #if TARGET_OS_IPHONE
     // Get network protocol from prefix
     NSUInteger prefixSize = sizeof(uint32_t);
     
-    if (packet.length < prefixSize) {
-        NSLog(@"Incorrect OpenVPN packet size");
-        return;
+    if (data.length < prefixSize) {
+        return nil;
     }
     
     uint32_t protocol = PF_UNSPEC;
-    [packet getBytes:&protocol length:prefixSize];
+    [data getBytes:&protocol length:prefixSize];
     protocol = CFSwapInt32BigToHost(protocol);
     
-    NSRange range = NSMakeRange(prefixSize, packet.length - prefixSize);
-    NSData *data = [packet subdataWithRange:range];
+    NSRange range = NSMakeRange(prefixSize, data.length - prefixSize);
+    NSData *packetData = [data subdataWithRange:range];
 #else
     // Get network protocol from header
     uint8_t header = 0;
-    [packet getBytes:&header length:1];
+    [data getBytes:&header length:1];
     
     uint32_t version = openvpn::IPHeader::version(header);
-    uint8_t protocol = [self protocolFamilyForVersion:version];
+    sa_family_t protocol = [self protocolFamilyForVersion:version];
     
-    NSData *data = packet;
+    NSData *packetData = data;
 #endif
     
-    // Send the packet to the TUN interface
-    if (![self.packetFlow writePackets:@[data] withProtocols:@[@(protocol)]]) {
-        NSLog(@"Failed to send OpenVPN packet to the TUN interface");
-    }
+    return [[NEPacket alloc] initWithData:packetData protocolFamily:protocol];
 }
 
-- (uint8_t)protocolFamilyForVersion:(uint32_t)version {
+- (void)writeDataToPacketFlow:(NSData *)data {
+    NEPacket *packet = [self packetFromData:data];
+    
+    if (!packet) {
+        return;
+    }
+    
+    [self.packetFlow writePacketObjects:@[packet]];
+}
+
+- (sa_family_t)protocolFamilyForVersion:(uint32_t)version {
     switch (version) {
         case 4: return PF_INET;
         case 6: return PF_INET6;
