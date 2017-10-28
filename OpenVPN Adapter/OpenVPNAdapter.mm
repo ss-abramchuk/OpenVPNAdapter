@@ -18,7 +18,7 @@
 #import "OpenVPNError.h"
 #import "OpenVPNInterfaceStats+Internal.h"
 #import "OpenVPNNetworkSettingsBuilder.h"
-#import "OpenVPNPacketFlow.h"
+#import "OpenVPNPacketFlowBridge.h"
 #import "OpenVPNProperties+Internal.h"
 #import "OpenVPNSessionToken+Internal.h"
 #import "OpenVPNTransportStats+Internal.h"
@@ -34,7 +34,7 @@ class Client;
 
 @property (nonatomic) OpenVPNNetworkSettingsBuilder *networkSettingsBuilder;
 
-@property (nonatomic) OpenVPNPacketFlow *packetFlow;
+@property (nonatomic) OpenVPNPacketFlowBridge *packetFlowBridge;
 
 - (OpenVPNAdapterError)errorByName:(NSString *)errorName;
 - (OpenVPNAdapterEvent)eventByName:(NSString *)errorName;
@@ -181,13 +181,13 @@ public:
         
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         [adapter.delegate openVPNAdapter:adapter configureTunnelWithNetworkSettings:networkSettings completionHandler:^(NEPacketTunnelFlow * _Nullable flow) {
-            adapter.packetFlow = [[OpenVPNPacketFlow alloc] initWithPacketFlow:flow];
+            adapter.packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] initWithPacketFlow:flow];
             dispatch_semaphore_signal(semaphore);
         }];
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
         
-        if (adapter.packetFlow) {
-            return adapter.packetFlow.socketHandle;
+        if (adapter.packetFlowBridge) {
+            return adapter.packetFlowBridge.socketHandle;
         } else {
             return -1;
         }
@@ -251,7 +251,7 @@ public:
     }
     
     void reset_tun() {
-        adapter.packetFlow = nil;
+        adapter.packetFlowBridge = nil;
         adapter.networkSettingsBuilder = nil;
         adapter.sessionName = nil;
     }

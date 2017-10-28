@@ -11,10 +11,10 @@
 		ABD6EF0A1F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD6EF071F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.h */; };
 		ABD6EF0B1F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD6EF081F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m */; };
 		ABD6EF0C1F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD6EF081F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m */; };
-		ABD6EF101F8F93AB007D3D90 /* OpenVPNPacketFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlow.h */; };
-		ABD6EF111F8F93AB007D3D90 /* OpenVPNPacketFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlow.h */; };
-		ABD6EF121F8F93AB007D3D90 /* OpenVPNPacketFlow.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlow.mm */; };
-		ABD6EF131F8F93AB007D3D90 /* OpenVPNPacketFlow.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlow.mm */; };
+		ABD6EF101F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h */; };
+		ABD6EF111F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h */; };
+		ABD6EF121F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm */; };
+		ABD6EF131F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm */; };
 		ABD6EF171F8F9C38007D3D90 /* OpenVPNAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD6EF151F8F9C37007D3D90 /* OpenVPNAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ABD6EF181F8F9C38007D3D90 /* OpenVPNAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABD6EF161F8F9C38007D3D90 /* OpenVPNAdapter.mm */; };
 		ABD6EF191F8F9C3B007D3D90 /* OpenVPNAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD6EF151F8F9C37007D3D90 /* OpenVPNAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -168,8 +168,8 @@
 /* Begin PBXFileReference section */
 		ABD6EF071F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNNetworkSettingsBuilder.h; sourceTree = "<group>"; };
 		ABD6EF081F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenVPNNetworkSettingsBuilder.m; sourceTree = "<group>"; };
-		ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNPacketFlow.h; sourceTree = "<group>"; };
-		ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlow.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNPacketFlow.mm; sourceTree = "<group>"; };
+		ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNPacketFlowBridge.h; sourceTree = "<group>"; };
+		ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNPacketFlowBridge.mm; sourceTree = "<group>"; };
 		ABD6EF151F8F9C37007D3D90 /* OpenVPNAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapter.h; sourceTree = "<group>"; };
 		ABD6EF161F8F9C38007D3D90 /* OpenVPNAdapter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNAdapter.mm; sourceTree = "<group>"; };
 		C90BAD261E73F47E00DEFB32 /* Info-Framework.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework.plist"; sourceTree = "<group>"; };
@@ -436,8 +436,8 @@
 				ABD6EF161F8F9C38007D3D90 /* OpenVPNAdapter.mm */,
 				ABD6EF071F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.h */,
 				ABD6EF081F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m */,
-				ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlow.h */,
-				ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlow.mm */,
+				ABD6EF0E1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h */,
+				ABD6EF0F1F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm */,
 			);
 			name = Adapter;
 			sourceTree = "<group>";
@@ -586,7 +586,7 @@
 				C98467AB1EAA5BE100272A9A /* OpenVPNConfiguration+Internal.h in Headers */,
 				C98467A61EAA5B7700272A9A /* OpenVPNConfiguration.h in Headers */,
 				C9B7956B1F1D26C900CF35FE /* OpenVPNReachability+Internal.h in Headers */,
-				ABD6EF101F8F93AB007D3D90 /* OpenVPNPacketFlow.h in Headers */,
+				ABD6EF101F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h in Headers */,
 				C9657A2B1EB0B6FA00EFF210 /* OpenVPNTransportStats+Internal.h in Headers */,
 				C9BB47601E71663A00F3F98C /* Umbrella-Header.h in Headers */,
 				C9657A5E1EB0D60700EFF210 /* OpenVPNTransportProtocol.h in Headers */,
@@ -629,7 +629,7 @@
 				C98467AC1EAA5BE200272A9A /* OpenVPNConfiguration+Internal.h in Headers */,
 				C98467A71EAA5B7700272A9A /* OpenVPNConfiguration.h in Headers */,
 				C9B7956C1F1D26C900CF35FE /* OpenVPNReachability+Internal.h in Headers */,
-				ABD6EF111F8F93AB007D3D90 /* OpenVPNPacketFlow.h in Headers */,
+				ABD6EF111F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.h in Headers */,
 				C9657A2F1EB0B79500EFF210 /* OpenVPNTransportStats+Internal.h in Headers */,
 				C9D2ABE61EA20F99007EDF9D /* Umbrella-Header.h in Headers */,
 				C9657A5F1EB0D60700EFF210 /* OpenVPNTransportProtocol.h in Headers */,
@@ -862,7 +862,7 @@
 				C9BCE25A1EB3C0D9009D6AC1 /* OpenVPNSessionToken.mm in Sources */,
 				ABD6EF0B1F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m in Sources */,
 				C98467A81EAA5B7700272A9A /* OpenVPNConfiguration.mm in Sources */,
-				ABD6EF121F8F93AB007D3D90 /* OpenVPNPacketFlow.mm in Sources */,
+				ABD6EF121F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm in Sources */,
 				C9E4401F1F6086A1001D7C41 /* NSError+Message.m in Sources */,
 				C9657A311EB0B7A900EFF210 /* OpenVPNTransportStats.mm in Sources */,
 				C9B795661F1D182500CF35FE /* OpenVPNReachabilityTracker.mm in Sources */,
@@ -901,7 +901,7 @@
 				C9BCE25B1EB3C0D9009D6AC1 /* OpenVPNSessionToken.mm in Sources */,
 				ABD6EF0C1F8F8CCD007D3D90 /* OpenVPNNetworkSettingsBuilder.m in Sources */,
 				C98467A91EAA5B7700272A9A /* OpenVPNConfiguration.mm in Sources */,
-				ABD6EF131F8F93AB007D3D90 /* OpenVPNPacketFlow.mm in Sources */,
+				ABD6EF131F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm in Sources */,
 				C9E440201F6086A1001D7C41 /* NSError+Message.m in Sources */,
 				C9657A301EB0B7A600EFF210 /* OpenVPNTransportStats.mm in Sources */,
 				C9B795671F1D182500CF35FE /* OpenVPNReachabilityTracker.mm in Sources */,

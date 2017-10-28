@@ -1,5 +1,5 @@
 //
-//  OpenVPNPacketFlow.mm
+//  OpenVPNPacketFlowBridge.mm
 //  OpenVPN Adapter
 //
 //  Created by Jonathan Downing on 12/10/2017.
@@ -7,9 +7,9 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 #import <openvpn/ip/ip.hpp>
-#import "OpenVPNPacketFlow.h"
+#import "OpenVPNPacketFlowBridge.h"
 
-@interface OpenVPNPacketFlow () {
+@interface OpenVPNPacketFlowBridge () {
     CFSocketRef _openVPNClientSocket;
     CFSocketRef _packetFlowSocket;
 }
@@ -18,7 +18,7 @@
 
 @end
 
-@implementation OpenVPNPacketFlow
+@implementation OpenVPNPacketFlowBridge
 
 - (CFSocketNativeHandle)socketHandle {
     return CFSocketGetNative(_openVPNClientSocket);
@@ -38,7 +38,7 @@
 }
 
 static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *adapter) {
-    [(__bridge OpenVPNPacketFlow *)adapter writeDataToPacketFlow:(__bridge NSData *)data];
+    [(__bridge OpenVPNPacketFlowBridge *)adapter writeDataToPacketFlow:(__bridge NSData *)data];
 }
 
 - (BOOL)configureSockets {
