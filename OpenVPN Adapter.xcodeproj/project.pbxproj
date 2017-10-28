@@ -120,6 +120,8 @@
 		C9BCE25B1EB3C0D9009D6AC1 /* OpenVPNSessionToken.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9BCE2571EB3C0D9009D6AC1 /* OpenVPNSessionToken.mm */; };
 		C9BCE25E1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BCE25C1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h */; };
 		C9BCE25F1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BCE25C1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h */; };
+		C9C1E4101FA47117006ECA7D /* remote_vpn_server.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */; };
+		C9C1E4111FA47117006ECA7D /* remote_vpn_server.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */; };
 		C9CA4DD31F602F7B00C4F184 /* OpenVPNCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CA4DD11F602F7B00C4F184 /* OpenVPNCertificate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9CA4DD41F602F7B00C4F184 /* OpenVPNCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CA4DD11F602F7B00C4F184 /* OpenVPNCertificate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9CA4DD51F602F7B00C4F184 /* OpenVPNCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9CA4DD21F602F7B00C4F184 /* OpenVPNCertificate.m */; };
@@ -231,6 +233,7 @@
 		C9BCE2561EB3C0D9009D6AC1 /* OpenVPNSessionToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNSessionToken.h; sourceTree = "<group>"; };
 		C9BCE2571EB3C0D9009D6AC1 /* OpenVPNSessionToken.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNSessionToken.mm; sourceTree = "<group>"; };
 		C9BCE25C1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNSessionToken+Internal.h"; sourceTree = "<group>"; };
+		C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = remote_vpn_server.ovpn; sourceTree = "<group>"; };
 		C9CA4DD11F602F7B00C4F184 /* OpenVPNCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCertificate.h; sourceTree = "<group>"; };
 		C9CA4DD21F602F7B00C4F184 /* OpenVPNCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenVPNCertificate.m; sourceTree = "<group>"; };
 		C9CA4DE01F603A5300C4F184 /* OpenVPNCertificateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNCertificateTests.swift; sourceTree = "<group>"; };
@@ -469,7 +472,6 @@
 				C915F2241F61B22300B3DF23 /* test-ca.crt */,
 				C915F21E1F6199E300B3DF23 /* keyfile-encrypted.3des */,
 				C915F2211F61B0E700B3DF23 /* keyfile-decrypted.3des */,
-				C98467A11EAA559B00272A9A /* local_vpn_server.ovpn */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -489,6 +491,7 @@
 		C9BB479E1E7183B800F3F98C /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				C9C1E40E1FA470EB006ECA7D /* Configuration */,
 				C9BB479F1E7183C200F3F98C /* Helpers */,
 			);
 			name = Libraries;
@@ -509,6 +512,15 @@
 				C9B03A7A1EABA6B500268B85 /* ProfileLoader.swift */,
 			);
 			name = Utils;
+			sourceTree = "<group>";
+		};
+		C9C1E40E1FA470EB006ECA7D /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				C98467A11EAA559B00272A9A /* local_vpn_server.ovpn */,
+				C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */,
+			);
+			name = Configuration;
 			sourceTree = "<group>";
 		};
 		C9CA4DD01F602D8300C4F184 /* Certificates and Keys */ = {
@@ -771,6 +783,7 @@
 				C98467A21EAA559B00272A9A /* local_vpn_server.ovpn in Resources */,
 				C915F2221F61B0E700B3DF23 /* keyfile-decrypted.3des in Resources */,
 				C915F2251F61B22300B3DF23 /* test-ca.crt in Resources */,
+				C9C1E4101FA47117006ECA7D /* remote_vpn_server.ovpn in Resources */,
 				C915F21F1F6199E300B3DF23 /* keyfile-encrypted.3des in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -789,6 +802,7 @@
 				C98467A31EAA559B00272A9A /* local_vpn_server.ovpn in Resources */,
 				C915F2231F61B0E700B3DF23 /* keyfile-decrypted.3des in Resources */,
 				C915F2261F61B22300B3DF23 /* test-ca.crt in Resources */,
+				C9C1E4111FA47117006ECA7D /* remote_vpn_server.ovpn in Resources */,
 				C915F2201F6199E300B3DF23 /* keyfile-encrypted.3des in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
