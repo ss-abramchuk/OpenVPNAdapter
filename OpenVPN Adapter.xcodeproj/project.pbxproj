@@ -122,6 +122,8 @@
 		C9BCE25F1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BCE25C1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h */; };
 		C9C1E4101FA47117006ECA7D /* remote_vpn_server.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */; };
 		C9C1E4111FA47117006ECA7D /* remote_vpn_server.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */; };
+		C9C1E4141FA475B7006ECA7D /* CustomFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C1E4131FA475B7006ECA7D /* CustomFlow.swift */; };
+		C9C1E4151FA475B7006ECA7D /* CustomFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C1E4131FA475B7006ECA7D /* CustomFlow.swift */; };
 		C9CA4DD31F602F7B00C4F184 /* OpenVPNCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CA4DD11F602F7B00C4F184 /* OpenVPNCertificate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9CA4DD41F602F7B00C4F184 /* OpenVPNCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CA4DD11F602F7B00C4F184 /* OpenVPNCertificate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9CA4DD51F602F7B00C4F184 /* OpenVPNCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9CA4DD21F602F7B00C4F184 /* OpenVPNCertificate.m */; };
@@ -234,6 +236,7 @@
 		C9BCE2571EB3C0D9009D6AC1 /* OpenVPNSessionToken.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNSessionToken.mm; sourceTree = "<group>"; };
 		C9BCE25C1EB3C201009D6AC1 /* OpenVPNSessionToken+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNSessionToken+Internal.h"; sourceTree = "<group>"; };
 		C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = remote_vpn_server.ovpn; sourceTree = "<group>"; };
+		C9C1E4131FA475B7006ECA7D /* CustomFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFlow.swift; sourceTree = "<group>"; };
 		C9CA4DD11F602F7B00C4F184 /* OpenVPNCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCertificate.h; sourceTree = "<group>"; };
 		C9CA4DD21F602F7B00C4F184 /* OpenVPNCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenVPNCertificate.m; sourceTree = "<group>"; };
 		C9CA4DE01F603A5300C4F184 /* OpenVPNCertificateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNCertificateTests.swift; sourceTree = "<group>"; };
@@ -492,6 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				C9C1E40E1FA470EB006ECA7D /* Configuration */,
+				C9C1E4121FA47586006ECA7D /* Base */,
 				C9BB479F1E7183C200F3F98C /* Helpers */,
 			);
 			name = Libraries;
@@ -521,6 +525,14 @@
 				C9C1E40F1FA47117006ECA7D /* remote_vpn_server.ovpn */,
 			);
 			name = Configuration;
+			sourceTree = "<group>";
+		};
+		C9C1E4121FA47586006ECA7D /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				C9C1E4131FA475B7006ECA7D /* CustomFlow.swift */,
+			);
+			name = Base;
 			sourceTree = "<group>";
 		};
 		C9CA4DD01F602D8300C4F184 /* Certificates and Keys */ = {
@@ -870,6 +882,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9C1E4141FA475B7006ECA7D /* CustomFlow.swift in Sources */,
 				C94605E91EAA656B00971516 /* OpenVPNConfigurationTests.swift in Sources */,
 				C9BB47911E71821A00F3F98C /* OpenVPNAdapterTests.swift in Sources */,
 				C915F1F91F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */,
@@ -914,6 +927,7 @@
 				C9354F471F1E4AE200F4C935 /* OpenVPNReachabilityTests.swift in Sources */,
 				C915F1FA1F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */,
 				C9B03A7D1EABA82300268B85 /* ProfileLoader.swift in Sources */,
+				C9C1E4151FA475B7006ECA7D /* CustomFlow.swift in Sources */,
 				C9D2ABF71EA212A3007EDF9D /* Bundle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
