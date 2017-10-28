@@ -179,18 +179,12 @@ public:
             return -1;
         }
         
-        __block NEPacketTunnelFlow *packetFlow;
-        
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         [client.delegate openVPNAdapter:client configureTunnelWithNetworkSettings:networkSettings completionHandler:^(NEPacketTunnelFlow * _Nullable flow) {
-            packetFlow = flow;
+            client.packetFlowAdapter = [[OpenVPNPacketFlowAdapter alloc] initWithPacketFlow:flow];
             dispatch_semaphore_signal(semaphore);
         }];
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
-        
-        if (packetFlow) {
-            client.packetFlowAdapter = [[OpenVPNPacketFlowAdapter alloc] initWithPacketFlow:packetFlow];
-        }
         
         if (client.packetFlowAdapter) {
             return client.packetFlowAdapter.socketHandle;
