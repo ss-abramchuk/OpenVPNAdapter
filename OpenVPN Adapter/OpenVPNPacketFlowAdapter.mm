@@ -5,9 +5,9 @@
 //  Created by Jonathan Downing on 12/10/2017.
 //
 
-#import "OpenVPNPacketFlowAdapter.h"
 #import <NetworkExtension/NetworkExtension.h>
 #import <openvpn/ip/ip.hpp>
+#import "OpenVPNPacketFlowAdapter.h"
 
 @interface OpenVPNPacketFlowAdapter () {
     CFSocketRef _openVPNClientSocket;

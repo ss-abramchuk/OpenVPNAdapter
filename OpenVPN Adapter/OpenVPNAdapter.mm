@@ -6,13 +6,11 @@
 //
 //
 
-#import "OpenVPNAdapter.h"
-
 #define OPENVPN_EXTERN extern
 
+#import <NetworkExtension/NetworkExtension.h>
 #import <client/ovpncli.hpp>
 #import <openvpn/tun/client/tunbase.hpp>
-#import <NetworkExtension/NetworkExtension.h>
 #import "OpenVPNAdapterEvent.h"
 #import "OpenVPNCredentials+Internal.h"
 #import "OpenVPNConfiguration+Internal.h"
@@ -24,6 +22,7 @@
 #import "OpenVPNProperties+Internal.h"
 #import "OpenVPNSessionToken+Internal.h"
 #import "OpenVPNTransportStats+Internal.h"
+#import "OpenVPNAdapter.h"
 
 class Client;
 

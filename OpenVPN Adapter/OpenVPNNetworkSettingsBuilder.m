@@ -5,8 +5,8 @@
 //  Created by Jonathan Downing on 12/10/2017.
 //
 
-#import "OpenVPNNetworkSettingsBuilder.h"
 #import <NetworkExtension/NetworkExtension.h>
+#import "OpenVPNNetworkSettingsBuilder.h"
 
 @interface OpenVPNNetworkSettingsBuilder ()
 @property (nonatomic) NSMutableArray<NSString *> *ipv4LocalAddresses;
