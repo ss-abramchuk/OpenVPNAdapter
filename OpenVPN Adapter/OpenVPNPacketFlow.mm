@@ -1,5 +1,5 @@
 //
-//  OpenVPNPacketFlowAdapter.mm
+//  OpenVPNPacketFlow.mm
 //  OpenVPN Adapter
 //
 //  Created by Jonathan Downing on 12/10/2017.
@@ -7,16 +7,22 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 #import <openvpn/ip/ip.hpp>
-#import "OpenVPNPacketFlowAdapter.h"
+#import "OpenVPNPacketFlow.h"
 
-@interface OpenVPNPacketFlowAdapter () {
+@interface OpenVPNPacketFlow () {
     CFSocketRef _openVPNClientSocket;
     CFSocketRef _packetFlowSocket;
 }
+
 @property (nonatomic) NEPacketTunnelFlow *packetFlow;
+
 @end
 
-@implementation OpenVPNPacketFlowAdapter
+@implementation OpenVPNPacketFlow
+
+- (CFSocketNativeHandle)socketHandle {
+    return CFSocketGetNative(_openVPNClientSocket);
+}
 
 - (instancetype)initWithPacketFlow:(NEPacketTunnelFlow *)packetFlow {
     if ((self = [super init])) {
@@ -31,12 +37,8 @@
     return self;
 }
 
-- (CFSocketNativeHandle)socketHandle {
-    return CFSocketGetNative(_openVPNClientSocket);
-}
-
 static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *adapter) {
-    [(__bridge OpenVPNPacketFlowAdapter *)adapter writeDataToPacketFlow:(__bridge NSData *)data];
+    [(__bridge OpenVPNPacketFlow *)adapter writeDataToPacketFlow:(__bridge NSData *)data];
 }
 
 - (BOOL)configureSockets {
@@ -84,20 +86,16 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
         return NO;
     }
     
-    CFOptionFlags sockopt = CFSocketGetSocketFlags(socket);
-    
-    sockopt |= kCFSocketCloseOnInvalidate | kCFSocketAutomaticallyReenableDataCallBack;
-    CFSocketSetSocketFlags(socket, sockopt);
-    
     return YES;
 }
 
 - (void)readPacketFlowPackets {
     __weak typeof(self) weakSelf = self;
     [self.packetFlow readPacketObjectsWithCompletionHandler:^(NSArray<NEPacket *> * _Nonnull packets) {
-        typeof(self) strongSelf = weakSelf;
-        [strongSelf writeVPNPacketObjects:packets];
-        [strongSelf readPacketFlowPackets];
+        __strong typeof(self) self = weakSelf;
+
+        [self writeVPNPacketObjects:packets];
+        [self readPacketFlowPackets];
     }];
 }
 

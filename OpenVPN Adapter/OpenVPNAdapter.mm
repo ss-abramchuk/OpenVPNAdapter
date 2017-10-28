@@ -18,7 +18,7 @@
 #import "OpenVPNError.h"
 #import "OpenVPNInterfaceStats+Internal.h"
 #import "OpenVPNNetworkSettingsBuilder.h"
-#import "OpenVPNPacketFlowAdapter.h"
+#import "OpenVPNPacketFlow.h"
 #import "OpenVPNProperties+Internal.h"
 #import "OpenVPNSessionToken+Internal.h"
 #import "OpenVPNTransportStats+Internal.h"
@@ -34,7 +34,7 @@ class Client;
 
 @property (nonatomic) OpenVPNNetworkSettingsBuilder *networkSettingsBuilder;
 
-@property (nonatomic) OpenVPNPacketFlowAdapter *packetFlowAdapter;
+@property (nonatomic) OpenVPNPacketFlow *packetFlow;
 
 - (OpenVPNAdapterError)errorByName:(NSString *)errorName;
 - (OpenVPNAdapterEvent)eventByName:(NSString *)errorName;
@@ -46,13 +46,13 @@ using namespace openvpn;
 
 class Client : public ClientAPI::OpenVPNClient {
 public:
-    Client(OpenVPNAdapter *client) {
-        this->client = client;
+    Client(OpenVPNAdapter *adapter) {
+        this->adapter = adapter;
     }
     
     bool tun_builder_set_remote_address(const std::string& address, bool ipv6) override {
         NSString *remoteAddress = [[NSString alloc] initWithUTF8String:address.c_str()];
-        client.networkSettingsBuilder.remoteAddress = remoteAddress;
+        adapter.networkSettingsBuilder.remoteAddress = remoteAddress;
         return true;
     }
     
@@ -61,14 +61,14 @@ public:
         NSString *gatewayAddress = [[NSString alloc] initWithUTF8String:gateway.c_str()];
         NSString *defaultGateway = gatewayAddress.length == 0 || [gatewayAddress isEqualToString:@"UNSPEC"] ? nil : gatewayAddress;
         if (ipv6) {
-            client.networkSettingsBuilder.ipv6DefaultGateway = defaultGateway;
-            [client.networkSettingsBuilder.ipv6LocalAddresses addObject:localAddress];
-            [client.networkSettingsBuilder.ipv6NetworkPrefixLengths addObject:@(prefix_length)];
+            adapter.networkSettingsBuilder.ipv6DefaultGateway = defaultGateway;
+            [adapter.networkSettingsBuilder.ipv6LocalAddresses addObject:localAddress];
+            [adapter.networkSettingsBuilder.ipv6NetworkPrefixLengths addObject:@(prefix_length)];
         } else {
             NSString *subnetMask = [[NSString alloc] initWithUTF8String:IPv4::Addr::netmask_from_prefix_len(prefix_length).to_string().c_str()];
-            client.networkSettingsBuilder.ipv4DefaultGateway = defaultGateway;
-            [client.networkSettingsBuilder.ipv4LocalAddresses addObject:localAddress];
-            [client.networkSettingsBuilder.ipv4SubnetMasks addObject:subnetMask];
+            adapter.networkSettingsBuilder.ipv4DefaultGateway = defaultGateway;
+            [adapter.networkSettingsBuilder.ipv4LocalAddresses addObject:localAddress];
+            [adapter.networkSettingsBuilder.ipv4SubnetMasks addObject:subnetMask];
         }
         return true;
     }
@@ -76,13 +76,13 @@ public:
     bool tun_builder_reroute_gw(bool ipv4, bool ipv6, unsigned int flags) override {
         if (ipv4) {
             NEIPv4Route *includedRoute = [NEIPv4Route defaultRoute];
-            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv4DefaultGateway;
-            [client.networkSettingsBuilder.ipv4IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = adapter.networkSettingsBuilder.ipv4DefaultGateway;
+            [adapter.networkSettingsBuilder.ipv4IncludedRoutes addObject:includedRoute];
         }
         if (ipv6) {
             NEIPv6Route *includedRoute = [NEIPv6Route defaultRoute];
-            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv6DefaultGateway;
-            [client.networkSettingsBuilder.ipv6IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = adapter.networkSettingsBuilder.ipv6DefaultGateway;
+            [adapter.networkSettingsBuilder.ipv6IncludedRoutes addObject:includedRoute];
         }
         return true;
     }
@@ -91,13 +91,13 @@ public:
         NSString *route = [[NSString alloc] initWithUTF8String:address.c_str()];
         if (ipv6) {
             NEIPv6Route *includedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:@(prefix_length)];
-            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv6DefaultGateway;
-            [client.networkSettingsBuilder.ipv6IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = adapter.networkSettingsBuilder.ipv6DefaultGateway;
+            [adapter.networkSettingsBuilder.ipv6IncludedRoutes addObject:includedRoute];
         } else {
             NSString *subnetMask = [[NSString alloc] initWithUTF8String:IPv4::Addr::netmask_from_prefix_len(prefix_length).to_string().c_str()];
             NEIPv4Route *includedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnetMask];
-            includedRoute.gatewayAddress = client.networkSettingsBuilder.ipv4DefaultGateway;
-            [client.networkSettingsBuilder.ipv4IncludedRoutes addObject:includedRoute];
+            includedRoute.gatewayAddress = adapter.networkSettingsBuilder.ipv4DefaultGateway;
+            [adapter.networkSettingsBuilder.ipv4IncludedRoutes addObject:includedRoute];
         }
         return true;
     }
@@ -106,61 +106,61 @@ public:
         NSString *route = [[NSString alloc] initWithUTF8String:address.c_str()];
         if (ipv6) {
             NEIPv6Route *excludedRoute = [[NEIPv6Route alloc] initWithDestinationAddress:route networkPrefixLength:@(prefix_length)];
-            [client.networkSettingsBuilder.ipv6ExcludedRoutes addObject:excludedRoute];
+            [adapter.networkSettingsBuilder.ipv6ExcludedRoutes addObject:excludedRoute];
         } else {
             NSString *subnetMask = [[NSString alloc] initWithUTF8String:IPv4::Addr::netmask_from_prefix_len(prefix_length).to_string().c_str()];
             NEIPv4Route *excludedRoute = [[NEIPv4Route alloc] initWithDestinationAddress:route subnetMask:subnetMask];
-            [client.networkSettingsBuilder.ipv4ExcludedRoutes addObject:excludedRoute];
+            [adapter.networkSettingsBuilder.ipv4ExcludedRoutes addObject:excludedRoute];
         }
         return true;
     }
     
     bool tun_builder_add_dns_server(const std::string& address, bool ipv6) override {
         NSString *dnsAddress = [[NSString alloc] initWithUTF8String:address.c_str()];
-        [client.networkSettingsBuilder.dnsServers addObject:dnsAddress];
+        [adapter.networkSettingsBuilder.dnsServers addObject:dnsAddress];
         return true;
     }
     
     bool tun_builder_add_search_domain(const std::string& domain) override {
         NSString *searchDomain = [[NSString alloc] initWithUTF8String:domain.c_str()];
-        [client.networkSettingsBuilder.searchDomains addObject:searchDomain];
+        [adapter.networkSettingsBuilder.searchDomains addObject:searchDomain];
         return true;
     }
     
     bool tun_builder_set_mtu(int mtu) override {
-        client.networkSettingsBuilder.mtu = @(mtu);
+        adapter.networkSettingsBuilder.mtu = @(mtu);
         return true;
     }
     
     bool tun_builder_set_session_name(const std::string& name) override {
-        client.sessionName = [[NSString alloc] initWithUTF8String:name.c_str()];
+        adapter.sessionName = [[NSString alloc] initWithUTF8String:name.c_str()];
         return true;
     }
     
     bool tun_builder_add_proxy_bypass(const std::string& bypass_host) override {
         NSString *bypassHost = [[NSString alloc] initWithUTF8String:bypass_host.c_str()];
-        [client.networkSettingsBuilder.proxyExceptionList addObject:bypassHost];
+        [adapter.networkSettingsBuilder.proxyExceptionList addObject:bypassHost];
         return true;
     }
     
     bool tun_builder_set_proxy_auto_config_url(const std::string& urlString) override {
         NSURL *url = [[NSURL alloc] initWithString:[[NSString alloc] initWithUTF8String:urlString.c_str()]];
-        client.networkSettingsBuilder.autoProxyConfigurationEnabled = url != nil;
-        client.networkSettingsBuilder.proxyAutoConfigurationURL = url;
+        adapter.networkSettingsBuilder.autoProxyConfigurationEnabled = url != nil;
+        adapter.networkSettingsBuilder.proxyAutoConfigurationURL = url;
         return true;
     }
     
     bool tun_builder_set_proxy_http(const std::string& host, int port) override {
         NSString *address = [[NSString alloc] initWithUTF8String:host.c_str()];
-        client.networkSettingsBuilder.httpProxyServerEnabled = YES;
-        client.networkSettingsBuilder.httpProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
+        adapter.networkSettingsBuilder.httpProxyServerEnabled = YES;
+        adapter.networkSettingsBuilder.httpProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
         return true;
     }
     
     bool tun_builder_set_proxy_https(const std::string& host, int port) override {
         NSString *address = [[NSString alloc] initWithUTF8String:host.c_str()];
-        client.networkSettingsBuilder.httpsProxyServerEnabled = YES;
-        client.networkSettingsBuilder.httpsProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
+        adapter.networkSettingsBuilder.httpsProxyServerEnabled = YES;
+        adapter.networkSettingsBuilder.httpsProxyServer = [[NEProxyServer alloc] initWithAddress:address port:port];
         return true;
     }
     
@@ -174,20 +174,20 @@ public:
     }
     
     int tun_builder_establish() override {
-        NEPacketTunnelNetworkSettings *networkSettings = client.networkSettingsBuilder.networkSettings;
+        NEPacketTunnelNetworkSettings *networkSettings = adapter.networkSettingsBuilder.networkSettings;
         if (!networkSettings) {
             return -1;
         }
         
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [client.delegate openVPNAdapter:client configureTunnelWithNetworkSettings:networkSettings completionHandler:^(NEPacketTunnelFlow * _Nullable flow) {
-            client.packetFlowAdapter = [[OpenVPNPacketFlowAdapter alloc] initWithPacketFlow:flow];
+        [adapter.delegate openVPNAdapter:adapter configureTunnelWithNetworkSettings:networkSettings completionHandler:^(NEPacketTunnelFlow * _Nullable flow) {
+            adapter.packetFlow = [[OpenVPNPacketFlow alloc] initWithPacketFlow:flow];
             dispatch_semaphore_signal(semaphore);
         }];
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
         
-        if (client.packetFlowAdapter) {
-            return client.packetFlowAdapter.socketHandle;
+        if (adapter.packetFlow) {
+            return adapter.packetFlow.socketHandle;
         } else {
             return -1;
         }
@@ -222,35 +222,42 @@ public:
         NSString *message = [[NSString alloc] initWithUTF8String:event.info.c_str()];
         
         if (event.error) {
-            OpenVPNAdapterError errorCode = [client errorByName:name];
-            NSString *errorReason = [client reasonForError:errorCode];
-            NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:@{NSLocalizedDescriptionKey: @"OpenVPN error occured.", NSLocalizedFailureReasonErrorKey: errorReason, OpenVPNAdapterErrorMessageKey: message != nil ? message : @"", OpenVPNAdapterErrorFatalKey: @(event.fatal)}];
-            [client.delegate openVPNAdapter:client handleError:error];
+            OpenVPNAdapterError errorCode = [adapter errorByName:name];
+            NSString *errorReason = [adapter reasonForError:errorCode];
+            
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"OpenVPN error occured.",
+                                        NSLocalizedFailureReasonErrorKey: errorReason,
+                                        OpenVPNAdapterErrorMessageKey: message != nil ? message : @"",
+                                        OpenVPNAdapterErrorFatalKey: @(event.fatal) };
+            
+            NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:userInfo];
+            [adapter.delegate openVPNAdapter:adapter handleError:error];
         } else {
-            OpenVPNAdapterEvent eventIdentifier = [client eventByName:name];
-            [client.delegate openVPNAdapter:client handleEvent:eventIdentifier message:message.length ? message : nil];
+            OpenVPNAdapterEvent eventIdentifier = [adapter eventByName:name];
+            [adapter.delegate openVPNAdapter:adapter handleEvent:eventIdentifier message:message.length ? message : nil];
         }
     }
     
     void log(const ClientAPI::LogInfo& log) override {
-        if ([client.delegate respondsToSelector:@selector(openVPNAdapter:handleLogMessage:)]) {
-            [client.delegate openVPNAdapter:client handleLogMessage:[[NSString alloc] initWithUTF8String:log.text.c_str()]];
+        if ([adapter.delegate respondsToSelector:@selector(openVPNAdapter:handleLogMessage:)]) {
+            [adapter.delegate openVPNAdapter:adapter handleLogMessage:[[NSString alloc] initWithUTF8String:log.text.c_str()]];
         }
     }
     
     void clock_tick() override {
-        if ([client.delegate respondsToSelector:@selector(openVPNAdapterDidReceiveClockTick:)]) {
-            [client.delegate openVPNAdapterDidReceiveClockTick:client];
+        if ([adapter.delegate respondsToSelector:@selector(openVPNAdapterDidReceiveClockTick:)]) {
+            [adapter.delegate openVPNAdapterDidReceiveClockTick:adapter];
         }
     }
     
     void reset_tun() {
-        client.packetFlowAdapter = nil;
-        client.networkSettingsBuilder = nil;
-        client.sessionName = nil;
+        adapter.packetFlow = nil;
+        adapter.networkSettingsBuilder = nil;
+        adapter.sessionName = nil;
     }
+    
 private:
-    OpenVPNAdapter *client;
+    OpenVPNAdapter *adapter;
 };
 
 @implementation OpenVPNAdapter
@@ -272,7 +279,13 @@ private:
     if (eval.error) {
         if (error) {
             NSString *errorReason = [self reasonForError:OpenVPNAdapterErrorConfigurationFailure];
-            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNAdapterErrorConfigurationFailure userInfo:@{NSLocalizedDescriptionKey: @"Failed to apply OpenVPN configuration.", NSLocalizedFailureReasonErrorKey: errorReason, OpenVPNAdapterErrorMessageKey: [[NSString alloc] initWithUTF8String:eval.message.c_str()], OpenVPNAdapterErrorFatalKey: @YES}];
+            
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Failed to apply OpenVPN configuration.",
+                                        NSLocalizedFailureReasonErrorKey: errorReason,
+                                        OpenVPNAdapterErrorMessageKey: [[NSString alloc] initWithUTF8String:eval.message.c_str()],
+                                        OpenVPNAdapterErrorFatalKey: @YES };
+            
+            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:OpenVPNAdapterErrorConfigurationFailure userInfo: userInfo];
         }
         return nil;
     }
@@ -285,10 +298,20 @@ private:
     
     if (status.error) {
         if (error) {
-            OpenVPNAdapterError errorCode = !status.status.empty() ? [self errorByName:[[NSString alloc] initWithUTF8String:status.status.c_str()]] : OpenVPNAdapterErrorCredentialsFailure;
+            OpenVPNAdapterError errorCode = !status.status.empty() ?
+                [self errorByName:[[NSString alloc] initWithUTF8String:status.status.c_str()]] :
+                OpenVPNAdapterErrorCredentialsFailure;
+            
             NSString *errorReason = [self reasonForError:errorCode];
-            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:@{NSLocalizedDescriptionKey: @"Failed to provide OpenVPN credentials.", NSLocalizedFailureReasonErrorKey: errorReason, OpenVPNAdapterErrorMessageKey: [[NSString alloc] initWithUTF8String:status.message.c_str()], OpenVPNAdapterErrorFatalKey: @YES}];
+            
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Failed to provide OpenVPN credentials.",
+                                        NSLocalizedFailureReasonErrorKey: errorReason,
+                                        OpenVPNAdapterErrorMessageKey: [[NSString alloc] initWithUTF8String:status.message.c_str()],
+                                        OpenVPNAdapterErrorFatalKey: @YES };
+            
+            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:userInfo];
         }
+        
         return NO;
     }
     
@@ -329,7 +352,13 @@ private:
     
     OpenVPNAdapterError errorCode = !status.status.empty() ? [self errorByName:[[NSString alloc] initWithUTF8String:status.status.c_str()]] : OpenVPNAdapterErrorUnknown;
     NSString *errorReason = [self reasonForError:errorCode];
-    NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:@{NSLocalizedDescriptionKey: @"Failed to establish connection with OpenVPN server.", NSLocalizedFailureReasonErrorKey: errorReason, OpenVPNAdapterErrorMessageKey: [[NSString alloc] initWithUTF8String:status.message.c_str()], OpenVPNAdapterErrorFatalKey: @YES}];
+    
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Failed to establish connection with OpenVPN server.",
+                                NSLocalizedFailureReasonErrorKey: errorReason,
+                                OpenVPNAdapterErrorMessageKey: [[NSString alloc] initWithUTF8String:status.message.c_str()],
+                                OpenVPNAdapterErrorFatalKey: @YES };
+    
+    NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain code:errorCode userInfo:userInfo];
     [self.delegate openVPNAdapter:self handleError:error];
 }
 

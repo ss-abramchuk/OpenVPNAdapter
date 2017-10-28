@@ -1,5 +1,5 @@
 //
-//  OpenVPNPacketFlowAdapter.h
+//  OpenVPNPacketFlow.h
 //  OpenVPN Adapter
 //
 //  Created by Jonathan Downing on 12/10/2017.
@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class NEPacketTunnelFlow;
 
-@interface OpenVPNPacketFlowAdapter : NSObject
+@interface OpenVPNPacketFlow : NSObject
 
 @property (nonatomic, readonly) CFSocketNativeHandle socketHandle;
 
