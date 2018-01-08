@@ -4,23 +4,25 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef OPENVPN_COMMON_LINK_H
 #define OPENVPN_COMMON_LINK_H
+
+#include <utility>
 
 namespace openvpn {
 
@@ -40,7 +42,7 @@ namespace openvpn {
   {
   protected:
     Link() {}
-    Link(const typename SEND::Ptr& send_arg) : send(send_arg) {}
+    Link(typename SEND::Ptr send_arg) : send(std::move(send_arg)) {}
     Link(SEND* send_arg) : send(send_arg) {}
 
     typename SEND::Ptr send;

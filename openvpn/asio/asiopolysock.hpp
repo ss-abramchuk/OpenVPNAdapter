@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -35,6 +35,10 @@
 #include <openvpn/common/to_string.hpp>
 #include <openvpn/common/sockopt.hpp>
 #include <openvpn/addr/ip.hpp>
+
+#ifdef OPENVPN_POLYSOCK_SUPPORTS_BIND
+#include <openvpn/asio/asioboundsock.hpp>
+#endif
 
 #ifdef ASIO_HAS_LOCAL_SOCKETS
 #include <openvpn/common/peercred.hpp>
@@ -160,7 +164,11 @@ namespace openvpn {
 	return false;
       }
 
+#ifdef OPENVPN_POLYSOCK_SUPPORTS_BIND
+      AsioBoundSocket::Socket socket;
+#else
       openvpn_io::ip::tcp::socket socket;
+#endif
     };
 
 #ifdef ASIO_HAS_LOCAL_SOCKETS

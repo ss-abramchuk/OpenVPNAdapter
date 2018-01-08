@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -28,7 +28,6 @@
 #include <sys/types.h>
 #include <errno.h>
 
-#include <cstring>     // for std::strerror()
 #include <string>
 
 #include <openvpn/common/platform.hpp>
@@ -40,6 +39,7 @@
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/to_string.hpp>
+#include <openvpn/common/strerror.hpp>
 
 namespace openvpn {
   // NOTE: -- SetUserGroup object does not own passwd and group
@@ -83,14 +83,14 @@ namespace openvpn {
 	  if (::setgid(gr->gr_gid))
 	    {
 	      const int eno = errno;
-	      OPENVPN_THROW(user_group_err, "setgid failed for group '" << group_name << "': " << std::strerror(eno));
+	      OPENVPN_THROW(user_group_err, "setgid failed for group '" << group_name << "': " << strerror_str(eno));
 	    }
 	  gid_t gr_list[1];
 	  gr_list[0] = gr->gr_gid;
 	  if (::setgroups(1, gr_list))
 	    {
 	      const int eno = errno;
-	      OPENVPN_THROW(user_group_err, "setgroups failed for group '" << group_name << "': " << std::strerror(eno));
+	      OPENVPN_THROW(user_group_err, "setgroups failed for group '" << group_name << "': " << strerror_str(eno));
 	    }
 	  OPENVPN_LOG("GID set to '" << group_name << '\'');
 	}
@@ -99,7 +99,7 @@ namespace openvpn {
 	  if (::setuid(pw->pw_uid))
 	    {
 	      const int eno = errno;
-	      OPENVPN_THROW(user_group_err, "setuid failed for user '" << user_name << "': " << std::strerror(eno));
+	      OPENVPN_THROW(user_group_err, "setuid failed for user '" << user_name << "': " << strerror_str(eno));
 	    }
 	  OPENVPN_LOG("UID set to '" << user_name << '\'');
 	}
@@ -118,7 +118,7 @@ namespace openvpn {
 	  if (status < 0)
 	    {
 	      const int eno = errno;
-	      OPENVPN_THROW(user_group_err, "chown " << user_name << '.' << group_name << ' ' << fn << " : " << std::strerror(eno));
+	      OPENVPN_THROW(user_group_err, "chown " << user_name << '.' << group_name << ' ' << fn << " : " << strerror_str(eno));
 	    }
 	}
     }
@@ -131,7 +131,7 @@ namespace openvpn {
 	  if (status < 0)
 	    {
 	      const int eno = errno;
-	      OPENVPN_THROW(user_group_err, "chown " << user_name << '.' << group_name << ' ' << title << " : " << std::strerror(eno));
+	      OPENVPN_THROW(user_group_err, "chown " << user_name << '.' << group_name << ' ' << title << " : " << strerror_str(eno));
 	    }
 	}
     }
