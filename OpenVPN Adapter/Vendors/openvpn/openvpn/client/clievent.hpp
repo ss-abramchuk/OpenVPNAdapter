@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -50,6 +50,7 @@ namespace openvpn {
       ADD_ROUTES,
       ECHO_OPT,
       INFO,
+      WARN,
       PAUSE,
       RESUME,
       RELAY,
@@ -64,6 +65,7 @@ namespace openvpn {
       CERT_VERIFY_FAIL,
       TLS_VERSION_MIN,
       CLIENT_HALT,
+      CLIENT_SETUP,
       CONNECTION_TIMEOUT,
       INACTIVE_TIMEOUT,
       DYNAMIC_CHALLENGE,
@@ -99,6 +101,7 @@ namespace openvpn {
 	"ADD_ROUTES",
 	"ECHO",
 	"INFO",
+	"WARN",
 	"PAUSE",
 	"RESUME",
 	"RELAY",
@@ -113,6 +116,7 @@ namespace openvpn {
 	"CERT_VERIFY_FAIL",
 	"TLS_VERSION_MIN",
 	"CLIENT_HALT",
+	"CLIENT_SETUP",
 	"CONNECTION_TIMEOUT",
 	"INACTIVE_TIMEOUT",
 	"DYNAMIC_CHALLENGE",
@@ -393,6 +397,31 @@ namespace openvpn {
     struct Info : public ReasonBase
     {
       Info(std::string value) : ReasonBase(INFO, std::move(value)) {}
+    };
+
+    struct Warn : public ReasonBase
+    {
+      Warn(std::string value) : ReasonBase(WARN, std::move(value)) {}
+    };
+
+    class ClientSetup : public ReasonBase
+    {
+    public:
+      ClientSetup(const std::string& status, const std::string& message)
+	: ReasonBase(CLIENT_SETUP, make(status, message))
+      {
+      }
+
+    private:
+      static std::string make(const std::string& status, const std::string& message)
+      {
+	std::string ret;
+	ret += status;
+	if (!status.empty() && !message.empty())
+	  ret += ": ";
+	ret += message;
+	return ret;
+      }
     };
 
     class Queue : public RC<thread_unsafe_refcount>

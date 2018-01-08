@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -44,9 +44,11 @@ namespace openvpn {
       {
       }
 
-      void bind_local(const IP::Addr& addr)
+      // if port 0, kernel will dynamically allocate free port
+      void bind_local(const IP::Addr& addr, const unsigned short port=0)
       {
 	bind_local_addr = addr;
+	bind_local_port = port;
       }
 
     private:
@@ -57,11 +59,12 @@ namespace openvpn {
 	    set_option(openvpn_io::socket_base::reuse_address(true), ec);
 	    if (ec)
 	      return;
-	    bind(openvpn_io::ip::tcp::endpoint(bind_local_addr.to_asio(), 0), ec); // port 0 -- kernel will choose port
+	    bind(openvpn_io::ip::tcp::endpoint(bind_local_addr.to_asio(), bind_local_port), ec);
 	  }
       }
 
       IP::Addr bind_local_addr;
+      unsigned short bind_local_port = 0;
     };
 
   }

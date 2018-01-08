@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -148,19 +148,19 @@ namespace openvpn {
 	  throw ip_exception("address unspecified");
       }
 
-      static Addr from_ipv4(const IPv4::Addr& addr)
+      static Addr from_ipv4(IPv4::Addr addr)
       {
 	Addr a;
 	a.ver = V4;
-	a.u.v4 = addr;
+	a.u.v4 = std::move(addr);
 	return a;
       }
 
-      static Addr from_ipv6(const IPv6::Addr& addr)
+      static Addr from_ipv6(IPv6::Addr addr)
       {
 	Addr a;
 	a.ver = V6;
-	a.u.v6 = addr;
+	a.u.v6 = std::move(addr);
 	return a;
       }
 
@@ -325,6 +325,22 @@ namespace openvpn {
 	  return from_ipv6(IPv6::Addr::from_zero_complement());
 	else
 	  throw ip_exception("address unspecified");
+      }
+
+      // validate the prefix length for the IP version
+      static bool validate_prefix_len(Version v, const unsigned int prefix_len)
+      {
+	if (v == V4)
+	  {
+	    if (prefix_len <= V4_SIZE)
+	      return true;
+	  }
+	else if (v == V6)
+	  {
+	    if (prefix_len <= V6_SIZE)
+	      return true;
+	  }
+	return false;
       }
 
       // build a netmask using given prefix_len
@@ -837,22 +853,30 @@ namespace openvpn {
 	  return 0;
       }
 
-      std::size_t hashval() const
+      template <typename HASH>
+      void hash(HASH& h) const
       {
-	std::size_t seed = 0;
 	switch (ver)
 	  {
 	  case Addr::V4:
-	    Hash::combine(seed, 4, u.v4);
+	    u.v4.hash(h);
 	    break;
 	  case Addr::V6:
-	    Hash::combine(seed, 6, u.v6);
+	    u.v6.hash(h);
 	    break;
 	  default:
 	    break;
 	  }
-	return seed;
       }
+
+#ifdef HAVE_CITYHASH
+      std::size_t hashval() const
+      {
+	HashSizeT h;
+	hash(h);
+	return h.value();
+      }
+#endif
 
 #ifdef OPENVPN_IP_IMMUTABLE
     private:
@@ -951,6 +975,8 @@ namespace openvpn {
   }
 }
 
+#ifdef HAVE_CITYHASH
 OPENVPN_HASH_METHOD(openvpn::IP::Addr, hashval);
+#endif
 
 #endif
