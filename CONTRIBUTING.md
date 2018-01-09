@@ -1,4 +1,5 @@
 # Objective-C Style Guide
+> Based on [Google Objective-C Style Guide](http://google.github.io/styleguide/objcguide.html) and [NYTimes Objective-C Style Guide](https://github.com/NYTimes/objective-c-style-guide)
 
 The purpose of this part is to describe the Objective-C (and Objective-C++) coding guidelines and practices that should be used for iOS and OS X code. Apple has already written a very good, and widely accepted, [Cocoa Coding Guidelines](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html#//apple_ref/doc/uid/10000146i) for Objective-C. Please read it in addition to this guide.
 
@@ -124,12 +125,35 @@ Methods should look like this:
 }
 ```
 
-Asterisks indicating a type is a pointer MUST be "attached to" the argument name.
+Asterisks indicating a type is a pointer **MUST** be "attached to" the argument name.
 
-When it comes to the nullability specifiers, the specifiers (`__nullable`, `__nonnull`, `__null_unspecified`) **SHOULD** be placed between the asterisks and the argument name:
+When it comes to the nullability specifiers, the specifiers (`nonnull`, `nullable`, `null_unspecified`) **SHOULD** be placed immediately after an open parenthesis, as long as the type is a simple object or block pointer:
 
 ```
-- (void)doSomethingWithString:(NSString * __nullable)theString;
+- (void)doSomethingWithString:(nonnull NSString *)theString;
+```
+
+You can mark certain regions of your Objective-C header files as audited for `nullability` using `NS_ASSUME_NONNULL_BEGIN` and `NS_ASSUME_NONNULL_END`. Within these regions, any simple pointer type will be assumed to be `nonnull`.
+
+```
+NS_ASSUME_NONNULL_BEGIN
+
+@interface AAPLList : NSObject <NSCoding, NSCopying>
+
+// ...
+
+- (nullable AAPLListItem *)itemWithName:(NSString *)name;
+- (NSInteger)indexOfItem:(AAPLListItem *)item;
+
+@property (copy, nullable) NSString *name;
+@property (copy, readonly) NSArray *allItems;
+
+// ...
+
+@end
+
+NS_ASSUME_NONNULL_END
+
 ```
 
 If you have too many parameters to fit on one line, giving each its own line is preferred. If multiple lines are used, align each using the colon before the parameter.
@@ -281,3 +305,223 @@ When updating legacy code, consider also breaking long functions into smaller an
 
 ### Vertical Whitespace
 Use vertical whitespace sparingly. To allow more code to be easily viewed on a screen, avoid putting blank lines just inside the braces of functions. Limit blank lines to one or two between functions and between logical groups of code.
+
+## Naming
+Names should be as descriptive as possible, within reason. Follow standard [Objective-C naming rules](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html).
+
+Avoid non-standard abbreviations. Don’t worry about saving horizontal space as it is far more important to make your code immediately understandable by a new reader. For example:
+
+```
+// GOOD:
+
+int numberOfErrors = 0;
+int completedConnectionsCount = 0;
+tickets = [[NSMutableArray alloc] init];
+userInfo = [someObject object];
+port = [network port];
+NSDate *gAppLaunchDate;
+```
+
+```
+// AVOID:
+
+int w;
+int nerr;
+int nCompConns;
+tix = [[NSMutableArray alloc] init];
+obj = [someObject object];
+p = [network port];
+```
+
+Any class, category, method, function, or variable name should use all capitals for acronyms and initialisms within the name. This follows Apple’s standard of using all capitals within a name for acronyms such as URL, ID, TIFF, and EXIF.
+
+Names of C functions and typedefs should be capitalized and use camel case as appropriate for the surrounding code.
+
+### File Names
+File names should reflect the name of the class implementation that they contain, including case.
+
+Files containing code that may be shared across projects or used in a large project should have a clearly unique name, typically including the project or class prefix.
+
+File names for categories should include the name of the class being extended, like `GTMNSString+Utils.h` or `NSTextView+GTMAutocomplete.h`
+
+### Class Names
+Class names (along with category and protocol names) should start as uppercase and use mixed case to delimit words.
+
+When designing code to be shared across multiple applications, prefixes are acceptable and recommended (e.g. GTMSendMessage). Prefixes are also recommended for classes of large applications that depend on external libraries.
+
+### Category Names
+Category names should start with a prefix identifying the category as part of a project or open for general use.
+
+The category name should incorporate the name of the class it’s extending. For example, if we want to create a category on `NSString` for parsing, we would put the category in a file named `NSString+GTMParsing.h`, and the category itself would be named `GTMNSStringParsingAdditions`. The file name and the category may not match, as this file could have many separate categories related to parsing. Methods in that category should share the prefix (`gtm_MyCategoryMethodOnAString:`) in order to prevent collisions in Objective-C’s global namespace.
+
+```
+// GOOD:
+
+/** A category that adds parsing functionality to NSString. */
+@interface NSString (GTMNSStringParsingAdditions)
+- (NSString *)gtm_parsedString;
+@end
+```
+
+### Objective-C Method Names
+Method and parameter names typically start as lowercase and then use mixed case.
+
+Proper capitalization should be respected, including at the beginning of names.
+
+```
+// GOOD:
+
++ (NSURL *)URLWithString:(NSString *)URLString;
+```
+
+The method name should read like a sentence if possible, meaning you should choose parameter names that flow with the method name. Objective-C method names tend to be very long, but this has the benefit that a block of code can almost read like prose, thus rendering many implementation comments unnecessary.
+
+Use prepositions and conjunctions like “with”, “from”, and “to” in the second and later parameter names only where necessary to clarify the meaning or behavior of the method.
+
+```
+- (void)addTarget:(id)target action:(SEL)action;
+- (CGPoint)convertPoint:(CGPoint)point fromView:(UIView *)view;
+- (void)replaceCharactersInRange:(NSRange)aRange
+            withAttributedString:(NSAttributedString *)attributedString;
+```
+
+A method that returns an object should have a name beginning with a noun identifying the object returned:
+
+```
+// GOOD:
+
+- (Sandwich *)sandwich;
+```
+
+```
+// AVOID:
+
+- (Sandwich *)makeSandwich;
+```
+
+An accessor method should be named the same as the object it’s getting, but it should not be prefixed with the word get. For example:
+
+```
+// GOOD:
+
+- (id)delegate;
+```
+
+```
+// AVOID:
+
+- (id)getDelegate;
+```
+
+Accessors that return the value of boolean adjectives have method names beginning with `is`, but property names for those methods omit the `is`.
+
+```
+// GOOD:
+
+@property(nonatomic, getter=isGlorious) BOOL glorious;
+- (BOOL)isGlorious;
+
+BOOL isGood = object.glorious;
+BOOL isGood = [object isGlorious];
+```
+
+```
+// AVOID:
+
+BOOL isGood = object.isGlorious;
+```
+
+Dot notation is used only with property names, not with method names.
+
+```
+// GOOD:
+
+NSArray<Frog *> *frogs = [NSArray<Frog *> arrayWithObject:frog];
+NSEnumerator *enumerator = [frogs reverseObjectEnumerator];
+```
+
+```
+// AVOID:
+
+NSEnumerator *enumerator = frogs.reverseObjectEnumerator;
+```
+
+These guidelines are for Objective-C methods only. C++ method names continue to follow the rules set in the C++ style guide.
+
+### Function Names
+Regular functions have mixed case.
+
+Ordinarily, functions should start with a capital letter and have a capital letter for each new word (a.k.a. “Camel Case” or “Pascal case”).
+
+```
+// GOOD:
+
+static void AddTableEntry(NSString *tableEntry);
+static BOOL DeleteFile(char *filename);
+```
+
+Because Objective-C does not provide namespacing, non-static functions should have a prefix that minimizes the chance of a name collision.
+
+```
+// GOOD:
+
+extern NSTimeZone *GTMGetDefaultTimeZone();
+extern NSString *GTMGetURLScheme(NSURL *URL);
+```
+
+### Variable Names
+Variable names typically start with a lowercase and use mixed case to delimit words.
+
+Instance variables have leading underscores. File scope or global variables have a prefix `g`. For example: `myLocalVariable`, `_myInstanceVariable`, `gMyGlobalVariable`.
+
+#### Common Variable Names
+Readers should be able to infer the variable type from the name, but do not use Hungarian notation for syntactic attributes, such as the static type of a variable (int or pointer).
+
+File scope or global variables (as opposed to constants) declared outside the scope of a method or function should be rare, and should have the prefix `g`.
+
+```
+// GOOD:
+
+static int gGlobalCounter;
+```
+
+#### Instance Variables
+Instance variable names are mixed case and should be prefixed with an underscore, like `_usernameTextField`.
+
+#### Constants
+Constant symbols (const global and static variables and constants created with #define) should use mixed case to delimit words.
+
+Global and file scope constants should have an appropriate prefix.
+
+```
+// GOOD:
+
+extern NSString *const GTLServiceErrorDomain;
+
+typedef NS_ENUM(NSInteger, GTLServiceError) {
+    GTLServiceErrorQueryResultMissing = -3000,
+    GTLServiceErrorWaitTimedOut       = -3001,
+};
+```
+
+Because Objective-C does not provide namespacing, constants with external linkage should have a prefix that minimizes the chance of a name collision, typically like `ClassNameConstantName` or `ClassNameEnumName`.
+
+For interoperability with Swift code, enumerated values should have names that extend the typedef name:
+
+```
+// GOOD:
+
+typedef NS_ENUM(NSInteger, DisplayTinge) {
+    DisplayTingeGreen = 1,
+    DisplayTingeBlue = 2,
+};
+```
+
+Constants may use a lowercase k prefix when appropriate:
+
+```
+// GOOD:
+
+static const int kFileCount = 12;
+static NSString *const kUserKey = @"kUserKey";
+```
