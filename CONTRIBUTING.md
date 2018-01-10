@@ -71,9 +71,9 @@ v = -y * (x + z);
 ```
 
 ### Variables
-Asterisks indicating a type is a pointer **MUST** be "attached to" the variable name. For example, `NSString *text` or `NSString *const NYTConstantString`, not `NSString* text` or `NSString * text`.
+Asterisks indicating a type is a pointer **MUST** be "attached to" the variable name or `const` keyword. For example, `NSString *text` or `NSString *const NYTConstantString`, not `NSString* text` or `NSString * text`.
 
-When it comes to the variable qualifiers introduced with ARC, the qualifier (`__strong`, `__weak`, `__unsafe_unretained`, `__autoreleasing`) **SHOULD** be placed between the asterisks and the variable name, e.g., `NSString * __weak text`
+When it comes to the variable qualifiers introduced with ARC, the qualifier (`__strong`, `__weak`, `__unsafe_unretained`, `__autoreleasing`) **SHOULD** be placed at the beginning of declaration, e.g., `__weak NSString * text`
 
 ### Properties
 Property definitions **SHOULD** be used in place of naked instance variables whenever possible. Direct instance variable access **SHOULD** be avoided except in initializer methods (`init`, `initWithCoder:`, etc…), `dealloc` methods and within custom setters and getters.
@@ -96,7 +96,7 @@ Property definitions **SHOULD** be used in place of naked instance variables whe
 }
 ```
 
-Dot notation is RECOMMENDED over bracket notation for getting and setting properties.
+Dot notation is **RECOMMENDED** over bracket notation for getting and setting properties.
 
 ```
 // GOOD:
@@ -524,4 +524,179 @@ Constants may use a lowercase k prefix when appropriate:
 
 static const int kFileCount = 12;
 static NSString *const kUserKey = @"kUserKey";
+```
+
+## Types and Declarations
+
+### Local Variables
+Declare variables in the narrowest practical scopes, and close to their use. Initialize variables in their declarations.
+
+```
+// GOOD:
+
+CLLocation *location = [self lastKnownLocation];
+for (int meters = 1; meters < 10; meters++) {
+  reportFrogsWithinRadius(location, meters);
+}
+```
+
+Under Automatic Reference Counting, pointers to Objective-C objects are by default initialized to `nil`, so explicit initialization to `nil` is not required.
+
+### Unsigned Integers
+Avoid unsigned integers except when matching types used by system interfaces.
+
+Subtle errors crop up when doing math or counting down to zero using unsigned integers. Rely only on signed integers in math expressions except when matching `NSUInteger` in system interfaces.
+
+```
+// GOOD:
+
+NSUInteger numberOfObjects = array.count;
+for (NSInteger counter = numberOfObjects - 1; counter > 0; --counter)
+```
+
+```
+// AVOID:
+
+for (NSUInteger counter = numberOfObjects - 1; counter > 0; --counter)
+```
+
+Unsigned integers may be used for flags and bitmasks, though often `NS_OPTIONS` or `NS_ENUM` will be more appropriate.
+
+### Types with Inconsistent Sizes
+Due to sizes that differ in 32- and 64-bit builds, avoid types `long`, `NSInteger`, `NSUInteger`, and `CGFloat` except when matching system interfaces.
+
+Types `long`, `NSInteger`, `NSUInteger`, and `CGFloat` vary in size between 32- and 64-bit builds. Use of these types is appropriate when handling values exposed by system interfaces, but they should be avoided for most other computations.
+
+```
+// GOOD:
+
+int32_t scalar1 = proto.intValue;
+int64_t scalar2 = proto.longValue;
+NSUInteger numberOfObjects = array.count;
+CGFloat offset = view.bounds.origin.x;
+```
+
+```
+// AVOID:
+
+NSInteger scalar2 = proto.longValue;
+```
+
+File and buffer sizes often exceed 32-bit limits, so they should be declared using `int64_t`, not with `long`, `NSInteger`, or `NSUInteger`.
+
+## Comments
+Comments are absolutely vital to keeping our code readable. The following rules describe what you should comment and where. But remember: while comments are important, the best code is self-documenting. Giving sensible names to types and variables is much better than using obscure names and then trying to explain them through comments.
+
+Pay attention to punctuation, spelling, and grammar; it is easier to read well-written comments than badly written ones.
+
+Comments should be as readable as narrative text, with proper capitalization and punctuation. In many cases, complete sentences are more readable than sentence fragments. Shorter comments, such as comments at the end of a line of code, can sometimes be less formal, but use a consistent style. When writing your comments, write for your audience: the next contributor who will need to understand your code. Be generous—the next one may be you!
+
+### File Comments
+A file may optionally start with a description of its contents. Every file may contain the following items, in order:
+
+- License boilerplate if necessary. Choose the appropriate boilerplate for the license used by the project.
+- A basic description of the contents of the file if necessary.
+
+If you make significant changes to a file with an author line, consider deleting the author line since revision history already provides a more detailed and accurate record of authorship.
+
+### Declaration Comments
+Every non-trivial interface, public and private, should have an accompanying comment describing its purpose and how it fits into the larger picture.
+
+Comments should be used to document classes, properties, ivars, functions, categories, protocol declarations, and enums.
+
+```
+// GOOD:
+
+/**
+ * A delegate for NSApplication to handle notifications about app
+ * launch and shutdown. Owned by the main app controller.
+ */
+@interface MyAppDelegate : NSObject {
+  /**
+   * The background task in progress, if any. This is initialized
+   * to the value UIBackgroundTaskInvalid.
+   */
+  UIBackgroundTaskIdentifier _backgroundTaskID;
+}
+
+/** The factory that creates and manages fetchers for the app. */
+@property(nonatomic) GTMSessionFetcherService *fetcherService;
+
+@end
+```
+
+Doxygen-style comments are encouraged for interfaces as they are parsed by Xcode to display formatted documentation. There is a wide variety of Doxygen commands; use them consistently within a project.
+
+If you have already described an interface in detail in the comments at the top of your file, feel free to simply state, “See comment at top of file for a complete description”, but be sure to have some sort of comment.
+
+Additionally, each method should have a comment explaining its function, arguments, return value, thread or queue assumptions, and any side effects. Documentation comments should be in the header for public methods, or immediately preceding the method for non-trivial private methods.
+
+Use descriptive form (“Opens the file”) rather than imperative form (“Open the file”) for method and function comments. The comment describes the function; it does not tell the function what to do.
+
+Document the thread usage assumptions the class, properties, or methods make, if any. If an instance of the class can be accessed by multiple threads, take extra care to document the rules and invariants surrounding multithreaded use.
+
+Any sentinel values for properties and ivars, such as `NULL` or `-1`, should be documented in comments.
+
+Declaration comments explain how a method or function is used. Comments explaining how a method or function is implemented should be with the implementation rather than with the declaration.
+
+### Implementation Comments
+Provide comments explaining tricky, subtle, or complicated sections of code.
+
+```
+// GOOD:
+
+// Set the property to nil before invoking the completion handler to
+// avoid the risk of reentrancy leading to the callback being
+// invoked again.
+CompletionHandler handler = self.completionHandler;
+self.completionHandler = nil;
+handler();
+```
+
+When useful, also provide comments about implementation approaches that were considered or abandoned.
+
+End-of-line comments should be separated from the code by at least 2 spaces. If you have several comments on subsequent lines, it can often be more readable to line them up.
+
+```
+// GOOD:
+
+[self doSomethingWithALongName];  // Two spaces before the comment.
+[self doSomethingShort];          // More spacing to align the comment.
+```
+
+### Disambiguating Symbols
+Where needed to avoid ambiguity, use backticks or vertical bars to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
+
+In Doxygen-style comments, prefer demarcating symbols with a monospace text command, such as `@c`.
+
+Demarcation helps provide clarity when a symbol is a common word that might make the sentence read like it was poorly constructed. A common example is the symbol `count`:
+
+```
+// GOOD:
+
+// Sometimes `count` will be less than zero.
+```
+
+or when quoting something which already contains quotes
+
+```
+// GOOD:
+
+// Remember to call `StringWithoutSpaces("foo bar baz")`
+```
+
+Backticks or vertical bars are not needed when a symbol is self-apparent.
+
+```
+// GOOD:
+
+// This class serves as a delegate to GTMDepthCharge.
+```
+
+Doxygen formatting is also suitable for identifying symbols.
+
+```
+// GOOD:
+
+/** @param maximum The highest value for @c count. */
 ```
