@@ -700,3 +700,55 @@ Doxygen formatting is also suitable for identifying symbols.
 
 /** @param maximum The highest value for @c count. */
 ```
+
+## C Language Features
+
+### Macros
+Avoid macros, especially where `const` variables, enums, XCode snippets, or C functions may be used instead.
+
+Macros make the code you see different from the code the compiler sees. Modern C renders traditional uses of macros for constants and utility functions unnecessary. Macros should only be used when there is no other solution available.
+
+Where a macro is needed, use a unique name to avoid the risk of a symbol collision in the compilation unit. If practical, keep the scope limited by `#undefining` the macro after its use.
+
+Macro names should use `SHOUTY_SNAKE_CASE` – all uppercase letters with underscores between words. Function-like macros may use C function naming practices. Do not define macros that appear to be C or Objective-C keywords.
+
+```
+// GOOD:
+
+#define GTM_EXPERIMENTAL_BUILD ...
+
+// Assert unless X > Y
+#define GTM_ASSERT_GT(X, Y) ...
+
+// Assert unless X > Y
+#define GTMAssertGreaterThan(X, Y) ...
+```
+
+```
+// AVOID:
+
+#define kIsExperimentalBuild ...
+
+#define unless(X) if(!(X))
+```
+
+Avoid macros that expand to unbalanced C or Objective-C constructs. Avoid macros that introduce scope, or may obscure the capturing of values in blocks.
+
+Avoid macros that generate class, property, or method definitions in headers to be used as public API. These only make the code hard to understand, and the language already has better ways of doing this.
+
+Avoid macros that generate method implementations, or that generate declarations of variables that are later used outside of the macro. Macros shouldn’t make code hard to understand by hiding where and how a variable is declared.
+
+```
+// AVOID:
+
+#define ARRAY_ADDER(CLASS) \
+    -(void)add ## CLASS ## :(CLASS *)obj toArray:(NSMutableArray *)array
+
+ARRAY_ADDER(NSString) {
+    if (array.count > 5) {
+        ...
+    }
+}
+```
+
+Examples of acceptable macro use include assertion and debug logging macros that are conditionally compiled based on build settings – often, these are not compiled into release builds.
