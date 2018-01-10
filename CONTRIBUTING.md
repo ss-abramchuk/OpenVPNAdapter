@@ -1062,3 +1062,70 @@ Omit the empty set of braces on interfaces that do not declare any instance vari
 - (void)fooBarBam;
 @end
 ```
+
+## Cocoa Patterns
+
+### Delegate Pattern
+Delegates, target objects, and block pointers should not be retained when doing so would create a retain cycle.
+
+To avoid causing a retain cycle, a delegate or target pointer should be released as soon as it is clear there will no longer be a need to message the object.
+
+If there is no clear time at which the delegate or target pointer is no longer needed, the pointer should only be retained weakly.
+
+Block pointers cannot be retained weakly. To avoid causing retain cycles in the client code, block pointers should be used for callbacks only where they can be explicitly released after they have been called or once they are no longer needed. Otherwise, callbacks should be done via weak delegate or target pointers.
+
+## Objective-C++
+
+### Style Matches the Language
+Within an Objective-C++ source file, follow the style for the language of the function or method you’re implementing. In order to minimize clashes between the differing naming styles when mixing Cocoa/Objective-C and C++, follow the style of the method being implemented.
+
+For code in an `@implementation` block, use the Objective-C naming rules. For code in a method of a C++ class, use the C++ naming rules.
+
+For code in an Objective-C++ file outside of a class implementation, be consistent within the file.
+
+```
+// GOOD:
+
+// file: cross_platform_header.h
+
+class CrossPlatformAPI {
+public:
+    ...
+    int DoSomethingPlatformSpecific();  // impl on each platform
+private:
+    int an_instance_var_;
+};
+
+// file: mac_implementation.mm
+#include "cross_platform_header.h"
+
+// A typical Objective-C class, using Objective-C naming.
+@interface MyDelegate: NSObject {
+@private
+    int _instanceVar;
+    CrossPlatformAPI *_backEndObject;
+}
+
+- (void)respondToSomething:(id)something;
+
+@end
+
+@implementation MyDelegate
+
+- (void)respondToSomething:(id)something {
+    // bridge from Cocoa through our C++ backend
+    _instanceVar = _backEndObject->DoSomethingPlatformSpecific();
+    NSString *tempString = [NSString stringWithFormat:@"%d", _instanceVar];
+    NSLog(@"%@", tempString);
+}
+
+@end
+
+// The platform-specific implementation of the C++ class, using
+// C++ naming.
+int CrossPlatformAPI::DoSomethingPlatformSpecific() {
+    NSString *temp_string = [NSString stringWithFormat:@"%d", an_instance_var_];
+    NSLog(@"%@", temp_string);
+    return [temp_string intValue];
+}
+```
