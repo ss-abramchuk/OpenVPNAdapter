@@ -130,12 +130,16 @@ Asterisks indicating a type is a pointer **MUST** be "attached to" the argument 
 When it comes to the nullability specifiers, the specifiers (`nonnull`, `nullable`, `null_unspecified`) **SHOULD** be placed immediately after an open parenthesis, as long as the type is a simple object or block pointer:
 
 ```
+// GOOD:
+
 - (void)doSomethingWithString:(nonnull NSString *)theString;
 ```
 
 You can mark certain regions of your Objective-C header files as audited for `nullability` using `NS_ASSUME_NONNULL_BEGIN` and `NS_ASSUME_NONNULL_END`. Within these regions, any simple pointer type will be assumed to be `nonnull`.
 
 ```
+// GOOD:
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AAPLList : NSObject <NSCoding, NSCopying>
@@ -379,6 +383,8 @@ The method name should read like a sentence if possible, meaning you should choo
 Use prepositions and conjunctions like “with”, “from”, and “to” in the second and later parameter names only where necessary to clarify the meaning or behavior of the method.
 
 ```
+// GOOD:
+
 - (void)addTarget:(id)target action:(SEL)action;
 - (CGPoint)convertPoint:(CGPoint)point fromView:(UIView *)view;
 - (void)replaceCharactersInRange:(NSRange)aRange
