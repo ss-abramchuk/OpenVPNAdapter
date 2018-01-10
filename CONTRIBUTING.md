@@ -752,3 +752,313 @@ ARRAY_ADDER(NSString) {
 ```
 
 Examples of acceptable macro use include assertion and debug logging macros that are conditionally compiled based on build settings – often, these are not compiled into release builds.
+
+## Cocoa and Objective-C Features
+
+### Identify Designated Initializer
+Clearly identify your designated initializer.
+
+It is important for those who might be subclassing your class that the designated initializer be clearly identified. That way, they only need to override a single initializer (of potentially several) to guarantee the initializer of their subclass is called. It also helps those debugging your class in the future understand the flow of initialization code if they need to step through it. Identify the designated initializer using comments or the `NS_DESIGNATED_INITIALIZER` macro. If you use `NS_DESIGNATED_INITIALIZER`, mark unsupported initializers with `NS_UNAVAILABLE`.
+
+### Override Designated Initializer
+When writing a subclass that requires an init... method, make sure you override the designated initializer of the superclass.
+
+If you fail to override the designated initializer of the superclass, your initializer may not be called in all cases, leading to subtle and very difficult to find bugs.
+
+### Overridden NSObject Method Placement
+Put overridden methods of NSObject at the top of an `@implementation`.
+
+This commonly applies to (but is not limited to) the `init...`, `copyWithZone:`, and `dealloc` methods. The `init...` methods should be grouped together, followed by other typical `NSObject` methods such as `description`, `isEqual:`, and `hash`.
+
+Convenience class factory methods for creating instances may precede the `NSObject` methods.
+
+### Initialization
+Don’t initialize instance variables to `0` or `nil` in the `init` method; doing so is redundant.
+
+All instance variables for a newly allocated object are initialized to `0` (except for isa), so don’t clutter up the `init` method by re-initializing variables to `0` or `nil`.
+
+Use the following construction for initialization:
+
+```
+// GOOD:
+
+- (instancetype)init {
+    if (self = [super init]) {
+        ...
+    }
+    return self;
+}
+```
+
+### Instance Variables In Headers Should Be `@protected` or `@private`
+Instance variables should typically be declared in implementation files or auto-synthesized by properties. When ivars are declared in a header file, they should be marked `@protected` or `@private`.
+
+```
+// GOOD:
+
+@interface MyClass: NSObject {
+    @protected
+    id _myInstanceVariable;
+}
+@end
+```
+
+### Avoid `new`
+Do not invoke the `NSObject` class method `new`, nor override it in a subclass. Instead, use `alloc` and `init` methods to instantiate retained objects.
+
+Modern Objective-C code explicitly calls `alloc` and an `init` method to create and retain an object. As the `new` class method is rarely used, it makes reviewing code for correct memory management more difficult.
+
+### Keep the Public API Simple
+Keep your class simple; avoid “kitchen-sink” APIs. If a method doesn’t need to be public, keep it out of the public interface.
+
+Unlike C++, Objective-C doesn’t differentiate between public and private methods; any message may be sent to an object. As a result, avoid placing methods in the public API unless they are actually expected to be used by a consumer of the class. This helps reduce the likelihood they’ll be called when you’re not expecting it. This includes methods that are being overridden from the parent class.
+
+Since internal methods are not really private, it’s easy to accidentally override a superclass’s “private” method, thus making a very difficult bug to squash. In general, private methods should have a fairly unique name that will prevent subclasses from unintentionally overriding them.
+
+### `#import` and `#include`
+`#import` Objective-C and Objective-C++ headers, and `#include` C/C++ headers.
+
+Choose between `#import` and `#include` based on the language of the header that you are including.
+
+When including a header that uses Objective-C or Objective-C++, use #import. When including a standard C or C++ header, use #include. The header should provide its own `#define` guard.
+
+### Order of Includes
+The standard order for header inclusion is the related header, operating system headers, language library headers, and finally groups of headers for other dependencies.
+
+The related header precedes others to ensure it has no hidden dependencies. For implementation files the related header is the header file. For test files the related header is the header containing the tested interface.
+
+A blank line may separate logically distinct groups of included headers.
+
+Import headers using their path relative to the project’s source directory.
+
+```
+// GOOD:
+
+#import "ProjectX/BazViewController.h"
+
+#import <Foundation/Foundation.h>
+
+#include <unistd.h>
+#include <vector>
+
+#include "base/basictypes.h"
+#include "base/integral_types.h"
+#include "util/math/mathutil.h"
+
+#import "ProjectX/BazModel.h"
+#import "Shared/Util/Foo.h"
+```
+
+### Use Umbrella Headers for System Frameworks
+Import umbrella headers for system frameworks and system libraries rather than include individual files.
+
+While it may seem tempting to include individual system headers from a framework such as Cocoa or Foundation, in fact it’s less work on the compiler if you include the top-level root framework. The root framework is generally pre-compiled and can be loaded much more quickly. In addition, remember to use `@import` or `#import` rather than `#include` for Objective-C frameworks.
+
+```
+// GOOD:
+
+@import UIKit;
+#import <Foundation/Foundation.h>
+```
+
+```
+// AVOID:
+
+#import <Foundation/NSArray.h>
+#import <Foundation/NSString.h>
+...
+```
+
+### Avoid Messaging the Current Object Within `init` and `dealloc`
+Code in initializers and `-dealloc` should avoid invoking instance methods.
+
+Superclass initialization completes before subclass initialization. Until all classes have had a chance to initialize their instance state any method invocation on self may lead to a subclass operating on uninitialized instance state.
+
+A similar issue exists for `-dealloc`, where a method invocation may cause a class to operate on state that has been deallocated.
+
+One case where this is less obvious is property accessors. These can be overridden just like any other selector. Whenever practical, directly assign to and release ivars in initializers and `-dealloc`, rather than rely on accessors.
+
+```
+// GOOD:
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _bar = 23;
+    }
+    return self;
+}
+```
+
+Beware of factoring common initialization code into helper methods:
+- Methods can be overridden in subclasses, either deliberately, or accidentally due to naming collisions.
+- When editing a helper method, it may not be obvious that the code is being run from an initializer.
+
+```
+// AVOID:
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.bar = 23;
+        [self sharedMethod];
+    }
+    return self;
+}
+```
+
+```
+// GOOD:
+
+- (void)dealloc {
+    [_notifier removeObserver:self];
+}
+```
+
+```
+// AVOID:
+
+- (void)dealloc {
+    [self removeNotifications];
+}
+```
+
+### Setters copy NSStrings
+Setters taking an `NSString` should always copy the string it accepts. This is often also appropriate for collections like `NSArray` and `NSDictionary`.
+
+Never just retain the string, as it may be a `NSMutableString`. This avoids the caller changing it under you without your knowledge.
+
+Code receiving and holding collection objects should also consider that the passed collection may be mutable, and thus the collection could be more safely held as a copy or mutable copy of the original.
+
+```
+// GOOD:
+
+@property(nonatomic, copy) NSString *name;
+
+- (void)setZigfoos:(NSArray<Zigfoo *> *)zigfoos {
+    // Ensure that we're holding an immutable collection.
+    _zigfoos = [zigfoos copy];
+}
+```
+
+### Use Lightweight Generics to Document Contained Types
+All projects compiling on Xcode 7 or newer versions should make use of the Objective-C lightweight generics notation to type contained objects.
+
+Every `NSArray`, `NSDictionary`, or `NSSet` reference should be declared using lightweight generics for improved type safety and to explicitly document usage.
+
+```
+// GOOD:
+
+@property(nonatomic, copy) NSArray<Location *> *locations;
+@property(nonatomic, copy, readonly) NSSet<NSString *> *identifiers;
+
+NSMutableArray<MyLocation *> *mutableLocations = [otherObject.locations mutableCopy];
+```
+
+If the fully-annotated types become complex, consider using a typedef to preserve readability.
+
+```
+// GOOD:
+
+typedef NSSet<NSDictionary<NSString *, NSDate *> *> TimeZoneMappingSet;
+TimeZoneMappingSet *timeZoneMappings = [TimeZoneMappingSet setWithObjects:...];
+```
+
+Use the most descriptive common superclass or protocol available. In the most generic case when nothing else is known, declare the collection to be explicitly heterogenous using id.
+
+```
+// GOOD:
+
+@property(nonatomic, copy) NSArray<id> *unknowns;
+```
+
+### Avoid Throwing Exceptions
+Don’t `@throw` Objective-C exceptions, but you should be prepared to catch them from third-party or OS calls. Use of `@try`, `@catch`, and `@finally` are allowed when required to properly use 3rd party code or libraries. If you do use them, please document exactly which methods you expect to throw.
+
+### `nil` Checks
+Use `nil` checks for logic flow only.
+
+Use `nil` pointer checks for logic flow of the application, not for preventing crashes when sending messages. Sending a message to `nil` reliably returns `nil` as a pointer, zero as an integer or floating-point value, structs initialized to `0`, and `_Complex` values equal to `{0, 0}`.
+
+Note that this applies to `nil` as a message target, not as a parameter value. Individual methods may or may not safely handle `nil` parameter values.
+
+Note too that this is distinct from checking C/C++ pointers and block pointers against `NULL`, which the runtime does not handle and will cause your application to crash. You still need to make sure you do not dereference a `NULL` pointer.
+
+### BOOL Pitfalls
+Be careful when converting general integral values to `BOOL`. Avoid comparing directly with `YES`.
+
+`BOOL` in OS X and in 32-bit iOS builds is defined as a signed char, so it may have values other than `YES` (1) and `NO` (0). Do not cast or convert general integral values directly to `BOOL`.
+
+Common mistakes include casting or converting an array’s size, a pointer value, or the result of a bitwise logic operation to a `BOOL` that could, depending on the value of the last byte of the integer value, still result in a `NO` value. When converting a general integral value to a `BOOL` use ternary operators to return a `YES` or `NO` value.
+
+You can safely interchange and convert `BOOL`, `_Bool` and `bool` (see C++ Std 4.7.4, 4.12 and C99 Std 6.3.1.2). Use `BOOL` in Objective-C method signatures.
+
+Using logical operators (`&&`, `||` and `!`) with `BOOL` is also valid and will return values that can be safely converted to `BOOL` without the need for a ternary operator.
+
+```
+// AVOID:
+
+- (BOOL)isBold {
+    return [self fontTraits] & NSFontBoldTrait;
+}
+
+- (BOOL)isValid {
+    return [self stringValue];
+}
+```
+
+```
+// GOOD:
+
+- (BOOL)isBold {
+    return ([self fontTraits] & NSFontBoldTrait) ? YES : NO;
+}
+
+- (BOOL)isValid {
+    return [self stringValue] != nil;
+}
+
+- (BOOL)isEnabled {
+    return [self isValid] && [self isBold];
+}
+```
+
+Also, don’t directly compare `BOOL` variables directly with `YES`. Not only is it harder to read for those well-versed in C, but the first point above demonstrates that return values may not always be what you expect.
+
+```
+// AVOID:
+
+BOOL great = [foo isGreat];
+if (great == YES) {
+    // ...be great!
+}
+```
+
+```
+// GOOD:
+
+BOOL great = [foo isGreat];
+if (great) {
+    // ...be great!
+}
+```
+
+### Interfaces Without Instance Variables
+Omit the empty set of braces on interfaces that do not declare any instance variables.
+
+```
+// GOOD:
+
+@interface MyClass : NSObject
+// Does a lot of stuff.
+- (void)fooBarBam;
+@end
+```
+
+```
+// AVOID:
+
+@interface MyClass : NSObject {
+}
+// Does a lot of stuff.
+- (void)fooBarBam;
+@end
+```
