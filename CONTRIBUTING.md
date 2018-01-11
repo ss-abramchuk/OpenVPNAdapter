@@ -18,11 +18,21 @@
     - [Objective-C++](#objective-c++)
 
 ## Code of Conduct
-This project and everyone participating in it is governed by the [Code of Conduct](). By participating, you are expected to uphold this code.
+This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ## How Can I Contribute
 
 ### Reporting Bugs
+This section guides you through submitting a bug report for the project. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
+
+Before creating bug reports ensure the bug was not already reported by searching on GitHub under [Issues](https://github.com/ss-abramchuk/OpenVPNAdapter/issues). If you're unable to find an open issue addressing the problem, open a new one. Explain the problem and include additional details to help maintainers reproduce the problem:
+
+- **Use a clear and descriptive title** for the issue to identify the problem.
+- **Describe the exact steps which reproduce the problem** in as many details as possible.
+- **Provide specific examples to demonstrate the steps**. Include links to files or GitHub projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use [Markdown code blocks](https://help.github.com/articles/markdown-basics/#multiple-lines).
+- **Provide log entries** of both OpenVPN client and server if possible to help maintainers address the problem.
+- **Include details about your configuration and environment**. The name and version of the OS you're using, client and server configuration, etc.
+
 ### Suggesting Enhancements
 ### Pull Requests
 
