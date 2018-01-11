@@ -15,7 +15,7 @@
     - [C Language Features](#c-language-features)
     - [Cocoa and Objective-C Features](#cocoa-and-objective-c-features)
     - [Cocoa Patterns](#cocoa-patterns)
-    - [Objective-C++](#objective-c++)
+    - [Objective-C++](#objective-c)
 
 ## Code of Conduct
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
