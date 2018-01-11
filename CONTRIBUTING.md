@@ -1,18 +1,46 @@
-# Objective-C Style Guide
+# Contributing to Project
+
+## Table Of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [How Can I Contribute](#how-can-i-contribute)
+    - [Reporting Bugs](#reporting-bugs)
+    - [Suggesting Enhancements](#suggesting-enhancements)
+    - [Pull Requests](#pull-requests)
+- [Style Guide](#objective-c-style-guide)
+    - [Spacing and Formatting](#spacing-and-formatting)
+    - [Naming](#naming)
+    - [Types and Declarations](#types-and-declarations)
+    - [Comments](#comments)
+    - [C Language Features](#c-language-features)
+    - [Cocoa and Objective-C Features](#cocoa-and-objective-c-features)
+    - [Cocoa Patterns](#cocoa-patterns)
+    - [Objective-C++](#objective-c++)
+
+## Code of Conduct
+This project and everyone participating in it is governed by the [Code of Conduct](). By participating, you are expected to uphold this code.
+
+## How Can I Contribute
+
+### Reporting Bugs
+### Suggesting Enhancements
+### Pull Requests
+
+## Style Guide
 > Based on [Google Objective-C Style Guide](http://google.github.io/styleguide/objcguide.html) and [NYTimes Objective-C Style Guide](https://github.com/NYTimes/objective-c-style-guide)
 
 The purpose of this part is to describe the Objective-C (and Objective-C++) coding guidelines and practices that should be used for iOS and OS X code. Apple has already written a very good, and widely accepted, [Cocoa Coding Guidelines](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html#//apple_ref/doc/uid/10000146i) for Objective-C. Please read it in addition to this guide.
 
-## Spacing and Formatting
+### Spacing and Formatting
 
-### Spaces vs. Tabs
+#### Spaces vs. Tabs
 Use only spaces, and indent 4 spaces at a time. We use spaces for indentation. Do not use tabs in your code.
 
-### Line Length
+#### Line Length
 The maximum line length for Objective-C files is 125 columns.
 You can make violations easier to spot by enabling **Preferences** > **Text Editing** > **Page guide at column: 125** in Xcode.
 
-### Conditionals
+#### Conditionals
 Include a space after if, while, for, and switch, and around comparison operators.
 
 ```
@@ -44,7 +72,7 @@ if (!error)
 if (!error) return success;
 ```
 
-### Ternary Operator
+#### Ternary Operator
 The intent of the ternary operator is to increase clarity or code neatness. The ternary **SHOULD** only evaluate a single condition per expression. Evaluating multiple conditions is usually more understandable as an if statement or refactored into named variables.
 
 ```
@@ -59,7 +87,7 @@ result = a > b ? x : y;
 result = a > b ? x = c > d ? c : d : y;
 ```
 
-### Expressions
+#### Expressions
 Use a space around binary operators and assignments. Omit a space for a unary operator. Do not add spaces inside parentheses.
 
 ```
@@ -70,12 +98,12 @@ v = w * x + y / z;
 v = -y * (x + z);
 ```
 
-### Variables
+#### Variables
 Asterisks indicating a type is a pointer **MUST** be "attached to" the variable name or `const` keyword. For example, `NSString *text` or `NSString *const NYTConstantString`, not `NSString* text` or `NSString * text`.
 
 When it comes to the variable qualifiers introduced with ARC, the qualifier (`__strong`, `__weak`, `__unsafe_unretained`, `__autoreleasing`) **SHOULD** be placed at the beginning of declaration, e.g., `__weak NSString * text`
 
-### Properties
+#### Properties
 Property definitions **SHOULD** be used in place of naked instance variables whenever possible. Direct instance variable access **SHOULD** be avoided except in initializer methods (`init`, `initWithCoder:`, etc…), `dealloc` methods and within custom setters and getters.
 
 ```
@@ -112,7 +140,7 @@ view.backgroundColor = [UIColor orangeColor];
 UIApplication.sharedApplication.delegate;
 ```
 
-### Method Declarations and Definitions
+#### Method Declarations and Definitions
 One space should be used between the - or + and the return type, and no spacing in the parameter list except between parameters.
 
 Methods should look like this:
@@ -185,7 +213,7 @@ When the second or later parameter name is longer than the first, indent the sec
 }
 ```
 
-### Method Invocations
+#### Method Invocations
 Method invocations should be formatted much like method declarations. When there’s a choice of formatting styles, follow the convention already used in a given source file. Invocations should have all arguments on one line:
 
 ```
@@ -231,7 +259,7 @@ As with declarations and definitions, when the first keyword is shorter than the
                 error:arg4];
 ```
 
-### Function Calls
+#### Function Calls
 Function calls should include as many parameters as fit on each line, except where shorter lines are needed for clarity or documentation of the parameters. Continuation lines for function parameters may be indented to align with the opening parenthesis, or may have a four-space indent.
 
 ```
@@ -261,7 +289,7 @@ double scoreHeuristic = scores[x] * y + bases[x];
 UpdateTally(scoreHeuristic, x, y, z);
 ```
 
-### Error Handling
+#### Error Handling
 When methods return an error parameter by reference, code **MUST** switch on the returned value and **MUST NOT** switch on the error variable.
 
 ```
@@ -283,7 +311,7 @@ if (error) {
 }
 ```
 
-### Exceptions
+#### Exceptions
 Format exceptions with `@catch` and `@finally` labels on the same line as the preceding }. Add a space between the @ label and the opening brace (`{`), as well as between the `@catch` and the caught object declaration. If you must use Objective-C exceptions, format them as follows.
 
 ```
@@ -298,7 +326,7 @@ Format exceptions with `@catch` and `@finally` labels on the same line as the pr
 }
 ```
 
-### Function Length
+#### Function Length
 Prefer small and focused functions.
 
 Long functions and methods are occasionally appropriate, so no hard limit is placed on function length. If a function exceeds about 40 lines, think about whether it can be broken up without harming the structure of the program.
@@ -307,10 +335,10 @@ Even if your long function works perfectly now, someone modifying it in a few mo
 
 When updating legacy code, consider also breaking long functions into smaller and more manageable pieces.
 
-### Vertical Whitespace
+#### Vertical Whitespace
 Use vertical whitespace sparingly. To allow more code to be easily viewed on a screen, avoid putting blank lines just inside the braces of functions. Limit blank lines to one or two between functions and between logical groups of code.
 
-## Naming
+### Naming
 Names should be as descriptive as possible, within reason. Follow standard [Objective-C naming rules](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html).
 
 Avoid non-standard abbreviations. Don’t worry about saving horizontal space as it is far more important to make your code immediately understandable by a new reader. For example:
@@ -341,19 +369,19 @@ Any class, category, method, function, or variable name should use all capitals 
 
 Names of C functions and typedefs should be capitalized and use camel case as appropriate for the surrounding code.
 
-### File Names
+#### File Names
 File names should reflect the name of the class implementation that they contain, including case.
 
 Files containing code that may be shared across projects or used in a large project should have a clearly unique name, typically including the project or class prefix.
 
 File names for categories should include the name of the class being extended, like `GTMNSString+Utils.h` or `NSTextView+GTMAutocomplete.h`
 
-### Class Names
+#### Class Names
 Class names (along with category and protocol names) should start as uppercase and use mixed case to delimit words.
 
 When designing code to be shared across multiple applications, prefixes are acceptable and recommended (e.g. GTMSendMessage). Prefixes are also recommended for classes of large applications that depend on external libraries.
 
-### Category Names
+#### Category Names
 Category names should start with a prefix identifying the category as part of a project or open for general use.
 
 The category name should incorporate the name of the class it’s extending. For example, if we want to create a category on `NSString` for parsing, we would put the category in a file named `NSString+GTMParsing.h`, and the category itself would be named `GTMNSStringParsingAdditions`. The file name and the category may not match, as this file could have many separate categories related to parsing. Methods in that category should share the prefix (`gtm_MyCategoryMethodOnAString:`) in order to prevent collisions in Objective-C’s global namespace.
@@ -367,7 +395,7 @@ The category name should incorporate the name of the class it’s extending. For
 @end
 ```
 
-### Objective-C Method Names
+#### Objective-C Method Names
 Method and parameter names typically start as lowercase and then use mixed case.
 
 Proper capitalization should be respected, including at the beginning of names.
@@ -454,7 +482,7 @@ NSEnumerator *enumerator = frogs.reverseObjectEnumerator;
 
 These guidelines are for Objective-C methods only. C++ method names continue to follow the rules set in the C++ style guide.
 
-### Function Names
+#### Function Names
 Regular functions have mixed case.
 
 Ordinarily, functions should start with a capital letter and have a capital letter for each new word (a.k.a. “Camel Case” or “Pascal case”).
@@ -475,12 +503,12 @@ extern NSTimeZone *GTMGetDefaultTimeZone();
 extern NSString *GTMGetURLScheme(NSURL *URL);
 ```
 
-### Variable Names
+#### Variable Names
 Variable names typically start with a lowercase and use mixed case to delimit words.
 
 Instance variables have leading underscores. File scope or global variables have a prefix `g`. For example: `myLocalVariable`, `_myInstanceVariable`, `gMyGlobalVariable`.
 
-#### Common Variable Names
+##### Common Variable Names
 Readers should be able to infer the variable type from the name, but do not use Hungarian notation for syntactic attributes, such as the static type of a variable (int or pointer).
 
 File scope or global variables (as opposed to constants) declared outside the scope of a method or function should be rare, and should have the prefix `g`.
@@ -491,10 +519,10 @@ File scope or global variables (as opposed to constants) declared outside the sc
 static int gGlobalCounter;
 ```
 
-#### Instance Variables
+##### Instance Variables
 Instance variable names are mixed case and should be prefixed with an underscore, like `_usernameTextField`.
 
-#### Constants
+##### Constants
 Constant symbols (const global and static variables and constants created with #define) should use mixed case to delimit words.
 
 Global and file scope constants should have an appropriate prefix.
@@ -532,9 +560,9 @@ static const int kFileCount = 12;
 static NSString *const kUserKey = @"kUserKey";
 ```
 
-## Types and Declarations
+### Types and Declarations
 
-### Local Variables
+#### Local Variables
 Declare variables in the narrowest practical scopes, and close to their use. Initialize variables in their declarations.
 
 ```
@@ -548,7 +576,7 @@ for (int meters = 1; meters < 10; meters++) {
 
 Under Automatic Reference Counting, pointers to Objective-C objects are by default initialized to `nil`, so explicit initialization to `nil` is not required.
 
-### Unsigned Integers
+#### Unsigned Integers
 Avoid unsigned integers except when matching types used by system interfaces.
 
 Subtle errors crop up when doing math or counting down to zero using unsigned integers. Rely only on signed integers in math expressions except when matching `NSUInteger` in system interfaces.
@@ -568,7 +596,7 @@ for (NSUInteger counter = numberOfObjects - 1; counter > 0; --counter)
 
 Unsigned integers may be used for flags and bitmasks, though often `NS_OPTIONS` or `NS_ENUM` will be more appropriate.
 
-### Types with Inconsistent Sizes
+#### Types with Inconsistent Sizes
 Due to sizes that differ in 32- and 64-bit builds, avoid types `long`, `NSInteger`, `NSUInteger`, and `CGFloat` except when matching system interfaces.
 
 Types `long`, `NSInteger`, `NSUInteger`, and `CGFloat` vary in size between 32- and 64-bit builds. Use of these types is appropriate when handling values exposed by system interfaces, but they should be avoided for most other computations.
@@ -590,14 +618,14 @@ NSInteger scalar2 = proto.longValue;
 
 File and buffer sizes often exceed 32-bit limits, so they should be declared using `int64_t`, not with `long`, `NSInteger`, or `NSUInteger`.
 
-## Comments
+### Comments
 Comments are absolutely vital to keeping our code readable. The following rules describe what you should comment and where. But remember: while comments are important, the best code is self-documenting. Giving sensible names to types and variables is much better than using obscure names and then trying to explain them through comments.
 
 Pay attention to punctuation, spelling, and grammar; it is easier to read well-written comments than badly written ones.
 
 Comments should be as readable as narrative text, with proper capitalization and punctuation. In many cases, complete sentences are more readable than sentence fragments. Shorter comments, such as comments at the end of a line of code, can sometimes be less formal, but use a consistent style. When writing your comments, write for your audience: the next contributor who will need to understand your code. Be generous—the next one may be you!
 
-### File Comments
+#### File Comments
 A file may optionally start with a description of its contents. Every file may contain the following items, in order:
 
 - License boilerplate if necessary. Choose the appropriate boilerplate for the license used by the project.
@@ -605,7 +633,7 @@ A file may optionally start with a description of its contents. Every file may c
 
 If you make significant changes to a file with an author line, consider deleting the author line since revision history already provides a more detailed and accurate record of authorship.
 
-### Declaration Comments
+#### Declaration Comments
 Every non-trivial interface, public and private, should have an accompanying comment describing its purpose and how it fits into the larger picture.
 
 Comments should be used to document classes, properties, ivars, functions, categories, protocol declarations, and enums.
@@ -645,7 +673,7 @@ Any sentinel values for properties and ivars, such as `NULL` or `-1`, should be 
 
 Declaration comments explain how a method or function is used. Comments explaining how a method or function is implemented should be with the implementation rather than with the declaration.
 
-### Implementation Comments
+#### Implementation Comments
 Provide comments explaining tricky, subtle, or complicated sections of code.
 
 ```
@@ -670,7 +698,7 @@ End-of-line comments should be separated from the code by at least 2 spaces. If 
 [self doSomethingShort];          // More spacing to align the comment.
 ```
 
-### Disambiguating Symbols
+#### Disambiguating Symbols
 Where needed to avoid ambiguity, use backticks or vertical bars to quote variable names and symbols in comments in preference to using quotation marks or naming the symbols inline.
 
 In Doxygen-style comments, prefer demarcating symbols with a monospace text command, such as `@c`.
@@ -707,9 +735,9 @@ Doxygen formatting is also suitable for identifying symbols.
 /** @param maximum The highest value for @c count. */
 ```
 
-## C Language Features
+### C Language Features
 
-### Macros
+#### Macros
 Avoid macros, especially where `const` variables, enums, XCode snippets, or C functions may be used instead.
 
 Macros make the code you see different from the code the compiler sees. Modern C renders traditional uses of macros for constants and utility functions unnecessary. Macros should only be used when there is no other solution available.
@@ -759,26 +787,26 @@ ARRAY_ADDER(NSString) {
 
 Examples of acceptable macro use include assertion and debug logging macros that are conditionally compiled based on build settings – often, these are not compiled into release builds.
 
-## Cocoa and Objective-C Features
+### Cocoa and Objective-C Features
 
-### Identify Designated Initializer
+#### Identify Designated Initializer
 Clearly identify your designated initializer.
 
 It is important for those who might be subclassing your class that the designated initializer be clearly identified. That way, they only need to override a single initializer (of potentially several) to guarantee the initializer of their subclass is called. It also helps those debugging your class in the future understand the flow of initialization code if they need to step through it. Identify the designated initializer using comments or the `NS_DESIGNATED_INITIALIZER` macro. If you use `NS_DESIGNATED_INITIALIZER`, mark unsupported initializers with `NS_UNAVAILABLE`.
 
-### Override Designated Initializer
+#### Override Designated Initializer
 When writing a subclass that requires an init... method, make sure you override the designated initializer of the superclass.
 
 If you fail to override the designated initializer of the superclass, your initializer may not be called in all cases, leading to subtle and very difficult to find bugs.
 
-### Overridden NSObject Method Placement
+#### Overridden NSObject Method Placement
 Put overridden methods of NSObject at the top of an `@implementation`.
 
 This commonly applies to (but is not limited to) the `init...`, `copyWithZone:`, and `dealloc` methods. The `init...` methods should be grouped together, followed by other typical `NSObject` methods such as `description`, `isEqual:`, and `hash`.
 
 Convenience class factory methods for creating instances may precede the `NSObject` methods.
 
-### Initialization
+#### Initialization
 Don’t initialize instance variables to `0` or `nil` in the `init` method; doing so is redundant.
 
 All instance variables for a newly allocated object are initialized to `0` (except for isa), so don’t clutter up the `init` method by re-initializing variables to `0` or `nil`.
@@ -796,7 +824,7 @@ Use the following construction for initialization:
 }
 ```
 
-### Instance Variables In Headers Should Be `@protected` or `@private`
+#### Instance Variables In Headers Should Be `@protected` or `@private`
 Instance variables should typically be declared in implementation files or auto-synthesized by properties. When ivars are declared in a header file, they should be marked `@protected` or `@private`.
 
 ```
@@ -809,26 +837,26 @@ Instance variables should typically be declared in implementation files or auto-
 @end
 ```
 
-### Avoid `new`
+#### Avoid `new`
 Do not invoke the `NSObject` class method `new`, nor override it in a subclass. Instead, use `alloc` and `init` methods to instantiate retained objects.
 
 Modern Objective-C code explicitly calls `alloc` and an `init` method to create and retain an object. As the `new` class method is rarely used, it makes reviewing code for correct memory management more difficult.
 
-### Keep the Public API Simple
+#### Keep the Public API Simple
 Keep your class simple; avoid “kitchen-sink” APIs. If a method doesn’t need to be public, keep it out of the public interface.
 
 Unlike C++, Objective-C doesn’t differentiate between public and private methods; any message may be sent to an object. As a result, avoid placing methods in the public API unless they are actually expected to be used by a consumer of the class. This helps reduce the likelihood they’ll be called when you’re not expecting it. This includes methods that are being overridden from the parent class.
 
 Since internal methods are not really private, it’s easy to accidentally override a superclass’s “private” method, thus making a very difficult bug to squash. In general, private methods should have a fairly unique name that will prevent subclasses from unintentionally overriding them.
 
-### `#import` and `#include`
+#### `#import` and `#include`
 `#import` Objective-C and Objective-C++ headers, and `#include` C/C++ headers.
 
 Choose between `#import` and `#include` based on the language of the header that you are including.
 
 When including a header that uses Objective-C or Objective-C++, use #import. When including a standard C or C++ header, use #include. The header should provide its own `#define` guard.
 
-### Order of Includes
+#### Order of Includes
 The standard order for header inclusion is the related header, operating system headers, language library headers, and finally groups of headers for other dependencies.
 
 The related header precedes others to ensure it has no hidden dependencies. For implementation files the related header is the header file. For test files the related header is the header containing the tested interface.
@@ -855,7 +883,7 @@ Import headers using their path relative to the project’s source directory.
 #import "Shared/Util/Foo.h"
 ```
 
-### Use Umbrella Headers for System Frameworks
+#### Use Umbrella Headers for System Frameworks
 Import umbrella headers for system frameworks and system libraries rather than include individual files.
 
 While it may seem tempting to include individual system headers from a framework such as Cocoa or Foundation, in fact it’s less work on the compiler if you include the top-level root framework. The root framework is generally pre-compiled and can be loaded much more quickly. In addition, remember to use `@import` or `#import` rather than `#include` for Objective-C frameworks.
@@ -875,7 +903,7 @@ While it may seem tempting to include individual system headers from a framework
 ...
 ```
 
-### Avoid Messaging the Current Object Within `init` and `dealloc`
+#### Avoid Messaging the Current Object Within `init` and `dealloc`
 Code in initializers and `-dealloc` should avoid invoking instance methods.
 
 Superclass initialization completes before subclass initialization. Until all classes have had a chance to initialize their instance state any method invocation on self may lead to a subclass operating on uninitialized instance state.
@@ -927,7 +955,7 @@ Beware of factoring common initialization code into helper methods:
 }
 ```
 
-### Setters copy NSStrings
+#### Setters copy NSStrings
 Setters taking an `NSString` should always copy the string it accepts. This is often also appropriate for collections like `NSArray` and `NSDictionary`.
 
 Never just retain the string, as it may be a `NSMutableString`. This avoids the caller changing it under you without your knowledge.
@@ -945,7 +973,7 @@ Code receiving and holding collection objects should also consider that the pass
 }
 ```
 
-### Use Lightweight Generics to Document Contained Types
+#### Use Lightweight Generics to Document Contained Types
 All projects compiling on Xcode 7 or newer versions should make use of the Objective-C lightweight generics notation to type contained objects.
 
 Every `NSArray`, `NSDictionary`, or `NSSet` reference should be declared using lightweight generics for improved type safety and to explicitly document usage.
@@ -976,10 +1004,10 @@ Use the most descriptive common superclass or protocol available. In the most ge
 @property(nonatomic, copy) NSArray<id> *unknowns;
 ```
 
-### Avoid Throwing Exceptions
+#### Avoid Throwing Exceptions
 Don’t `@throw` Objective-C exceptions, but you should be prepared to catch them from third-party or OS calls. Use of `@try`, `@catch`, and `@finally` are allowed when required to properly use 3rd party code or libraries. If you do use them, please document exactly which methods you expect to throw.
 
-### `nil` Checks
+#### `nil` Checks
 Use `nil` checks for logic flow only.
 
 Use `nil` pointer checks for logic flow of the application, not for preventing crashes when sending messages. Sending a message to `nil` reliably returns `nil` as a pointer, zero as an integer or floating-point value, structs initialized to `0`, and `_Complex` values equal to `{0, 0}`.
@@ -988,7 +1016,7 @@ Note that this applies to `nil` as a message target, not as a parameter value. I
 
 Note too that this is distinct from checking C/C++ pointers and block pointers against `NULL`, which the runtime does not handle and will cause your application to crash. You still need to make sure you do not dereference a `NULL` pointer.
 
-### BOOL Pitfalls
+#### BOOL Pitfalls
 Be careful when converting general integral values to `BOOL`. Avoid comparing directly with `YES`.
 
 `BOOL` in OS X and in 32-bit iOS builds is defined as a signed char, so it may have values other than `YES` (1) and `NO` (0). Do not cast or convert general integral values directly to `BOOL`.
@@ -1047,7 +1075,7 @@ if (great) {
 }
 ```
 
-### Interfaces Without Instance Variables
+#### Interfaces Without Instance Variables
 Omit the empty set of braces on interfaces that do not declare any instance variables.
 
 ```
@@ -1069,9 +1097,9 @@ Omit the empty set of braces on interfaces that do not declare any instance vari
 @end
 ```
 
-## Cocoa Patterns
+### Cocoa Patterns
 
-### Delegate Pattern
+#### Delegate Pattern
 Delegates, target objects, and block pointers should not be retained when doing so would create a retain cycle.
 
 To avoid causing a retain cycle, a delegate or target pointer should be released as soon as it is clear there will no longer be a need to message the object.
@@ -1080,9 +1108,9 @@ If there is no clear time at which the delegate or target pointer is no longer n
 
 Block pointers cannot be retained weakly. To avoid causing retain cycles in the client code, block pointers should be used for callbacks only where they can be explicitly released after they have been called or once they are no longer needed. Otherwise, callbacks should be done via weak delegate or target pointers.
 
-## Objective-C++
+### Objective-C++
 
-### Style Matches the Language
+#### Style Matches the Language
 Within an Objective-C++ source file, follow the style for the language of the function or method you’re implementing. In order to minimize clashes between the differing naming styles when mixing Cocoa/Objective-C and C++, follow the style of the method being implemented.
 
 For code in an `@implementation` block, use the Objective-C naming rules. For code in a method of a C++ class, use the C++ naming rules.
