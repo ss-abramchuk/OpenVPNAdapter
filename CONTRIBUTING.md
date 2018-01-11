@@ -7,7 +7,7 @@
     - [Reporting Bugs](#reporting-bugs)
     - [Suggesting Enhancements](#suggesting-enhancements)
     - [Pull Requests](#pull-requests)
-- [Style Guide](#objective-c-style-guide)
+- [Style Guide](#style-guide)
     - [Spacing and Formatting](#spacing-and-formatting)
     - [Naming](#naming)
     - [Types and Declarations](#types-and-declarations)
@@ -23,8 +23,6 @@ This project and everyone participating in it is governed by the [Code of Conduc
 ## How Can I Contribute
 
 ### Reporting Bugs
-This section guides you through submitting a bug report for the project. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
-
 Before creating bug reports ensure the bug was not already reported by searching on GitHub under [Issues](https://github.com/ss-abramchuk/OpenVPNAdapter/issues). If you're unable to find an open issue addressing the problem, open a new one. Explain the problem and include additional details to help maintainers reproduce the problem:
 
 - **Use a clear and descriptive title** for the issue to identify the problem.
@@ -34,7 +32,18 @@ Before creating bug reports ensure the bug was not already reported by searching
 - **Include details about your configuration and environment**. The name and version of the OS you're using, client and server configuration, etc.
 
 ### Suggesting Enhancements
+Before creating enhancement suggestions, please check [GitHub Issues](https://github.com/ss-abramchuk/OpenVPNAdapter/issues) as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please include as many details as possible:
+
+- **Use a clear and descriptive title** for the issue to identify the suggestion.
+- **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
+- **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code blocks](https://help.github.com/articles/markdown-basics/#multiple-lines).
+- **Explain why this enhancement would be useful**.
+
 ### Pull Requests
+
+- Open a new GitHub pull request.
+- Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
+- Before submitting, please read the [Style Guide](#style-guide) to know more about coding conventions.
 
 ## Style Guide
 > Based on [Google Objective-C Style Guide](http://google.github.io/styleguide/objcguide.html) and [NYTimes Objective-C Style Guide](https://github.com/NYTimes/objective-c-style-guide)
