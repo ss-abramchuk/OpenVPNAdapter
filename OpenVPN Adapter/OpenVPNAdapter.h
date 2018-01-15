@@ -54,7 +54,8 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
 
 /**
  This method is called once the network settings to be used have been established.
- The receiver should call the completion handler once these settings have been set, returning a NEPacketTunnelFlow object for the TUN interface, or nil if an error occurred.
+ The receiver should call the completion handler once these settings have been set, returning a NEPacketTunnelFlow object for
+ the TUN interface, or nil if an error occurred.
  
  @param openVPNAdapter The OpenVPNAdapter instance requesting this information.
  @param networkSettings The NEPacketTunnelNetworkSettings to be used for the tunnel.
@@ -67,7 +68,8 @@ NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHand
 
 /**
  Informs the receiver that an OpenVPN error has occurred.
- Some errors are fatal and should trigger the diconnection of the tunnel, check for fatal errors with the OpenVPNAdapterErrorFatalKey.
+ Some errors are fatal and should trigger the diconnection of the tunnel, check for fatal errors with the
+ OpenVPNAdapterErrorFatalKey.
  
  @param openVPNAdapter The OpenVPNAdapter instance which encountered the error.
  @param error The error which has occurred.
