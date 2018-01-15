@@ -11,11 +11,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OpenVPNPacket : NSObject
 
-@property (readonly, nonatomic) NSData *data;
+/**
+ Data that can be written to the VPN socket.
+ */
+@property (readonly, nonatomic) NSData *vpnData;
+
+/**
+ Data that can be written to the packet flow.
+ */
+@property (readonly, nonatomic) NSData *packetFlowData;
+
+/**
+ Protocol number (e.g. PF_INET or PF_INET6) of the packet.
+ */
 @property (readonly, nonatomic) NSNumber *protocolFamily;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithData:(NSData *)data protocolFamily:(NSNumber *)protocolFamily NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithVPNData:(NSData *)data NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPacketFlowData:(NSData *)data protocolFamily:(NSNumber *)protocolFamily NS_DESIGNATED_INITIALIZER;
 
 @end
 
