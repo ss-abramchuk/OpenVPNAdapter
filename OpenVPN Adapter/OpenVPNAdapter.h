@@ -7,9 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OpenVPNAdapterEvent.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
 
 @class NEPacketTunnelFlow;
 @class NEPacketTunnelNetworkSettings;
