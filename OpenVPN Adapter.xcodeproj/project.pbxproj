@@ -340,6 +340,11 @@
 		C9235AC41EB24F0100C7D303 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				C9657A5D1EB0D60700EFF210 /* OpenVPNTransportProtocol.h */,
+				C9657A601EB0D64E00EFF210 /* OpenVPNIPv6Preference.h */,
+				C9657A631EB0D6AD00EFF210 /* OpenVPNCompressionMode.h */,
+				C9657A661EB0D73200EFF210 /* OpenVPNMinTLSVersion.h */,
+				C9657A691EB0D75700EFF210 /* OpenVPNTLSCertProfile.h */,
 				C98467A41EAA5B7700272A9A /* OpenVPNConfiguration.h */,
 				C98467AA1EAA5BB500272A9A /* OpenVPNConfiguration+Internal.h */,
 				C98467A51EAA5B7700272A9A /* OpenVPNConfiguration.mm */,
@@ -375,26 +380,10 @@
 			name = "Stats and Info";
 			sourceTree = "<group>";
 		};
-		C9235AC61EB24F2A00C7D303 /* Types and Constants */ = {
-			isa = PBXGroup;
-			children = (
-				C9BB476F1E7171A100F3F98C /* OpenVPNError.h */,
-				C93A4F611EE18009004DC561 /* OpenVPNError.m */,
-				C9BB47701E7171A100F3F98C /* OpenVPNAdapterEvent.h */,
-				C9657A5D1EB0D60700EFF210 /* OpenVPNTransportProtocol.h */,
-				C9657A601EB0D64E00EFF210 /* OpenVPNIPv6Preference.h */,
-				C9657A631EB0D6AD00EFF210 /* OpenVPNCompressionMode.h */,
-				C9657A661EB0D73200EFF210 /* OpenVPNMinTLSVersion.h */,
-				C9657A691EB0D75700EFF210 /* OpenVPNTLSCertProfile.h */,
-				C915F1FD1F6164CF00B3DF23 /* OpenVPNKeyType.h */,
-				C9B795681F1D219C00CF35FE /* OpenVPNReachabilityStatus.h */,
-			);
-			name = "Types and Constants";
-			sourceTree = "<group>";
-		};
 		C9B7955B1F1D165700CF35FE /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
+				C9B795681F1D219C00CF35FE /* OpenVPNReachabilityStatus.h */,
 				C9B795621F1D182500CF35FE /* OpenVPNReachabilityTracker.h */,
 				C9B795631F1D182500CF35FE /* OpenVPNReachabilityTracker.mm */,
 				C9B7955C1F1D16AA00CF35FE /* OpenVPNReachability.h */,
@@ -438,6 +427,9 @@
 		C9BB47671E7169F000F3F98C /* Adapter */ = {
 			isa = PBXGroup;
 			children = (
+				C9BB47701E7171A100F3F98C /* OpenVPNAdapterEvent.h */,
+				C9BB476F1E7171A100F3F98C /* OpenVPNError.h */,
+				C93A4F611EE18009004DC561 /* OpenVPNError.m */,
 				C9CDFDD9200781AF00323B73 /* OpenVPNClient.h */,
 				C9CDFDDA200781AF00323B73 /* OpenVPNClient.mm */,
 				ABD6EF151F8F9C37007D3D90 /* OpenVPNAdapter.h */,
@@ -546,6 +538,7 @@
 		C9CA4DD01F602D8300C4F184 /* Certificates and Keys */ = {
 			isa = PBXGroup;
 			children = (
+				C915F1FD1F6164CF00B3DF23 /* OpenVPNKeyType.h */,
 				C9CA4DD11F602F7B00C4F184 /* OpenVPNCertificate.h */,
 				C9CA4DD21F602F7B00C4F184 /* OpenVPNCertificate.m */,
 				C915F1F21F612F3300B3DF23 /* OpenVPNPrivateKey.h */,
@@ -566,7 +559,6 @@
 		C9FF73B71EB7421600E995AC /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				C9235AC61EB24F2A00C7D303 /* Types and Constants */,
 				C9E4401A1F6081FF001D7C41 /* Utils */,
 			);
 			name = Helpers;
