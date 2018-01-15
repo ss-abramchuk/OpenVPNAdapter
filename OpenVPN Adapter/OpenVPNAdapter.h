@@ -22,6 +22,33 @@ NS_ASSUME_NONNULL_BEGIN
 @class OpenVPNTransportStats;
 @class OpenVPNSessionToken;
 
+@protocol OpenVPNAdapterPacketFlow <NSObject>
+
+/**
+ Read IP packets from the TUN interface.
+ 
+ @param completionHandler A block that is executed when some packets are read from the TUN interface. The packets that were
+    read are passed to this block in the packets array. The protocol numbers of the packets that were read are passed to this
+    block in the protocols array. Each packet has a protocol number in the corresponding index in the protocols array. The
+    protocol numbers are given in host byte order. Valid protocol numbers include PF_INET and PF_INET6. See /usr/include/sys/socket.h.
+ */
+- (void)readPacketsWithCompletionHandler:(void (^)(NSArray<NSData *> *packets, NSArray<NSNumber *> *protocols))completionHandler;
+
+/**
+ Write IP packets to the TUN interface
+ 
+ @param packets An array of NSData objects containing the IP packets to the written.
+ @param protocols An array of NSNumber objects containing the protocol numbers (e.g. PF_INET or PF_INET6) of the IP packets
+     in packets in host byte order.
+ 
+ @discussion The number of NSData objects in packets must be exactly equal to the number of NSNumber objects in protocols.
+ 
+ @return YES on success, otherwise NO.
+ */
+- (BOOL)writePackets:(NSArray<NSData *> *)packets withProtocols:(NSArray<NSNumber *> *)protocols;
+
+@end
+
 @protocol OpenVPNAdapterDelegate <NSObject>
 
 /**
@@ -32,7 +59,10 @@ NS_ASSUME_NONNULL_BEGIN
  @param networkSettings The NEPacketTunnelNetworkSettings to be used for the tunnel.
  @param completionHandler The completion handler to be called with a NEPacketTunnelFlow object, or nil if an error occurred.
  */
-- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter configureTunnelWithNetworkSettings:(NEPacketTunnelNetworkSettings *)networkSettings completionHandler:(void (^)(NEPacketTunnelFlow * _Nullable packetFlow))completionHandler NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
+- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
+configureTunnelWithNetworkSettings:(NEPacketTunnelNetworkSettings *)networkSettings
+                 completionHandler:(void (^)(id<OpenVPNAdapterPacketFlow> _Nullable packetFlow))completionHandler
+NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
 /**
  Informs the receiver that an OpenVPN error has occurred.
@@ -50,7 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
  @param event The event which has occurred.
  @param message An accompanying message, may be nil.
  */
-- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter handleEvent:(OpenVPNAdapterEvent)event message:(nullable NSString *)message NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
+- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
+           handleEvent:(OpenVPNAdapterEvent)event
+               message:(nullable NSString *)message 
+NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
 
 @optional
 
@@ -122,7 +155,9 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error applying the configuration, upon return contains an error object that describes the problem.
  @return A properties object describing the configuration which has been applied.
  */
-- (nullable OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError **)error NS_SWIFT_NAME(apply(configuration:));
+- (nullable OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration
+                                             error:(NSError **)error
+NS_SWIFT_NAME(apply(configuration:));
 
 /**
  Provides credentials to the receiver.
