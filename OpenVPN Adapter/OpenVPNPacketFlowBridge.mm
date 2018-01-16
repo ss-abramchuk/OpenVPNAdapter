@@ -142,7 +142,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }];
 }
 
-#pragma mark -
+#pragma mark - TUN -> VPN
 
 - (void)writePackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols toSocket:(CFSocketRef)socket {
     [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
@@ -153,7 +153,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     }];
 }
 
-#pragma mark -
+#pragma mark - VPN -> TUN
 
 - (void)writePackets:(NSArray<OpenVPNPacket *> *)packets toPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
     NSMutableArray<NSData *> *flowPackets = [[NSMutableArray alloc] init];
