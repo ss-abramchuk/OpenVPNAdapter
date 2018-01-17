@@ -11,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class NEIPv4Route;
 @class NEIPv6Route;
-@class NEPacketTunnelNetworkSettings;
 @class NEProxyServer;
+@class NEPacketTunnelNetworkSettings;
 
 @interface OpenVPNNetworkSettingsBuilder : NSObject
 
