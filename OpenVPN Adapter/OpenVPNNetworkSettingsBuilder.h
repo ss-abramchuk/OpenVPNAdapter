@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL httpsProxyServerEnabled;
 @property (nonatomic, copy, nullable) NEProxyServer *httpsProxyServer;
 
-@property (nonatomic, readonly, nullable) NEPacketTunnelNetworkSettings *networkSettings;
+- (nullable NEPacketTunnelNetworkSettings *)networkSettings;
 
 @end
 
