@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol OpenVPNAdapterPacketFlow <NSObject>
 
 /**
@@ -33,3 +35,5 @@
 - (BOOL)writePackets:(NSArray<NSData *> *)packets withProtocols:(NSArray<NSNumber *> *)protocols;
 
 @end
+
+NS_ASSUME_NONNULL_END
