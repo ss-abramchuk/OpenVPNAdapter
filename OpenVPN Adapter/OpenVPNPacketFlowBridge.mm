@@ -52,7 +52,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             };
             
             *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
-                                         code:OpenVPNAdapterErrorTUNSetupFailed
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
                                      userInfo:userInfo];
         }
         
@@ -73,7 +73,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             };
             
             *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
-                                         code:OpenVPNAdapterErrorTUNSetupFailed
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
                                      userInfo:userInfo];
         }
 
@@ -105,7 +105,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             };
             
             *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
-                                         code:OpenVPNAdapterErrorTUNSetupFailed
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
                                      userInfo:userInfo];
         }
         
@@ -121,7 +121,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
             };
             
             *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
-                                         code:OpenVPNAdapterErrorTUNSetupFailed
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
                                      userInfo:userInfo];
         }
         

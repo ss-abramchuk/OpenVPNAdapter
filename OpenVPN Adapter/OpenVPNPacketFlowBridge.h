@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CFSocketRef packetFlowSocket;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (nullable instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)configureSocketsWithError:(NSError **)error;
 - (void)startReading;
