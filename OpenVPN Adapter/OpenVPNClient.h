@@ -44,20 +44,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)establishTunnel;
 - (CFSocketNativeHandle)socketHandle;
 
-- (void)clientEvent:(NSString *)eventName message:(nullable NSString *)message;
-- (void)clientError:(NSString *)errorName fatal:(BOOL)fatal message:(nullable NSString *)message;
-- (void)clientLog:(NSString *)logMessage;
+- (void)clientEventName:(NSString *)eventName message:(nullable NSString *)message;
+- (void)clientErrorName:(NSString *)errorName fatal:(BOOL)fatal message:(nullable NSString *)message;
+- (void)clientLogMessage:(NSString *)logMessage;
 
 - (void)tick;
 
 - (void)resetSettings;
 @end
 
+NS_ASSUME_NONNULL_END
+
 using namespace openvpn;
 
 class OpenVPNClient : public ClientAPI::OpenVPNClient {
 public:
-    OpenVPNClient(id<OpenVPNClientDelegate> _delegate);
+    OpenVPNClient(id<OpenVPNClientDelegate> _Nonnull delegate);
     
     bool tun_builder_new() override;
     
@@ -93,7 +95,7 @@ public:
     void clock_tick() override;
     
 private:
-    __weak id<OpenVPNClientDelegate> delegate;
+    __weak id<OpenVPNClientDelegate> _Nonnull delegate;
 };
 
-NS_ASSUME_NONNULL_END
+

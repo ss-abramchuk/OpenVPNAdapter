@@ -153,15 +153,15 @@ void OpenVPNClient::event(const ClientAPI::Event& ev) {
     NSString *message = [NSString stringWithUTF8String:ev.info.c_str()];
     
     if (ev.error) {
-        [this->delegate clientError:name fatal:ev.fatal message:message.length ? message : nil];
+        [this->delegate clientErrorName:name fatal:ev.fatal message:message.length ? message : nil];
     } else {
-        [this->delegate clientEvent:name message:message.length ? message : nil];
+        [this->delegate clientEventName:name message:message.length ? message : nil];
     }
 }
 
 void OpenVPNClient::log(const ClientAPI::LogInfo& log) {
     NSString *logMessage = [NSString stringWithUTF8String:log.text.c_str()];
-    [this->delegate clientLog:logMessage];
+    [this->delegate clientLogMessage:logMessage];
 }
 
 void OpenVPNClient::clock_tick() {
