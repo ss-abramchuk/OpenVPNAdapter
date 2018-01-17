@@ -106,7 +106,11 @@ bool OpenVPNClient::tun_builder_add_proxy_bypass(const std::string& bypass_host)
 
 bool OpenVPNClient::tun_builder_set_proxy_auto_config_url(const std::string& url) {
     NSURL *configURL = [[NSURL alloc] initWithString:[NSString stringWithUTF8String:url.c_str()]];
-    return [this->delegate setProxyAutoConfigurationURL:configURL];
+    if (configURL) {
+        return [this->delegate setProxyAutoConfigurationURL:configURL];
+    } else {
+        return false;
+    }
 }
 
 bool OpenVPNClient::tun_builder_set_proxy_http(const std::string& host, int port) {
