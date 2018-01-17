@@ -36,6 +36,7 @@ typedef NS_ERROR_ENUM(OpenVPNAdapterErrorDomain, OpenVPNAdapterError) {
     OpenVPNAdapterErrorBadSrcAddr,
     OpenVPNAdapterErrorCompressError,
     OpenVPNAdapterErrorResolveError,
+    OpenVPNAdapterErrorSocketSetupFailed,
     OpenVPNAdapterErrorSocketProtectError,
     OpenVPNAdapterErrorTUNReadError,
     OpenVPNAdapterErrorTUNWriteError,
