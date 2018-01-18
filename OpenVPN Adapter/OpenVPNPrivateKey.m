@@ -8,8 +8,9 @@
 
 #import "OpenVPNPrivateKey.h"
 
-#import <mbedtls/pk.h>
+#include <mbedtls/pk.h>
 
+#import "OpenVPNKeyType.h"
 #import "NSError+OpenVPNError.h"
 
 @interface OpenVPNPrivateKey ()
@@ -19,23 +20,6 @@
 @end
 
 @implementation OpenVPNPrivateKey
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.ctx = malloc(sizeof(mbedtls_pk_context));
-        mbedtls_pk_init(self.ctx);
-    }
-    return self;
-}
-
-- (NSInteger)size {
-    return mbedtls_pk_get_bitlen(self.ctx);
-}
-
-- (OpenVPNKeyType)type {
-    return (OpenVPNKeyType)mbedtls_pk_get_type(self.ctx);
-}
 
 + (nullable OpenVPNPrivateKey *)keyWithPEM:(NSData *)pemData password:(NSString *)password error:(out NSError **)error {
     OpenVPNPrivateKey *key = [OpenVPNPrivateKey new];
@@ -76,6 +60,22 @@
     }
     
     return key;
+}
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _ctx = malloc(sizeof(mbedtls_pk_context));
+        mbedtls_pk_init(_ctx);
+    }
+    return self;
+}
+
+- (NSInteger)size {
+    return mbedtls_pk_get_bitlen(self.ctx);
+}
+
+- (OpenVPNKeyType)type {
+    return (OpenVPNKeyType)mbedtls_pk_get_type(self.ctx);
 }
 
 - (NSData *)pemData:(out NSError **)error {
@@ -123,8 +123,8 @@
 }
 
 - (void)dealloc {
-    mbedtls_pk_free(self.ctx);
-    free(self.ctx);
+    mbedtls_pk_free(_ctx);
+    free(_ctx);
 }
 
 @end

@@ -7,8 +7,8 @@
 //
 #import "OpenVPNCertificate.h"
 
-#import <mbedtls/x509_crt.h>
-#import <mbedtls/pem.h>
+#include <mbedtls/x509_crt.h>
+#include <mbedtls/pem.h>
 
 #import "NSError+OpenVPNError.h"
 
@@ -19,16 +19,6 @@
 @end
 
 @implementation OpenVPNCertificate
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.crt = malloc(sizeof(mbedtls_x509_crt));
-        mbedtls_x509_crt_init(self.crt);
-    }
-    return self;
-}
 
 + (OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData error:(out NSError **)error {
     OpenVPNCertificate *certificate = [OpenVPNCertificate new];
@@ -60,6 +50,15 @@
     }
     
     return certificate;
+}
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _crt = malloc(sizeof(mbedtls_x509_crt));
+        mbedtls_x509_crt_init(_crt);
+    }
+    return self;
 }
 
 - (NSData *)pemData:(out NSError **)error {
@@ -102,8 +101,8 @@
 }
 
 - (void)dealloc {
-    mbedtls_x509_crt_free(self.crt);
-    free(self.crt);
+    mbedtls_x509_crt_free(_crt);
+    free(_crt);
 }
 
 @end
