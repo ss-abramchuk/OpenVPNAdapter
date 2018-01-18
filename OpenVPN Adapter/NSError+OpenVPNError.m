@@ -7,6 +7,8 @@
 
 #import "NSError+OpenVPNError.h"
 
+#import <mbedtls/error.h>
+
 #import "OpenVPNError.h"
 
 @implementation NSError (OpenVPNAdapterErrorGeneration)
@@ -176,6 +178,26 @@
         case OpenVPNAdapterErrorEPKIInvalidAlias: return nil;
         case OpenVPNAdapterErrorUnknown: return @"Unknown error.";
     }
+}
+
+@end
+
+@implementation NSError (OpenVPNMbedTLSErrorGeneration)
+
++ (NSError *)ovpn_errorObjectForMbedTLSError:(NSInteger)errorCode description:(NSString *)description {
+    size_t length = 1024;
+    char *buffer = malloc(length);
+    
+    mbedtls_strerror(errorCode, buffer, length);
+    
+    NSString *reason = [NSString stringWithUTF8String:buffer];
+    
+    free(buffer);
+    
+    return [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:errorCode userInfo:@{
+        NSLocalizedDescriptionKey: description,
+        NSLocalizedFailureReasonErrorKey: reason
+    }];
 }
 
 @end

@@ -24,4 +24,10 @@ typedef NS_ERROR_ENUM(OpenVPNAdapterErrorDomain, OpenVPNAdapterError);
 
 @end
 
+@interface NSError (OpenVPNMbedTLSErrorGeneration)
+
++ (NSError *)ovpn_errorObjectForMbedTLSError:(NSInteger)errorCode description:(NSString *)description;
+
+@end
+
 NS_ASSUME_NONNULL_END

@@ -6,11 +6,11 @@
 //
 //
 
+#import "OpenVPNPrivateKey.h"
+
 #import <mbedtls/pk.h>
 
-#import "NSError+Message.h"
-#import "OpenVPNError.h"
-#import "OpenVPNPrivateKey.h"
+#import "NSError+OpenVPNError.h"
 
 @interface OpenVPNPrivateKey ()
 
@@ -45,14 +45,12 @@
     size_t pem_length = strlen(pemString.UTF8String) + 1;
     size_t password_length = password != nil ? strlen(password.UTF8String) : 0;
     
-    int result = mbedtls_pk_parse_key(key.ctx, (const unsigned char *)pemString.UTF8String, pem_length, (const unsigned char *)password.UTF8String, password_length);
+    int result = mbedtls_pk_parse_key(key.ctx, (const unsigned char *)pemString.UTF8String,
+                                      pem_length, (const unsigned char *)password.UTF8String, password_length);
+    
     if (result < 0) {
         if (error) {
-            NSString *reason = [NSError reasonFromResult:result];
-            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
-                NSLocalizedDescriptionKey: @"Failed to read PEM data.",
-                NSLocalizedFailureReasonErrorKey: reason
-            }];
+            *error = [NSError ovpn_errorObjectForMbedTLSError:result description:@"Failed to read PEM data"];
         }
         
         return nil;
@@ -66,14 +64,12 @@
     
     size_t password_length = password != nil ? strlen(password.UTF8String) : 0;
     
-    int result = mbedtls_pk_parse_key(key.ctx, derData.bytes, derData.length, (const unsigned char *)password.UTF8String, password_length);
+    int result = mbedtls_pk_parse_key(key.ctx, derData.bytes,
+                                      derData.length, (const unsigned char *)password.UTF8String, password_length);
+    
     if (result < 0) {
         if (error) {
-            NSString *reason = [NSError reasonFromResult:result];
-            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
-                NSLocalizedDescriptionKey: @"Failed to read DER data.",
-                NSLocalizedFailureReasonErrorKey: reason
-            }];
+            *error = [NSError ovpn_errorObjectForMbedTLSError:result description:@"Failed to read DER data"];
         }
         
         return nil;
@@ -89,18 +85,15 @@
     int result = mbedtls_pk_write_key_pem(self.ctx, pem_buffer, buffer_length);
     if (result < 0) {
         if (error) {
-            NSString *reason = [NSError reasonFromResult:result];
-            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
-                NSLocalizedDescriptionKey: @"Failed to write PEM data.",
-                NSLocalizedFailureReasonErrorKey: reason
-            }];
+            *error = [NSError ovpn_errorObjectForMbedTLSError:result description:@"Failed to write PEM data"];
         }
         
         free(pem_buffer);
         return nil;
     }
     
-    NSData *pemData = [[NSString stringWithCString:(const char *)pem_buffer encoding:NSUTF8StringEncoding] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *pemData = [[NSString stringWithCString:(const char *)pem_buffer
+                                          encoding:NSUTF8StringEncoding] dataUsingEncoding:NSUTF8StringEncoding];
     
     free(pem_buffer);
     return pemData;
@@ -113,11 +106,7 @@
     int result = mbedtls_pk_write_key_der(self.ctx, der_buffer, buffer_length);
     if (result < 0) {
         if (error) {
-            NSString *reason = [NSError reasonFromResult:result];
-            *error = [NSError errorWithDomain:OpenVPNIdentityErrorDomain code:result userInfo:@{
-                NSLocalizedDescriptionKey: @"Failed to write DER data.",
-                NSLocalizedFailureReasonErrorKey: reason
-            }];
+            *error = [NSError ovpn_errorObjectForMbedTLSError:result description:@"Failed to write DER data"];
         }
         
         free(der_buffer);
