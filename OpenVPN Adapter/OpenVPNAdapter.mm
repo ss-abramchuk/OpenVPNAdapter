@@ -475,10 +475,10 @@
     
     __weak typeof(self) weakSelf = self;
     void (^completionHandler)(id<OpenVPNAdapterPacketFlow> _Nullable) = ^(id<OpenVPNAdapterPacketFlow> flow) {
-        __strong typeof(self) self = weakSelf;
+        __strong typeof(self) strongSelf = weakSelf;
         
         if (flow) {
-            self.packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] initWithPacketFlow:flow];
+            strongSelf.packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] initWithPacketFlow:flow];
         }
         
         dispatch_semaphore_signal(semaphore);

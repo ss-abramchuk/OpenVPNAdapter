@@ -135,10 +135,10 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     __weak typeof(self) weakSelf = self;
     
     [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> *packets, NSArray<NSNumber *> *protocols) {
-        __strong typeof(self) self = weakSelf;
+        __strong typeof(self) strongSelf = weakSelf;
         
-        [self writePackets:packets protocols:protocols toSocket:self.packetFlowSocket];
-        [self startReading];
+        [strongSelf writePackets:packets protocols:protocols toSocket:strongSelf.packetFlowSocket];
+        [strongSelf startReading];
     }];
 }
 
