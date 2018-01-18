@@ -9,6 +9,7 @@
 #import "OpenVPNReachabilityTracker.h"
 
 #import "OpenVPNReachability+Internal.h"
+#import "OpenVPNReachabilityStatus.h"
 
 OpenVPNReachabilityTracker::OpenVPNReachabilityTracker(const bool enable_internet, const bool enable_wifi, void* handler) :
     ReachabilityTracker(enable_internet, enable_wifi)
