@@ -16,6 +16,8 @@ class OpenVPNAdapterTests: XCTestCase {
         case connection
     }
     
+    let customFlow = CustomFlow()
+    
     var expectations = [ExpectationsType : XCTestExpectation]()
     
     override func setUp() {
@@ -63,8 +65,8 @@ class OpenVPNAdapterTests: XCTestCase {
         }
     }
     
-    // Test connection without specifying username and password
-    func testConection() {
+    // Test connection with local VPN server
+    func testLocalConection() {
         let adapter = OpenVPNAdapter()
         
         let configuration = OpenVPNConfiguration()
@@ -105,15 +107,39 @@ class OpenVPNAdapterTests: XCTestCase {
         }
     }
     
+    // Test connection with remote VPN server
+    func testRemoteConnection() {
+        let adapter = OpenVPNAdapter()
+        
+        let configuration = OpenVPNConfiguration()
+        configuration.fileContent = ProfileLoader.getVPNProfile(type: .remoteVPNServer)
+        
+        do {
+            _ = try adapter.apply(configuration: configuration)
+        } catch {
+            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
+            return
+        }
+        
+        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
+        
+        adapter.delegate = self
+        adapter.connect()
+        
+        waitForExpectations(timeout: 30.0) { (error) in
+            adapter.disconnect()
+        }
+    }
+    
 }
 
 extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
     
-    func configureTunnel(settings: NEPacketTunnelNetworkSettings, callback: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
-        callback(self)
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (NEPacketTunnelFlow?) -> Void) {
+        completionHandler(customFlow)
     }
     
-    func handle(event: OpenVPNAdapterEvent, message: String?) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?) {
         switch event {
         case .connected:
             guard let connectionExpectation = expectations[.connection] else { return }
@@ -127,23 +153,15 @@ extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
         }
     }
     
-    func handle(error: Error) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleError error: Error) {
         if let connectionExpectation = expectations[.connection] {
             XCTFail("Failed to establish conection. \(error.localizedDescription)")
             connectionExpectation.fulfill()
         }
     }
     
-    func handle(logMessage: String) {
-        print("\(logMessage)")
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleLogMessage logMessage: String) {
+        print(logMessage)
     }
-    
-}
-
-extension OpenVPNAdapterTests: OpenVPNAdapterPacketFlow {
-    
-    func readPackets(completionHandler: @escaping ([Data], [NSNumber]) -> Void) { }
-    
-    func writePackets(_ packets: [Data], withProtocols protocols: [NSNumber]) -> Bool { return true }
     
 }

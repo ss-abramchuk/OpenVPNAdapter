@@ -6,10 +6,13 @@
 //
 //
 
-#import <openvpn/apple/reachable.hpp>
-
 #import "OpenVPNReachability.h"
 #import "OpenVPNReachability+Internal.h"
+
+#include <openvpn/apple/reachable.hpp>
+
+#import "OpenVPNReachabilityTracker.h"
+#import "OpenVPNReachabilityStatus.h"
 
 @interface OpenVPNReachability () {
     BOOL _isTracking;
@@ -45,13 +48,12 @@
     }
 }
 
-- (nonnull instancetype)init {
-    self = [super init];
-    if (self) {
+- (instancetype)init {
+    if (self = [super init]) {
         _isTracking = NO;
 
-        self.tracker = new OpenVPNReachabilityTracker(true, false, (__bridge void *)self);
-        self.reachability = new Reachability(true, true);
+        _tracker = new OpenVPNReachabilityTracker(true, false, (__bridge void *)self);
+        _reachability = new Reachability(true, true);
     }
     return self;
 }
@@ -77,8 +79,8 @@
 }
 
 - (void)dealloc {
-    delete self.tracker;
-    delete self.reachability;
+    delete _tracker;
+    delete _reachability;
 }
 
 @end

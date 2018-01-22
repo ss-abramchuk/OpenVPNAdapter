@@ -8,24 +8,24 @@
 
 #import <Foundation/Foundation.h>
 
-#import "OpenVPNKeyType.h"
+typedef NS_ENUM(NSInteger, OpenVPNKeyType);
 
 @interface OpenVPNPrivateKey : NSObject
 
 + (nullable OpenVPNPrivateKey *)keyWithPEM:(nonnull NSData *)pemData
                                   password:(nullable NSString *)password
-                                     error:(out NSError * __nullable * __nullable)error;
+                                     error:(out NSError * _Nullable * _Nullable)error;
 
 + (nullable OpenVPNPrivateKey *)keyWithDER:(nonnull NSData *)derData
                                   password:(nullable NSString *)password
-                                     error:(out NSError * __nullable * __nullable)error;
+                                     error:(out NSError * _Nullable * _Nullable)error;
 
-- (nonnull instancetype) __unavailable init;
+- (nonnull instancetype) init NS_UNAVAILABLE;
 
 @property (nonatomic, readonly) NSInteger size;
 @property (nonatomic, readonly) OpenVPNKeyType type;
 
-- (nullable NSData *)pemData:(out NSError * __nullable * __nullable)error;
-- (nullable NSData *)derData:(out NSError * __nullable * __nullable)error;
+- (nullable NSData *)pemData:(out NSError * _Nullable * _Nullable)error;
+- (nullable NSData *)derData:(out NSError * _Nullable * _Nullable)error;
 
 @end

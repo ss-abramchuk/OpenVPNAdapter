@@ -11,14 +11,14 @@
 @interface OpenVPNCertificate : NSObject
 
 + (nullable OpenVPNCertificate *)certificateWithPEM:(nonnull NSData *)pemData
-                                              error:(out NSError * __nullable * __nullable)error;
+                                              error:(out NSError * _Nullable * _Nullable)error;
 
 + (nullable OpenVPNCertificate *)certificateWithDER:(nonnull NSData *)derData
-                                              error:(out NSError * __nullable * __nullable)error;
+                                              error:(out NSError * _Nullable * _Nullable)error;
 
-- (nonnull instancetype) __unavailable init;
+- (nonnull instancetype) init NS_UNAVAILABLE;
 
-- (nullable NSData *)pemData:(out NSError * __nullable * __nullable)error;
-- (nullable NSData *)derData:(out NSError * __nullable * __nullable)error;
+- (nullable NSData *)pemData:(out NSError * _Nullable * _Nullable)error;
+- (nullable NSData *)derData:(out NSError * _Nullable * _Nullable)error;
 
 @end

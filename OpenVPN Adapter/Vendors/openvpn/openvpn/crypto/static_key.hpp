@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -31,7 +31,9 @@
 #include <openvpn/common/hexstr.hpp>
 #include <openvpn/common/file.hpp>
 #include <openvpn/common/splitlines.hpp>
+#include <openvpn/common/base64.hpp>
 #include <openvpn/buffer/buffer.hpp>
+#include <openvpn/random/randapi.hpp>
 
 namespace openvpn {
 
@@ -50,6 +52,25 @@ namespace openvpn {
     void erase() { key_data_.clear(); }
 
     std::string render_hex() const { return openvpn::render_hex_generic(key_data_); }
+
+    void parse_from_base64(const std::string& b64, const size_t capacity)
+    {
+      key_data_.reset(capacity, key_t::DESTRUCT_ZERO);
+      base64->decode(key_data_, b64);
+    }
+
+    std::string render_to_base64() const
+    {
+      return base64->encode(key_data_);
+    }
+
+    void init_from_rng(RandomAPI& rng, const size_t key_size)
+    {
+      rng.assert_crypto();
+      key_data_.init(key_size, key_t::DESTRUCT_ZERO);
+      rng.rand_bytes(key_data_.data(), key_size);
+      key_data_.set_size(key_size);
+    }
 
   private:
     key_t key_data_;

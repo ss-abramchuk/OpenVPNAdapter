@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -38,7 +38,13 @@
 
 #define OPENVPN_DEBUG
 #define OPENVPN_ENABLE_ASSERT
-#define USE_TLS_AUTH
+
+#if !defined(USE_TLS_AUTH) && !defined(USE_TLS_CRYPT)
+//#define USE_TLS_AUTH
+#define USE_TLS_CRYPT
+#endif
+
+#define OPENVPN_INSTRUMENTATION
 
 // Data limits for Blowfish and other 64-bit block-size ciphers
 #ifndef BF
@@ -874,9 +880,14 @@ int test(const int thread_num)
     cp->dc.set_digest(CryptoAlgs::lookup(PROTO_DIGEST));
 #ifdef USE_TLS_AUTH
     cp->tls_auth_factory.reset(new CryptoOvpnHMACFactory<ClientCryptoAPI>());
-    cp->tls_auth_key.parse(tls_auth_key);
+    cp->tls_key.parse(tls_auth_key);
     cp->set_tls_auth_digest(CryptoAlgs::lookup(PROTO_DIGEST));
     cp->key_direction = 0;
+#endif
+#ifdef USE_TLS_CRYPT
+    cp->tls_crypt_factory.reset(new CryptoTLSCryptFactory<ClientCryptoAPI>());
+    cp->tls_key.parse(tls_auth_key);
+    cp->set_tls_crypt_algs(CryptoAlgs::lookup("SHA256"), CryptoAlgs::lookup("AES-256-CTR"));
 #endif
     cp->reliable_window = 4;
     cp->max_ack_list = 4;
@@ -944,9 +955,14 @@ int test(const int thread_num)
     sp->dc.set_digest(CryptoAlgs::lookup(PROTO_DIGEST));
 #ifdef USE_TLS_AUTH
     sp->tls_auth_factory.reset(new CryptoOvpnHMACFactory<ServerCryptoAPI>());
-    sp->tls_auth_key.parse(tls_auth_key);
+    sp->tls_key.parse(tls_auth_key);
     sp->set_tls_auth_digest(CryptoAlgs::lookup(PROTO_DIGEST));
     sp->key_direction = 1;
+#endif
+#ifdef USE_TLS_CRYPT
+    sp->tls_crypt_factory.reset(new CryptoTLSCryptFactory<ServerCryptoAPI>());
+    sp->tls_key.parse(tls_auth_key);
+    sp->set_tls_crypt_algs(CryptoAlgs::lookup("SHA256"), CryptoAlgs::lookup("AES-256-CTR"));
 #endif
     sp->reliable_window = 4;
     sp->max_ack_list = 4;
@@ -1066,6 +1082,7 @@ int test(const int thread_num)
 
 int main(int argc, char* argv[])
 {
+  int ret = 0;
   // process-wide initialization
   InitProcess::init();
 
@@ -1078,7 +1095,7 @@ int main(int argc, char* argv[])
     {
       const std::string out = SelfTest::crypto_self_test();
       OPENVPN_LOG(out);
-      return 0;
+      goto out;
     }
 
 #if N_THREADS >= 2
@@ -1095,8 +1112,12 @@ int main(int argc, char* argv[])
       threads[i]->join();
       delete threads[i];
     }
-  return 0;
 #else
-  return test(1);
+  ret = test(1);
 #endif
+
+out:
+  InitProcess::uninit();
+
+  return ret;
 }

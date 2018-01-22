@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -78,7 +78,7 @@ namespace openvpn {
 	return nullptr;
       }
 
-      const std::string get_value(const std::string& key) const
+      std::string get_value(const std::string& key) const
       {
 	const Header* h = get(key);
 	if (h)
@@ -87,9 +87,14 @@ namespace openvpn {
 	  return "";
       }
 
-      const std::string get_value_trim(const std::string& key) const
+      std::string get_value_trim(const std::string& key) const
       {
 	return string::trim_copy(get_value(key));
+      }
+
+      std::string get_value_trim_lower(const std::string& key) const
+      {
+	return string::to_lower_copy(get_value_trim(key));
       }
 
       std::string to_string() const
