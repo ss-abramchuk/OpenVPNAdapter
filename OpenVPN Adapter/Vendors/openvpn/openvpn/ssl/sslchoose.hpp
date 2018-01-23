@@ -4,27 +4,23 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef OPENVPN_SSL_SSLCHOOSE_H
 #define OPENVPN_SSL_SSLCHOOSE_H
-
-#ifndef OPENVPN_LOG_SSL
-#define OPENVPN_LOG_SSL(x) OPENVPN_LOG(x)
-#endif
 
 #ifdef USE_OPENSSL
 #include <openvpn/openssl/crypto/api.hpp>
@@ -44,6 +40,9 @@
 #include <openvpn/mbedtls/crypto/api.hpp>
 #include <openvpn/mbedtls/ssl/sslctx.hpp>
 #include <openvpn/mbedtls/util/rand.hpp>
+#ifdef OPENVPN_PLATFORM_UWP
+#include <openvpn/mbedtls/util/uwprand.hpp>
+#endif
 #endif
 
 #ifdef USE_MBEDTLS_APPLE_HYBRID
@@ -55,19 +54,27 @@
 namespace openvpn {
   namespace SSLLib {
 #if defined(USE_MBEDTLS)
+#define SSL_LIB_NAME "MbedTLS"
     typedef MbedTLSCryptoAPI CryptoAPI;
     typedef MbedTLSContext SSLAPI;
+#if defined OPENVPN_PLATFORM_UWP
+    typedef MbedTLSRandomWithUWPEntropy RandomAPI;
+#else
     typedef MbedTLSRandom RandomAPI;
+#endif
 #elif defined(USE_MBEDTLS_APPLE_HYBRID)
     // Uses Apple framework for CryptoAPI and MbedTLS for SSLAPI and RandomAPI
+#define SSL_LIB_NAME "MbedTLSAppleHybrid"
     typedef AppleCryptoAPI CryptoAPI;
     typedef MbedTLSContext SSLAPI;
     typedef MbedTLSRandom RandomAPI;
 #elif defined(USE_APPLE_SSL)
+#define SSL_LIB_NAME "AppleSSL"
     typedef AppleCryptoAPI CryptoAPI;
     typedef AppleSSLContext SSLAPI;
     typedef AppleRandom RandomAPI;
 #elif defined(USE_OPENSSL)
+#define SSL_LIB_NAME "OpenSSL"
     typedef OpenSSLCryptoAPI CryptoAPI;
     typedef OpenSSLContext SSLAPI;
     typedef OpenSSLRandom RandomAPI;

@@ -10,6 +10,7 @@ import Foundation
 
 enum ProfileType: String {
     case localVPNServer = "local_vpn_server"
+    case remoteVPNServer = "remote_vpn_server"
 }
 
 struct ProfileLoader {

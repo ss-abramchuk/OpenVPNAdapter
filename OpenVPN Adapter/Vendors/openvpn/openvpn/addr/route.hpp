@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -123,6 +123,14 @@ namespace openvpn {
 	return addr.defined() && prefix_len == addr.size();
       }
 
+      unsigned int host_bits() const
+      {
+	if (prefix_len < addr.size())
+	  return addr.size() - prefix_len;
+	else
+	  return 0;
+      }
+
       bool contains(const ADDR& a) const // assumes canonical address/routes
       {
 	if (addr.defined() && addr.version() == a.version())
@@ -167,10 +175,21 @@ namespace openvpn {
 	return prefix_len == other.prefix_len && addr == other.addr;
       }
 
+      template <typename HASH>
+      void hash(HASH& h) const
+      {
+	addr.hash(h);
+	h(prefix_len);
+      }
+
+#ifdef HAVE_CITYHASH
       std::size_t hash_value() const
       {
-	return Hash::value(addr, prefix_len);
+	HashSizeT h;
+	hash(h);
+	return h.value();
       }
+#endif
     };
 
     template <typename ADDR>
@@ -253,8 +272,10 @@ namespace openvpn {
   }
 }
 
+#ifdef HAVE_CITYHASH
 OPENVPN_HASH_METHOD(openvpn::IP::Route, hash_value);
 OPENVPN_HASH_METHOD(openvpn::IP::Route4, hash_value);
 OPENVPN_HASH_METHOD(openvpn::IP::Route6, hash_value);
+#endif
 
 #endif

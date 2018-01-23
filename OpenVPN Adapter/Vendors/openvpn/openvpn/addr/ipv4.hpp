@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -35,7 +35,6 @@
 #include <openvpn/common/socktypes.hpp>
 #include <openvpn/common/ffs.hpp>
 #include <openvpn/common/hexstr.hpp>
-#include <openvpn/common/hash.hpp>
 #include <openvpn/addr/iperr.hpp>
 
 namespace openvpn {
@@ -85,12 +84,12 @@ namespace openvpn {
 	return ret;
       }
 
-      struct sockaddr_in to_sockaddr() const
+      struct sockaddr_in to_sockaddr(const unsigned short port=0) const
       {
 	struct sockaddr_in ret;
 	std::memset(&ret, 0, sizeof(ret));
 	ret.sin_family = AF_INET;
-	ret.sin_port = 0;
+	ret.sin_port = htons(port);
 	ret.sin_addr.s_addr = htonl(u.addr);
 	return ret;
       }
@@ -493,9 +492,10 @@ namespace openvpn {
 	return SIZE;
       }
 
-      std::size_t hashval() const
+      template <typename HASH>
+      void hash(HASH& h) const
       {
-	return Hash::value(u.addr);
+	h(u.addr);
       }
 
 #ifdef OPENVPN_IP_IMMUTABLE
@@ -565,7 +565,5 @@ namespace openvpn {
     OPENVPN_OSTREAM(Addr, to_string)
   }
 }
-
-OPENVPN_HASH_METHOD(openvpn::IPv4::Addr, hashval);
 
 #endif // OPENVPN_ADDR_IPV4_H

@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -40,6 +40,7 @@
 #include <openvpn/common/scoped_fd.hpp>
 #include <openvpn/common/tempfile.hpp>
 #include <openvpn/common/pipe.hpp>
+#include <openvpn/common/strerror.hpp>
 
 namespace openvpn {
 
@@ -107,7 +108,7 @@ namespace openvpn {
       if (!in.defined())
 	{
 	  const int eno = errno;
-	  OPENVPN_THROW(redirect_std_err, "RedirectNull: error opening /dev/null for input : " << std::strerror(eno));
+	  OPENVPN_THROW(redirect_std_err, "RedirectNull: error opening /dev/null for input : " << strerror_str(eno));
 	}
 
       // open /dev/null for stdout
@@ -115,7 +116,7 @@ namespace openvpn {
       if (!out.defined())
 	{
 	  const int eno = errno;
-	  OPENVPN_THROW(redirect_std_err, "RedirectNull: error opening /dev/null for output : " << std::strerror(eno));
+	  OPENVPN_THROW(redirect_std_err, "RedirectNull: error opening /dev/null for output : " << strerror_str(eno));
 	}
       combine_out_err = true;
     }
@@ -156,7 +157,7 @@ namespace openvpn {
       if (!in.defined())
 	{
 	  const int eno = errno;
-	  OPENVPN_THROW(redirect_std_err, "error opening input file: " << fn << " : " << std::strerror(eno));
+	  OPENVPN_THROW(redirect_std_err, "error opening input file: " << fn << " : " << strerror_str(eno));
 	}
     }
 
@@ -171,7 +172,7 @@ namespace openvpn {
       if (!out.defined())
 	{
 	  const int eno = errno;
-	  OPENVPN_THROW(redirect_std_err, "error opening output file: " << fn << " : " << std::strerror(eno));
+	  OPENVPN_THROW(redirect_std_err, "error opening output file: " << fn << " : " << strerror_str(eno));
 	}
     }
   };
@@ -244,7 +245,7 @@ namespace openvpn {
 	  if (!remote.in.defined())
 	    {
 	      const int eno = errno;
-	      OPENVPN_THROW(redirect_std_err, "error opening /dev/null : " << std::strerror(eno));
+	      OPENVPN_THROW(redirect_std_err, "error opening /dev/null : " << strerror_str(eno));
 	    }
 	}
     }
@@ -267,7 +268,7 @@ namespace openvpn {
       if (::fcntl(fd, F_SETFD, FD_CLOEXEC) < 0)
 	{
 	  const int eno = errno;
-	  OPENVPN_THROW(redirect_std_err, "error setting FD_CLOEXEC on pipe : " << std::strerror(eno));
+	  OPENVPN_THROW(redirect_std_err, "error setting FD_CLOEXEC on pipe : " << strerror_str(eno));
 	}
       return fd;
     }

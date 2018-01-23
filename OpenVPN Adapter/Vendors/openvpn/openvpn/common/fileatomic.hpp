@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -38,12 +38,14 @@
 #include <openvpn/common/hexstr.hpp>
 #include <openvpn/common/fileunix.hpp>
 #include <openvpn/common/path.hpp>
+#include <openvpn/common/strerror.hpp>
 #include <openvpn/random/randapi.hpp>
 
 namespace openvpn {
   // Atomically write binary buffer to file (relies on
   // the atomicity of rename())
   inline void write_binary_atomic(const std::string& fn,
+				  const std::string& tmpdir,
 				  const mode_t mode,
 				  const Buffer& buf,
 				  RandomAPI& rng)
@@ -51,7 +53,7 @@ namespace openvpn {
     // generate temporary filename
     unsigned char data[16];
     rng.rand_fill(data);
-    const std::string tfn = path::join(path::dirname(fn), '.' + path::basename(fn) + '.' + render_hex(data, sizeof(data)));
+    const std::string tfn = path::join(tmpdir, '.' + path::basename(fn) + '.' + render_hex(data, sizeof(data)));
 
     // write to temporary file
     write_binary_unix(tfn, mode, buf);
@@ -60,7 +62,7 @@ namespace openvpn {
     if (::rename(tfn.c_str(), fn.c_str()) == -1)
       {
 	const int eno = errno;
-	OPENVPN_THROW(file_unix_error, "error moving '" << tfn << "' -> '" << fn << "' : " << std::strerror(eno));
+	OPENVPN_THROW(file_unix_error, "error moving '" << tfn << "' -> '" << fn << "' : " << strerror_str(eno));
       }
   }
 }

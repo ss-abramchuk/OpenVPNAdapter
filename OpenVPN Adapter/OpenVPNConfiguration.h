@@ -8,11 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "OpenVPNTransportProtocol.h"
-#import "OpenVPNIPv6Preference.h"
-#import "OpenVPNCompressionMode.h"
-#import "OpenVPNMinTLSVersion.h"
-#import "OpenVPNTLSCertProfile.h"
+typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol);
+typedef NS_ENUM(NSInteger, OpenVPNIPv6Preference);
+typedef NS_ENUM(NSInteger, OpenVPNCompressionMode);
+typedef NS_ENUM(NSInteger, OpenVPNMinTLSVersion);
+typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
 
 /**
  Class used to pass configuration

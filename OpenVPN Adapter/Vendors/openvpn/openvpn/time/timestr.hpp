@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,7 +26,6 @@
 
 #include <string>
 #include <cstring> // for std::strlen
-#include <cstdint> // for std::uint64_t
 #include <time.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -127,15 +126,6 @@ namespace openvpn {
       }
     save = tv.tv_sec;
     return date_time(&tv, true);
-  }
-
-  inline std::uint64_t milliseconds_since_epoch()
-  {
-    struct timeval tv;
-    if (::gettimeofday(&tv, nullptr) < 0)
-      return 0;
-    return std::uint64_t(tv.tv_sec)  * std::uint64_t(1000)
-         + std::uint64_t(tv.tv_usec) / std::uint64_t(1000);
   }
 
 #endif

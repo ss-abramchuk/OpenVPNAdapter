@@ -12,8 +12,7 @@
 @implementation OpenVPNServerEntry
 
 - (instancetype)initWithServerEntry:(ClientAPI::ServerEntry)entry {
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
         _server = !entry.server.empty() ? [NSString stringWithUTF8String:entry.server.c_str()] : nil;
         _friendlyName = !entry.friendlyName.empty() ? [NSString stringWithUTF8String:entry.friendlyName.c_str()] : nil;
     }

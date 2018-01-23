@@ -4,18 +4,18 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Technologies, Inc.
+//    Copyright (C) 2012-2017 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License Version 3
+//    it under the terms of the GNU Affero General Public License Version 3
 //    as published by the Free Software Foundation.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
+//    GNU Affero General Public License for more details.
 //
-//    You should have received a copy of the GNU General Public License
+//    You should have received a copy of the GNU Affero General Public License
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
@@ -35,12 +35,12 @@
 #include <sys/types.h> // for lseek, open
 #include <sys/stat.h>  // for open
 #include <fcntl.h>     // for open
-#include <cstring>     // for std::strerror()
 
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/scoped_fd.hpp>
 #include <openvpn/common/write.hpp>
+#include <openvpn/common/strerror.hpp>
 #include <openvpn/buffer/bufread.hpp>
 
 namespace openvpn {
@@ -57,7 +57,7 @@ namespace openvpn {
     if (!fd.defined())
       {
 	const int eno = errno;
-	throw file_unix_error(fn + " : open for write : " + std::strerror(eno));
+	throw file_unix_error(fn + " : open for write : " + strerror_str(eno));
       }
 
     // write
@@ -71,7 +71,7 @@ namespace openvpn {
     {
       const int eno = fd.close_with_errno();
       if (eno)
-	throw file_unix_error(fn + " : close for write : " + std::strerror(eno));
+	throw file_unix_error(fn + " : close for write : " + strerror_str(eno));
     }
   }
 
@@ -103,7 +103,7 @@ namespace openvpn {
 	const int eno = errno;
 	if ((buffer_flags & NULL_ON_ENOENT) && eno == ENOENT)
 	  return BufferPtr();
-	throw file_unix_error(fn + " : open for read : " + std::strerror(eno));
+	throw file_unix_error(fn + " : open for read : " + strerror_str(eno));
       }
 
     // get file length
@@ -111,12 +111,12 @@ namespace openvpn {
     if (length < 0)
       {
 	const int eno = errno;
-	throw file_unix_error(fn + " : seek end error : " + std::strerror(eno));
+	throw file_unix_error(fn + " : seek end error : " + strerror_str(eno));
       }
     if (::lseek(fd(), 0, SEEK_SET) != 0)
       {
 	const int eno = errno;
-	throw file_unix_error(fn + " : seek begin error : " + std::strerror(eno));
+	throw file_unix_error(fn + " : seek begin error : " + strerror_str(eno));
       }
 
     // maximum size exceeded?
@@ -134,7 +134,7 @@ namespace openvpn {
     {
       const int eno = fd.close_with_errno();
       if (eno)
-	throw file_unix_error(fn + " : close for read : " + std::strerror(eno));
+	throw file_unix_error(fn + " : close for read : " + strerror_str(eno));
     }
 
     return bp;
