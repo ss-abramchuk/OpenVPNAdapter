@@ -6,22 +6,15 @@
 //
 
 import NetworkExtension
+@testable import OpenVPNAdapter
 
-class CustomFlow: NEPacketTunnelFlow {
-
-    override func readPackets(completionHandler: @escaping ([Data], [NSNumber]) -> Void) {
+class CustomFlow: NSObject, OpenVPNAdapterPacketFlow {
+    
+    func readPackets(completionHandler: @escaping ([Data], [NSNumber]) -> Void) {
         
     }
     
-    override func writePackets(_ packets: [Data], withProtocols protocols: [NSNumber]) -> Bool {
-        return true
-    }
-    
-    override func readPacketObjects(completionHandler: @escaping ([NEPacket]) -> Void) {
-        
-    }
-    
-    override func writePacketObjects(_ packets: [NEPacket]) -> Bool {
+    func writePackets(_ packets: [Data], withProtocols protocols: [NSNumber]) -> Bool {
         return true
     }
     
