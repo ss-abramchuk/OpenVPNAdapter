@@ -52,7 +52,8 @@ using namespace openvpn;
 }
 
 - (NSString *)dynamicChallengeCookie {
-    return !_credentials.dynamicChallengeCookie.empty() ? [NSString stringWithUTF8String:_credentials.dynamicChallengeCookie.c_str()] : nil;
+    return !_credentials.dynamicChallengeCookie.empty() ?
+        [NSString stringWithUTF8String:_credentials.dynamicChallengeCookie.c_str()] : nil;
 }
 
 - (void)setDynamicChallengeCookie:(NSString *)dynamicChallengeCookie {

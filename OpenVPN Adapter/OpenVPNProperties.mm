@@ -6,20 +6,20 @@
 //
 //
 
-#import <openvpn/common/number.hpp>
+#import "OpenVPNProperties.h"
+#import "OpenVPNProperties+Internal.h"
+
+#include <openvpn/common/number.hpp>
 
 #import "OpenVPNConfiguration+Internal.h"
 #import "OpenVPNServerEntry+Internal.h"
-#import "OpenVPNProperties.h"
-#import "OpenVPNProperties+Internal.h"
 
 using namespace openvpn;
 
 @implementation OpenVPNProperties
 
 - (instancetype)initWithEvalConfig:(ClientAPI::EvalConfig)eval {
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
         _username = !eval.userlockedUsername.empty() ? [NSString stringWithUTF8String:eval.userlockedUsername.c_str()] : nil;
         
         _profileName = !eval.profileName.empty() ? [NSString stringWithUTF8String:eval.profileName.c_str()] : nil;
@@ -44,6 +44,7 @@ using namespace openvpn;
         _remoteProto = [OpenVPNConfiguration getTransportProtocolFromValue:currentProto];
         
         _servers = nil;
+        
         if (!eval.serverList.empty()) {
             NSMutableArray *servers = [NSMutableArray new];
             

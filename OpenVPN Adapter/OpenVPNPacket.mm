@@ -21,7 +21,7 @@
 @implementation OpenVPNPacket
 
 - (instancetype)initWithVPNData:(NSData *)data {
-    if ((self = [super init])) {
+    if (self = [super init]) {
 #if TARGET_OS_IPHONE
         // Get network protocol family from data prefix
         NSUInteger prefix_size = sizeof(uint32_t);
@@ -59,7 +59,7 @@
 }
 
 - (instancetype)initWithPacketFlowData:(NSData *)data protocolFamily:(NSNumber *)protocolFamily {
-    if ((self = [super init])) {
+    if (self = [super init]) {
         _data = data;
         _protocolFamily = protocolFamily;
     }

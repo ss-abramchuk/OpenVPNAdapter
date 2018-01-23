@@ -6,6 +6,7 @@
 //
 //
 
+#import "OpenVPNTransportStats.h"
 #import "OpenVPNTransportStats+Internal.h"
 
 using namespace openvpn;
@@ -21,12 +22,13 @@ using namespace openvpn;
 @implementation OpenVPNTransportStats
 
 - (instancetype)initWithTransportStats:(ClientAPI::TransportStats)stats {
-    if ((self = [self init])) {
+    if (self = [self init]) {
         self.bytesIn = stats.bytesIn;
         self.bytesOut = stats.bytesOut;
         self.packetsIn = stats.packetsIn;
         self.packetsOut = stats.packetsOut;
-        self.lastPacketReceived = stats.lastPacketReceived >= 0 ? [NSDate dateWithTimeIntervalSinceNow:stats.lastPacketReceived / -1024.0] : nil;
+        self.lastPacketReceived = stats.lastPacketReceived >= 0 ?
+            [NSDate dateWithTimeIntervalSinceNow:stats.lastPacketReceived / -1024.0] : nil;
     }
     return self;
 }
@@ -50,12 +52,13 @@ using namespace openvpn;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if ((self = [super init])) {
+    if (self = [super init]) {
         self.bytesIn = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(bytesIn))];
         self.bytesOut = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(bytesOut))];
         self.packetsIn = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(packetsIn))];
         self.packetsOut = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(packetsOut))];
-        self.lastPacketReceived = [aDecoder decodeObjectOfClass:[NSDate class] forKey:NSStringFromSelector(@selector(lastPacketReceived))];
+        self.lastPacketReceived = [aDecoder decodeObjectOfClass:[NSDate class]
+                                                         forKey:NSStringFromSelector(@selector(lastPacketReceived))];
     }
     return self;
 }

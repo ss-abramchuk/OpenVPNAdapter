@@ -6,9 +6,9 @@
 //
 //
 
-#import <client/ovpncli.hpp>
-
 #import "OpenVPNInterfaceStats.h"
+
+#include <client/ovpncli.hpp>
 
 using namespace openvpn;
 

@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "OpenVPNTransportProtocol.h"
-
+typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol);
 @class OpenVPNServerEntry;
 
 @interface OpenVPNProperties : NSObject
@@ -47,7 +46,7 @@
 /**
  YES if this profile requires a private key password
  */
-@property (readonly, nonatomic) BOOL privateKeyPasswordRequired;
+@property (readonly, nonatomic, getter=isPrivateKeyPasswordRequired) BOOL privateKeyPasswordRequired;
 
 /**
  YES if user is allowed to save authentication password in UI
@@ -74,6 +73,6 @@
  */
 @property (nullable, readonly, nonatomic) NSArray<OpenVPNServerEntry *> *servers;
 
-- (nonnull instancetype) __unavailable init;
+- (nonnull instancetype) init NS_UNAVAILABLE;
 
 @end
