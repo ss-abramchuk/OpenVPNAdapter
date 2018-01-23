@@ -219,7 +219,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 }
 
 - (void)setFileContent:(NSData *)fileContent {
-    _config.content = fileContent ? std::string((const char *)fileContent.bytes) : "";
+    _config.content = fileContent.length ? std::string((const char *)fileContent.bytes) : "";
 }
 
 - (NSDictionary<NSString *,NSString *> *)settings {
