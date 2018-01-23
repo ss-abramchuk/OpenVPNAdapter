@@ -3,65 +3,85 @@
 //  OpenVPN Adapter
 //
 //  Created by Jonathan Downing on 12/10/2017.
+//  Modified by Sergey Abramchuk on 15/01/2018.
 //
 
-#import <NetworkExtension/NetworkExtension.h>
-#import <openvpn/ip/ip.hpp>
 #import "OpenVPNPacketFlowBridge.h"
 
-@interface OpenVPNPacketFlowBridge () {
-    CFSocketRef _openVPNClientSocket;
-    CFSocketRef _packetFlowSocket;
-}
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
-@property (nonatomic) NEPacketTunnelFlow *packetFlow;
+#import "OpenVPNError.h"
+#import "OpenVPNPacket.h"
+#import "OpenVPNAdapterPacketFlow.h"
+
+@interface OpenVPNPacketFlowBridge ()
+
+@property (nonatomic) id<OpenVPNAdapterPacketFlow> packetFlow;
 
 @end
 
 @implementation OpenVPNPacketFlowBridge
 
-- (CFSocketNativeHandle)socketHandle {
-    return CFSocketGetNative(_openVPNClientSocket);
-}
-
-- (instancetype)initWithPacketFlow:(NEPacketTunnelFlow *)packetFlow {
-    if ((self = [super init])) {
-        self.packetFlow = packetFlow;
-        
-        if (![self configureSockets]) {
-            return nil;
-        }
-        
-        [self readPacketFlowPackets];
+- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
+    if (self = [super init]) {
+        _packetFlow = packetFlow;
     }
     return self;
 }
 
-static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *adapter) {
-    [(__bridge OpenVPNPacketFlowBridge *)adapter writeDataToPacketFlow:(__bridge NSData *)data];
+#pragma mark - Sockets Configuration
+
+static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *obj) {
+    if (type != kCFSocketDataCallBack) { return; }
+    
+    OpenVPNPacket *packet = [[OpenVPNPacket alloc] initWithVPNData:(__bridge NSData *)data];
+    
+    OpenVPNPacketFlowBridge *bridge = (__bridge OpenVPNPacketFlowBridge *)obj;
+    [bridge writePackets:@[packet] toPacketFlow:bridge.packetFlow];
 }
 
-- (BOOL)configureSockets {
+- (BOOL)configureSocketsWithError:(NSError **)error {
     int sockets[2];
     if (socketpair(PF_LOCAL, SOCK_DGRAM, IPPROTO_IP, sockets) == -1) {
-        NSLog(@"Failed to create a pair of connected sockets: %@", [NSString stringWithUTF8String:strerror(errno)]);
+        if (error) {
+            NSDictionary *userInfo = @{
+                NSLocalizedDescriptionKey: @"Failed to create a pair of connected sockets",
+                NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
+                OpenVPNAdapterErrorFatalKey: @(YES)
+            };
+            
+            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
+                                     userInfo:userInfo];
+        }
+        
         return NO;
     }
     
     CFSocketContext socketCtxt = {0, (__bridge void *)self, NULL, NULL, NULL};
     
-    _packetFlowSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack, PacketFlowSocketCallback, &socketCtxt);
-    _openVPNClientSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
+    _packetFlowSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack,
+                                                 SocketCallback, &socketCtxt);
+    _openVPNSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
     
-    if (!(_packetFlowSocket && _openVPNClientSocket)) {
-        NSLog(@"Failed to create core foundation sockets from native sockets");
+    if (!(_packetFlowSocket && _openVPNSocket)) {
+        if (error) {
+            NSDictionary *userInfo = @{
+                NSLocalizedDescriptionKey: @"Failed to create core foundation sockets from native sockets",
+                OpenVPNAdapterErrorFatalKey: @(YES)
+            };
+            
+            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
+                                     userInfo:userInfo];
+        }
+
         return NO;
     }
     
-    if (!([self configureOptionsForSocket:_packetFlowSocket] && [self configureOptionsForSocket:_openVPNClientSocket])) {
-        NSLog(@"Failed to configure buffer size of the sockets");
-        return NO;
-    }
+    if (!([self configureOptionsForSocket:_packetFlowSocket error:error] &&
+          [self configureOptionsForSocket:_openVPNSocket error:error])) { return NO; }
     
     CFRunLoopSourceRef packetFlowSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _packetFlowSocket, 0);
     CFRunLoopAddSource(CFRunLoopGetMain(), packetFlowSocketSource, kCFRunLoopDefaultMode);
@@ -70,104 +90,88 @@ static inline void PacketFlowSocketCallback(CFSocketRef socket, CFSocketCallBack
     return YES;
 }
 
-- (BOOL)configureOptionsForSocket:(CFSocketRef)socket {
+- (BOOL)configureOptionsForSocket:(CFSocketRef)socket error:(NSError **)error {
     CFSocketNativeHandle socketHandle = CFSocketGetNative(socket);
     
     int buf_value = 65536;
     socklen_t buf_len = sizeof(buf_value);
     
     if (setsockopt(socketHandle, SOL_SOCKET, SO_RCVBUF, &buf_value, buf_len) == -1) {
-        NSLog(@"Failed to setup buffer size for input: %@", [NSString stringWithUTF8String:strerror(errno)]);
+        if (error) {
+            NSDictionary *userInfo = @{
+                NSLocalizedDescriptionKey: @"Failed to setup buffer size for input",
+                NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
+                OpenVPNAdapterErrorFatalKey: @(YES)
+            };
+            
+            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
+                                     userInfo:userInfo];
+        }
+        
         return NO;
     }
     
     if (setsockopt(socketHandle, SOL_SOCKET, SO_SNDBUF, &buf_value, buf_len) == -1) {
-        NSLog(@"Failed to setup buffer size for output: %@", [NSString stringWithUTF8String:strerror(errno)]);
+        if (error) {
+            NSDictionary *userInfo = @{
+                NSLocalizedDescriptionKey: @"Failed to setup buffer size for output",
+                NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
+                OpenVPNAdapterErrorFatalKey: @(YES)
+            };
+            
+            *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
+                                         code:OpenVPNAdapterErrorSocketSetupFailed
+                                     userInfo:userInfo];
+        }
+        
         return NO;
     }
     
     return YES;
 }
 
-- (void)readPacketFlowPackets {
+- (void)startReading {
     __weak typeof(self) weakSelf = self;
-    [self.packetFlow readPacketObjectsWithCompletionHandler:^(NSArray<NEPacket *> * _Nonnull packets) {
+    
+    [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> *packets, NSArray<NSNumber *> *protocols) {
         __strong typeof(self) self = weakSelf;
-
-        [self writeVPNPacketObjects:packets];
-        [self readPacketFlowPackets];
+        
+        [self writePackets:packets protocols:protocols toSocket:self.packetFlowSocket];
+        [self startReading];
     }];
 }
 
-- (void)writeVPNPacketObjects:(NSArray<NEPacket *> *)packets {
-    for (NEPacket *packet in packets) {
-        CFSocketSendData(_packetFlowSocket, NULL, (CFDataRef)[self dataFromPacket:packet], 0.05);
-    }
+#pragma mark - TUN -> VPN
+
+- (void)writePackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols toSocket:(CFSocketRef)socket {
+    [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
+        NSNumber *protocolFamily = protocols[idx];
+        OpenVPNPacket *packet = [[OpenVPNPacket alloc] initWithPacketFlowData:data protocolFamily:protocolFamily];
+        
+        CFSocketSendData(socket, NULL, (CFDataRef)packet.vpnData, 0.05);
+    }];
 }
 
-- (NSData *)dataFromPacket:(NEPacket *)packet {
-#if TARGET_OS_IPHONE
-    // Prepend data with network protocol. It should be done because OpenVPN on iOS uses uint32_t prefixes containing network protocol.
-    uint32_t prefix = CFSwapInt32HostToBig((uint32_t)packet.protocolFamily);
-    NSMutableData *data = [[NSMutableData alloc] initWithCapacity:sizeof(prefix) + packet.data.length];
-    [data appendBytes:&prefix length:sizeof(prefix)];
-    [data appendData:packet.data];
-    return data;
-#else
-    return packet.data;
-#endif
+#pragma mark - VPN -> TUN
+
+- (void)writePackets:(NSArray<OpenVPNPacket *> *)packets toPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
+    NSMutableArray<NSData *> *flowPackets = [[NSMutableArray alloc] init];
+    NSMutableArray<NSNumber *> *protocols = [[NSMutableArray alloc] init];
+    
+    [packets enumerateObjectsUsingBlock:^(OpenVPNPacket * _Nonnull packet, NSUInteger idx, BOOL * _Nonnull stop) {
+        [flowPackets addObject:packet.packetFlowData];
+        [protocols addObject:packet.protocolFamily];
+    }];
+    
+    [packetFlow writePackets:flowPackets withProtocols:protocols];
 }
 
-- (NEPacket *)packetFromData:(NSData *)data {
-#if TARGET_OS_IPHONE
-    // Get network protocol from prefix
-    NSUInteger prefixSize = sizeof(uint32_t);
-    
-    if (data.length < prefixSize) {
-        return nil;
-    }
-    
-    uint32_t protocol = PF_UNSPEC;
-    [data getBytes:&protocol length:prefixSize];
-    protocol = CFSwapInt32BigToHost(protocol);
-    
-    NSRange range = NSMakeRange(prefixSize, data.length - prefixSize);
-    NSData *packetData = [data subdataWithRange:range];
-#else
-    // Get network protocol from header
-    uint8_t header = 0;
-    [data getBytes:&header length:1];
-    
-    uint32_t version = openvpn::IPHeader::version(header);
-    sa_family_t protocol = [self protocolFamilyForVersion:version];
-    
-    NSData *packetData = data;
-#endif
-    
-    return [[NEPacket alloc] initWithData:packetData protocolFamily:protocol];
-}
-
-- (void)writeDataToPacketFlow:(NSData *)data {
-    NEPacket *packet = [self packetFromData:data];
-    
-    if (!packet) {
-        return;
-    }
-    
-    [self.packetFlow writePacketObjects:@[packet]];
-}
-
-- (sa_family_t)protocolFamilyForVersion:(uint32_t)version {
-    switch (version) {
-        case 4: return PF_INET;
-        case 6: return PF_INET6;
-        default: return PF_UNSPEC;
-    }
-}
+#pragma mark -
 
 - (void)dealloc {
-    CFSocketInvalidate(_openVPNClientSocket);
-    CFRelease(_openVPNClientSocket);
+    CFSocketInvalidate(_openVPNSocket);
+    CFRelease(_openVPNSocket);
     
     CFSocketInvalidate(_packetFlowSocket);
     CFRelease(_packetFlowSocket);

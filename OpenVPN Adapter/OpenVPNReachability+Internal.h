@@ -6,7 +6,6 @@
 //
 //
 
-#import "OpenVPNReachabilityTracker.h"
 #import "OpenVPNReachability.h"
 
 @interface OpenVPNReachability (Internal)

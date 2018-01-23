@@ -5,10 +5,9 @@
 //  Created by Sergey Abramchuk on 24.04.17.
 //
 //
-
-#import <client/ovpncli.hpp>
-
 #import "OpenVPNCredentials.h"
+
+#include <client/ovpncli.hpp>
 
 using namespace openvpn;
 

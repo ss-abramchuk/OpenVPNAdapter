@@ -28,7 +28,7 @@ using namespace openvpn;
 @implementation OpenVPNConnectionInfo
 
 - (instancetype)initWithConnectionInfo:(ClientAPI::ConnectionInfo)info {
-    if ((self = [super init])) {
+    if (self = [super init]) {
         self.user = !info.user.empty() ? [NSString stringWithUTF8String:info.user.c_str()] : nil;
         self.serverHost = !info.serverHost.empty() ? [NSString stringWithUTF8String:info.serverHost.c_str()] : nil;
         self.serverPort = !info.serverPort.empty() ? [NSString stringWithUTF8String:info.serverPort.c_str()] : nil;
@@ -75,7 +75,7 @@ using namespace openvpn;
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)aDecoder {
-    if ((self = [self init])) {
+    if (self = [self init]) {
         self.user = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(user))];
         self.serverHost = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(serverHost))];
         self.serverPort = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(serverPort))];

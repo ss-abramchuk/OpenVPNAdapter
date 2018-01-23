@@ -7,11 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OpenVPNReachabilityStatus.h"
+
+typedef NS_ENUM(NSInteger, OpenVPNReachabilityStatus);
 
 @interface OpenVPNReachability : NSObject
 
-@property (readonly, nonatomic) BOOL isTracking;
+@property (readonly, nonatomic, getter=isTracking) BOOL tracking;
 @property (readonly, nonatomic) OpenVPNReachabilityStatus reachabilityStatus;
 
 - (nonnull instancetype)init;

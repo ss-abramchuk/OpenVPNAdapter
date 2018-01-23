@@ -135,7 +135,7 @@ class OpenVPNAdapterTests: XCTestCase {
 
 extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
     
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (NEPacketTunnelFlow?) -> Void) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
         completionHandler(customFlow)
     }
     

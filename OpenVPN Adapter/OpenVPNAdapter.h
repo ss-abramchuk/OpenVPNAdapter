@@ -7,12 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OpenVPNAdapterEvent.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
+
 @class NEPacketTunnelFlow;
 @class NEPacketTunnelNetworkSettings;
+
+@protocol OpenVPNAdapterPacketFlow;
+
 @class OpenVPNAdapter;
 @class OpenVPNConfiguration;
 @class OpenVPNConnectionInfo;
@@ -26,17 +30,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  This method is called once the network settings to be used have been established.
- The receiver should call the completion handler once these settings have been set, returning a NEPacketTunnelFlow object for the TUN interface, or nil if an error occurred.
+ The receiver should call the completion handler once these settings have been set, returning a NEPacketTunnelFlow object for
+ the TUN interface, or nil if an error occurred.
  
  @param openVPNAdapter The OpenVPNAdapter instance requesting this information.
  @param networkSettings The NEPacketTunnelNetworkSettings to be used for the tunnel.
  @param completionHandler The completion handler to be called with a NEPacketTunnelFlow object, or nil if an error occurred.
  */
-- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter configureTunnelWithNetworkSettings:(NEPacketTunnelNetworkSettings *)networkSettings completionHandler:(void (^)(NEPacketTunnelFlow * _Nullable packetFlow))completionHandler NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
+- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
+configureTunnelWithNetworkSettings:(NEPacketTunnelNetworkSettings *)networkSettings
+                 completionHandler:(void (^)(id<OpenVPNAdapterPacketFlow> _Nullable packetFlow))completionHandler
+NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
 /**
  Informs the receiver that an OpenVPN error has occurred.
- Some errors are fatal and should trigger the diconnection of the tunnel, check for fatal errors with the OpenVPNAdapterErrorFatalKey.
+ Some errors are fatal and should trigger the diconnection of the tunnel, check for fatal errors with the
+ OpenVPNAdapterErrorFatalKey.
  
  @param openVPNAdapter The OpenVPNAdapter instance which encountered the error.
  @param error The error which has occurred.
@@ -50,7 +59,10 @@ NS_ASSUME_NONNULL_BEGIN
  @param event The event which has occurred.
  @param message An accompanying message, may be nil.
  */
-- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter handleEvent:(OpenVPNAdapterEvent)event message:(nullable NSString *)message NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
+- (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
+           handleEvent:(OpenVPNAdapterEvent)event
+               message:(nullable NSString *)message 
+NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
 
 @optional
 
@@ -122,7 +134,9 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error applying the configuration, upon return contains an error object that describes the problem.
  @return A properties object describing the configuration which has been applied.
  */
-- (nullable OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError **)error NS_SWIFT_NAME(apply(configuration:));
+- (nullable OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration
+                                             error:(NSError **)error
+NS_SWIFT_NAME(apply(configuration:));
 
 /**
  Provides credentials to the receiver.

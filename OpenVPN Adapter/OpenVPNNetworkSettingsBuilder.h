@@ -11,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class NEIPv4Route;
 @class NEIPv6Route;
-@class NEPacketTunnelNetworkSettings;
 @class NEProxyServer;
+@class NEPacketTunnelNetworkSettings;
 
 @interface OpenVPNNetworkSettingsBuilder : NSObject
 
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL httpsProxyServerEnabled;
 @property (nonatomic, copy, nullable) NEProxyServer *httpsProxyServer;
 
-@property (nonatomic, readonly, nullable) NEPacketTunnelNetworkSettings *networkSettings;
+- (nullable NEPacketTunnelNetworkSettings *)networkSettings;
 
 @end
 
