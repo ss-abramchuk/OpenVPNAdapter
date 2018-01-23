@@ -21,7 +21,7 @@
 @implementation OpenVPNInterfaceStats
 
 - (instancetype)initWithInterfaceStats:(ClientAPI::InterfaceStats)stats {
-    if ((self = [super init])) {
+    if (self = [super init]) {
         self.bytesIn = stats.bytesIn;
         self.bytesOut = stats.bytesOut;
         self.packetsIn = stats.packetsIn;
@@ -53,7 +53,7 @@
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)aDecoder {
-    if ((self = [self init])) {
+    if (self = [self init]) {
         self.bytesIn = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(bytesIn))];
         self.bytesOut = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(bytesOut))];
         self.packetsIn = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(packetsIn))];

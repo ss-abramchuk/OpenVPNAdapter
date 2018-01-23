@@ -6,6 +6,7 @@
 //
 //
 
+#import "OpenVPNSessionToken.h"
 #import "OpenVPNSessionToken+Internal.h"
 
 using namespace openvpn;
@@ -18,7 +19,7 @@ using namespace openvpn;
 @implementation OpenVPNSessionToken
 
 - (instancetype)initWithSessionToken:(ClientAPI::SessionToken)token {
-    if ((self = [super init])) {
+    if (self = [super init]) {
         self.username = !token.username.empty() ? [NSString stringWithUTF8String:token.username.c_str()] : nil;
         self.session = !token.session_id.empty() ? [NSString stringWithUTF8String:token.session_id.c_str()] : nil;
     }
@@ -38,7 +39,7 @@ using namespace openvpn;
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)aDecoder {
-    if ((self = [self init])) {
+    if (self = [self init]) {
         self.username = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(username))];
         self.session = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(session))];
     }
