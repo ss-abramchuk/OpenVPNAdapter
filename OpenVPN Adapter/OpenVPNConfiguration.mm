@@ -6,7 +6,14 @@
 //
 //
 
+#import "OpenVPNConfiguration.h"
 #import "OpenVPNConfiguration+Internal.h"
+
+#import "OpenVPNTransportProtocol.h"
+#import "OpenVPNIPv6Preference.h"
+#import "OpenVPNCompressionMode.h"
+#import "OpenVPNMinTLSVersion.h"
+#import "OpenVPNTLSCertProfile.h"
 
 using namespace openvpn;
 
@@ -494,7 +501,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if ((self = [self init])) {
+    if (self = [self init]) {
         self.fileContent = [aDecoder decodeObjectOfClass:[NSData class] forKey:NSStringFromSelector(@selector(fileContent))];
         self.settings = [aDecoder decodeObjectOfClass:[NSDictionary class] forKey:NSStringFromSelector(@selector(settings))];
         self.guiVersion = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(guiVersion))];
