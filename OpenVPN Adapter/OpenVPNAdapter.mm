@@ -325,7 +325,7 @@
     NSError *error = [NSError ovpn_errorObjectForAdapterError:adapterError
                                                   description:description
                                                       message:message
-                                                        fatal:YES];
+                                                        fatal:fatal];
 
     [self.delegate openVPNAdapter:self handleError:error];
 }
