@@ -20,7 +20,7 @@
 
 @implementation OpenVPNCertificate
 
-+ (OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData error:(out NSError **)error {
++ (OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData error:(NSError * __autoreleasing *)error {
     OpenVPNCertificate *certificate = [OpenVPNCertificate new];
     
     NSString *pemString = [[NSString alloc] initWithData:pemData encoding:NSUTF8StringEncoding];
@@ -37,7 +37,7 @@
     return certificate;
 }
 
-+ (OpenVPNCertificate *)certificateWithDER:(NSData *)derData error:(out NSError **)error {
++ (OpenVPNCertificate *)certificateWithDER:(NSData *)derData error:(NSError * __autoreleasing *)error {
     OpenVPNCertificate *certificate = [OpenVPNCertificate new];
     
     int result = mbedtls_x509_crt_parse_der(certificate.crt, derData.bytes, derData.length);
@@ -61,7 +61,7 @@
     return self;
 }
 
-- (NSData *)pemData:(out NSError **)error {
+- (NSData *)pemData:(NSError * __autoreleasing *)error {
     NSString *header = @"-----BEGIN CERTIFICATE-----\n";
     NSString *footer = @"-----END CERTIFICATE-----\n";
     
@@ -87,7 +87,7 @@
     return pemData;
 }
 
-- (NSData *)derData:(out NSError **)error {
+- (NSData *)derData:(NSError * __autoreleasing *)error {
     if (self.crt->raw.p == NULL || self.crt->raw.len == 0) {
         if (error) {
             *error = [NSError ovpn_errorObjectForMbedTLSError:MBEDTLS_ERR_X509_BAD_INPUT_DATA

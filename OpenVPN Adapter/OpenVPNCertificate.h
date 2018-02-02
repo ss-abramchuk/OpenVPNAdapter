@@ -8,17 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OpenVPNCertificate : NSObject
 
-+ (nullable OpenVPNCertificate *)certificateWithPEM:(nonnull NSData *)pemData
-                                              error:(out NSError * _Nullable * _Nullable)error;
++ (nullable OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData error:(NSError **)error;
++ (nullable OpenVPNCertificate *)certificateWithDER:(NSData *)derData error:(NSError **)error;
 
-+ (nullable OpenVPNCertificate *)certificateWithDER:(nonnull NSData *)derData
-                                              error:(out NSError * _Nullable * _Nullable)error;
+- (instancetype) init NS_UNAVAILABLE;
 
-- (nonnull instancetype) init NS_UNAVAILABLE;
-
-- (nullable NSData *)pemData:(out NSError * _Nullable * _Nullable)error;
-- (nullable NSData *)derData:(out NSError * _Nullable * _Nullable)error;
+- (nullable NSData *)pemData:(NSError **)error;
+- (nullable NSData *)derData:(NSError **)error;
 
 @end
+
+NS_ASSUME_NONNULL_END

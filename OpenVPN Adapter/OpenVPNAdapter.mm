@@ -47,7 +47,7 @@
 
 #pragma mark - OpenVPNClient Lifecycle
 
-- (OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * _Nullable __autoreleasing *)error {
+- (OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * __autoreleasing *)error {
     ClientAPI::EvalConfig eval = self.vpnClient->eval_config(configuration.config);
     
     if (eval.error) {
@@ -65,7 +65,7 @@
     return [[OpenVPNProperties alloc] initWithEvalConfig:eval];
 }
 
-- (BOOL)provideCredentials:(OpenVPNCredentials *)credentials error:(NSError * _Nullable __autoreleasing *)error {
+- (BOOL)provideCredentials:(OpenVPNCredentials *)credentials error:(NSError * __autoreleasing *)error {
     ClientAPI::Status status = self.vpnClient->provide_creds(credentials.credentials);
     
     if (status.error) {
