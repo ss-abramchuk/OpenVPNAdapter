@@ -21,7 +21,7 @@
 
 @implementation OpenVPNPrivateKey
 
-+ (nullable OpenVPNPrivateKey *)keyWithPEM:(NSData *)pemData password:(NSString *)password error:(out NSError **)error {
++ (OpenVPNPrivateKey *)keyWithPEM:(NSData *)pemData password:(NSString *)password error:(NSError * __autoreleasing *)error {
     OpenVPNPrivateKey *key = [OpenVPNPrivateKey new];
     
     NSString *pemString = [[NSString alloc] initWithData:pemData encoding:NSUTF8StringEncoding];
@@ -43,7 +43,7 @@
     return key;
 }
 
-+ (nullable OpenVPNPrivateKey *)keyWithDER:(NSData *)derData password:(NSString *)password error:(out NSError **)error {
++ (OpenVPNPrivateKey *)keyWithDER:(NSData *)derData password:(NSString *)password error:(NSError * __autoreleasing *)error {
     OpenVPNPrivateKey *key = [OpenVPNPrivateKey new];
     
     size_t password_length = password != nil ? strlen(password.UTF8String) : 0;
@@ -78,7 +78,7 @@
     return (OpenVPNKeyType)mbedtls_pk_get_type(self.ctx);
 }
 
-- (NSData *)pemData:(out NSError **)error {
+- (NSData *)pemData:(NSError * __autoreleasing *)error {
     size_t buffer_length = mbedtls_pk_get_len(self.ctx) * 10;
     unsigned char *pem_buffer = malloc(buffer_length);
     
@@ -99,7 +99,7 @@
     return pemData;
 }
 
-- (NSData *)derData:(out NSError **)error {
+- (NSData *)derData:(NSError * __autoreleasing *)error {
     size_t buffer_length = mbedtls_pk_get_len(self.ctx) * 10;
     unsigned char *der_buffer = malloc(buffer_length);
     

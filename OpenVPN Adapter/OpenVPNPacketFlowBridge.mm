@@ -41,7 +41,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     [bridge writePackets:@[packet] toPacketFlow:bridge.packetFlow];
 }
 
-- (BOOL)configureSocketsWithError:(NSError **)error {
+- (BOOL)configureSocketsWithError:(NSError * __autoreleasing *)error {
     int sockets[2];
     if (socketpair(PF_LOCAL, SOCK_DGRAM, IPPROTO_IP, sockets) == -1) {
         if (error) {
@@ -90,7 +90,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return YES;
 }
 
-- (BOOL)configureOptionsForSocket:(CFSocketRef)socket error:(NSError **)error {
+- (BOOL)configureOptionsForSocket:(CFSocketRef)socket error:(NSError * __autoreleasing *)error {
     CFSocketNativeHandle socketHandle = CFSocketGetNative(socket);
     
     int buf_value = 65536;
