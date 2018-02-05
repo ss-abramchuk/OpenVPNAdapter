@@ -10,7 +10,18 @@
 ## Overview
 ## Installation
 ### Requirements
+- iOS 9.0+ / macOS 10.11+
+- Xcode 9.0+
+
 ### Carthage
+To install OpenVPNAdapter with Carthage, add the following line to your `Cartfile`.
+
+```
+github "ss-abramchuk/OpenVPNAdapter"
+```
+
+Then run `carthage update` command. For details of the installation and usage of Carthage, visit [its project page](https://github.com/Carthage/Carthage).
+
 ## Usage
 ## Contributing
 ## Acknowledgments
