@@ -163,6 +163,8 @@ extension NEPacketTunnelFlow: OpenVPNAdapterPacketFlow {}
 ```
 
 ## Contributing
+Any contributions and suggestions are welcome! But before creating a PR or an issue please read the [Contribution Guide](CONTRIBUTING.md).
+
 ## Acknowledgments
 ## License
 OpenVPNAdapter is available under the AGPLv3 license. See the LICENSE file for more info. Also this project has a few dependencies:
