@@ -167,10 +167,10 @@ Any contributions and suggestions are welcome! But before creating a PR or an is
 
 ## Acknowledgments
 ## License
-OpenVPNAdapter is available under the AGPLv3 license. See the LICENSE file for more info. Also this project has a few dependencies:
+OpenVPNAdapter is available under the AGPLv3 license. See the [LICENSE](LICENSE) file for more info. Also this project has a few dependencies:
 - [openvpn3](https://github.com/OpenVPN/openvpn3)
 - [asio](https://github.com/chriskohlhoff/asio)
 - [lz4](https://github.com/lz4/lz4)
 - [mbedtls](https://github.com/ARMmbed/mbedtls)
 
-See NOTICE file for more info about their licenses and copyrights.
+See [NOTICE](NOTICE) file for more info about their licenses and copyrights.
