@@ -173,4 +173,4 @@ OpenVPNAdapter is available under the AGPLv3 license. See the [LICENSE](LICENSE)
 - [lz4](https://github.com/lz4/lz4)
 - [mbedtls](https://github.com/ARMmbed/mbedtls)
 
-See [NOTICE](NOTICE) file for more info about their licenses and copyrights.
+See the [NOTICE](NOTICE) file for more info about their licenses and copyrights.
