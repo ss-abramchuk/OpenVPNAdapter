@@ -46,6 +46,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     var stopHandler: (() -> Void)?
 
     override func startTunnel(options: [String : NSObject]?, completionHandler: @escaping (Error?) -> Void) {
+        // There are many ways to provide OpenVPN settings to the tunnel provider. For instance,
+        // you can use `options` argument of `startTunnel(options:completionHandler:)` method or get
+        // settings from `protocolConfiguration.providerConfiguration` property of `NEPacketTunnelProvider`
+        // class. Also you may provide just content of a ovpn file or use key:value pairs
+        // that may be provided exclusively or in addition to file content.
+
         let ovpnFileContent: NSData = ... // Retrieve content of a ovpn file
         let ovpnSettings: [String : String] = ... // Retrieve settings as key:value pairs
 
@@ -53,6 +59,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         configuration.fileContent = ovpnFileContent
         configuration.settings = ovpnSettings
 
+        // Apply OpenVPN configuration
         let properties: OpenVPNProperties
         do {
             properties = try vpnAdapter.apply(configuration: configuration)
@@ -61,7 +68,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
 
+        // Provide credentials if needed
         if !properties.autologin {
+            // If your VPN configuration requires user credentials you can provide them by
+            // `protocolConfiguration.username` and `protocolConfiguration.passwordReference`
+            // properties. It is recommended to use persistent keychain reference to a keychain
+            // item containing the password.
+
             let username: String = ... // Retrieve a username
             let password: String = ... // Retrieve a password
 
@@ -77,11 +90,15 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             }
         }
 
+        // Checking reachability. In some cases after switching from cellular to
+        // WiFi the adapter still uses cellular data. Changing reachability forces
+        // reconnection so the adapter will use actual connection.
         vpnReachability.startTracking { [weak self] status in
             guard status != .notReachable else { return }
             self?.vpnAdapter.reconnect(interval: 5)
         }
 
+        // Establish connection and wait for .connected event
         startHandler = completionHandler
         vpnAdapter.connect()
     }
@@ -100,12 +117,19 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
 extension PacketTunnelProvider: OpenVPNAdapterDelegate {
 
+    // OpenVPNAdapter calls this delegate method to configure a VPN tunnel.
+    // `completionHandler` callback requires an object conforming to `OpenVPNAdapterPacketFlow`
+    // protocol if the tunnel is configured without errors. Otherwise send nil.
+    // `OpenVPNAdapterPacketFlow` method signatures are similar to `NEPacketTunnelFlow` so
+    // you can just extend that class to adopt `OpenVPNAdapterPacketFlow` protocol and
+    // send `self.packetFlow` to `completionHandler` callback.
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
         setTunnelNetworkSettings(settings) { (error) in
             completionHandler(error == nil ? self.packetFlow : nil)
         }
     }
 
+    // Process events returned by the OpenVPN library
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?) {
         switch event {
         case .connected:
@@ -136,7 +160,9 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
         }
     }
 
+    // Handle errors thrown by the OpenVPN library
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleError error: Error) {
+        // Handle only fatal errors
         guard let fatal = (error as NSError).userInfo[OpenVPNAdapterErrorFatalKey] as? Bool, fatal == true else {
             return
         }
@@ -153,12 +179,16 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
         }
     }
 
+    // Use this method to process any log message returned by OpenVPN library.
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleLogMessage logMessage: String) {
-
+        // Handle log messages
     }
 
 }
 
+// Extend NEPacketTunnelFlow to adopt OpenVPNAdapterPacketFlow protocol so that
+// `self.packetFlow` could be sent to `completionHandler` callback of OpenVPNAdapterDelegate
+// method openVPNAdapter(openVPNAdapter:configureTunnelWithNetworkSettings:completionHandler).
 extension NEPacketTunnelFlow: OpenVPNAdapterPacketFlow {}
 ```
 
