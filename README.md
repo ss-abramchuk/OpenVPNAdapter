@@ -8,7 +8,12 @@
 ![License](https://img.shields.io/badge/License-AGPLv3-lightgrey.svg)
 
 ## Overview
+OpenVPNAdapter is an Objective-C framework that allows to easily configure and establish VPN connection using OpenVPN protocol. It is based on the original [openvpn3](https://github.com/OpenVPN/openvpn3) library so it has every feature the library has.
+
+The framework is designed to use in conjunction with [`NetworkExtension`](https://developer.apple.com/documentation/networkextension) framework and doesn't use any private Apple API. Compatible with iOS and macOS and also Swift friendly.
+
 ## Installation
+
 ### Requirements
 - iOS 9.0+ or macOS 10.11+
 - Xcode 9.0+
@@ -23,7 +28,7 @@ github "ss-abramchuk/OpenVPNAdapter"
 Then run `carthage update` command. For details of the installation and usage of Carthage, visit [its project page](https://github.com/Carthage/Carthage).
 
 ## Usage
-OpenVPNAdapter is designed to use in conjunction with [`NetworkExtension`](https://developer.apple.com/documentation/networkextension) framework. So at first, you need to add a Packet Tunnel Provider extension to the project and configure provision profiles for both the container app and the extension. There are official documentation and many tutorials describing how to do it so we won't dwell on this in detail.
+At first, you need to add a Packet Tunnel Provider extension to the project and configure provision profiles for both the container app and the extension. There are official documentation and many tutorials describing how to do it so we won't dwell on this in detail.
 
 ...Don't forget...
 
