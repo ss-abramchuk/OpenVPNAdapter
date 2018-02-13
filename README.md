@@ -25,6 +25,92 @@ Then run `carthage update` command. For details of the installation and usage of
 ## Usage
 OpenVPNAdapter is designed to use in conjunction with [`NetworkExtension`](https://developer.apple.com/documentation/networkextension) framework. So at first, you need to add a Packet Tunnel Provider extension to the project and configure provision profiles for both the container app and the extension. There are official documentation and many tutorials describing how to do it so we won't dwell on this in detail.
 
+...Don't forget...
+
+```swift
+import NetworkExtension
+```
+
+...Retrieve instance of [`NETunnelProviderManager`](https://developer.apple.com/documentation/networkextension/netunnelprovidermanager) class...
+
+```swift
+NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
+    guard error == nil else {
+        // Handle an occured error
+        return
+    }
+
+    self.providerManager = managers?.first ?? NETunnelProviderManager()
+}
+```
+
+...Configure tunnel provider...
+
+```swift
+self.providerManager?.loadFromPreferences(completionHandler: { (error) in
+    guard error == nil else {
+        // Handle an occured error
+        return
+    }
+
+    // Assuming the app bundle contains a configuration file named 'client.ovpn' lets get its
+    // Data representation
+    guard
+        let configurationFileURL = Bundle.main.url(forResource: "client", withExtension: "ovpn"),
+        let configurationFileContent = try? Data(contentsOf: configurationFileURL)
+    else {
+        fatalError()
+    }
+
+    let tunnelProtocol = NETunnelProviderProtocol()
+
+    // If the ovpn file doesn't contain server address you can use this property
+    // to provide it. Or just set an empty string value because `serverAddress`
+    // property must be set to a non-nil string in either case.
+    tunnelProtocol.serverAddress = ""
+
+    //
+    tunnelProtocol.providerBundleIdentifier = "com.example.openvpn-client.tunnel-provider"
+
+    //
+    tunnelProtocol.providerConfiguration = ["ovpn": configurationFileContent]
+
+    //
+    tunnelProtocol.username = "username"
+    tunnelProtocol.passwordReference = ... // A persistent keychain reference to an item containing the password
+
+    //
+    self.providerManager?.protocolConfiguration = tunnelProtocol
+    self.providerManager?.localizedDescription = "OpenVPN Client"
+
+    self.providerManager?.isEnabled = true
+
+    //
+    self.providerManager?.saveToPreferences(completionHandler: { (error) in
+        if let error = error  {
+            // Handle an occured error
+        }
+    })
+}
+```
+
+...Start the tunnel...
+
+```swift
+self.providerManager?.loadFromPreferences(completionHandler: { (error) in
+    guard error == nil else {
+        // Handle an occured error
+        return
+    }
+
+    do {
+        try self.providerManager?.connection.startVPNTunnel()
+    } catch {
+        // Handle an occured error
+    }
+}
+```
+
 Packet Tunnel Provider extension uses [`NEPacketTunnelProvider`](https://developer.apple.com/documentation/networkextension/nepackettunnelprovider) subclass to configure and establish VPN connection. Therefore, that class is the right place to configure OpenVPNAdapter. The following example shows how you can setup it:
 
 ```swift
@@ -52,12 +138,25 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         // class. Also you may provide just content of a ovpn file or use key:value pairs
         // that may be provided exclusively or in addition to file content.
 
-        let ovpnFileContent: NSData = ... // Retrieve content of a ovpn file
-        let ovpnSettings: [String : String] = ... // Retrieve settings as key:value pairs
+        // In our case we need providerConfiguration dictionary to retrieve content
+        // of the OpenVPN configuration file. Other options related to the tunnel
+        // provider also can be stored there.
+        guard
+            let protocolConfiguration = protocolConfiguration as? NETunnelProviderProtocol,
+            let providerConfiguration = protocolConfiguration.providerConfiguration
+        else {
+            fatalError()
+        }
+
+        guard let ovpnFileContent: Data = providerConfiguration["ovpn"] as? Data else {
+            fatalError()
+        }
 
         let configuration = OpenVPNConfiguration()
         configuration.fileContent = ovpnFileContent
-        configuration.settings = ovpnSettings
+        configuration.settings = [
+            // Additional parameters as key:value pairs may be provided here
+        ]
 
         // Apply OpenVPN configuration
         let properties: OpenVPNProperties
@@ -75,8 +174,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             // properties. It is recommended to use persistent keychain reference to a keychain
             // item containing the password.
 
-            let username: String = ... // Retrieve a username
-            let password: String = ... // Retrieve a password
+            guard let username: String = protocolConfiguration.username else {
+                fatalError()
+            }
+
+            // Retrieve a password from the keychain
+            guard let password: String = ... {
+                fatalError()
+            }
 
             let credentials = OpenVPNCredentials()
             credentials.username = username
