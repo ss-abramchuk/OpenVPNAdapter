@@ -20,7 +20,6 @@ OpenVPNClient::OpenVPNClient(id<OpenVPNClientDelegate> delegate): ClientAPI::Ope
 }
 
 bool OpenVPNClient::tun_builder_new() {
-    [this->delegate resetSettings];
     return true;
 }
 

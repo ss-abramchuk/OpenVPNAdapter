@@ -38,8 +38,8 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
  @param completionHandler The completion handler to be called with a NEPacketTunnelFlow object, or nil if an error occurred.
  */
 - (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
-configureTunnelWithNetworkSettings:(NEPacketTunnelNetworkSettings *)networkSettings
-                 completionHandler:(void (^)(id<OpenVPNAdapterPacketFlow> _Nullable packetFlow))completionHandler
+configureTunnelWithNetworkSettings:(nullable NEPacketTunnelNetworkSettings *)networkSettings
+                 completionHandler:(nullable void (^)(id<OpenVPNAdapterPacketFlow> _Nullable packetFlow))completionHandler
 NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
 /**

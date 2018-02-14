@@ -227,15 +227,16 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
 extension PacketTunnelProvider: OpenVPNAdapterDelegate {
 
-    // OpenVPNAdapter calls this delegate method to configure a VPN tunnel.
+    // OpenVPNAdapter calls this delegate method to either configure a VPN
+    // tunnel or reset the tunnel (during a reconnect for example).
     // `completionHandler` callback requires an object conforming to `OpenVPNAdapterPacketFlow`
     // protocol if the tunnel is configured without errors. Otherwise send nil.
     // `OpenVPNAdapterPacketFlow` method signatures are similar to `NEPacketTunnelFlow` so
     // you can just extend that class to adopt `OpenVPNAdapterPacketFlow` protocol and
     // send `self.packetFlow` to `completionHandler` callback.
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: ((OpenVPNAdapterPacketFlow?) -> Void)? = nil) {
         setTunnelNetworkSettings(settings) { (error) in
-            completionHandler(error == nil ? self.packetFlow : nil)
+            completionHandler?(error == nil ? self.packetFlow : nil)
         }
     }
 

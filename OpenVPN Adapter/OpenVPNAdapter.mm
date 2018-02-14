@@ -346,6 +346,7 @@
     _sessionName = nil;
     _packetFlowBridge = nil;
     _networkSettingsBuilder = nil;
+    [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:nil completionHandler:nil];
 }
 
 #pragma mark -
