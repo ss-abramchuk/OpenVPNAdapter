@@ -70,6 +70,11 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
 @property (nonatomic) BOOL googleDNSFallback;
 
 /**
+ Whether to do DNS lookups synchronously.
+ */
+@property (nonatomic) BOOL synchronousDNSLookup;
+
+/**
  Enable autologin sessions
  */
 @property (nonatomic) BOOL autologinSessions;
