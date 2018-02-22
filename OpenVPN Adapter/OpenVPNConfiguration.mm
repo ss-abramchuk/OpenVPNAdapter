@@ -312,6 +312,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.googleDnsFallback = googleDNSFallback;
 }
 
+- (BOOL)synchronousDNSLookup {
+    return _config.synchronousDnsLookup;
+}
+
+- (void)setSynchronousDNSLookup:(BOOL)synchronousDNSLookup {
+    _config.synchronousDnsLookup = synchronousDNSLookup;
+}
+
 - (BOOL)autologinSessions {
     return _config.autologinSessions;
 }
@@ -459,6 +467,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     configuration.connectionTimeout = self.connectionTimeout;
     configuration.tunPersist = self.tunPersist;
     configuration.googleDNSFallback = self.googleDNSFallback;
+    configuration.synchronousDNSLookup = self.synchronousDNSLookup;
     configuration.autologinSessions = self.autologinSessions;
     configuration.disableClientCert = self.disableClientCert;
     configuration.sslDebugLevel = self.sslDebugLevel;
@@ -485,6 +494,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     [aCoder encodeInteger:self.connectionTimeout forKey:NSStringFromSelector(@selector(connectionTimeout))];
     [aCoder encodeBool:self.tunPersist forKey:NSStringFromSelector(@selector(tunPersist))];
     [aCoder encodeBool:self.googleDNSFallback forKey:NSStringFromSelector(@selector(googleDNSFallback))];
+    [aCoder encodeBool:self.synchronousDNSLookup forKey:NSStringFromSelector(@selector(synchronousDNSLookup))];
     [aCoder encodeBool:self.autologinSessions forKey:NSStringFromSelector(@selector(autologinSessions))];
     [aCoder encodeBool:self.disableClientCert forKey:NSStringFromSelector(@selector(disableClientCert))];
     [aCoder encodeInteger:self.sslDebugLevel forKey:NSStringFromSelector(@selector(sslDebugLevel))];
@@ -511,6 +521,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
         self.connectionTimeout = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(connectionTimeout))];
         self.tunPersist = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(tunPersist))];
         self.googleDNSFallback = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(googleDNSFallback))];
+        self.synchronousDNSLookup = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(synchronousDNSLookup))];
         self.autologinSessions = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(autologinSessions))];
         self.disableClientCert = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(disableClientCert))];
         self.sslDebugLevel = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(sslDebugLevel))];
