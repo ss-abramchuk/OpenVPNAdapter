@@ -30,13 +30,13 @@ Then run `carthage update` command. For details of the installation and usage of
 ## Usage
 At first, you need to add a Packet Tunnel Provider extension to the project and configure provision profiles for both the container app and the extension. There are official documentation and many tutorials describing how to do it so we won't dwell on this in detail.
 
-...Don't forget...
+Before you can configure and establish VPN connection don't forget to import [`NetworkExtension`](https://developer.apple.com/documentation/networkextension).
 
 ```swift
 import NetworkExtension
 ```
 
-...Retrieve instance of [`NETunnelProviderManager`](https://developer.apple.com/documentation/networkextension/netunnelprovidermanager) class...
+Then we need to create or load a VPN profile. [`NETunnelProviderManager`](https://developer.apple.com/documentation/networkextension/netunnelprovidermanager) is used to configure and control  VPN connections provided by a Tunnel Provider extension. Each instance corresponds to a single VPN configuration stored in the Network Extension preferences. ￼Call the following method to load all existing VPN profiles from the system preferences. For the sake of simplicity, we will use only one instance of [`NETunnelProviderManager`](https://developer.apple.com/documentation/networkextension/netunnelprovidermanager) assuming that our object has a property named `providerManager`.
 
 ```swift
 NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
@@ -48,8 +48,7 @@ NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
     self.providerManager = managers?.first ?? NETunnelProviderManager()
 }
 ```
-
-...Configure tunnel provider...
+The next step is to provide VPN settings to the instance of [`NETunnelProviderManager`](https://developer.apple.com/documentation/networkextension/netunnelprovidermanager). Setup the [`NETunnelProviderProtocol`](https://developer.apple.com/documentation/networkextension/netunnelproviderprotocol) object with appropriate values and save it to preferences.
 
 ```swift
 self.providerManager?.loadFromPreferences(completionHandler: { (error) in
@@ -74,7 +73,8 @@ self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     // property must be set to a non-nil string in either case.
     tunnelProtocol.serverAddress = ""
 
-    //
+    // The most important field which MUST be the bundle ID of our custom network
+    // extension target.
     tunnelProtocol.providerBundleIdentifier = "com.example.openvpn-client.tunnel-provider"
 
     //
@@ -99,7 +99,7 @@ self.providerManager?.loadFromPreferences(completionHandler: { (error) in
 }
 ```
 
-...Start the tunnel...
+Start VPN by calling the following code.
 
 ```swift
 self.providerManager?.loadFromPreferences(completionHandler: { (error) in
