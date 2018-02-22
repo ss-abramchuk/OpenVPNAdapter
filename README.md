@@ -48,7 +48,7 @@ NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
     self.providerManager = managers?.first ?? NETunnelProviderManager()
 }
 ```
-The next step is to provide VPN settings to the instance of [`NETunnelProviderManager`](https://developer.apple.com/documentation/networkextension/netunnelprovidermanager). Setup the [`NETunnelProviderProtocol`](https://developer.apple.com/documentation/networkextension/netunnelproviderprotocol) object with appropriate values and save it to preferences.
+The next step is to provide VPN settings to the instance of [`NETunnelProviderManager`](https://developer.apple.com/documentation/networkextension/netunnelprovidermanager). Setup the [`NETunnelProviderProtocol`](https://developer.apple.com/documentation/networkextension/netunnelproviderprotocol) object with appropriate values and save it in preferences.
 
 ```swift
 self.providerManager?.loadFromPreferences(completionHandler: { (error) in
@@ -77,20 +77,22 @@ self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     // extension target.
     tunnelProtocol.providerBundleIdentifier = "com.example.openvpn-client.tunnel-provider"
 
-    //
+    // Use `providerConfiguration` to save content of the ovpn file.
     tunnelProtocol.providerConfiguration = ["ovpn": configurationFileContent]
 
-    //
+    // Provide user credentials if needed. It is highly recommended to use
+    // keychain to store a password.
     tunnelProtocol.username = "username"
     tunnelProtocol.passwordReference = ... // A persistent keychain reference to an item containing the password
 
-    //
+    // Finish configuration by assigning tunnel protocol to `protocolConfiguration`
+    // property of `providerManager` and by setting description.
     self.providerManager?.protocolConfiguration = tunnelProtocol
     self.providerManager?.localizedDescription = "OpenVPN Client"
 
     self.providerManager?.isEnabled = true
 
-    //
+    // Save configuration in the Network Extension preferences
     self.providerManager?.saveToPreferences(completionHandler: { (error) in
         if let error = error  {
             // Handle an occured error
