@@ -522,6 +522,9 @@ namespace openvpn {
 	  if (!ssl)
 	    throw OpenSSLException("OpenSSLContext::SSL: SSL_new failed");
 
+	  // release unneeded buffers
+	  SSL_set_mode(ssl, SSL_MODE_RELEASE_BUFFERS);
+
 	  // verify hostname
 	  if (hostname)
 	    {
@@ -791,7 +794,7 @@ namespace openvpn {
 	}
 	catch (const std::exception& e)
 	  {
-	    OPENVPN_LOG("OpenSSLContext::ExternalPKIImpl::rsa_priv_enc: " << e.what());
+	    OPENVPN_LOG("OpenSSLContext::ExternalPKIImpl::rsa_priv_enc exception: " << e.what());
 	    ++self->n_errors;
 	    return -1;
 	  }
