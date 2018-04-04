@@ -304,16 +304,15 @@ namespace openvpn {
 	frame_context.prepare(tcpfrom->buf);
 
 	socket.async_receive(frame_context.mutable_buffer_clamp(tcpfrom->buf),
-			     [self=Ptr(this), tcpfrom](const openvpn_io::error_code& error, const size_t bytes_recvd)
+			     [self=Ptr(this), tcpfrom=PacketFrom::SPtr(tcpfrom)](const openvpn_io::error_code& error, const size_t bytes_recvd) mutable
 			     {
-			       self->handle_recv(tcpfrom, error, bytes_recvd);
+			       self->handle_recv(std::move(tcpfrom), error, bytes_recvd);
 			     });
       }
 
-      void handle_recv(PacketFrom *tcpfrom, const openvpn_io::error_code& error, const size_t bytes_recvd)
+      void handle_recv(PacketFrom::SPtr pfp, const openvpn_io::error_code& error, const size_t bytes_recvd)
       {
 	OPENVPN_LOG_TCPLINK_VERBOSE("TCPLink::handle_recv: " << error.message());
-	PacketFrom::SPtr pfp(tcpfrom);
 	if (!halt)
 	  {
 	    if (!error)
@@ -331,7 +330,7 @@ namespace openvpn {
 		    }
 		    catch (const std::exception& e)
 		      {
-			OPENVPN_LOG_TCPLINK_ERROR("TCP packet extract error: " << e.what());
+			OPENVPN_LOG_TCPLINK_ERROR("TCP packet extract exception: " << e.what());
 			stats->error(Error::TCP_SIZE_ERROR);
 			read_handler->tcp_error_handler("TCP_SIZE_ERROR");
 			stop();

@@ -53,9 +53,20 @@ else
 
     # apply pre-generated patches
     for file in $O3/core/deps/mbedtls/patches/*.patch; do
-        patch -p1 <$file
+        echo Applying patch: $file
+        git apply $file
     done
 fi
+
+if [[ "x$TARGET" == xlinux* || "x$TARGET" == xosx* ]]; then
+    # run unit tests and then clean
+    echo RUNNING CHECK
+    make check
+    echo CLEANING
+    make clean
+fi
+
+echo BUILDING
 
 # compiler vars
 CC=cc
