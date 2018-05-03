@@ -2,7 +2,7 @@
 // use_future.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -118,7 +118,23 @@ public:
   operator()(ASIO_MOVE_ARG(Function) f) const;
 
 private:
-  Allocator allocator_;
+  // Helper type to ensure that use_future can be constexpr default-constructed
+  // even when std::allocator<void> can't be.
+  struct std_allocator_void
+  {
+    ASIO_CONSTEXPR std_allocator_void()
+    {
+    }
+
+    operator std::allocator<void>() const
+    {
+      return std::allocator<void>();
+    }
+  };
+
+  typename conditional<
+    is_same<std::allocator<void>, Allocator>::value,
+    std_allocator_void, Allocator>::type allocator_;
 };
 
 /// A special value, similar to std::nothrow.

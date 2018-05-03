@@ -2,7 +2,7 @@
 // network_v4.cpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2014 Oliver Kowalke (oliver dot kowalke at gmail dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -219,6 +219,19 @@ void test()
   ASIO_CHECK(make_network_v4("192.168.77.100/32").network() == make_address_v4("192.168.77.100"));
   ASIO_CHECK(make_network_v4("192.168.77.100/24").network() == make_address_v4("192.168.77.0"));
   ASIO_CHECK(make_network_v4("192.168.77.128/25").network() == make_address_v4("192.168.77.128"));
+
+  // construct network from invalid string
+  asio::error_code ec;
+  make_network_v4("10.0.0.256/24", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v4("10.0.0.0/33", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v4("10.0.0.0/-1", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v4("10.0.0.0/", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v4("10.0.0.0", ec);
+  ASIO_CHECK(!!ec);
 
   // prefix length
   ASIO_CHECK(make_network_v4("193.99.144.80/24").prefix_length() == 24);

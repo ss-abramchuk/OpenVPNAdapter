@@ -2,7 +2,7 @@
 // tcp.cpp
 // ~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -1069,6 +1069,18 @@ private:
 #endif // defined(ASIO_HAS_MOVE)
 };
 
+struct legacy_resolve_handler
+{
+  legacy_resolve_handler() {}
+  void operator()(const asio::error_code&,
+      asio::ip::tcp::resolver::iterator) {}
+#if defined(ASIO_HAS_MOVE)
+  legacy_resolve_handler(legacy_resolve_handler&&) {}
+private:
+  legacy_resolve_handler(const legacy_resolve_handler&);
+#endif // defined(ASIO_HAS_MOVE)
+};
+
 void test()
 {
   using namespace asio;
@@ -1162,6 +1174,7 @@ void test()
 
 #if !defined(ASIO_NO_DEPRECATED)
     resolver.async_resolve(q, resolve_handler());
+    resolver.async_resolve(q, legacy_resolve_handler());
     int i1 = resolver.async_resolve(q, lazy);
     (void)i1;
     double d1 = resolver.async_resolve(q, dlazy);
@@ -1169,6 +1182,7 @@ void test()
 #endif // !defined(ASIO_NO_DEPRECATED)
 
     resolver.async_resolve("", "", resolve_handler());
+    resolver.async_resolve("", "", legacy_resolve_handler());
     int i2 = resolver.async_resolve("", "", lazy);
     (void)i2;
 #if !defined(ASIO_NO_DEPRECATED)
@@ -1178,6 +1192,8 @@ void test()
 
     resolver.async_resolve("", "",
         ip::tcp::resolver::flags(), resolve_handler());
+    resolver.async_resolve("", "",
+        ip::tcp::resolver::flags(), legacy_resolve_handler());
     int i3 = resolver.async_resolve("", "",
         ip::tcp::resolver::flags(), lazy);
     (void)i3;
@@ -1188,6 +1204,7 @@ void test()
 #endif // !defined(ASIO_NO_DEPRECATED)
 
     resolver.async_resolve(ip::tcp::v4(), "", "", resolve_handler());
+    resolver.async_resolve(ip::tcp::v4(), "", "", legacy_resolve_handler());
     int i4 = resolver.async_resolve(ip::tcp::v4(), "", "", lazy);
     (void)i4;
 #if !defined(ASIO_NO_DEPRECATED)
@@ -1197,6 +1214,8 @@ void test()
 
     resolver.async_resolve(ip::tcp::v4(),
         "", "", ip::tcp::resolver::flags(), resolve_handler());
+    resolver.async_resolve(ip::tcp::v4(),
+        "", "", ip::tcp::resolver::flags(), legacy_resolve_handler());
     int i5 = resolver.async_resolve(ip::tcp::v4(),
         "", "", ip::tcp::resolver::flags(), lazy);
     (void)i5;
@@ -1207,6 +1226,7 @@ void test()
 #endif // !defined(ASIO_NO_DEPRECATED)
 
     resolver.async_resolve(e, resolve_handler());
+    resolver.async_resolve(e, legacy_resolve_handler());
     int i6 = resolver.async_resolve(e, lazy);
     (void)i6;
 #if !defined(ASIO_NO_DEPRECATED)
@@ -1310,19 +1330,19 @@ void test()
 
   ip::tcp::iostream ios1;
 
-#if defined(ASIO_HAS_MOVE)
+#if defined(ASIO_HAS_STD_IOSTREAM_MOVE)
   ip::tcp::iostream ios2(std::move(sock));
-#endif // defined(ASIO_HAS_MOVE)
+#endif // defined(ASIO_HAS_STD_IOSTREAM_MOVE)
 
   ip::tcp::iostream ios3("hostname", "service");
 
   // basic_socket_iostream operators.
 
-#if defined(ASIO_HAS_MOVE)
+#if defined(ASIO_HAS_STD_IOSTREAM_MOVE)
   ios1 = ip::tcp::iostream();
 
   ios2 = std::move(ios1);
-#endif // defined(ASIO_HAS_MOVE)
+#endif // defined(ASIO_HAS_STD_IOSTREAM_MOVE)
 
   // basic_socket_iostream members.
 
@@ -1339,7 +1359,7 @@ void test()
 #endif // defined(ASIO_ENABLE_OLD_SERVICES)
   (void)sref;
 
-  error_code ec = ios1.error();
+  asio::error_code ec = ios1.error();
   (void)ec;
 
   ip::tcp::iostream::time_point tp = ios1.expiry();
