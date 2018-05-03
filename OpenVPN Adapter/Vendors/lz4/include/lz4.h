@@ -409,19 +409,21 @@ union LZ4_streamDecode_u {
 *  Obsolete Functions
 **************************************/
 
-/*! Deprecation warnings
-   Should deprecation warnings be a problem,
-   it is generally possible to disable them,
-   typically with -Wno-deprecated-declarations for gcc
-   or _CRT_SECURE_NO_WARNINGS in Visual.
-   Otherwise, it's also possible to define LZ4_DISABLE_DEPRECATE_WARNINGS */
+    /*! Deprecation warnings
+     Should deprecation warnings be a problem,
+     it is generally possible to disable them,
+     typically with -Wno-deprecated-declarations for gcc
+     or _CRT_SECURE_NO_WARNINGS in Visual.
+     Otherwise, it's also possible to define LZ4_DISABLE_DEPRECATE_WARNINGS */
 #ifdef LZ4_DISABLE_DEPRECATE_WARNINGS
 #  define LZ4_DEPRECATED(message)   /* disable deprecation warnings */
 #else
 #  define LZ4_GCC_VERSION (__GNUC__ * 100 + __GNUC_MINOR__)
-#  if defined (__cplusplus) && (__cplusplus >= 201402) /* C++14 or greater */
+#  if defined(__clang__) /* clang doesn't handle mixed C++11 and CNU attributes */
+#    define LZ4_DEPRECATED(message) __attribute__((deprecated(message)))
+#  elif defined (__cplusplus) && (__cplusplus >= 201402) /* C++14 or greater */
 #    define LZ4_DEPRECATED(message) [[deprecated(message)]]
-#  elif (LZ4_GCC_VERSION >= 405) || defined(__clang__)
+#  elif (LZ4_GCC_VERSION >= 405)
 #    define LZ4_DEPRECATED(message) __attribute__((deprecated(message)))
 #  elif (LZ4_GCC_VERSION >= 301)
 #    define LZ4_DEPRECATED(message) __attribute__((deprecated))
