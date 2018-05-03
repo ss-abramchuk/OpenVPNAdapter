@@ -667,6 +667,9 @@ namespace openvpn {
       if (relay_mode)
 	lflags |= SSLConfigAPI::LF_RELAY_MODE;
 
+      if (opt.exists("allow-name-constraints"))
+	lflags |= SSLConfigAPI::LF_ALLOW_NAME_CONSTRAINTS;
+
       // client SSL config
       SSLLib::SSLAPI::Config::Ptr cc(new SSLLib::SSLAPI::Config());
       cc->set_external_pki_callback(config.external_pki);
@@ -730,7 +733,6 @@ namespace openvpn {
 #endif
 
 #else
-	
       if (dco)
 	{
 	  DCO::TransportConfig transconf;
@@ -789,7 +791,11 @@ namespace openvpn {
 #endif
 	      transport_factory = udpconf;
 	    }
-	  else if (transport_protocol.is_tcp())
+	  else if (transport_protocol.is_tcp()
+#ifdef OPENVPN_TLS_LINK
+		   || transport_protocol.is_tls()
+#endif
+		  )
 	    {
 	      // TCP transport
 	      TCPTransport::ClientConfig::Ptr tcpconf = TCPTransport::ClientConfig::new_obj();
@@ -797,6 +803,10 @@ namespace openvpn {
 	      tcpconf->frame = frame;
 	      tcpconf->stats = cli_stats;
 	      tcpconf->socket_protect = socket_protect;
+#ifdef OPENVPN_TLS_LINK
+	      if (transport_protocol.is_tls())
+		tcpconf->use_tls = true;
+#endif
 #ifdef OPENVPN_GREMLIN
 	      tcpconf->gremlin_config = gremlin_config;
 #endif
