@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -241,8 +241,6 @@ bool non_blocking_accept(socket_type s,
     if (ec == asio::error::would_block
         || ec == asio::error::try_again)
     {
-      if (state & user_set_non_blocking)
-        return true;
       // Fall through to retry operation.
     }
     else if (ec == asio::error::connection_aborted)
@@ -772,6 +770,8 @@ signed_size_type recv(socket_type s, buf* bufs, size_t count,
     ec = asio::error::connection_reset;
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = asio::error::connection_refused;
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+    ec.assign(0, ec.category());
   if (result != 0)
     return socket_error_retval;
   ec = asio::error_code();
@@ -850,6 +850,10 @@ void complete_iocp_recv(state_type state,
   {
     ec = asio::error::connection_refused;
   }
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+  {
+    ec.assign(0, ec.category());
+  }
 
   // Check for connection closed.
   else if (!ec && bytes_transferred == 0
@@ -920,6 +924,8 @@ signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
     ec = asio::error::connection_reset;
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = asio::error::connection_refused;
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+    ec.assign(0, ec.category());
   if (result != 0)
     return socket_error_retval;
   ec = asio::error_code();
@@ -988,6 +994,10 @@ void complete_iocp_recvfrom(
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
   {
     ec = asio::error::connection_refused;
+  }
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+  {
+    ec.assign(0, ec.category());
   }
 }
 
@@ -1101,6 +1111,10 @@ void complete_iocp_recvmsg(
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
   {
     ec = asio::error::connection_refused;
+  }
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+  {
+    ec.assign(0, ec.category());
   }
 }
 
@@ -3325,6 +3339,23 @@ asio::error_code getaddrinfo(const char* host,
 #elif !defined(ASIO_HAS_GETADDRINFO)
   int error = getaddrinfo_emulation(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
+#elif defined(ASIO_HAS_GETADDRINFO) && defined(ASIO_APPLE_NAT64)
+  // For NAT64 compatibility, Apple recommends to set AI_DEFAULT flags
+  addrinfo_type new_hints = hints;
+  new_hints.ai_flags |= AI_DEFAULT;
+  int error = ::getaddrinfo(host, service, &new_hints, result);
+
+  // iOS bug workaround: sometimes iOS getaddrinfo() returns a non-zero scope ID
+  // for non-link-local addresses.  Workaround by forcing scope ID to 0 for
+  // non-link-local addresses.
+  if (!error && (*result)->ai_family == AF_INET6)
+  {
+    sockaddr_in6* a6 = (sockaddr_in6*)(*result)->ai_addr;
+    if (a6->sin6_scope_id && !(IN6_IS_ADDR_LINKLOCAL(&a6->sin6_addr) || IN6_IS_ADDR_MC_NODELOCAL(&a6->sin6_addr) || IN6_IS_ADDR_MC_LINKLOCAL(&a6->sin6_addr)))
+      a6->sin6_scope_id = 0;
+  }
+
+  return ec = translate_addrinfo_error(error);
 #else
   int error = ::getaddrinfo(host, service, &hints, result);
 #if defined(__MACH__) && defined(__APPLE__)
@@ -3435,7 +3466,6 @@ asio::error_code getnameinfo(const socket_addr_type* addr,
   using namespace std; // For memcpy.
   sockaddr_storage_type tmp_addr;
   memcpy(&tmp_addr, addr, addrlen);
-  tmp_addr.ss_len = addrlen;
   addr = reinterpret_cast<socket_addr_type*>(&tmp_addr);
   clear_last_error();
   return getnameinfo_emulation(addr, addrlen,

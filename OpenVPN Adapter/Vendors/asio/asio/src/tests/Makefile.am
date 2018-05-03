@@ -102,9 +102,19 @@ check_PROGRAMS = \
 	unit/strand \
 	unit/stream_socket_service \
 	unit/streambuf \
+	unit/system_context \
+	unit/system_executor \
 	unit/system_timer \
 	unit/thread \
 	unit/time_traits \
+	unit/ts/buffer \
+	unit/ts/executor \
+	unit/ts/internet \
+	unit/ts/io_context \
+	unit/ts/net \
+	unit/ts/netfwd \
+	unit/ts/socket \
+	unit/ts/timer \
 	unit/use_future \
 	unit/uses_executor \
 	unit/wait_traits \
@@ -231,9 +241,19 @@ TESTS = \
 	unit/strand \
 	unit/stream_socket_service \
 	unit/streambuf \
+	unit/system_context \
+	unit/system_executor \
 	unit/system_timer \
 	unit/thread \
 	unit/time_traits \
+	unit/ts/buffer \
+	unit/ts/executor \
+	unit/ts/internet \
+	unit/ts/io_context \
+	unit/ts/net \
+	unit/ts/netfwd \
+	unit/ts/socket \
+	unit/ts/timer \
 	unit/use_future \
 	unit/uses_executor \
 	unit/wait_traits \
@@ -264,10 +284,7 @@ TESTS += \
 endif
 
 noinst_HEADERS = \
-	latency/coroutine.hpp \
 	latency/high_res_clock.hpp \
-	latency/unyield.hpp \
-	latency/yield.hpp \
 	unit/unit_test.hpp
 
 AM_CXXFLAGS = -I$(srcdir)/../../include
@@ -373,9 +390,19 @@ unit_steady_timer_SOURCES = unit/steady_timer.cpp
 unit_strand_SOURCES = unit/strand.cpp
 unit_stream_socket_service_SOURCES = unit/stream_socket_service.cpp
 unit_streambuf_SOURCES = unit/streambuf.cpp
+unit_system_context_SOURCES = unit/system_context.cpp
+unit_system_executor_SOURCES = unit/system_executor.cpp
 unit_system_timer_SOURCES = unit/system_timer.cpp
 unit_thread_SOURCES = unit/thread.cpp
 unit_time_traits_SOURCES = unit/time_traits.cpp
+unit_ts_buffer_SOURCES = unit/ts/buffer.cpp
+unit_ts_executor_SOURCES = unit/ts/executor.cpp
+unit_ts_internet_SOURCES = unit/ts/internet.cpp
+unit_ts_io_context_SOURCES = unit/ts/io_context.cpp
+unit_ts_net_SOURCES = unit/ts/net.cpp
+unit_ts_netfwd_SOURCES = unit/ts/netfwd.cpp
+unit_ts_socket_SOURCES = unit/ts/socket.cpp
+unit_ts_timer_SOURCES = unit/ts/timer.cpp
 unit_use_future_SOURCES = unit/use_future.cpp
 unit_uses_executor_SOURCES = unit/uses_executor.cpp
 unit_wait_traits_SOURCES = unit/wait_traits.cpp

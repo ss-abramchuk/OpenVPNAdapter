@@ -2,7 +2,7 @@
 // asio.hpp
 // ~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -62,6 +62,7 @@
 #include "asio/handler_continuation_hook.hpp"
 #include "asio/handler_invoke_hook.hpp"
 #include "asio/handler_type.hpp"
+#include "asio/high_resolution_timer.hpp"
 #include "asio/io_context.hpp"
 #include "asio/io_context_strand.hpp"
 #include "asio/io_service.hpp"
@@ -117,11 +118,14 @@
 #include "asio/signal_set_service.hpp"
 #include "asio/socket_acceptor_service.hpp"
 #include "asio/socket_base.hpp"
+#include "asio/steady_timer.hpp"
 #include "asio/strand.hpp"
 #include "asio/stream_socket_service.hpp"
 #include "asio/streambuf.hpp"
+#include "asio/system_context.hpp"
 #include "asio/system_error.hpp"
 #include "asio/system_executor.hpp"
+#include "asio/system_timer.hpp"
 #include "asio/thread.hpp"
 #include "asio/thread_pool.hpp"
 #include "asio/time_traits.hpp"

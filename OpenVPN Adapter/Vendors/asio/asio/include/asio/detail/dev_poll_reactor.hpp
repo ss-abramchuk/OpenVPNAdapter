@@ -2,7 +2,7 @@
 // detail/dev_poll_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -101,14 +101,20 @@ public:
   ASIO_DECL void cancel_ops(socket_type descriptor, per_descriptor_data&);
 
   // Cancel any operations that are running against the descriptor and remove
-  // its registration from the reactor.
+  // its registration from the reactor. The reactor resources associated with
+  // the descriptor must be released by calling cleanup_descriptor_data.
   ASIO_DECL void deregister_descriptor(socket_type descriptor,
       per_descriptor_data&, bool closing);
 
-  // Cancel any operations that are running against the descriptor and remove
-  // its registration from the reactor.
+  // Remove the descriptor's registration from the reactor. The reactor
+  // resources associated with the descriptor must be released by calling
+  // cleanup_descriptor_data.
   ASIO_DECL void deregister_internal_descriptor(
       socket_type descriptor, per_descriptor_data&);
+
+  // Perform any post-deregistration cleanup tasks associated with the
+  // descriptor data.
+  ASIO_DECL void cleanup_descriptor_data(per_descriptor_data&);
 
   // Add a new timer queue to the reactor.
   template <typename Time_Traits>
@@ -139,7 +145,7 @@ public:
       typename timer_queue<Time_Traits>::per_timer_data& source);
 
   // Run /dev/poll once until interrupted or events are ready to be dispatched.
-  ASIO_DECL void run(bool block, op_queue<operation>& ops);
+  ASIO_DECL void run(long usec, op_queue<operation>& ops);
 
   // Interrupt the select loop.
   ASIO_DECL void interrupt();
