@@ -2,7 +2,7 @@
 // ip/impl/network_v4.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2014 Oliver Kowalke (oliver dot kowalke at gmail dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -178,8 +178,18 @@ network_v4 make_network_v4(const std::string& str,
     return network_v4();
   }
 
-  return network_v4(make_address_v4(str.substr(0, pos)),
-      std::atoi(str.substr(pos + 1).c_str()));
+  const address_v4 addr = make_address_v4(str.substr(0, pos), ec);
+  if (ec)
+    return network_v4();
+
+  const int prefix_len = std::atoi(str.substr(pos + 1).c_str());
+  if (prefix_len < 0 || prefix_len > 32)
+  {
+    ec = asio::error::invalid_argument;
+    return network_v4();
+  }
+
+  return network_v4(addr, static_cast<unsigned short>(prefix_len));
 }
 
 #if defined(ASIO_HAS_STD_STRING_VIEW)

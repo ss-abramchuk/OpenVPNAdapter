@@ -2,7 +2,7 @@
 // logger_service.hpp
 // ~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -102,7 +102,7 @@ public:
     std::ostringstream os;
     os << impl->identifier << ": " << message;
 
-    // Pass the work of opening the file to the background thread.
+    // Pass the work of writing to the file to the background thread.
     asio::post(work_io_context_, boost::bind(
           &logger_service::log_impl, this, os.str()));
   }

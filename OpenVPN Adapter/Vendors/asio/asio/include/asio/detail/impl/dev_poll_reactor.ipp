@@ -2,7 +2,7 @@
 // detail/impl/dev_poll_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -67,7 +67,8 @@ void dev_poll_reactor::shutdown()
   scheduler_.abandon_operations(ops);
 } 
 
-void dev_poll_reactor::notify_fork(asio::io_context::fork_event fork_ev)
+void dev_poll_reactor::notify_fork(
+    asio::execution_context::fork_event fork_ev)
 {
   if (fork_ev == asio::execution_context::fork_child)
   {
@@ -234,13 +235,18 @@ void dev_poll_reactor::deregister_internal_descriptor(
     op_queue_[i].cancel_operations(descriptor, ops, ec);
 }
 
+void dev_poll_reactor::cleanup_descriptor_data(
+    dev_poll_reactor::per_descriptor_data&)
+{
+}
+
 void dev_poll_reactor::run(long usec, op_queue<operation>& ops)
 {
   asio::detail::mutex::scoped_lock lock(mutex_);
 
   // We can return immediately if there's no work to do and the reactor is
   // not supposed to block.
-  if (!block && op_queue_[read_op].empty() && op_queue_[write_op].empty()
+  if (usec == 0 && op_queue_[read_op].empty() && op_queue_[write_op].empty()
       && op_queue_[except_op].empty() && timer_queues_.all_empty())
     return;
 

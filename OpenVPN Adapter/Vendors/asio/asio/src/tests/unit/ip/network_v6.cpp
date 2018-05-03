@@ -2,7 +2,7 @@
 // network_v6.cpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2014 Oliver Kowalke (oliver dot kowalke at gmail dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -152,6 +152,19 @@ void test()
   ASIO_CHECK(make_network_v6("2001:370::10:7344/128").network() == make_address_v6("2001:370::10:7344"));
   ASIO_CHECK(make_network_v6("2001:370::10:7344/64").network() == make_address_v6("2001:370::"));
   ASIO_CHECK(make_network_v6("2001:370::10:7344/27").network() == make_address_v6("2001:360::"));
+
+  // construct network from invalid string
+  asio::error_code ec;
+  make_network_v6("a:b/24", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v6("2001:370::10:7344/129", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v6("2001:370::10:7344/-1", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v6("2001:370::10:7344/", ec);
+  ASIO_CHECK(!!ec);
+  make_network_v6("2001:370::10:7344", ec);
+  ASIO_CHECK(!!ec);
 
   // prefix length
   ASIO_CHECK(make_network_v6("2001:370::10:7344/128").prefix_length() == 128);
