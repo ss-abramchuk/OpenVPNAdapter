@@ -31,7 +31,7 @@
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "platform_time.h"
+#include "mbedtls/platform_time.h"
 #endif
 
 #ifdef __cplusplus

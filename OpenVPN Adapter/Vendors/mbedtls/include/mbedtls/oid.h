@@ -228,6 +228,14 @@
 
 #define MBEDTLS_OID_HMAC_SHA1                   MBEDTLS_OID_RSA_COMPANY "\x02\x07" /**< id-hmacWithSHA1 OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) digestAlgorithm(2) 7 } */
 
+#define MBEDTLS_OID_HMAC_SHA224                 MBEDTLS_OID_RSA_COMPANY "\x02\x08" /**< id-hmacWithSHA224 OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) digestAlgorithm(2) 8 } */
+
+#define MBEDTLS_OID_HMAC_SHA256                 MBEDTLS_OID_RSA_COMPANY "\x02\x09" /**< id-hmacWithSHA256 OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) digestAlgorithm(2) 9 } */
+
+#define MBEDTLS_OID_HMAC_SHA384                 MBEDTLS_OID_RSA_COMPANY "\x02\x0A" /**< id-hmacWithSHA384 OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) digestAlgorithm(2) 10 } */
+
+#define MBEDTLS_OID_HMAC_SHA512                 MBEDTLS_OID_RSA_COMPANY "\x02\x0B" /**< id-hmacWithSHA512 OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) digestAlgorithm(2) 11 } */
+
 /*
  * Encryption algorithms
  */
@@ -402,7 +410,7 @@ int mbedtls_oid_get_numeric_string( char *buf, size_t size, const mbedtls_asn1_b
 
 #if defined(MBEDTLS_X509_USE_C) || defined(MBEDTLS_X509_CREATE_C)
 /**
- * \brief          Translate an X.509 extension OID into local values
+ * \brief          Translate supported X.509 extension OID into local values
  *
  * \param oid      OID to use
  * \param ext_type place to store the extension type
@@ -410,6 +418,17 @@ int mbedtls_oid_get_numeric_string( char *buf, size_t size, const mbedtls_asn1_b
  * \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
  */
 int mbedtls_oid_get_x509_ext_type( const mbedtls_asn1_buf *oid, int *ext_type );
+
+/**
+ * \brief              Translate supported and unsupported X.509 extension OID into local values
+ *
+ * \param oid          OID to use
+ * \param ext_type     place to store the extension type
+ * \param is_supported place to store flag if extension is supported (1 - supported, 0 otherwise)
+ *
+ * \return             0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
+ */
+int mbedtls_oid_get_x509_ext_type_supported( const mbedtls_asn1_buf *oid, int *ext_type, int *is_supported );
 #endif
 
 /**
@@ -514,6 +533,16 @@ int mbedtls_oid_get_oid_by_sig_alg( mbedtls_pk_type_t pk_alg, mbedtls_md_type_t 
  * \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
  */
 int mbedtls_oid_get_md_alg( const mbedtls_asn1_buf *oid, mbedtls_md_type_t *md_alg );
+
+/**
+ * \brief          Translate hmac algorithm OID into md_type
+ *
+ * \param oid      OID to use
+ * \param md_hmac  place to store message hmac algorithm
+ *
+ * \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
+ */
+int mbedtls_oid_get_md_hmac( const mbedtls_asn1_buf *oid, mbedtls_md_type_t *md_hmac );
 #endif /* MBEDTLS_MD_C */
 
 /**
