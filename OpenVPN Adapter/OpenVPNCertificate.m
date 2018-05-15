@@ -9,6 +9,7 @@
 
 #include <mbedtls/x509_crt.h>
 #include <mbedtls/pem.h>
+#include <mbedtls/bignum.h>
 
 #import "NSError+OpenVPNError.h"
 
@@ -50,6 +51,10 @@
     }
     
     return certificate;
+}
+
+- (NSData *)serial {
+    return [NSData dataWithBytes:self.crt->serial.p length:self.crt->serial.len];
 }
 
 - (instancetype)init
