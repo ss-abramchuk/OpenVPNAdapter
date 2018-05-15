@@ -76,5 +76,25 @@ class OpenVPNCertificateTests: XCTestCase {
         
         XCTFail("Initialization with empty PEM data should fail")
     }
+    
+    func testReadSerial() {
+        guard
+            let caURL = Bundle.current.url(forResource: "test-ca", withExtension: "crt"),
+            let caOriginalPEMData = try? Data(contentsOf: caURL)
+        else {
+            XCTFail()
+            return
+        }
+        
+        let certificateFromPEM: OpenVPNCertificate
+        do {
+            certificateFromPEM = try OpenVPNCertificate(pem: caOriginalPEMData)
+        } catch {
+            XCTFail(error.localizedDescription)
+            return
+        }
+        
+        XCTAssert(!certificateFromPEM.serial.isEmpty)
+    }
 
 }
