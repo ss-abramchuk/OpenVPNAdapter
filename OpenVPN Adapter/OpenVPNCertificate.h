@@ -15,7 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable OpenVPNCertificate *)certificateWithPEM:(NSData *)pemData error:(NSError **)error;
 + (nullable OpenVPNCertificate *)certificateWithDER:(NSData *)derData error:(NSError **)error;
 
+@property (readonly, nonatomic) NSInteger version;
 @property (readonly, nonatomic) NSData *serial;
+
+@property (readonly, nonatomic) NSData *issuer;
+@property (readonly, nonatomic) NSData *subject;
 
 - (instancetype) init NS_UNAVAILABLE;
 

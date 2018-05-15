@@ -53,8 +53,20 @@
     return certificate;
 }
 
+- (NSInteger)version {
+    return self.crt->version;
+}
+
 - (NSData *)serial {
     return [NSData dataWithBytes:self.crt->serial.p length:self.crt->serial.len];
+}
+
+- (NSData *)issuer {
+    return [NSData dataWithBytes:self.crt->issuer_raw.p length:self.crt->issuer_raw.len];
+}
+
+- (NSData *)subject {
+    return [NSData dataWithBytes:self.crt->subject_raw.p length:self.crt->subject_raw.len];
 }
 
 - (instancetype)init
