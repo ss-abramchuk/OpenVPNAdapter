@@ -35,6 +35,7 @@
 		C915F2231F61B0E700B3DF23 /* keyfile-decrypted.3des in Resources */ = {isa = PBXBuildFile; fileRef = C915F2211F61B0E700B3DF23 /* keyfile-decrypted.3des */; };
 		C915F2251F61B22300B3DF23 /* test-ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = C915F2241F61B22300B3DF23 /* test-ca.crt */; };
 		C915F2261F61B22300B3DF23 /* test-ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = C915F2241F61B22300B3DF23 /* test-ca.crt */; };
+		C9310BBE20FF63A400838910 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9310BBD20FF63A400838910 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9354F451F1E4A4500F4C935 /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B795681F1D219C00CF35FE /* OpenVPNReachabilityStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9354F461F1E4A4600F4C935 /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B795681F1D219C00CF35FE /* OpenVPNReachabilityStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9354F471F1E4AE200F4C935 /* OpenVPNReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9354F431F1E49A500F4C935 /* OpenVPNReachabilityTests.swift */; };
@@ -88,7 +89,6 @@
 		C9657A681EB0D73200EFF210 /* OpenVPNMinTLSVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A661EB0D73200EFF210 /* OpenVPNMinTLSVersion.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9657A6A1EB0D75700EFF210 /* OpenVPNTLSCertProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A691EB0D75700EFF210 /* OpenVPNTLSCertProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9657A6B1EB0D75700EFF210 /* OpenVPNTLSCertProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C9657A691EB0D75700EFF210 /* OpenVPNTLSCertProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C9659C3D2042CE67006FEFA8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9659C3C2042CE66006FEFA8 /* UIKit.framework */; };
 		C98467A21EAA559B00272A9A /* local_vpn_server.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C98467A11EAA559B00272A9A /* local_vpn_server.ovpn */; };
 		C98467A31EAA559B00272A9A /* local_vpn_server.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C98467A11EAA559B00272A9A /* local_vpn_server.ovpn */; };
 		C98467A61EAA5B7700272A9A /* OpenVPNConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = C98467A41EAA5B7700272A9A /* OpenVPNConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -199,6 +199,7 @@
 		C915F21E1F6199E300B3DF23 /* keyfile-encrypted.3des */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "keyfile-encrypted.3des"; sourceTree = "<group>"; };
 		C915F2211F61B0E700B3DF23 /* keyfile-decrypted.3des */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "keyfile-decrypted.3des"; sourceTree = "<group>"; };
 		C915F2241F61B22300B3DF23 /* test-ca.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "test-ca.crt"; sourceTree = "<group>"; };
+		C9310BBD20FF63A400838910 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C9354F431F1E49A500F4C935 /* OpenVPNReachabilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNReachabilityTests.swift; sourceTree = "<group>"; };
 		C93779D31EAE32670030A362 /* OpenVPNCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCredentials.h; sourceTree = "<group>"; };
 		C93779D41EAE32670030A362 /* OpenVPNCredentials.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNCredentials.mm; sourceTree = "<group>"; };
@@ -225,7 +226,6 @@
 		C9657A631EB0D6AD00EFF210 /* OpenVPNCompressionMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNCompressionMode.h; sourceTree = "<group>"; };
 		C9657A661EB0D73200EFF210 /* OpenVPNMinTLSVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNMinTLSVersion.h; sourceTree = "<group>"; };
 		C9657A691EB0D75700EFF210 /* OpenVPNTLSCertProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNTLSCertProfile.h; sourceTree = "<group>"; };
-		C9659C3C2042CE66006FEFA8 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C98467A11EAA559B00272A9A /* local_vpn_server.ovpn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = local_vpn_server.ovpn; sourceTree = "<group>"; };
 		C98467A41EAA5B7700272A9A /* OpenVPNConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNConfiguration.h; sourceTree = "<group>"; };
 		C98467A51EAA5B7700272A9A /* OpenVPNConfiguration.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNConfiguration.mm; sourceTree = "<group>"; };
@@ -270,7 +270,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9659C3D2042CE67006FEFA8 /* UIKit.framework in Frameworks */,
+				C9310BBE20FF63A400838910 /* UIKit.framework in Frameworks */,
 				C912BB251E7C3339002B9414 /* NetworkExtension.framework in Frameworks */,
 				C90BAD311E73FF6C00DEFB32 /* SystemConfiguration.framework in Frameworks */,
 			);
@@ -343,7 +343,7 @@
 		C91031361E472C870004DFFE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C9659C3C2042CE66006FEFA8 /* UIKit.framework */,
+				C9310BBD20FF63A400838910 /* UIKit.framework */,
 				C912BB241E7C3339002B9414 /* NetworkExtension.framework */,
 				C90BAD301E73FF6C00DEFB32 /* SystemConfiguration.framework */,
 			);
