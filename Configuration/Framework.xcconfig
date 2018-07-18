@@ -1,16 +1,16 @@
 PRODUCT_NAME = OpenVPNAdapter
 PRODUCT_BUNDLE_IDENTIFIER = me.ss-abramchuk.openvpn-adapter
 INFOPLIST_FILE = Configuration/Info-Framework.plist
-MODULEMAP_FILE = OpenVPN Adapter/OpenVPNAdapter.modulemap
+MODULEMAP_FILE = Sources/OpenVPNAdapter/OpenVPNAdapter.modulemap
 DYLIB_CURRENT_VERSION = $(CURRENT_PROJECT_VERSION)
 APPLICATION_EXTENSION_API_ONLY = YES
 CLANG_CXX_LANGUAGE_STANDARD = gnu++14
 CLANG_CXX_LIBRARY = libc++
-VENDORS_PATH = $(PROJECT_DIR)/OpenVPN Adapter/Vendors
-HEADER_SEARCH_PATHS = "$(VENDORS_PATH)/asio/asio/include" "$(VENDORS_PATH)/lz4/include" "$(VENDORS_PATH)/mbedtls/include" "$(VENDORS_PATH)/openvpn"
-LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*] = "$(VENDORS_PATH)/lz4/lib/sim" "$(VENDORS_PATH)/mbedtls/lib/sim"
-LIBRARY_SEARCH_PATHS[sdk=iphoneos*] = "$(VENDORS_PATH)/lz4/lib/ios" "$(VENDORS_PATH)/mbedtls/lib/ios"
-LIBRARY_SEARCH_PATHS[sdk=macosx*] = "$(VENDORS_PATH)/lz4/lib/macos" "$(VENDORS_PATH)/mbedtls/lib/macos"
+VENDORS_DIR = $(PROJECT_DIR)/Sources/OpenVPNAdapter/Libraries/Vendors
+HEADER_SEARCH_PATHS = "$(VENDORS_DIR)/asio/asio/include" "$(VENDORS_DIR)/lz4/include" "$(VENDORS_DIR)/mbedtls/include" "$(VENDORS_DIR)/openvpn"
+LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*] = "$(VENDORS_DIR)/lz4/lib/sim" "$(VENDORS_DIR)/mbedtls/lib/sim"
+LIBRARY_SEARCH_PATHS[sdk=iphoneos*] = "$(VENDORS_DIR)/lz4/lib/ios" "$(VENDORS_DIR)/mbedtls/lib/ios"
+LIBRARY_SEARCH_PATHS[sdk=macosx*] = "$(VENDORS_DIR)/lz4/lib/macos" "$(VENDORS_DIR)/mbedtls/lib/macos"
 OTHER_LDFLAGS = -lmbedtls -lmbedx509 -lmbedcrypto -llz4
 OTHER_CPLUSPLUSFLAGS = $(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER
 GCC_WARN_64_TO_32_BIT_CONVERSION = NO
