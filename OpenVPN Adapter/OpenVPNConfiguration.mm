@@ -248,7 +248,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     
     [settings enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string([key UTF8String]), std::string([obj UTF8String]));
-        _config.contentList.push_back(param);
+        self->_config.contentList.push_back(param);
     }];
 }
 
@@ -424,7 +424,7 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     
     [peerInfo enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         ClientAPI::KeyValue param = ClientAPI::KeyValue(std::string([key UTF8String]), std::string([obj UTF8String]));
-        _config.peerInfo.push_back(param);
+        self->_config.peerInfo.push_back(param);
     }];
 }
 
