@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C9D2ABD81EA20F99007EDF9D"
+               BlueprintIdentifier = "C9BB475B1E71663A00F3F98C"
                BuildableName = "OpenVPNAdapter.framework"
-               BlueprintName = "OpenVPN Adapter macOS"
-               ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
+               BlueprintName = "OpenVPNAdapter iOS"
+               ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,20 +33,20 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C9D2ABF21EA212A3007EDF9D"
+               BlueprintIdentifier = "C9BB478D1E71821A00F3F98C"
                BuildableName = "OpenVPNAdapterTests.xctest"
-               BlueprintName = "OpenVPN Adapter macOS Tests"
-               ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
+               BlueprintName = "OpenVPNAdapter iOS Tests"
+               ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9D2ABD81EA20F99007EDF9D"
+            BlueprintIdentifier = "C9BB475B1E71663A00F3F98C"
             BuildableName = "OpenVPNAdapter.framework"
-            BlueprintName = "OpenVPN Adapter macOS"
-            ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
+            BlueprintName = "OpenVPNAdapter iOS"
+            ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -65,10 +65,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9D2ABD81EA20F99007EDF9D"
+            BlueprintIdentifier = "C9BB475B1E71663A00F3F98C"
             BuildableName = "OpenVPNAdapter.framework"
-            BlueprintName = "OpenVPN Adapter macOS"
-            ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
+            BlueprintName = "OpenVPNAdapter iOS"
+            ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -83,10 +83,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9D2ABD81EA20F99007EDF9D"
+            BlueprintIdentifier = "C9BB475B1E71663A00F3F98C"
             BuildableName = "OpenVPNAdapter.framework"
-            BlueprintName = "OpenVPN Adapter macOS"
-            ReferencedContainer = "container:OpenVPN Adapter.xcodeproj">
+            BlueprintName = "OpenVPNAdapter iOS"
+            ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
