@@ -865,8 +865,6 @@ public:
       asio::error_code ec;
       const protocol_type protocol = peer_endpoint.protocol();
       this->get_service().open(this->get_implementation(), protocol, ec);
-      if (!ec)
-	async_connect_post_open(protocol, ec);
       if (ec)
       {
         async_completion<ConnectHandler,
@@ -1743,11 +1741,6 @@ protected:
   }
 
 private:
-  // optional user code hook immediately after socket open in async_connect
-  virtual void async_connect_post_open(const protocol_type& protocol, asio::error_code& ec)
-  {
-  }
-
   // Disallow copying and assignment.
   basic_socket(const basic_socket&) ASIO_DELETED;
   basic_socket& operator=(const basic_socket&) ASIO_DELETED;

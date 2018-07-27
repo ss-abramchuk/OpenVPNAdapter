@@ -649,6 +649,23 @@ namespace openvpn {
 	    else
 	      cli_events->add_event(std::move(ev));
 	  }
+	else if (info && string::starts_with(msg, "INFO_PRE,"))
+	  {
+	    // INFO_PRE is like INFO but it is never buffered
+	    ClientEvent::Base::Ptr ev = new ClientEvent::Info(msg.substr(9));
+	    cli_events->add_event(std::move(ev));
+	  }
+	else if (msg == "AUTH_PENDING")
+	  {
+	    // AUTH_PENDING indicates an out-of-band authentication step must
+	    // be performed before the server will send the PUSH_REPLY message.
+	    if (!auth_pending)
+	      {
+		auth_pending = true;
+		ClientEvent::Base::Ptr ev = new ClientEvent::AuthPending();
+		cli_events->add_event(std::move(ev));
+	      }
+	  }
 	else if (msg == "RELAY")
 	  {
 	    if (Base::conf().relay_mode)
@@ -761,9 +778,22 @@ namespace openvpn {
 	      set_housekeeping_timer();
 
 	      {
-		const Time::Duration newdur = std::min(dur + Time::Duration::seconds(1),
-						             Time::Duration::seconds(3));
-		schedule_push_request_callback(newdur);
+		if (auth_pending)
+		  {
+		    // With auth_pending, we can dial back the PUSH_REQUEST
+		    // frequency, but we still need back-and-forth network
+		    // activity to avoid an inactivity timeout, since the crypto
+		    // layer (and hence keepalive ping) is not initialized until
+		    // we receive the PUSH_REPLY from the server.
+		    schedule_push_request_callback(Time::Duration::seconds(8));
+		  }
+		else
+		  {
+		    // step function with ceiling: 1 sec, 2 secs, 3 secs, 3, 3, ...
+		    const Time::Duration newdur = std::min(dur + Time::Duration::seconds(1),
+							   Time::Duration::seconds(3));
+		    schedule_push_request_callback(newdur);
+		  }
 	      }
 	    }
 	}
@@ -780,6 +810,7 @@ namespace openvpn {
 	    push_request_timer.expires_after(dur);
 	    push_request_timer.async_wait([self=Ptr(this), dur](const openvpn_io::error_code& error)
                                           {
+                                            OPENVPN_ASYNC_HANDLER;
                                             self->send_push_request_callback(dur, error);
                                           });
 	  }
@@ -855,6 +886,7 @@ namespace openvpn {
 		housekeeping_timer.expires_at(next);
 		housekeeping_timer.async_wait([self=Ptr(this)](const openvpn_io::error_code& error)
                                               {
+                                                OPENVPN_ASYNC_HANDLER;
                                                 self->housekeeping_callback(error);
                                               });
 	      }
@@ -888,6 +920,7 @@ namespace openvpn {
 	inactive_timer.expires_after(inactive_duration);
 	inactive_timer.async_wait([self=Ptr(this)](const openvpn_io::error_code& error)
                                   {
+                                    OPENVPN_ASYNC_HANDLER;
                                     self->inactive_callback(error);
                                   });
       }
@@ -978,6 +1011,7 @@ namespace openvpn {
 	info_hold_timer.expires_after(Time::Duration::seconds(1));
 	info_hold_timer.async_wait([self=Ptr(this)](const openvpn_io::error_code& error)
                                   {
+                                    OPENVPN_ASYNC_HANDLER;
                                     self->info_hold_callback(error);
                                   });
       }
@@ -1042,6 +1076,7 @@ namespace openvpn {
 
       bool first_packet_received_ = false;
       bool sent_push_request = false;
+      bool auth_pending = false;
 
       SessionStats::Ptr cli_stats;
       ClientEvent::Queue::Ptr cli_events;

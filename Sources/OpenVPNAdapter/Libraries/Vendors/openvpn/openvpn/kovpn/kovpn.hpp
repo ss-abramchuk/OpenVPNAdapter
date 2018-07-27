@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2018 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -19,40 +19,18 @@
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
-// Define the ICMP header
+// OpenVPN 3 wrapper for kovpn
 
-#ifndef OPENVPN_IP_ICMP_H
-#define OPENVPN_IP_ICMP_H
+#ifndef OPENVPN_KOVPN_KOVPN_HPP
+#define OPENVPN_KOVPN_KOVPN_HPP
 
-#include <cstdint> // for std::uint32_t, uint16_t, uint8_t
+#include <sys/socket.h>
+#include <linux/if.h>
+#include <linux/in.h>
+#include <linux/in6.h>
 
-#include <openvpn/ip/ip.hpp>
-
-#pragma pack(push)
-#pragma pack(1)
-
-namespace openvpn {
-  struct ICMP {
-    enum {
-      ECHO_REPLY = 0,
-      ECHO_REQUEST = 8,
-    };
-
-    struct IPHeader head;
-
-    std::uint8_t type;
-    std::uint8_t code;
-    std::uint16_t checksum;
-
-    union {
-      struct {
-	std::uint16_t id;
-	std::uint16_t seq_num;
-      } echo;
-    } hd;
-  };
+extern "C" {
+#include <kovpn/kovpn.h>
 }
-
-#pragma pack(pop)
 
 #endif

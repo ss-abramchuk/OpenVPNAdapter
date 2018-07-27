@@ -132,7 +132,7 @@ namespace openvpn {
 
       virtual void load_crl(const std::string& crl_txt)
       {
-	throw ssl_options_error("CRL not implemented yet in OpenSSL driver"); // fixme
+	ca.parse_pem(crl_txt, "crl");
       }
 
       virtual void load_cert(const std::string& cert_txt)
@@ -159,42 +159,49 @@ namespace openvpn {
 
       virtual std::string extract_ca() const
       {
-	throw ssl_options_error("extract_ca not implemented yet in OpenSSL driver"); // fixme
+	return ca.certs.render_pem();
       }
 
       virtual std::string extract_crl() const
       {
-	throw ssl_options_error("CRL not implemented yet in OpenSSL driver"); // fixme
+	return ca.crls.render_pem();
       }
 
       virtual std::string extract_cert() const
       {
-	throw ssl_options_error("extract_cert not implemented yet in OpenSSL driver"); // fixme
+	return cert.render_pem();
       }
 
       virtual std::vector<std::string> extract_extra_certs() const
       {
-	throw ssl_options_error("extract_extra_certs not implemented yet in OpenSSL driver"); // fixme
+	std::vector<std::string> ret;
+
+	for (auto const& cert : extra_certs)
+	  ret.push_back(cert->render_pem());
+
+	return ret;
       }
 
       virtual std::string extract_private_key() const
       {
-	throw ssl_options_error("extract_priv_key not implemented yet in OpenSSL driver"); // fixme
+	return pkey.render_pem();
       }
 
       virtual std::string extract_dh() const
       {
-	throw ssl_options_error("extract_dh not implemented yet in OpenSSL driver"); // fixme
+	return dh.render_pem();
       }
 
       virtual PKType private_key_type() const
       {
-	throw ssl_options_error("private_key_type not implemented yet in OpenSSL driver"); // fixme
+	if (!pkey.defined())
+	  return PK_NONE;
+	return pkey.key_type();
       }
 
       virtual size_t private_key_length() const
       {
-	throw ssl_options_error("private_key_length not implemented yet in OpenSSL driver"); // fixme
+	return pkey.key_length();
       }
 
       virtual void set_frame(const Frame::Ptr& frame_arg)
@@ -300,7 +307,8 @@ namespace openvpn {
 
       virtual std::string validate_crl(const std::string& crl_txt) const
       {
-	throw ssl_options_error("CRL not implemented yet in OpenSSL driver"); // fixme
+	OpenSSLPKI::CRL crl(crl_txt);
+	return crl.render_pem();
       }
 
       virtual void load(const OptionList& opt, const unsigned int lflags)
@@ -320,6 +328,13 @@ namespace openvpn {
 	  if (lflags & LF_RELAY_MODE)
 	    ca_txt += opt.cat("relay-extra-ca");
 	  load_ca(ca_txt, true);
+	}
+
+	// CRL
+	{
+	  const std::string crl_txt = opt.cat("crl-verify");
+	  if (!crl_txt.empty())
+	    load_crl(crl_txt);
 	}
 
 	// local cert/key
@@ -387,7 +402,7 @@ namespace openvpn {
 
     private:
       Mode mode;
-      CertCRLList ca;                   // from OpenVPN "ca" option
+      CertCRLList ca;                   // from OpenVPN "ca" and "crl-verify" option
       OpenSSLPKI::X509 cert;            // from OpenVPN "cert" option
       OpenSSLPKI::X509List extra_certs; // from OpenVPN "extra-certs" option
       OpenSSLPKI::PKey pkey;            // private key
@@ -926,10 +941,41 @@ namespace openvpn {
 #endif
 	    }
 
-	  // tls-cert-profile is not implemented yet in OpenSSL (fixme),
-	  // so throw exception if the setting is anything other than LEGACY.
+	  /* HAVE_SSL_CTX_SET_SECURITY_LEVEL exists from OpenSSL-1.1.0 up */
+#ifdef HAVE_SSL_CTX_SET_SECURITY_LEVEL
+	  switch(TLSCertProfile::default_if_undef(config->tls_cert_profile))
+	  {
+	  case TLSCertProfile::UNDEF:
+	    OPENVPN_THROW(ssl_context_error,
+			  "OpenSSLContext: undefined tls-cert-profile");
+	    break;
+#ifdef OPENVPN_USE_TLS_MD5
+	  case TLSCertProfile::INSECURE:
+	    SSL_CTX_set_security_level(ctx, 0);
+	    break;
+#endif
+	  case TLSCertProfile::LEGACY:
+	    SSL_CTX_set_security_level(ctx, 1);
+	    break;
+	  case TLSCertProfile::PREFERRED:
+	    SSL_CTX_set_security_level(ctx, 2);
+	    break;
+	  case TLSCertProfile::SUITEB:
+	    SSL_CTX_set_security_level(ctx, 3);
+	    break;
+	  default:
+	    OPENVPN_THROW(ssl_context_error,
+			  "OpenSSLContext: unexpected tls-cert-profile value");
+	    break;
+	  }
+#else
+	  // when OpenSSL does not CertProfile support we force the user to set 'legacy'
 	  if (TLSCertProfile::default_if_undef(config->tls_cert_profile) != TLSCertProfile::LEGACY)
-	    OPENVPN_THROW(ssl_context_error, "OpenSSLContext: tls-cert-profile not implemented yet");
+	  {
+	    OPENVPN_THROW(ssl_context_error,
+			  "OpenSSLContext: tls-cert-profile not supported by this OpenSSL build. Use 'legacy' instead");
+	  }
+#endif
 
 	  if (config->local_cert_enabled)
 	    {

@@ -18,7 +18,6 @@
 #include "asio/detail/config.hpp"
 #include <cstddef>
 #include <cstring>
-#include <algorithm>
 #include "asio/detail/socket_ops.hpp"
 #include "asio/detail/socket_types.hpp"
 #include "asio/ip/basic_resolver_iterator.hpp"
@@ -298,12 +297,6 @@ public:
       const basic_resolver_results& b)
   {
     return !a.equal(b);
-  }
-
-  template <typename Random>
-  void randomize(Random& r)
-  {
-    std::shuffle(this->values_->begin(), this->values_->end(), r);
   }
 
 private:

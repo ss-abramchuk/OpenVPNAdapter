@@ -30,6 +30,7 @@
 
 #include <openvpn/io/io.hpp>
 
+#include <openvpn/common/bigmutex.hpp>
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/rc.hpp>
 #include <openvpn/common/socktypes.hpp>
@@ -72,16 +73,6 @@ namespace openvpn {
 	: Base(read_handler_arg, socket_arg, send_queue_max_size_arg,
 	       free_list_max_size_arg, frame_context_arg, stats_arg)
       { }
-
-      // Called by LinkCommon and TCPTransport Client class
-      unsigned int send_queue_size() const
-      {
-	return Base::queue.size()
-#ifdef OPENVPN_GREMLIN
-	  + (gremlin ? gremlin->send_size() : 0)
-#endif
-	  ;
-      }
 
     private:
       // Called by LinkCommon

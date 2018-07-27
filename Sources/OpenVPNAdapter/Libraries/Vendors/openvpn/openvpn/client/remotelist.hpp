@@ -341,6 +341,7 @@ namespace openvpn {
 		    resolver.async_resolve(item.server_host, item.server_port,
 					   [self=Ptr(this)](const openvpn_io::error_code& error, openvpn_io::ip::tcp::resolver::results_type results)
 					   {
+					     OPENVPN_ASYNC_HANDLER;
 					     self->resolve_callback(error, results);
 					   });
 		    return;
@@ -587,18 +588,19 @@ namespace openvpn {
     {
       if (remote_override)
 	{
-	  list.clear();
-	  index.reset();
 	  Item::Ptr item = remote_override->get();
 	  if (item)
-	    list.push_back(std::move(item));
+	    {
+	      list.clear();
+	      index.reset();
+	      list.push_back(std::move(item));
+	      return;
+	    }
 	}
-      else
-	{
-	  index.increment(list.size(), secondary_length(index.primary()));
-	  if (!enable_cache)
-	    reset_item(index.primary());
-	}
+
+      index.increment(list.size(), secondary_length(index.primary()));
+      if (!enable_cache)
+	reset_item(index.primary());
     }
 
     // Return details about current connection entry.

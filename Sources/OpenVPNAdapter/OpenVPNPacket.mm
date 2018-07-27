@@ -9,7 +9,7 @@
 
 #include <arpa/inet.h>
 
-#include <openvpn/ip/ip.hpp>
+#include <openvpn/ip/ipcommon.hpp>
 
 @interface OpenVPNPacket () {
     NSData *_data;
@@ -39,7 +39,7 @@
         
         uint32_t protocol = PF_UNSPEC;
         
-        uint32_t version = openvpn::IPHeader::version(header);
+        uint32_t version = openvpn::IPCommon::version(header);
         switch (version) {
             case 4:
                 protocol = PF_INET;
