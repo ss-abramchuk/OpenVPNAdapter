@@ -24,6 +24,9 @@
 // The crux of the API is defined in OpenVPNClient (below)
 // and TunBuilderBase.
 
+#ifndef OVPNCLI_HPP
+#define OVPNCLI_HPP
+
 #include <string>
 #include <vector>
 #include <utility>
@@ -605,3 +608,6 @@ namespace openvpn {
 
   }
 }
+
+#endif
+
