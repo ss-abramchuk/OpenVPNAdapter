@@ -88,6 +88,7 @@
 #endif
 
 #include <openvpn/init/initprocess.hpp>
+#include <openvpn/common/bigmutex.hpp>
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/platform_string.hpp>
 #include <openvpn/common/count.hpp>
@@ -321,20 +322,28 @@ namespace openvpn {
 	  {
 	    const std::string title = "remote-override";
 	    ClientAPI::RemoteOverride ro;
-	    parent->remote_override(ro);
-	    if (!ro.error.empty())
-	      throw Exception("remote override exception: " + ro.error);
+	    try {
+	      parent->remote_override(ro);
+	    }
+	    catch (const std::exception& e)
+	      {
+		ro.error = e.what();
+	      }
 	    RemoteList::Item::Ptr ri(new RemoteList::Item);
-	    if (!ro.ip.empty())
-	      ri->set_ip_addr(IP::Addr(ro.ip, title));
-	    if (ro.host.empty())
-	      ro.host = ro.ip;
-	    HostPort::validate_host(ro.host, title);
-	    HostPort::validate_port(ro.port, title);
-	    ri->server_host = std::move(ro.host);
-	    ri->server_port = std::move(ro.port);
-	    ri->transport_protocol = Protocol::parse(ro.proto, Protocol::CLIENT_SUFFIX, title.c_str());
-
+	    if (ro.error.empty())
+	      {
+		if (!ro.ip.empty())
+		  ri->set_ip_addr(IP::Addr(ro.ip, title));
+		if (ro.host.empty())
+		  ro.host = ro.ip;
+		HostPort::validate_host(ro.host, title);
+		HostPort::validate_port(ro.port, title);
+		ri->server_host = std::move(ro.host);
+		ri->server_port = std::move(ro.port);
+		ri->transport_protocol = Protocol::parse(ro.proto, Protocol::CLIENT_SUFFIX, title.c_str());
+	      }
+	    else
+	      throw Exception("remote override exception: " + ro.error);
 	    return ri;
 	  }
 	else
@@ -542,10 +551,12 @@ namespace openvpn {
 	void setup_async_stop_scopes()
 	{
 	  stop_scope_local.reset(new AsioStopScope(*io_context(), async_stop_local(), [this]() {
+	      OPENVPN_ASYNC_HANDLER;
 	      session->graceful_stop();
 	    }));
 
 	  stop_scope_global.reset(new AsioStopScope(*io_context(), async_stop_global(), [this]() {
+	      OPENVPN_ASYNC_HANDLER;
 	      trigger_async_stop_local();
 	    }));
 	}

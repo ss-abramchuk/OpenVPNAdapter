@@ -559,7 +559,18 @@ namespace openvpn {
 	      new_comp = o->get(1, 128);
 	      CompressContext::Type meth = CompressContext::parse_method(new_comp);
 	      if (meth != CompressContext::NONE)
-		comp_ctx = CompressContext(pco.is_comp() ? meth : CompressContext::stub(meth), pco.is_comp_asym());
+		{
+		  // if compression is not availabe, CompressContext ctor throws an exception
+		  if (pco.is_comp())
+		    comp_ctx = CompressContext(meth, pco.is_comp_asym());
+		  else
+		    {
+		      // server pushes compression but client has compression disabled
+		      // degrade to asymmetric compression (downlink only)
+		      comp_ctx = CompressContext(meth, true);
+		      OPENVPN_LOG("Server has pushed compressor " << comp_ctx.str() << ", but client has disabled compression, switching to asymmetric");
+		    }
+		}
 	    }
 	  else
 	    {
@@ -3177,7 +3188,7 @@ namespace openvpn {
     // configuration
     const Config& conf() const { return *config; }
     Config& conf() { return *config; }
-    const Config::Ptr& conf_ptr() const { return config; }
+    Config::Ptr conf_ptr() const { return config; }
 
     // stats
     SessionStats& stat() const { return *stats; }

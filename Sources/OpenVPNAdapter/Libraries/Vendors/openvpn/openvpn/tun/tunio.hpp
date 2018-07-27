@@ -26,10 +26,11 @@
 
 #include <openvpn/io/io.hpp>
 
+#include <openvpn/common/bigmutex.hpp>
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/rc.hpp>
 #include <openvpn/frame/frame.hpp>
-#include <openvpn/ip/ip.hpp>
+#include <openvpn/ip/ipcommon.hpp>
 #include <openvpn/common/socktypes.hpp>
 #include <openvpn/log/sessionstats.hpp>
 #include <openvpn/tun/tunlog.hpp>
@@ -73,7 +74,7 @@ namespace openvpn {
 	      {
 		if (buf.offset() >= 4 && buf.size() >= 1)
 		  {
-		    switch (IPHeader::version(buf[0]))
+		    switch (IPCommon::version(buf[0]))
 		      {
 		      case 4:
 			prepend_pf_inet(buf, PF_INET);
@@ -208,6 +209,7 @@ namespace openvpn {
       stream->async_read_some(frame_context.mutable_buffer(tunfrom->buf),
 			      [self=Ptr(this), tunfrom=typename PacketFrom::SPtr(tunfrom)](const openvpn_io::error_code& error, const size_t bytes_recvd) mutable
                               {
+                                OPENVPN_ASYNC_HANDLER;
                                 self->handle_read(std::move(tunfrom), error, bytes_recvd);
                               });
     }
