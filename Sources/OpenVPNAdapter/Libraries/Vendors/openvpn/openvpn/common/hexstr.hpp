@@ -343,7 +343,7 @@ namespace openvpn {
 	dest.push_back((high<<4) + low);
       }
     if (i != len)
-      throw parse_hex_error(); // straggler char      
+      throw parse_hex_error(); // straggler char
   }
 
 
@@ -438,7 +438,7 @@ namespace openvpn {
    *          exception on parsing errors.
    */
   template <typename T>
-  std::string render_hex_number(T value, const bool caps=false)
+  inline std::string render_hex_number(T value, const bool caps=false)
   {
     unsigned char buf[sizeof(T)];
     for (size_t i = sizeof(T); i --> 0 ;)
@@ -461,7 +461,7 @@ namespace openvpn {
    *          of the input value.  The result will always contain only
    *          two characters.
    */
-  std::string render_hex_number(unsigned char uc, const bool caps=false)
+  inline std::string render_hex_number(unsigned char uc, const bool caps=false)
   {
     RenderHexByte b(uc, caps);
     return std::string(b.str2(), 2);
