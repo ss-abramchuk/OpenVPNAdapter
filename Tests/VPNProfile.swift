@@ -9,10 +9,10 @@
 import Foundation
 
 struct VPNProfile {
-    static let username = "<%= OPENVPN_USERNAME %>"
-    static let password = "<%= OPENVPN_PASSWORD %>"
+    static let username = "OPENVPN_USERNAME"
+    static let password = "OPENVPN_PASSWORD"
     
     static let configuration = """
-    <%= OPENVPN_CONFIGURATION %>
+    OPENVPN_CONFIGURATION
     """
 }
