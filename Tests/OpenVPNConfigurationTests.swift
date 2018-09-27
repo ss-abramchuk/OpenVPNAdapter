@@ -24,7 +24,7 @@ class OpenVPNConfigurationTests: XCTestCase {
     }
     
     func testGetSetProfile() {
-        let originalProfile = ProfileLoader.getVPNProfile(type: .localVPNServer)
+        guard let originalProfile = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
         
         let configuration = OpenVPNConfiguration()
         
