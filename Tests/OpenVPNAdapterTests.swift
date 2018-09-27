@@ -75,12 +75,26 @@ class OpenVPNAdapterTests: XCTestCase {
 
         let configuration = OpenVPNConfiguration()
         configuration.fileContent = vpnConfiguration
-
+        
+        let result: OpenVPNProperties
         do {
-            _ = try adapter.apply(configuration: configuration)
+            result = try adapter.apply(configuration: configuration)
         } catch {
             XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
             return
+        }
+        
+        if !result.autologin {
+            let credentials = OpenVPNCredentials()
+            credentials.username = VPNProfile.username
+            credentials.password = VPNProfile.password
+            
+            do {
+                try adapter.provide(credentials: credentials)
+            } catch {
+                XCTFail("Failed to provide credentials. \(error)")
+                return
+            }
         }
 
         expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
