@@ -9,10 +9,11 @@
 import Foundation
 
 struct VPNProfile {
-    static let username = "OPENVPN_USERNAME"
-    static let password = "OPENVPN_PASSWORD"
+    static let username: String = <#OPENVPN_USERNAME#>
+    static let password: String = <#OPENVPN_PASSWORD#>
     
-    static let configuration = """
-    OPENVPN_CONFIGURATION
-    """
+    static let configuration: String = <#OPENVPN_CONFIGURATION#>
+    
+    static let remoteHost: String = <#OPENVPN_REMOTE_HOST#>
+    static let remotePort: Int = <#OPENVPN_REMOTE_PORT#>
 }
