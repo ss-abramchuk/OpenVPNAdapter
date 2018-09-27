@@ -16,6 +16,7 @@ DerivedData
 *.perspectivev3
 !default.perspectivev3
 xcuserdata/
+Scripts/environment.rb
 
 ## Other
 *.xccheckout
@@ -47,4 +48,3 @@ playground.xcworkspace
 # Carthage/Checkouts
 
 Carthage/Build
-
