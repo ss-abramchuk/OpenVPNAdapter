@@ -35,6 +35,8 @@
 		C915F2231F61B0E700B3DF23 /* keyfile-decrypted.3des in Resources */ = {isa = PBXBuildFile; fileRef = C915F2211F61B0E700B3DF23 /* keyfile-decrypted.3des */; };
 		C915F2251F61B22300B3DF23 /* test-ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = C915F2241F61B22300B3DF23 /* test-ca.crt */; };
 		C915F2261F61B22300B3DF23 /* test-ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = C915F2241F61B22300B3DF23 /* test-ca.crt */; };
+		C924E19E215CEBFC00AEDEB5 /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C924E19D215CEBFC00AEDEB5 /* VPNProfile.swift */; };
+		C924E19F215CEBFC00AEDEB5 /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C924E19D215CEBFC00AEDEB5 /* VPNProfile.swift */; };
 		C9310BBE20FF63A400838910 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9310BBD20FF63A400838910 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9310BC120FF6E9700838910 /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C9310BC020FF6E9700838910 /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9310BC220FF6E9700838910 /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C9310BC020FF6E9700838910 /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -193,6 +195,8 @@
 		C915F21E1F6199E300B3DF23 /* keyfile-encrypted.3des */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "keyfile-encrypted.3des"; sourceTree = "<group>"; };
 		C915F2211F61B0E700B3DF23 /* keyfile-decrypted.3des */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "keyfile-decrypted.3des"; sourceTree = "<group>"; };
 		C915F2241F61B22300B3DF23 /* test-ca.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "test-ca.crt"; sourceTree = "<group>"; };
+		C924E19C215CE9BC00AEDEB5 /* vpn_profile_template.erb */ = {isa = PBXFileReference; lastKnownFileType = text; path = vpn_profile_template.erb; sourceTree = "<group>"; };
+		C924E19D215CEBFC00AEDEB5 /* VPNProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNProfile.swift; sourceTree = "<group>"; };
 		C9310BBD20FF63A400838910 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C9310BC020FF6E9700838910 /* Umbrella-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Umbrella-Header.h"; path = "OpenVPNAdapter/Umbrella-Header.h"; sourceTree = "<group>"; };
 		C9354F431F1E49A500F4C935 /* OpenVPNReachabilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNReachabilityTests.swift; sourceTree = "<group>"; };
@@ -398,6 +402,7 @@
 		C924E19B215CE76600AEDEB5 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				C924E19C215CE9BC00AEDEB5 /* vpn_profile_template.erb */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -541,6 +546,7 @@
 			isa = PBXGroup;
 			children = (
 				C9C1E4131FA475B7006ECA7D /* CustomFlow.swift */,
+				C924E19D215CEBFC00AEDEB5 /* VPNProfile.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -897,6 +903,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9C1E4141FA475B7006ECA7D /* CustomFlow.swift in Sources */,
+				C924E19E215CEBFC00AEDEB5 /* VPNProfile.swift in Sources */,
 				C94605E91EAA656B00971516 /* OpenVPNConfigurationTests.swift in Sources */,
 				C9BB47911E71821A00F3F98C /* OpenVPNAdapterTests.swift in Sources */,
 				C915F1F91F615BB400B3DF23 /* OpenVPNPrivateKeyTests.swift in Sources */,
@@ -936,6 +943,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C924E19F215CEBFC00AEDEB5 /* VPNProfile.swift in Sources */,
 				C94605EA1EAA65F200971516 /* OpenVPNConfigurationTests.swift in Sources */,
 				C9D2ABF61EA212A3007EDF9D /* OpenVPNAdapterTests.swift in Sources */,
 				C9CA4DE21F603A5300C4F184 /* OpenVPNCertificateTests.swift in Sources */,
