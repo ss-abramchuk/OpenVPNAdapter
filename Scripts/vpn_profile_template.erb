@@ -13,6 +13,8 @@ struct VPNProfile {
     static let password = "<%= OPENVPN_PASSWORD %>"
 
     static let configuration = """
-    <%= OPENVPN_CONFIGURATION %>
+<% OPENVPN_CONFIGURATION.each_line do |line| %>
+    <%= line %>
+<% end %>
     """
 }
