@@ -54,3 +54,11 @@ if ENV["OPENVPN_CONFIGURATION"].nil?
     </tls-auth>
   END
 end
+
+if ENV["OPENVPN_REMOTE_HOST"].nil?
+  ENV["OPENVPN_REMOTE_HOST"] = "Remote Host Address"
+end
+
+if ENV["OPENVPN_REMOTE_PORT"].nil?
+  ENV["OPENVPN_REMOTE_PORT"] = "Remote Host Port"
+end
