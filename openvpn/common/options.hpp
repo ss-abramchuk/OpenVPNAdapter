@@ -57,7 +57,6 @@
 #include <cstdint>     // for std::uint64_t
 
 #include <openvpn/common/rc.hpp>
-#include <openvpn/common/exception.hpp>
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/number.hpp>
 #include <openvpn/common/hexstr.hpp>
@@ -65,10 +64,9 @@
 #include <openvpn/common/split.hpp>
 #include <openvpn/common/splitlines.hpp>
 #include <openvpn/common/unicode.hpp>
+#include <openvpn/common/option_error.hpp>
 
 namespace openvpn {
-
-  OPENVPN_EXCEPTION(option_error);
 
   class Option
   {
@@ -1171,6 +1169,16 @@ namespace openvpn {
 	{
 	  return "";
 	}
+    }
+
+    // Return raw C string to option data or nullptr if option doesn't exist.
+    const char *get_c_str(const std::string& name, size_t index, const size_t max_len) const
+    {
+      const Option* o = get_ptr(name);
+      if (o)
+	return o->get(index, max_len).c_str();
+      else
+	return nullptr;
     }
 
     // Convenience method that gets a particular argument index within an option,

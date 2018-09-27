@@ -223,7 +223,7 @@ namespace openvpn {
     }
 
     // return the first line (without newline) of a multi-line string
-    std::string first_line(const std::string& str)
+    inline std::string first_line(const std::string& str)
     {
       const size_t pos = str.find_first_of('\n');
       if (pos != std::string::npos)
@@ -308,6 +308,19 @@ namespace openvpn {
 	if (is_space(*i))
 	  return true;
       return false;
+    }
+
+    // remove all spaces in string
+    inline std::string remove_spaces(const std::string& str)
+    {
+      std::string ret;
+      for (std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+	{
+	  char c = *i;
+	  if (!is_space(c))
+	    ret += c;
+	}
+      return ret;
     }
 
     // replace all spaces in string with rep
