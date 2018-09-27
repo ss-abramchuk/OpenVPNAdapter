@@ -37,8 +37,6 @@
 		C915F2261F61B22300B3DF23 /* test-ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = C915F2241F61B22300B3DF23 /* test-ca.crt */; };
 		C924E19E215CEBFC00AEDEB5 /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C924E19D215CEBFC00AEDEB5 /* VPNProfile.swift */; };
 		C924E19F215CEBFC00AEDEB5 /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C924E19D215CEBFC00AEDEB5 /* VPNProfile.swift */; };
-		C924E1A2215CF37300AEDEB5 /* environment.rb.example in Resources */ = {isa = PBXBuildFile; fileRef = C924E1A1215CF37300AEDEB5 /* environment.rb.example */; };
-		C924E1A3215CF37300AEDEB5 /* environment.rb.example in Resources */ = {isa = PBXBuildFile; fileRef = C924E1A1215CF37300AEDEB5 /* environment.rb.example */; };
 		C9310BBE20FF63A400838910 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9310BBD20FF63A400838910 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9310BC120FF6E9700838910 /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C9310BC020FF6E9700838910 /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9310BC220FF6E9700838910 /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C9310BC020FF6E9700838910 /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -825,7 +823,6 @@
 				C915F2221F61B0E700B3DF23 /* keyfile-decrypted.3des in Resources */,
 				C915F2251F61B22300B3DF23 /* test-ca.crt in Resources */,
 				C915F21F1F6199E300B3DF23 /* keyfile-encrypted.3des in Resources */,
-				C924E1A2215CF37300AEDEB5 /* environment.rb.example in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -843,7 +840,6 @@
 				C915F2231F61B0E700B3DF23 /* keyfile-decrypted.3des in Resources */,
 				C915F2261F61B22300B3DF23 /* test-ca.crt in Resources */,
 				C915F2201F6199E300B3DF23 /* keyfile-encrypted.3des in Resources */,
-				C924E1A3215CF37300AEDEB5 /* environment.rb.example in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
