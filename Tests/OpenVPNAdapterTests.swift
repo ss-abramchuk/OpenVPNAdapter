@@ -30,12 +30,14 @@ class OpenVPNAdapterTests: XCTestCase {
     }
     
     func testApplyConfiguration() {
+        guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
+        
         let adapter = OpenVPNAdapter()
-        
+
         let configuration = OpenVPNConfiguration()
-        configuration.fileContent = ProfileLoader.getVPNProfile(type: .localVPNServer)
+        configuration.fileContent = vpnConfiguration
         configuration.settings = ["auth-user-pass": ""]
-        
+
         let result: OpenVPNProperties
         do {
             result = try adapter.apply(configuration: configuration)
@@ -43,10 +45,9 @@ class OpenVPNAdapterTests: XCTestCase {
             XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
             return
         }
-        
-        XCTAssert(result.remoteHost == "192.168.1.200")
-        XCTAssert(result.remotePort == 1194)
-        XCTAssert(result.remoteProto == .UDP)
+
+        XCTAssert(result.remoteHost == VPNProfile.remoteHost)
+        XCTAssert(result.remotePort == VPNProfile.remotePort)
         XCTAssert(result.autologin == false)
     }
     
@@ -65,67 +66,28 @@ class OpenVPNAdapterTests: XCTestCase {
         }
     }
     
-    // Test connection with local VPN server
-    func testLocalConection() {
-        let adapter = OpenVPNAdapter()
-        
-        let configuration = OpenVPNConfiguration()
-        configuration.fileContent = ProfileLoader.getVPNProfile(type: .localVPNServer)
-        configuration.settings = ["auth-user-pass": ""]
-        
-        let result: OpenVPNProperties
-        do {
-            result = try adapter.apply(configuration: configuration)
-        } catch {
-            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
-            return
-        }
-        
-        guard !result.autologin else {
-            XCTFail()
-            return
-        }
-        
-        let credentials = OpenVPNCredentials()
-        credentials.username = "testuser"
-        credentials.password = "nonsecure"
-        
-        do {
-            try adapter.provide(credentials: credentials)
-        } catch {
-            XCTFail("Failed to provide credentials. \(error)")
-            return
-        }
-        
-        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
-        
-        adapter.delegate = self
-        adapter.connect()
-        
-        waitForExpectations(timeout: 30.0) { (error) in
-            adapter.disconnect()
-        }
-    }
     
-    // Test connection with remote VPN server
-    func testRemoteConnection() {
+    // Test connection to the VPN server
+    func testConnection() {
+        guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
+        
         let adapter = OpenVPNAdapter()
-        
+
         let configuration = OpenVPNConfiguration()
-        configuration.fileContent = ProfileLoader.getVPNProfile(type: .remoteVPNServer)
-        
+        configuration.fileContent = vpnConfiguration
+
         do {
             _ = try adapter.apply(configuration: configuration)
         } catch {
             XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
             return
         }
-        
+
         expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
-        
+
         adapter.delegate = self
         adapter.connect()
-        
+
         waitForExpectations(timeout: 30.0) { (error) in
             adapter.disconnect()
         }
@@ -155,9 +117,11 @@ extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
     
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleError error: Error) {
         if let connectionExpectation = expectations[.connection] {
-            XCTFail("Failed to establish conection. \(error.localizedDescription)")
+            XCTFail("Failed to establish conection.")
             connectionExpectation.fulfill()
         }
+        
+        dump(error)
     }
     
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleLogMessage logMessage: String) {
