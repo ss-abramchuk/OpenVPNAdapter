@@ -82,6 +82,7 @@ namespace openvpn {
       buffer_headroom,
       buffer_underflow,
       buffer_overflow,
+      buffer_offset,
       buffer_index,
       buffer_const_index,
       buffer_push_front_headroom,
@@ -108,6 +109,8 @@ namespace openvpn {
 	  return "buffer_underflow";
 	case buffer_overflow:
 	  return "buffer_overflow";
+	case buffer_offset:
+	  return "buffer_offset";
 	case buffer_index:
 	  return "buffer_index";
 	case buffer_const_index:
@@ -144,6 +147,7 @@ namespace openvpn {
     template <typename, typename> friend class BufferAllocatedType;
 
   public:
+    typedef T value_type;
     typedef T* type;
     typedef const T* const_type;
     typedef typename std::remove_const<T>::type NCT; // non-const type
@@ -175,6 +179,15 @@ namespace openvpn {
 	OPENVPN_BUFFER_THROW(buffer_headroom);
       offset_ = headroom;
       size_ = 0;
+    }
+
+    void reset_offset(const size_t offset)
+    {
+      const size_t size = size_ + offset_ - offset;
+      if (offset > capacity_ || size > capacity_ || offset + size > capacity_)
+	OPENVPN_BUFFER_THROW(buffer_offset);
+      offset_ = offset;
+      size_ = size;
     }
 
     void reset_size()
@@ -511,6 +524,19 @@ namespace openvpn {
       if (size <= size_)
 	{
 	  T* ret = data();
+	  offset_ += size;
+	  size_ -= size;
+	  return ret;
+	}
+      else
+	OPENVPN_BUFFER_THROW(buffer_underflow);
+    }
+
+    BufferType read_alloc_buf(const size_t size)
+    {
+      if (size <= size_)
+	{
+	  BufferType ret(data_, offset_, size, capacity_);
 	  offset_ += size;
 	  size_ -= size;
 	  return ret;

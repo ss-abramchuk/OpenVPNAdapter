@@ -26,6 +26,7 @@
 
 #include <cstddef>  // for std::size_t
 #include <utility>  // for std::move
+#include <type_traits>
 #include <new>
 
 namespace openvpn {
@@ -35,7 +36,7 @@ namespace openvpn {
   template <typename F, std::size_t N=3, bool INTERN_ONLY=false>
   class Function;
 
-  template <typename R, typename ... A, std::size_t N, bool INTERN_ONLY>
+  template <typename R, typename... A, std::size_t N, bool INTERN_ONLY>
   class Function<R(A...), N, INTERN_ONLY>
   {
   public:
@@ -92,7 +93,7 @@ namespace openvpn {
 	}
     }
 
-    R operator()(A... args)
+    R operator()(A... args) const
     {
       return methods->invoke(data, std::forward<A>(args)...);
     }
@@ -103,6 +104,7 @@ namespace openvpn {
     }
 
   private:
+#ifdef _MSC_VER
     template <typename T>
     void construct(T&& functor) noexcept
     {
@@ -123,10 +125,38 @@ namespace openvpn {
 	  new (data) Extern<T>(std::move(functor));
 	}
     }
+#else
+    template <typename T>
+    static constexpr bool is_intern()
+    {
+      return sizeof(Intern<T>) <= sizeof(data);
+    }
+
+    template <typename T,
+	      typename std::enable_if<is_intern<T>(), int>::type = 0>
+    void construct(T&& functor) noexcept
+    {
+      // store functor internally (in data)
+      setup_methods_intern<T>();
+      new (data) Intern<T>(std::move(functor));
+    }
+
+    template <typename T,
+	      typename std::enable_if<!is_intern<T>(), int>::type = 0>
+    void construct(T&& functor) noexcept
+    {
+      static_assert(!INTERN_ONLY, "Function: Intern<T> doesn't fit in data[] and INTERN_ONLY=true");
+      static_assert(sizeof(Extern<T>) <= sizeof(data), "Function: Extern<T> doesn't fit in data[]");
+
+      // store functor externally (using new)
+      setup_methods_extern<T>();
+      new (data) Extern<T>(std::move(functor));
+    }
+#endif
 
     struct Methods
     {
-      R (*invoke)(void *, A...);
+      R (*invoke)(void *, A&&...);
       void (*move)(void *, void *);
       void (*destruct)(void *);
     };
@@ -163,21 +193,21 @@ namespace openvpn {
       {
       }
 
-      static R invoke(void *ptr, A... args)
+      static R invoke(void* ptr, A&&... args)
       {
-	Intern* self = reinterpret_cast<Intern<T>*>(ptr);
+	Intern* self = reinterpret_cast<Intern*>(ptr);
 	return self->functor_(std::forward<A>(args)...);
       }
 
       static void move(void *dest, void *src)
       {
-	Intern* s = reinterpret_cast<Intern<T>*>(src);
+	Intern* s = reinterpret_cast<Intern*>(src);
 	new (dest) Intern(std::move(*s));
       }
 
       static void destruct(void *ptr)
       {
-	Intern* self = reinterpret_cast<Intern<T>*>(ptr);
+	Intern* self = reinterpret_cast<Intern*>(ptr);
 	self->~Intern();
       }
 
@@ -195,23 +225,23 @@ namespace openvpn {
       {
       }
 
-      static R invoke(void *ptr, A... args)
+      static R invoke(void* ptr, A&&... args)
       {
-	Extern* self = reinterpret_cast<Extern<T>*>(ptr);
+	Extern* self = reinterpret_cast<Extern *>(ptr);
 	return (*self->functor_)(std::forward<A>(args)...);
       }
 
       static void move(void *dest, void *src)
       {
-	Extern* d = reinterpret_cast<Extern<T>*>(dest);
-	Extern* s = reinterpret_cast<Extern<T>*>(src);
+	Extern* d = reinterpret_cast<Extern*>(dest);
+	Extern* s = reinterpret_cast<Extern*>(src);
 	d->functor_ = s->functor_;
 	// no need to set s->functor_=nullptr because parent will not destruct src after move
       }
 
       static void destruct(void *ptr)
       {
-	Extern* self = reinterpret_cast<Extern<T>*>(ptr);
+	Extern* self = reinterpret_cast<Extern*>(ptr);
 	delete self->functor_;
       }
 
@@ -220,7 +250,7 @@ namespace openvpn {
     };
 
     const Methods* methods;
-    void* data[N];
+    mutable void* data[N];
   };
 }
 

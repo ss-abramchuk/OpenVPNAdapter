@@ -41,6 +41,8 @@
 #include <openvpn/tun/mac/utun.hpp>
 #include <openvpn/tun/mac/macgw.hpp>
 #include <openvpn/tun/mac/macdns_watchdog.hpp>
+#include <openvpn/tun/proxy.hpp>
+#include <openvpn/tun/mac/macproxy.hpp>
 #include <openvpn/tun/builder/rgwflags.hpp>
 #include <openvpn/tun/builder/setup.hpp>
 
@@ -317,7 +319,7 @@ namespace openvpn {
 	      cmd->argv.push_back("/sbin/ifconfig");
 	      cmd->argv.push_back(iface_name);
 	      cmd->argv.push_back(local4->address);
-	      cmd->argv.push_back(local4->address);
+	      cmd->argv.push_back(local4->gateway);
 	      cmd->argv.push_back("netmask");
 	      cmd->argv.push_back(netmask.to_string());
 	      cmd->argv.push_back("mtu");
@@ -463,6 +465,9 @@ namespace openvpn {
 				      create,
 				      destroy);
 	}
+	
+	if (pull.proxy_auto_config_url.defined())
+	  ProxySettings::add_actions<MacProxySettings>(pull, create, destroy);
       }
 
       ActionList::Ptr remove_cmds;
