@@ -33,10 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSMutableArray<NEIPv6Route *> *ipv6IncludedRoutes;
 @property (nonatomic, readonly) NSMutableArray<NEIPv6Route *> *ipv6ExcludedRoutes;
 
-@property (nonatomic, readonly) NSMutableArray<NSString *> *dnsServers;
-@property (nonatomic, readonly) NSMutableArray<NSString *> *searchDomains;
+@property (nonatomic, readonly) NSMutableSet<NSString *> *dnsServers;
+@property (nonatomic, readonly) NSMutableSet<NSString *> *searchDomains;
 
-@property (nonatomic, readonly) NSMutableArray<NSString *> *proxyExceptionList;
+@property (nonatomic, readonly) NSMutableSet<NSString *> *proxyExceptionList;
 
 @property (nonatomic) BOOL autoProxyConfigurationEnabled;
 @property (nonatomic, copy, nullable) NSURL *proxyAutoConfigurationURL;
