@@ -260,7 +260,6 @@
 
 - (BOOL)establishTunnel {
     NEPacketTunnelNetworkSettings *networkSettings = [self.networkSettingsBuilder networkSettings];
-    if (!networkSettings) { return NO; }
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
