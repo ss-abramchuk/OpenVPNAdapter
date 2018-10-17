@@ -14,8 +14,6 @@
 
 @interface OpenVPNNetworkSettingsBuilder ()
 
-// TODO: Use NSHashTable for routes to avoid duplicates
-
 @property (nonatomic) NSMutableArray<NSString *> *ipv4LocalAddresses;
 @property (nonatomic) NSMutableArray<NSString *> *ipv4SubnetMasks;
 @property (nonatomic) NSMutableArray<NEIPv4Route *> *ipv4IncludedRoutes;
@@ -26,10 +24,10 @@
 @property (nonatomic) NSMutableArray<NEIPv6Route *> *ipv6IncludedRoutes;
 @property (nonatomic) NSMutableArray<NEIPv6Route *> *ipv6ExcludedRoutes;
 
-@property (nonatomic) NSMutableSet<NSString *> *dnsServers;
-@property (nonatomic) NSMutableSet<NSString *> *searchDomains;
+@property (nonatomic) NSMutableArray<NSString *> *dnsServers;
+@property (nonatomic) NSMutableArray<NSString *> *searchDomains;
 
-@property (nonatomic) NSMutableSet<NSString *> *proxyExceptionList;
+@property (nonatomic) NSMutableArray<NSString *> *proxyExceptionList;
 
 @end
 
@@ -67,8 +65,8 @@
     }
     
     if (self.dnsServers.ovpn_isNotEmpty) {
-        NEDNSSettings *dnsSettings = [[NEDNSSettings alloc] initWithServers:self.dnsServers.allObjects];
-        dnsSettings.searchDomains = self.searchDomains.allObjects;
+        NEDNSSettings *dnsSettings = [[NEDNSSettings alloc] initWithServers:self.dnsServers];
+        dnsSettings.searchDomains = self.searchDomains;
         networkSettings.DNSSettings = dnsSettings;
     }
     
@@ -77,7 +75,7 @@
         
         proxySettings.autoProxyConfigurationEnabled = self.autoProxyConfigurationEnabled;
         proxySettings.proxyAutoConfigurationURL = self.proxyAutoConfigurationURL;
-        proxySettings.exceptionList = self.proxyExceptionList.allObjects;
+        proxySettings.exceptionList = self.proxyExceptionList;
         proxySettings.HTTPServer = self.httpProxyServer;
         proxySettings.HTTPEnabled = self.httpProxyServerEnabled;
         proxySettings.HTTPSServer = self.httpsProxyServer;
@@ -133,18 +131,18 @@
     return _ipv6ExcludedRoutes;
 }
 
-- (NSMutableSet<NSString *> *)dnsServers {
-    if (!_dnsServers) { _dnsServers = [[NSMutableSet alloc] init]; }
+- (NSMutableArray<NSString *> *)dnsServers {
+    if (!_dnsServers) { _dnsServers = [[NSMutableArray alloc] init]; }
     return _dnsServers;
 }
 
-- (NSMutableSet<NSString *> *)searchDomains {
-    if (!_searchDomains) { _searchDomains = [[NSMutableSet alloc] init]; }
+- (NSMutableArray<NSString *> *)searchDomains {
+    if (!_searchDomains) { _searchDomains = [[NSMutableArray alloc] init]; }
     return _searchDomains;
 }
 
-- (NSMutableSet<NSString *> *)proxyExceptionList {
-    if (!_proxyExceptionList) { _proxyExceptionList = [[NSMutableSet alloc] init]; }
+- (NSMutableArray<NSString *> *)proxyExceptionList {
+    if (!_proxyExceptionList) { _proxyExceptionList = [[NSMutableArray alloc] init]; }
     return _proxyExceptionList;
 }
 

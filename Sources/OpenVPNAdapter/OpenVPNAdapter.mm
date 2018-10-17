@@ -172,6 +172,7 @@
 
 - (BOOL)addIPV4Address:(NSString *)address subnetMask:(NSString *)subnetMask gateway:(NSString *)gateway {
     self.networkSettingsBuilder.ipv4DefaultGateway = gateway;
+    
     [self.networkSettingsBuilder.ipv4LocalAddresses addObject:address];
     [self.networkSettingsBuilder.ipv4SubnetMasks addObject:subnetMask];
     
@@ -180,6 +181,7 @@
 
 - (BOOL)addIPV6Address:(NSString *)address prefixLength:(NSNumber *)prefixLength gateway:(NSString *)gateway {
     self.networkSettingsBuilder.ipv6DefaultGateway = gateway;
+    
     [self.networkSettingsBuilder.ipv6LocalAddresses addObject:address];
     [self.networkSettingsBuilder.ipv6NetworkPrefixLengths addObject:prefixLength];
     
@@ -188,34 +190,78 @@
 
 - (BOOL)addIPV4Route:(NEIPv4Route *)route {
     route.gatewayAddress = self.networkSettingsBuilder.ipv4DefaultGateway;
-    [self.networkSettingsBuilder.ipv4IncludedRoutes addObject:route];
     
-    return YES;
+    NSUInteger index = [self.networkSettingsBuilder.ipv4IncludedRoutes indexOfObjectPassingTest:^BOOL(NEIPv4Route *obj, NSUInteger idx, BOOL *stop) {
+        return [obj.destinationAddress isEqualToString:route.destinationAddress] &&
+            [obj.destinationSubnetMask isEqualToString:route.destinationSubnetMask];
+    }];
+    
+    if (index == NSNotFound) {
+        [self.networkSettingsBuilder.ipv4IncludedRoutes addObject:route];
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (BOOL)addIPV6Route:(NEIPv6Route *)route {
     route.gatewayAddress = self.networkSettingsBuilder.ipv6DefaultGateway;
-    [self.networkSettingsBuilder.ipv6IncludedRoutes addObject:route];
     
-    return YES;
+    NSUInteger index = [self.networkSettingsBuilder.ipv6IncludedRoutes indexOfObjectPassingTest:^BOOL(NEIPv6Route *obj, NSUInteger idx, BOOL *stop) {
+        return [obj.destinationAddress isEqualToString:route.destinationAddress] &&
+            obj.destinationNetworkPrefixLength == route.destinationNetworkPrefixLength;
+    }];
+    
+    if (index == NSNotFound) {
+        [self.networkSettingsBuilder.ipv6IncludedRoutes addObject:route];
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (BOOL)excludeIPV4Route:(NEIPv4Route *)route {
-    [self.networkSettingsBuilder.ipv4ExcludedRoutes addObject:route];
-    return YES;
+    NSUInteger index = [self.networkSettingsBuilder.ipv4ExcludedRoutes indexOfObjectPassingTest:^BOOL(NEIPv4Route *obj, NSUInteger idx, BOOL *stop) {
+        return [obj.destinationAddress isEqualToString:route.destinationAddress] &&
+        [obj.destinationSubnetMask isEqualToString:route.destinationSubnetMask];
+    }];
+    
+    if (index == NSNotFound) {
+        [self.networkSettingsBuilder.ipv4ExcludedRoutes addObject:route];
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (BOOL)excludeIPV6Route:(NEIPv6Route *)route {
-    [self.networkSettingsBuilder.ipv6ExcludedRoutes addObject:route];
-    return YES;
+    NSUInteger index = [self.networkSettingsBuilder.ipv6ExcludedRoutes indexOfObjectPassingTest:^BOOL(NEIPv6Route *obj, NSUInteger idx, BOOL *stop) {
+        return [obj.destinationAddress isEqualToString:route.destinationAddress] &&
+        obj.destinationNetworkPrefixLength == route.destinationNetworkPrefixLength;
+    }];
+    
+    if (index == NSNotFound) {
+        [self.networkSettingsBuilder.ipv6ExcludedRoutes addObject:route];
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (BOOL)addDNS:(NSString *)dns {
+    if ([self.networkSettingsBuilder.dnsServers containsObject:dns]) {
+        return NO;
+    }
+    
     [self.networkSettingsBuilder.dnsServers addObject:dns];
     return YES;
 }
 
 - (BOOL)addSearchDomain:(NSString *)domain {
+    if ([self.networkSettingsBuilder.searchDomains containsObject:domain]) {
+        return NO;
+    }
+    
     [self.networkSettingsBuilder.searchDomains addObject:domain];
     return YES;
 }
@@ -231,6 +277,10 @@
 }
 
 - (BOOL)addProxyBypassHost:(NSString *)bypassHost {
+    if ([self.networkSettingsBuilder.proxyExceptionList containsObject:bypassHost]) {
+        return NO;
+    }
+    
     [self.networkSettingsBuilder.proxyExceptionList addObject:bypassHost];
     return YES;
 }
