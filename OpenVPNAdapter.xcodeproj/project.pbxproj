@@ -99,14 +99,14 @@
 		C98467A91EAA5B7700272A9A /* OpenVPNConfiguration.mm in Sources */ = {isa = PBXBuildFile; fileRef = C98467A51EAA5B7700272A9A /* OpenVPNConfiguration.mm */; };
 		C98467AB1EAA5BE100272A9A /* OpenVPNConfiguration+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C98467AA1EAA5BB500272A9A /* OpenVPNConfiguration+Internal.h */; };
 		C98467AC1EAA5BE200272A9A /* OpenVPNConfiguration+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C98467AA1EAA5BB500272A9A /* OpenVPNConfiguration+Internal.h */; };
-		C9A50F2D21763A2C0010C0D4 /* NSArray+Empty.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F2B21763A2C0010C0D4 /* NSArray+Empty.h */; };
-		C9A50F2E21763A2C0010C0D4 /* NSArray+Empty.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F2B21763A2C0010C0D4 /* NSArray+Empty.h */; };
-		C9A50F2F21763A2C0010C0D4 /* NSArray+Empty.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F2C21763A2C0010C0D4 /* NSArray+Empty.m */; };
-		C9A50F3021763A2C0010C0D4 /* NSArray+Empty.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F2C21763A2C0010C0D4 /* NSArray+Empty.m */; };
-		C9A50F3321763CBC0010C0D4 /* NSSet+Empty.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F3121763CBC0010C0D4 /* NSSet+Empty.h */; };
-		C9A50F3421763CBC0010C0D4 /* NSSet+Empty.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F3121763CBC0010C0D4 /* NSSet+Empty.h */; };
-		C9A50F3521763CBC0010C0D4 /* NSSet+Empty.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F3221763CBC0010C0D4 /* NSSet+Empty.m */; };
-		C9A50F3621763CBC0010C0D4 /* NSSet+Empty.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F3221763CBC0010C0D4 /* NSSet+Empty.m */; };
+		C9A50F2D21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F2B21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h */; };
+		C9A50F2E21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F2B21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h */; };
+		C9A50F2F21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F2C21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m */; };
+		C9A50F3021763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F2C21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m */; };
+		C9A50F3321763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F3121763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h */; };
+		C9A50F3421763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A50F3121763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h */; };
+		C9A50F3521763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F3221763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m */; };
+		C9A50F3621763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A50F3221763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m */; };
 		C9B7955E1F1D16AA00CF35FE /* OpenVPNReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B7955C1F1D16AA00CF35FE /* OpenVPNReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9B7955F1F1D16AA00CF35FE /* OpenVPNReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B7955C1F1D16AA00CF35FE /* OpenVPNReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9B795601F1D16AA00CF35FE /* OpenVPNReachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9B7955D1F1D16AA00CF35FE /* OpenVPNReachability.mm */; };
@@ -238,10 +238,10 @@
 		C98467A41EAA5B7700272A9A /* OpenVPNConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenVPNConfiguration.h; path = OpenVPNAdapter/OpenVPNConfiguration.h; sourceTree = "<group>"; };
 		C98467A51EAA5B7700272A9A /* OpenVPNConfiguration.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenVPNConfiguration.mm; path = OpenVPNAdapter/OpenVPNConfiguration.mm; sourceTree = "<group>"; };
 		C98467AA1EAA5BB500272A9A /* OpenVPNConfiguration+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "OpenVPNConfiguration+Internal.h"; path = "OpenVPNAdapter/OpenVPNConfiguration+Internal.h"; sourceTree = "<group>"; };
-		C9A50F2B21763A2C0010C0D4 /* NSArray+Empty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSArray+Empty.h"; path = "Sources/OpenVPNAdapter/NSArray+Empty.h"; sourceTree = SOURCE_ROOT; };
-		C9A50F2C21763A2C0010C0D4 /* NSArray+Empty.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSArray+Empty.m"; path = "Sources/OpenVPNAdapter/NSArray+Empty.m"; sourceTree = SOURCE_ROOT; };
-		C9A50F3121763CBC0010C0D4 /* NSSet+Empty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSSet+Empty.h"; path = "Sources/OpenVPNAdapter/NSSet+Empty.h"; sourceTree = SOURCE_ROOT; };
-		C9A50F3221763CBC0010C0D4 /* NSSet+Empty.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSSet+Empty.m"; path = "Sources/OpenVPNAdapter/NSSet+Empty.m"; sourceTree = SOURCE_ROOT; };
+		C9A50F2B21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSArray+OpenVPNAdditions.h"; path = "Sources/OpenVPNAdapter/NSArray+OpenVPNAdditions.h"; sourceTree = SOURCE_ROOT; };
+		C9A50F2C21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSArray+OpenVPNAdditions.m"; path = "Sources/OpenVPNAdapter/NSArray+OpenVPNAdditions.m"; sourceTree = SOURCE_ROOT; };
+		C9A50F3121763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSSet+OpenVPNAdditions.h"; path = "Sources/OpenVPNAdapter/NSSet+OpenVPNAdditions.h"; sourceTree = SOURCE_ROOT; };
+		C9A50F3221763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSSet+OpenVPNAdditions.m"; path = "Sources/OpenVPNAdapter/NSSet+OpenVPNAdditions.m"; sourceTree = SOURCE_ROOT; };
 		C9B7955C1F1D16AA00CF35FE /* OpenVPNReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenVPNReachability.h; path = OpenVPNAdapter/OpenVPNReachability.h; sourceTree = "<group>"; };
 		C9B7955D1F1D16AA00CF35FE /* OpenVPNReachability.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenVPNReachability.mm; path = OpenVPNAdapter/OpenVPNReachability.mm; sourceTree = "<group>"; };
 		C9B795621F1D182500CF35FE /* OpenVPNReachabilityTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenVPNReachabilityTracker.h; path = OpenVPNAdapter/OpenVPNReachabilityTracker.h; sourceTree = "<group>"; };
@@ -584,10 +584,10 @@
 			children = (
 				C9E350BF200F6EC0000820D9 /* NSError+OpenVPNError.h */,
 				C9E350C0200F6EC0000820D9 /* NSError+OpenVPNError.m */,
-				C9A50F2B21763A2C0010C0D4 /* NSArray+Empty.h */,
-				C9A50F2C21763A2C0010C0D4 /* NSArray+Empty.m */,
-				C9A50F3121763CBC0010C0D4 /* NSSet+Empty.h */,
-				C9A50F3221763CBC0010C0D4 /* NSSet+Empty.m */,
+				C9A50F2B21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h */,
+				C9A50F2C21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m */,
+				C9A50F3121763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h */,
+				C9A50F3221763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -628,7 +628,7 @@
 				C9657A5E1EB0D60700EFF210 /* OpenVPNTransportProtocol.h in Headers */,
 				C9657A1D1EB0A8D800EFF210 /* OpenVPNConnectionInfo+Internal.h in Headers */,
 				C9B7955E1F1D16AA00CF35FE /* OpenVPNReachability.h in Headers */,
-				C9A50F3321763CBC0010C0D4 /* NSSet+Empty.h in Headers */,
+				C9A50F3321763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h in Headers */,
 				C915F1F41F612F3300B3DF23 /* OpenVPNPrivateKey.h in Headers */,
 				C9657A171EB0A7F800EFF210 /* OpenVPNConnectionInfo.h in Headers */,
 				C9310BC120FF6E9700838910 /* Umbrella-Header.h in Headers */,
@@ -647,7 +647,7 @@
 				C9657A6A1EB0D75700EFF210 /* OpenVPNTLSCertProfile.h in Headers */,
 				C9657A461EB0CB5900EFF210 /* OpenVPNServerEntry+Internal.h in Headers */,
 				C9657A251EB0B60200EFF210 /* OpenVPNTransportStats.h in Headers */,
-				C9A50F2D21763A2C0010C0D4 /* NSArray+Empty.h in Headers */,
+				C9A50F2D21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -676,7 +676,7 @@
 				C9657A5F1EB0D60700EFF210 /* OpenVPNTransportProtocol.h in Headers */,
 				C9657A1E1EB0A8D800EFF210 /* OpenVPNConnectionInfo+Internal.h in Headers */,
 				C9B7955F1F1D16AA00CF35FE /* OpenVPNReachability.h in Headers */,
-				C9A50F3421763CBC0010C0D4 /* NSSet+Empty.h in Headers */,
+				C9A50F3421763CBC0010C0D4 /* NSSet+OpenVPNAdditions.h in Headers */,
 				C915F1F51F612F3300B3DF23 /* OpenVPNPrivateKey.h in Headers */,
 				C9657A181EB0A7F800EFF210 /* OpenVPNConnectionInfo.h in Headers */,
 				C9310BC220FF6E9700838910 /* Umbrella-Header.h in Headers */,
@@ -695,7 +695,7 @@
 				C9657A6B1EB0D75700EFF210 /* OpenVPNTLSCertProfile.h in Headers */,
 				C9657A471EB0CB5900EFF210 /* OpenVPNServerEntry+Internal.h in Headers */,
 				C9657A261EB0B60200EFF210 /* OpenVPNTransportStats.h in Headers */,
-				C9A50F2E21763A2C0010C0D4 /* NSArray+Empty.h in Headers */,
+				C9A50F2E21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -946,13 +946,13 @@
 				ABD6EF121F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm in Sources */,
 				C9657A311EB0B7A900EFF210 /* OpenVPNTransportStats.mm in Sources */,
 				C9B795661F1D182500CF35FE /* OpenVPNReachabilityTracker.mm in Sources */,
-				C9A50F3521763CBC0010C0D4 /* NSSet+Empty.m in Sources */,
+				C9A50F3521763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m in Sources */,
 				C9657A581EB0CE1300EFF210 /* OpenVPNProperties.mm in Sources */,
 				C9CA4DD51F602F7B00C4F184 /* OpenVPNCertificate.m in Sources */,
 				C9CDFDDD200781AF00323B73 /* OpenVPNClient.mm in Sources */,
 				C915F1F61F612F3300B3DF23 /* OpenVPNPrivateKey.m in Sources */,
 				C9FD921B1E9A667600374FC4 /* ovpncli.cpp in Sources */,
-				C9A50F2F21763A2C0010C0D4 /* NSArray+Empty.m in Sources */,
+				C9A50F2F21763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m in Sources */,
 				C9657A361EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */,
 				C9657A211EB0ACAE00EFF210 /* OpenVPNConnectionInfo.mm in Sources */,
 				C9C2B2BD200CC42A00CA0FF3 /* OpenVPNPacket.mm in Sources */,
@@ -989,13 +989,13 @@
 				ABD6EF131F8F93AB007D3D90 /* OpenVPNPacketFlowBridge.mm in Sources */,
 				C9657A301EB0B7A600EFF210 /* OpenVPNTransportStats.mm in Sources */,
 				C9B795671F1D182500CF35FE /* OpenVPNReachabilityTracker.mm in Sources */,
-				C9A50F3621763CBC0010C0D4 /* NSSet+Empty.m in Sources */,
+				C9A50F3621763CBC0010C0D4 /* NSSet+OpenVPNAdditions.m in Sources */,
 				C9657A591EB0CE1400EFF210 /* OpenVPNProperties.mm in Sources */,
 				C9CA4DD61F602F7B00C4F184 /* OpenVPNCertificate.m in Sources */,
 				C9CDFDDE200781AF00323B73 /* OpenVPNClient.mm in Sources */,
 				C915F1F71F612F3300B3DF23 /* OpenVPNPrivateKey.m in Sources */,
 				C9D2ABDE1EA20F99007EDF9D /* ovpncli.cpp in Sources */,
-				C9A50F3021763A2C0010C0D4 /* NSArray+Empty.m in Sources */,
+				C9A50F3021763A2C0010C0D4 /* NSArray+OpenVPNAdditions.m in Sources */,
 				C9657A371EB0BA3900EFF210 /* OpenVPNInterfaceStats.mm in Sources */,
 				C9657A221EB0ACAE00EFF210 /* OpenVPNConnectionInfo.mm in Sources */,
 				C9C2B2BE200CC42A00CA0FF3 /* OpenVPNPacket.mm in Sources */,

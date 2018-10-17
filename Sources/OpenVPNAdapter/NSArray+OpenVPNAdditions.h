@@ -1,5 +1,5 @@
 //
-//  NSSet+Empty.h
+//  NSArray+OpenVPNAdditions.h
 //  OpenVPNAdapter
 //
 //  Created by Sergey Abramchuk on 16/10/2018.
@@ -9,9 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSSet (Empty)
+@interface NSArray (OpenVPNEmptyArray)
 
-@property (nonatomic, readonly) BOOL isNotEmpty;
+@property (nonatomic, readonly) BOOL ovpn_isNotEmpty;
 
 @end
 

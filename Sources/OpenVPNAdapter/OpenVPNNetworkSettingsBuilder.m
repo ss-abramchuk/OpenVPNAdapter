@@ -9,8 +9,8 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "NSArray+Empty.h"
-#import "NSSet+Empty.h"
+#import "NSArray+OpenVPNAdditions.h"
+#import "NSSet+OpenVPNAdditions.h"
 
 @interface OpenVPNNetworkSettingsBuilder ()
 
@@ -42,7 +42,7 @@
     
     NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.remoteAddress];
     
-    if (self.ipv4LocalAddresses.isNotEmpty) {
+    if (self.ipv4LocalAddresses.ovpn_isNotEmpty) {
         NSAssert(self.ipv4LocalAddresses.count == self.ipv4SubnetMasks.count, @"Number of IPv4 addresses is not equal to number of IPv4 subnet masks.");
         
         NEIPv4Settings *ipv4Settings = [[NEIPv4Settings alloc] initWithAddresses:self.ipv4LocalAddresses
@@ -54,7 +54,7 @@
         networkSettings.IPv4Settings = ipv4Settings;
     }
     
-    if (self.ipv6LocalAddresses.isNotEmpty) {
+    if (self.ipv6LocalAddresses.ovpn_isNotEmpty) {
         NSAssert(self.ipv6LocalAddresses.count == self.ipv6NetworkPrefixLengths.count, @"Number of IPv6 addresses is not equal to number of IPv6 prefixes.");
         
         NEIPv6Settings *ipv6Settings = [[NEIPv6Settings alloc] initWithAddresses:self.ipv6LocalAddresses
@@ -66,7 +66,7 @@
         networkSettings.IPv6Settings = ipv6Settings;
     }
     
-    if (self.dnsServers.isNotEmpty) {
+    if (self.dnsServers.ovpn_isNotEmpty) {
         NEDNSSettings *dnsSettings = [[NEDNSSettings alloc] initWithServers:self.dnsServers.allObjects];
         dnsSettings.searchDomains = self.searchDomains.allObjects;
         networkSettings.DNSSettings = dnsSettings;
