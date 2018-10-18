@@ -51,34 +51,14 @@ Pod::Spec.new do |s|
 
   s.module_map = "Configuration/OpenVPNAdapter.modulemap"
 
-  # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  A list of resources included with the Pod. These are copied into the
-  #  target bundle with a build phase script. Anything else will be cleaned.
-  #  You can preserve files from being cleaned, please don't preserve
-  #  non-essential files like tests, examples and documentation.
-  #
-
-  # s.resource  = "icon.png"
-  # s.resources = "Resources/*.png"
-
-  # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
-
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Link your library with frameworks, or libraries. Libraries do not include
-  #  the lib prefix of their name.
-  #
 
   s.ios.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration", "UIKit"
   s.osx.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration"
 
+
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If your library depends on compiler flags you can set them in the xcconfig hash
-  #  where they will only apply to your library. If you depend on other Podspecs
-  #  you can include multiple dependencies to ensure it works.
 
   s.requires_arc = true
 
@@ -89,6 +69,7 @@ Pod::Spec.new do |s|
       "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO",
       "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
   }
+
 
   # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
@@ -135,6 +116,8 @@ Pod::Spec.new do |s|
     openvpn_path = "#{vendors_path}/openvpn"
 
     openvpn.source_files = "#{openvpn_path}/client/*.{hpp,cpp}"
+    openvpn.private_header_files = "#{openvpn_path}/client/*.hpp"
+
     openvpn.preserve_paths = "#{openvpn_path}/openvpn/**/*.hpp"
 
     openvpn.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{openvpn_path}/**" }
