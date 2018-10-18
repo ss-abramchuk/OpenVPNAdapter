@@ -9,6 +9,9 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
+#import "NSArray+OpenVPNAdditions.h"
+#import "NSSet+OpenVPNAdditions.h"
+
 @interface OpenVPNNetworkSettingsBuilder ()
 
 @property (nonatomic) NSMutableArray<NSString *> *ipv4LocalAddresses;
@@ -33,11 +36,13 @@
 #pragma mark - NEPacketTunnelNetworkSettings Generation
 
 - (NEPacketTunnelNetworkSettings *)networkSettings {
-    if (!self.remoteAddress.length) { return nil; }
+    NSAssert(self.remoteAddress != nil && self.remoteAddress.length > 0, @"Remote address is nil or empty.");
     
     NEPacketTunnelNetworkSettings *networkSettings = [[NEPacketTunnelNetworkSettings alloc] initWithTunnelRemoteAddress:self.remoteAddress];
     
-    if (self.ipv4LocalAddresses.count && (self.ipv4LocalAddresses.count == self.ipv4SubnetMasks.count)) {
+    if (self.ipv4LocalAddresses.ovpn_isNotEmpty) {
+        NSAssert(self.ipv4LocalAddresses.count == self.ipv4SubnetMasks.count, @"Number of IPv4 addresses is not equal to number of IPv4 subnet masks.");
+        
         NEIPv4Settings *ipv4Settings = [[NEIPv4Settings alloc] initWithAddresses:self.ipv4LocalAddresses
                                                                      subnetMasks:self.ipv4SubnetMasks];
         
@@ -47,7 +52,9 @@
         networkSettings.IPv4Settings = ipv4Settings;
     }
     
-    if (self.ipv6LocalAddresses.count && (self.ipv6LocalAddresses.count == self.ipv6NetworkPrefixLengths.count)) {
+    if (self.ipv6LocalAddresses.ovpn_isNotEmpty) {
+        NSAssert(self.ipv6LocalAddresses.count == self.ipv6NetworkPrefixLengths.count, @"Number of IPv6 addresses is not equal to number of IPv6 prefixes.");
+        
         NEIPv6Settings *ipv6Settings = [[NEIPv6Settings alloc] initWithAddresses:self.ipv6LocalAddresses
                                                             networkPrefixLengths:self.ipv6NetworkPrefixLengths];
         
@@ -57,7 +64,7 @@
         networkSettings.IPv6Settings = ipv6Settings;
     }
     
-    if (self.dnsServers.count) {
+    if (self.dnsServers.ovpn_isNotEmpty) {
         NEDNSSettings *dnsSettings = [[NEDNSSettings alloc] initWithServers:self.dnsServers];
         dnsSettings.searchDomains = self.searchDomains;
         networkSettings.DNSSettings = dnsSettings;
