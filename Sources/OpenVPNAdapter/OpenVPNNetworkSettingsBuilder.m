@@ -10,7 +10,6 @@
 #import <NetworkExtension/NetworkExtension.h>
 
 #import "NSArray+OpenVPNAdditions.h"
-#import "NSSet+OpenVPNAdditions.h"
 
 @interface OpenVPNNetworkSettingsBuilder ()
 
