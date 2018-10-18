@@ -8,7 +8,7 @@
 
 #import "OpenVPNServerEntry.h"
 
-#include <client/ovpncli.hpp>
+#include "ovpncli.hpp"
 
 using namespace openvpn;
 
