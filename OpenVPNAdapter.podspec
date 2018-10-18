@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.source       = { :git => "https://github.com/ss-abramchuk/OpenVPNAdapter.git", :branch => "develop" }
+  s.source       = { :git => "file:///Users/ss.abramchuk/Sources.localized/open-source.localized/openvpn-adapter", :branch => "feature/cocoapods" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -71,9 +71,8 @@ Pod::Spec.new do |s|
   #  the lib prefix of their name.
   #
 
-  s.ios.frameworks = "UIKit", "NetworkExtension", "SystemConfiguration"
-  s.osx.frameworks = "NetworkExtension", "SystemConfiguration"
-
+  s.ios.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration", "UIKit"
+  s.osx.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration"
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -87,7 +86,8 @@ Pod::Spec.new do |s|
       "APPLICATION_EXTENSION_API_ONLY" => "YES",
       "CLANG_CXX_LANGUAGE_STANDARD" => "gnu++14",
       "CLANG_CXX_LIBRARY" => "libc++",
-      "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO"
+      "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO",
+      "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
   }
 
   # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -95,26 +95,40 @@ Pod::Spec.new do |s|
   vendors_path = "Sources/OpenVPNAdapter/Libraries/Vendors"
 
   # s.subspec 'lz4' do |lz4|
-  #   lz4.ios.vendored_library = "Sources/OpenVPNAdapter/Libraries/Vendors/lz4/lib/ios/liblz4.a"
-  #   lz4.osx.vendored_library = "Sources/OpenVPNAdapter/Libraries/Vendors/lz4/lib/macos/liblz4.a"
-  # end
+  #   lz4_path = "#{vendors_path}/lz4"
   #
+  #   lz4.preserve_paths = "#{lz4_path}/include/*.h"
+  #
+  #   # lz4.ios.vendored_library = "#{lz4_path}/lib/ios/liblz4.a"
+  #   # lz4.osx.vendored_library = "#{lz4_path}/lib/macos/liblz4.a"
+  #
+  #   lz4.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{lz4_path}/include/**" }
+  # end
+
   # s.subspec 'mbedtls' do |mbedtls|
-  #   mbedtls.preserve_paths = "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/include/mbedtls/*.h"
-  #   mbedtls.ios.vendored_libraries = [
-  #     "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedcrypto.a",
-  #     "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedtls.a",
-  #     "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedx509.a"
-  #   ]
-  #   mbedtls.osx.vendored_libraries = [
-  #     "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedcrypto.a",
-  #     "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedtls.a",
-  #     "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedx509.a"
-  #   ]
+  #   mbedtls_path = "#{vendors_path}/mbedtls"
+  #
+  #   mbedtls.preserve_paths = "#{mbedtls_path}/include/**/*.h"
+  #
+  #   # mbedtls.ios.vendored_libraries = [
+  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedcrypto.a",
+  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedtls.a",
+  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedx509.a"
+  #   # ]
+  #   # mbedtls.osx.vendored_libraries = [
+  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedcrypto.a",
+  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedtls.a",
+  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedx509.a"
+  #   # ]
+  #
+  #   mbedtls.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{mbedtls_path}/include/**" }
   # end
 
   s.subspec 'asio' do |asio|
     asio_path = "#{vendors_path}/asio"
+
+    # asio.source_files = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
+    # asio.public_header_files = "#{asio_path}/asio/include/**/*.hpp"
 
     asio.preserve_paths = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
     asio.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{asio_path}/asio/include/**" }
@@ -127,9 +141,10 @@ Pod::Spec.new do |s|
     openvpn.preserve_paths = "#{openvpn_path}/openvpn/**/*.hpp"
 
     openvpn.xcconfig = {
-        "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{openvpn_path}/**",
-        "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
+        "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{openvpn_path}/**"
     }
   end
+
+  # s.libraries = "lz4"
 
 end
