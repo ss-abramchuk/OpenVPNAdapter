@@ -73,7 +73,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/ss-abramchuk/OpenVPNAdapter", :branch => "develop" }
+  s.source       = { :git => "file:///Users/ss.abramchuk/Sources.localized/open-source.localized/openvpn-adapter", :branch => "feature/cocoapods" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -123,12 +123,13 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(TARGETNAME)/openvpn3" }
+  s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(TARGETNAME)/openvpn3" }
 
   # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.subspec 'openvpn3' do |ovpns|
-    ovpns.source_files = "Sources/OpenVPNAdapter/Libraries/Vendors/openvpn/openvpn/**/*.hpp", "Sources/OpenVPNAdapter/Libraries/Vendors/openvpn/client/*.{hpp,cpp}"
+    ovpns.source_files = "Sources/OpenVPNAdapter/Libraries/Vendors/openvpn/client/*.{hpp,cpp}"
+    ovpns.preserve_paths = "Sources/OpenVPNAdapter/Libraries/Vendors/openvpn/openvpn"
   end
 
 end
