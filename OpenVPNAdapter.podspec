@@ -83,9 +83,16 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(TARGETNAME)/openvpn3" }
+  s.xcconfig = {
+      "APPLICATION_EXTENSION_API_ONLY" => "YES",
+      "CLANG_CXX_LANGUAGE_STANDARD" => "gnu++14",
+      "CLANG_CXX_LIBRARY" => "libc++",
+      "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO"
+  }
 
   # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
+
+  vendors_path = "Sources/OpenVPNAdapter/Libraries/Vendors"
 
   # s.subspec 'lz4' do |lz4|
   #   lz4.ios.vendored_library = "Sources/OpenVPNAdapter/Libraries/Vendors/lz4/lib/ios/liblz4.a"
@@ -107,16 +114,22 @@ Pod::Spec.new do |s|
   # end
 
   s.subspec 'asio' do |asio|
-    asio_path = "Sources/OpenVPNAdapter/Libraries/Vendors/asio"
-    asio.preserve_paths = "#{asio_path}/asio/include/*.hpp"
-    asio.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/#{s.name}/#{asio_path}/asio/include/**" }
+    asio_path = "#{vendors_path}/asio"
+
+    asio.preserve_paths = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
+    asio.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{asio_path}/asio/include/**" }
   end
 
   s.subspec 'openvpn3' do |openvpn|
-    openvpn_path = "Sources/OpenVPNAdapter/Libraries/Vendors/openvpn"
+    openvpn_path = "#{vendors_path}/openvpn"
+
     openvpn.source_files = "#{openvpn_path}/client/*.{hpp,cpp}"
     openvpn.preserve_paths = "#{openvpn_path}/openvpn/**/*.hpp"
-    openvpn.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/#{s.name}/#{openvpn_path}/openvpn/**" }
+
+    openvpn.xcconfig = {
+        "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{openvpn_path}/**",
+        "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
+    }
   end
 
 end
