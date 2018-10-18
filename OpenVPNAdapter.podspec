@@ -39,14 +39,14 @@ Pod::Spec.new do |s|
 
   s.public_header_files = "Sources/OpenVPNAdapter/*.h"
   s.private_header_files = [
-      "Sources/OpenVPNAdapter/*+Internal.h",
-      "Sources/OpenVPNAdapter/OpenVPNReachabilityTracker.h",
-      "Sources/OpenVPNAdapter/OpenVPNClient.h",
-      "Sources/OpenVPNAdapter/OpenVPNNetworkSettingsBuilder.h",
-      "Sources/OpenVPNAdapter/OpenVPNPacket.h",
-      "Sources/OpenVPNAdapter/OpenVPNPacketFlowBridge.h",
-      "Sources/OpenVPNAdapter/NSError+OpenVPNError.h",
-      "Sources/OpenVPNAdapter/NSArray+OpenVPNAdditions.h"
+    "Sources/OpenVPNAdapter/*+Internal.h",
+    "Sources/OpenVPNAdapter/OpenVPNReachabilityTracker.h",
+    "Sources/OpenVPNAdapter/OpenVPNClient.h",
+    "Sources/OpenVPNAdapter/OpenVPNNetworkSettingsBuilder.h",
+    "Sources/OpenVPNAdapter/OpenVPNPacket.h",
+    "Sources/OpenVPNAdapter/OpenVPNPacketFlowBridge.h",
+    "Sources/OpenVPNAdapter/NSError+OpenVPNError.h",
+    "Sources/OpenVPNAdapter/NSArray+OpenVPNAdditions.h"
   ]
 
   s.module_map = "Configuration/OpenVPNAdapter.modulemap"
@@ -63,11 +63,11 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.xcconfig = {
-      "APPLICATION_EXTENSION_API_ONLY" => "YES",
-      "CLANG_CXX_LANGUAGE_STANDARD" => "gnu++14",
-      "CLANG_CXX_LIBRARY" => "libc++",
-      "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO",
-      "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
+    "APPLICATION_EXTENSION_API_ONLY" => "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "gnu++14",
+    "CLANG_CXX_LIBRARY" => "libc++",
+    "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO",
+    "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
   }
 
 
