@@ -22,6 +22,7 @@ Pod::Spec.new do |s|
 
   s.author             = { "Sergey Abramchuk" => "personal@ss-abramchuk.me" }
 
+
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.ios.deployment_target = "9.0"
