@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "OpenVPNAdapter"
-  s.version      = "0.0.1"
-  s.summary      = "A short description of OpenVPNAdapter."
+  s.version      = "0.1.0"
+  s.summary      = "Objective-C wrapper for OpenVPN library. Compatible with iOS and macOS."
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,7 +25,9 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-                   DESC
+    OpenVPNAdapter is an Objective-C framework that allows to easily configure and establish VPN connection using OpenVPN protocol. It is based on the original openvpn3 library so it has every feature the library has.
+    The framework is designed to use in conjunction with NetworkExtension framework and doesn't use any private Apple API. Compatible with iOS and macOS and also Swift friendly
+  DESC
 
   s.homepage     = "http://EXAMPLE/OpenVPNAdapter"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
@@ -38,7 +40,7 @@ Pod::Spec.new do |s|
   #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
   #
 
-  s.license      = "MIT (example)"
+  s.license      = "AGPLv3"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
 
 
@@ -53,9 +55,6 @@ Pod::Spec.new do |s|
   #
 
   s.author             = { "Sergey Abramchuk" => "personal@ss-abramchuk.me" }
-  # Or just: s.author    = "Sergey Abramchuk"
-  # s.authors            = { "Sergey Abramchuk" => "personal@ss-abramchuk.me" }
-  # s.social_media_url   = "http://twitter.com/Sergey Abramchuk"
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -63,14 +62,9 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-  # s.platform     = :ios
-  # s.platform     = :ios, "5.0"
-
   #  When using multiple platforms
-  # s.ios.deployment_target = "5.0"
-  # s.osx.deployment_target = "10.7"
-  # s.watchos.deployment_target = "2.0"
-  # s.tvos.deployment_target = "9.0"
+  s.ios.deployment_target = "9.0"
+  s.osx.deployment_target = "10.11"
 
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -79,7 +73,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "http://EXAMPLE/OpenVPNAdapter.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/ss-abramchuk/OpenVPNAdapter", :branch => "develop" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -90,11 +84,12 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Classes", "Classes/**/*.{h,m}"
-  s.exclude_files = "Classes/Exclude"
+  s.source_files  = "Sources/OpenVPNAdapter/*.{h,m,mm}"
 
-  # s.public_header_files = "Classes/**/*.h"
+  s.public_header_files = "Sources/OpenVPNAdapter/*.h"
+  s.private_header_files = "Sources/OpenVPNAdapter/OpenVPNReachabilityTracker.h", "Sources/OpenVPNAdapter/OpenVPNReachability+Internal.h"
 
+  s.module_map = "Configuration/OpenVPNAdapter.modulemap"
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -116,11 +111,8 @@ Pod::Spec.new do |s|
   #  the lib prefix of their name.
   #
 
-  # s.framework  = "SomeFramework"
-  # s.frameworks = "SomeFramework", "AnotherFramework"
-
-  # s.library   = "iconv"
-  # s.libraries = "iconv", "xml2"
+  s.ios.frameworks = "UIKit", "NetworkExtension", "SystemConfiguration"
+  s.osx.frameworks = "NetworkExtension", "SystemConfiguration"
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -129,9 +121,14 @@ Pod::Spec.new do |s|
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
 
-  # s.requires_arc = true
+  s.requires_arc = true
 
-  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
-  # s.dependency "JSONKit", "~> 1.4"
+  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(TARGETNAME)/openvpn3" }
+
+  # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
+
+  s.subspec 'openvpn3' do |ovpns|
+    ovpns.source_files = "Sources/OpenVPNAdapter/Libraries/Vendors/openvpn/openvpn/**/*.hpp", "Sources/OpenVPNAdapter/Libraries/Vendors/openvpn/client/*.{hpp,cpp}"
+  end
 
 end
