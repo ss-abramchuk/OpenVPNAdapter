@@ -94,41 +94,38 @@ Pod::Spec.new do |s|
 
   vendors_path = "Sources/OpenVPNAdapter/Libraries/Vendors"
 
-  # s.subspec 'lz4' do |lz4|
-  #   lz4_path = "#{vendors_path}/lz4"
-  #
-  #   lz4.preserve_paths = "#{lz4_path}/include/*.h"
-  #
-  #   # lz4.ios.vendored_library = "#{lz4_path}/lib/ios/liblz4.a"
-  #   # lz4.osx.vendored_library = "#{lz4_path}/lib/macos/liblz4.a"
-  #
-  #   lz4.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{lz4_path}/include/**" }
-  # end
+  s.subspec 'lz4' do |lz4|
+    lz4_path = "#{vendors_path}/lz4"
 
-  # s.subspec 'mbedtls' do |mbedtls|
-  #   mbedtls_path = "#{vendors_path}/mbedtls"
-  #
-  #   mbedtls.preserve_paths = "#{mbedtls_path}/include/**/*.h"
-  #
-  #   # mbedtls.ios.vendored_libraries = [
-  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedcrypto.a",
-  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedtls.a",
-  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/ios/libmbedx509.a"
-  #   # ]
-  #   # mbedtls.osx.vendored_libraries = [
-  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedcrypto.a",
-  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedtls.a",
-  #   #   "Sources/OpenVPNAdapter/Libraries/Vendors/mbedtls/lib/macos/libmbedx509.a"
-  #   # ]
-  #
-  #   mbedtls.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{mbedtls_path}/include/**" }
-  # end
+    lz4.preserve_paths = "#{lz4_path}/include/*.h"
+
+    lz4.ios.vendored_library = "#{lz4_path}/lib/ios/liblz4.a"
+    lz4.osx.vendored_library = "#{lz4_path}/lib/macos/liblz4.a"
+
+    lz4.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{lz4_path}/include/**" }
+  end
+
+  s.subspec 'mbedtls' do |mbedtls|
+    mbedtls_path = "#{vendors_path}/mbedtls"
+
+    mbedtls.preserve_paths = "#{mbedtls_path}/include/**/*.h"
+
+    mbedtls.ios.vendored_libraries = [
+      "#{mbedtls_path}/lib/ios/libmbedcrypto.a",
+      "#{mbedtls_path}/lib/ios/libmbedtls.a",
+      "#{mbedtls_path}/lib/ios/libmbedx509.a"
+    ]
+    mbedtls.osx.vendored_libraries = [
+      "#{mbedtls_path}/lib/macos/libmbedcrypto.a",
+      "#{mbedtls_path}/lib/macos/libmbedtls.a",
+      "#{mbedtls_path}/lib/macos/libmbedx509.a"
+    ]
+
+    mbedtls.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{mbedtls_path}/include/**" }
+  end
 
   s.subspec 'asio' do |asio|
     asio_path = "#{vendors_path}/asio"
-
-    # asio.source_files = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
-    # asio.public_header_files = "#{asio_path}/asio/include/**/*.hpp"
 
     asio.preserve_paths = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
     asio.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{asio_path}/asio/include/**" }
@@ -140,11 +137,9 @@ Pod::Spec.new do |s|
     openvpn.source_files = "#{openvpn_path}/client/*.{hpp,cpp}"
     openvpn.preserve_paths = "#{openvpn_path}/openvpn/**/*.hpp"
 
-    openvpn.xcconfig = {
-        "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{openvpn_path}/**"
-    }
+    openvpn.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/#{s.name}/#{openvpn_path}/**" }
   end
 
-  # s.libraries = "lz4"
+  s.libraries = "lz4", "mbedcrypto", "mbedtls", "mbedx509"
 
 end
