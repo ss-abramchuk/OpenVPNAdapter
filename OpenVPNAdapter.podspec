@@ -40,11 +40,6 @@ Pod::Spec.new do |s|
   framework_path = "Sources/OpenVPNAdapter"
   vendors_path = "#{framework_path}/Libraries/Vendors"
 
-  lz4_path = "#{vendors_path}/lz4"
-  mbedtls_path = "#{vendors_path}/mbedtls"
-  asio_path = "#{vendors_path}/asio"
-  openvpn_path = "#{vendors_path}/openvpn"
-
   s.source_files  = "#{framework_path}/*.{h,m,mm}"
 
   s.public_header_files = "#{framework_path}/*.h"
@@ -59,13 +54,6 @@ Pod::Spec.new do |s|
     "#{framework_path}/NSArray+OpenVPNAdditions.h"
   ]
 
-  s.preserve_paths = [
-    "#{lz4_path}/include/*.h",
-    "#{mbedtls_path}/include/**/*.h",
-    "#{asio_path}/asio/include/**/*.{hpp,ipp}",
-    "#{openvpn_path}/openvpn/**/*.hpp"
-  ]
-
   s.module_map = "Configuration/OpenVPNAdapter.modulemap"
 
 
@@ -73,20 +61,6 @@ Pod::Spec.new do |s|
 
   s.ios.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration", "UIKit"
   s.osx.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration"
-
-  s.ios.vendored_libraries = [
-    "#{lz4_path}/lib/ios/liblz4.a",
-    "#{mbedtls_path}/lib/ios/libmbedcrypto.a",
-    "#{mbedtls_path}/lib/ios/libmbedtls.a",
-    "#{mbedtls_path}/lib/ios/libmbedx509.a"
-  ]
-
-  s.osx.vendored_libraries = [
-    "#{lz4_path}/lib/macos/liblz4.a",
-    "#{mbedtls_path}/lib/macos/libmbedcrypto.a",
-    "#{mbedtls_path}/lib/macos/libmbedtls.a",
-    "#{mbedtls_path}/lib/macos/libmbedx509.a"
-  ]
 
   s.libraries = "lz4", "mbedcrypto", "mbedtls", "mbedx509"
 
@@ -100,19 +74,77 @@ Pod::Spec.new do |s|
     "APPLICATION_EXTENSION_API_ONLY" => "YES",
     "CLANG_CXX_LANGUAGE_STANDARD" => "gnu++14",
     "CLANG_CXX_LIBRARY" => "libc++",
-    "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/#{lz4_path}/include/**\" \"${PODS_TARGET_SRCROOT}/#{mbedtls_path}/include/**\" \"${PODS_TARGET_SRCROOT}/#{asio_path}/asio/include/**\" \"${PODS_TARGET_SRCROOT}/#{openvpn_path}/**\"",
     "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO",
-    "CLANG_WARN_DOCUMENTATION_COMMENTS" => "NO",
-    "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
+    "CLANG_WARN_DOCUMENTATION_COMMENTS" => "NO"
   }
 
 
   # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
+  s.subspec "lz4" do |lz4|
+    lz4_path = "#{vendors_path}/lz4"
+
+    lz4.preserve_paths = "#{lz4_path}/include/*.h"
+
+    lz4.ios.vendored_libraries = [
+      "#{lz4_path}/lib/ios/liblz4.a"
+    ]
+
+    lz4.osx.vendored_libraries = [
+      "#{lz4_path}/lib/macos/liblz4.a"
+    ]
+
+    lz4.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{lz4_path}/include/**"
+    }
+  end
+
+  s.subspec "mbedtls" do |mbedtls|
+    mbedtls_path = "#{vendors_path}/mbedtls"
+
+    mbedtls.preserve_paths = "#{mbedtls_path}/include/**/*.h"
+
+    mbedtls.ios.vendored_libraries = [
+      "#{mbedtls_path}/lib/ios/libmbedcrypto.a",
+      "#{mbedtls_path}/lib/ios/libmbedtls.a",
+      "#{mbedtls_path}/lib/ios/libmbedx509.a"
+    ]
+
+    mbedtls.osx.vendored_libraries = [
+      "#{mbedtls_path}/lib/macos/libmbedcrypto.a",
+      "#{mbedtls_path}/lib/macos/libmbedtls.a",
+      "#{mbedtls_path}/lib/macos/libmbedx509.a"
+    ]
+
+    mbedtls.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{mbedtls_path}/include/**"
+    }
+  end
+
+  s.subspec "asio" do |asio|
+    asio_path = "#{vendors_path}/asio"
+
+    asio.preserve_paths = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
+
+    asio.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{asio_path}/asio/include/**"
+    }
+  end
+
   s.subspec "openvpn" do |openvpn|
+    openvpn_path = "#{vendors_path}/openvpn"
+
     openvpn.source_files = "#{openvpn_path}/client/*.{hpp,cpp}"
     openvpn.private_header_files = "#{openvpn_path}/client/*.hpp"
+
+    openvpn.preserve_paths = "#{openvpn_path}/openvpn/**/*.hpp"
+
     openvpn.compiler_flags = "-x objective-c++"
+
+    openvpn.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{openvpn_path}/**",
+      "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
+    }
   end
 
 end
