@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.source = { :git => "https://github.com/ss-abramchuk/OpenVPNAdapter.git", :branch => "feature/cocoapods" }
+  s.source = { :git => "https://github.com/ss-abramchuk/OpenVPNAdapter.git", :branch => "develop" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
