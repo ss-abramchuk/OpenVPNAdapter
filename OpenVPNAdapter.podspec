@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
   asio_path = "#{vendors_path}/asio"
   openvpn_path = "#{vendors_path}/openvpn"
 
-  s.source_files  = "#{framework_path}/*.{h,m,mm}", "#{openvpn_path}/client/*.{hpp,cpp}"
+  s.source_files  = "#{framework_path}/*.{h,m,mm}"
 
   s.public_header_files = "#{framework_path}/*.h"
   s.private_header_files = [
@@ -56,9 +56,7 @@ Pod::Spec.new do |s|
     "#{framework_path}/OpenVPNPacket.h",
     "#{framework_path}/OpenVPNPacketFlowBridge.h",
     "#{framework_path}/NSError+OpenVPNError.h",
-    "#{framework_path}/NSArray+OpenVPNAdditions.h",
-    "#{openvpn_path}/openvpn/**/*.hpp",
-    "#{openvpn_path}/client/*.hpp"
+    "#{framework_path}/NSArray+OpenVPNAdditions.h"
   ]
 
   s.preserve_paths = [
@@ -107,5 +105,14 @@ Pod::Spec.new do |s|
     "CLANG_WARN_DOCUMENTATION_COMMENTS" => "NO",
     "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
   }
+
+
+  # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
+
+  s.subspec "openvpn" do |openvpn|
+    openvpn.source_files = "#{openvpn_path}/client/*.{hpp,cpp}"
+    openvpn.private_header_files = "#{openvpn_path}/client/*.hpp"
+    openvpn.compiler_flags = "-x objective-c++"
+  end
 
 end
