@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include <client/ovpncli.hpp>
+#include "ovpncli.hpp"
 
 @class NEIPv4Route;
 @class NEIPv6Route;

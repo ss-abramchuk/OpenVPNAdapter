@@ -1,137 +1,150 @@
-#
-#  Be sure to run `pod spec lint OpenVPNAdapter.podspec' to ensure this is a
-#  valid spec and to remove all comments including this before submitting the spec.
-#
-#  To learn more about Podspec attributes see http://docs.cocoapods.org/specification.html
-#  To see working Podspecs in the CocoaPods repo see https://github.com/CocoaPods/Specs/
-#
-
 Pod::Spec.new do |s|
 
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  These will help people to find your library, and whilst it
-  #  can feel like a chore to fill in it's definitely to your advantage. The
-  #  summary should be tweet-length, and the description more in depth.
-  #
 
-  s.name         = "OpenVPNAdapter"
-  s.version      = "0.0.1"
-  s.summary      = "A short description of OpenVPNAdapter."
+  s.name = "OpenVPNAdapter"
+  s.version = "0.1.0"
+  s.summary   = "Objective-C wrapper for OpenVPN library. Compatible with iOS and macOS."
+  s.description = <<-DESC
+    OpenVPNAdapter is an Objective-C framework that allows to easily configure and establish VPN connection using OpenVPN protocol.
+    It is based on the original openvpn3 library so it has every feature the library has. The framework is designed to use in conjunction
+    with NetworkExtension framework and doesn't use any private Apple API. Compatible with iOS and macOS and also Swift friendly.
+  DESC
 
-  # This description is used to generate tags and improve search results.
-  #   * Think: What does it do? Why did you write it? What is the focus?
-  #   * Try to keep it short, snappy and to the point.
-  #   * Write the description between the DESC delimiters below.
-  #   * Finally, don't worry about the indent, CocoaPods strips it!
-  s.description  = <<-DESC
-                   DESC
-
-  s.homepage     = "http://EXAMPLE/OpenVPNAdapter"
-  # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
+  s.homepage = "https://github.com/ss-abramchuk/OpenVPNAdapter"
 
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Licensing your code is important. See http://choosealicense.com for more info.
-  #  CocoaPods will detect a license file if there is a named LICENSE*
-  #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
-  #
 
-  s.license      = "MIT (example)"
-  # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
+  s.license = "AGPLv3"
 
 
   # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Specify the authors of the library, with email addresses. Email addresses
-  #  of the authors are extracted from the SCM log. E.g. $ git log. CocoaPods also
-  #  accepts just a name if you'd rather not provide an email address.
-  #
-  #  Specify a social_media_url where others can refer to, for example a twitter
-  #  profile URL.
-  #
 
-  s.author             = { "Sergey Abramchuk" => "personal@ss-abramchuk.me" }
-  # Or just: s.author    = "Sergey Abramchuk"
-  # s.authors            = { "Sergey Abramchuk" => "personal@ss-abramchuk.me" }
-  # s.social_media_url   = "http://twitter.com/Sergey Abramchuk"
+  s.author = { "Sergey Abramchuk" => "personal@ss-abramchuk.me" }
+
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If this Pod runs only on iOS or OS X, then specify the platform and
-  #  the deployment target. You can optionally include the target after the platform.
-  #
 
-  # s.platform     = :ios
-  # s.platform     = :ios, "5.0"
-
-  #  When using multiple platforms
-  # s.ios.deployment_target = "5.0"
-  # s.osx.deployment_target = "10.7"
-  # s.watchos.deployment_target = "2.0"
-  # s.tvos.deployment_target = "9.0"
+  s.ios.deployment_target = "9.0"
+  s.osx.deployment_target = "10.11"
 
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Specify the location from where the source should be retrieved.
-  #  Supports git, hg, bzr, svn and HTTP.
-  #
 
-  s.source       = { :git => "http://EXAMPLE/OpenVPNAdapter.git", :tag => "#{s.version}" }
+  s.source = { :git => "https://github.com/ss-abramchuk/OpenVPNAdapter.git", :branch => "develop" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  CocoaPods is smart about how it includes source code. For source files
-  #  giving a folder will include any swift, h, m, mm, c & cpp files.
-  #  For header files it will include any header in the folder.
-  #  Not including the public_header_files will make all headers public.
-  #
 
-  s.source_files  = "Classes", "Classes/**/*.{h,m}"
-  s.exclude_files = "Classes/Exclude"
+  framework_path = "Sources/OpenVPNAdapter"
+  vendors_path = "#{framework_path}/Libraries/Vendors"
 
-  # s.public_header_files = "Classes/**/*.h"
+  s.source_files  = "#{framework_path}/*.{h,m,mm}"
 
+  s.public_header_files = "#{framework_path}/*.h"
+  s.private_header_files = [
+    "#{framework_path}/*+Internal.h",
+    "#{framework_path}/OpenVPNReachabilityTracker.h",
+    "#{framework_path}/OpenVPNClient.h",
+    "#{framework_path}/OpenVPNNetworkSettingsBuilder.h",
+    "#{framework_path}/OpenVPNPacket.h",
+    "#{framework_path}/OpenVPNPacketFlowBridge.h",
+    "#{framework_path}/NSError+OpenVPNError.h",
+    "#{framework_path}/NSArray+OpenVPNAdditions.h"
+  ]
 
-  # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  A list of resources included with the Pod. These are copied into the
-  #  target bundle with a build phase script. Anything else will be cleaned.
-  #  You can preserve files from being cleaned, please don't preserve
-  #  non-essential files like tests, examples and documentation.
-  #
-
-  # s.resource  = "icon.png"
-  # s.resources = "Resources/*.png"
-
-  # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
+  s.module_map = "Configuration/OpenVPNAdapter.modulemap"
 
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Link your library with frameworks, or libraries. Libraries do not include
-  #  the lib prefix of their name.
-  #
 
-  # s.framework  = "SomeFramework"
-  # s.frameworks = "SomeFramework", "AnotherFramework"
+  s.ios.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration", "UIKit"
+  s.osx.frameworks = "Foundation", "NetworkExtension", "SystemConfiguration"
 
-  # s.library   = "iconv"
-  # s.libraries = "iconv", "xml2"
+  s.libraries = "lz4", "mbedcrypto", "mbedtls", "mbedx509"
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If your library depends on compiler flags you can set them in the xcconfig hash
-  #  where they will only apply to your library. If you depend on other Podspecs
-  #  you can include multiple dependencies to ensure it works.
 
-  # s.requires_arc = true
+  s.requires_arc = true
+  s.prefix_header_file = false
 
-  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
-  # s.dependency "JSONKit", "~> 1.4"
+  s.xcconfig = {
+    "APPLICATION_EXTENSION_API_ONLY" => "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "gnu++14",
+    "CLANG_CXX_LIBRARY" => "libc++",
+    "GCC_WARN_64_TO_32_BIT_CONVERSION" => "NO",
+    "CLANG_WARN_DOCUMENTATION_COMMENTS" => "NO"
+  }
+
+
+  # ――― Subspecs ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
+
+  s.subspec "lz4" do |lz4|
+    lz4_path = "#{vendors_path}/lz4"
+
+    lz4.preserve_paths = "#{lz4_path}/include/*.h"
+
+    lz4.ios.vendored_libraries = [
+      "#{lz4_path}/lib/ios/liblz4.a"
+    ]
+
+    lz4.osx.vendored_libraries = [
+      "#{lz4_path}/lib/macos/liblz4.a"
+    ]
+
+    lz4.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{lz4_path}/include/**"
+    }
+  end
+
+  s.subspec "mbedtls" do |mbedtls|
+    mbedtls_path = "#{vendors_path}/mbedtls"
+
+    mbedtls.preserve_paths = "#{mbedtls_path}/include/**/*.h"
+
+    mbedtls.ios.vendored_libraries = [
+      "#{mbedtls_path}/lib/ios/libmbedcrypto.a",
+      "#{mbedtls_path}/lib/ios/libmbedtls.a",
+      "#{mbedtls_path}/lib/ios/libmbedx509.a"
+    ]
+
+    mbedtls.osx.vendored_libraries = [
+      "#{mbedtls_path}/lib/macos/libmbedcrypto.a",
+      "#{mbedtls_path}/lib/macos/libmbedtls.a",
+      "#{mbedtls_path}/lib/macos/libmbedx509.a"
+    ]
+
+    mbedtls.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{mbedtls_path}/include/**"
+    }
+  end
+
+  s.subspec "asio" do |asio|
+    asio_path = "#{vendors_path}/asio"
+
+    asio.preserve_paths = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
+
+    asio.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{asio_path}/asio/include/**"
+    }
+  end
+
+  s.subspec "openvpn" do |openvpn|
+    openvpn_path = "#{vendors_path}/openvpn"
+
+    openvpn.source_files = "#{openvpn_path}/client/*.{hpp,cpp}"
+    openvpn.private_header_files = "#{openvpn_path}/client/*.hpp"
+
+    openvpn.preserve_paths = "#{openvpn_path}/openvpn/**/*.hpp"
+
+    openvpn.compiler_flags = "-x objective-c++"
+
+    openvpn.xcconfig = {
+      "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{openvpn_path}/**",
+      "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
+    }
+  end
 
 end
