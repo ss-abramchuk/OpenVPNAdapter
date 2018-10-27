@@ -1,0 +1,64 @@
+# Your OpenVPN username
+if ENV["OPENVPN_USERNAME"].nil?
+  ENV["OPENVPN_USERNAME"] = "Username"
+end
+
+# Your OpenVPN password
+if ENV["OPENVPN_PASSWORD"].nil?
+  ENV["OPENVPN_PASSWORD"] = "Password"
+end
+
+# Your OpenVPN configuration
+if ENV["OPENVPN_CONFIGURATION"].nil?
+  ENV["OPENVPN_CONFIGURATION"] = <<~END
+    client
+    dev tun
+    proto udp
+
+    remote X.X.X.X 1194
+
+    remote-random
+    resolv-retry infinite
+    nobind
+    cipher AES-256-CBC
+    auth SHA512
+    comp-lzo no
+    verb 3
+
+    tun-mtu 1500
+    tun-mtu-extra 32
+    mssfix 1450
+    persist-key
+    persist-tun
+
+    reneg-sec 0
+
+    remote-cert-tls server
+    auth-user-pass
+    pull
+    fast-io
+
+    <ca>
+    -----BEGIN CERTIFICATE-----
+    ...
+    -----END CERTIFICATE-----
+    </ca>
+
+    key-direction 1
+
+    <tls-auth>
+    # 2048 bit OpenVPN static key
+    -----BEGIN OpenVPN Static key V1-----
+    ...
+    -----END OpenVPN Static key V1-----
+    </tls-auth>
+  END
+end
+
+if ENV["OPENVPN_REMOTE_HOST"].nil?
+  ENV["OPENVPN_REMOTE_HOST"] = "Remote Host Address"
+end
+
+if ENV["OPENVPN_REMOTE_PORT"].nil?
+  ENV["OPENVPN_REMOTE_PORT"] = "Remote Host Port"
+end
