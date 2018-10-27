@@ -25,7 +25,22 @@ To install OpenVPNAdapter with Carthage, add the following line to your `Cartfil
 github "ss-abramchuk/OpenVPNAdapter"
 ```
 
-Then run `carthage update` command. For details of the installation and usage of Carthage, visit [its project page](https://github.com/Carthage/Carthage).
+Then run `$ carthage update` command. For details of the installation and usage of Carthage, visit [its project page](https://github.com/Carthage/Carthage).
+
+### Cocoapods
+To install OpenVPNAdapter with Cocoapods, add the following lines to your `Podfile`.
+
+```ruby
+target 'Your Target Name' do
+  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for iOSOpenVPNTunnel
+  pod 'OpenVPNAdapter', '~> 0.1'
+end
+```
+
+And run `$ pod install`.
 
 ## Usage
 At first, you need to add a Packet Tunnel Provider extension to the project and configure provision profiles for both the container app and the extension. There are official documentation and many tutorials describing how to do it so we won't dwell on this in detail.
