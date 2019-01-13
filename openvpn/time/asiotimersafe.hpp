@@ -21,62 +21,58 @@
 
 #pragma once
 
-#include <openvpn/common/endian_platform.hpp>
+#include <openvpn/time/asiotimer.hpp>
+
+// AsioTimerSafe is like AsioTimer but with an epoch counter
+// that allows a handler to determine if it is the most recent
+// handler to be queued.
 
 namespace openvpn {
-  namespace Endian {
-#   if defined(OPENVPN_LITTLE_ENDIAN)
-    inline size_t e16(const size_t v)
+  class AsioTimerSafe
+  {
+  public:
+    typedef std::size_t epoch_t;
+
+    AsioTimerSafe(openvpn_io::io_context& io_context)
+      : timer_(io_context)
     {
-      return v;
     }
-    inline size_t e16rev(const size_t v)
+
+    std::size_t expires_at(const Time& t)
     {
-      return 15-v;
+      ++epoch_;
+      return timer_.expires_at(t);
     }
-    inline size_t e4(const size_t v)
+
+    std::size_t expires_after(const Time::Duration& d)
     {
-      return v;
+      ++epoch_;
+      return timer_.expires_after(d);
     }
-    inline size_t e4rev(const size_t v)
+
+    std::size_t cancel()
     {
-      return 3-v;
+      ++epoch_;
+      return timer_.cancel();
     }
-    inline size_t e2(const size_t v)
+
+    epoch_t epoch() const
     {
-      return v;
+      return epoch_;
     }
-    inline size_t e2rev(const size_t v)
+
+    template <typename F>
+    void async_wait(F&& func)
     {
-      return 1-v;
+      ++epoch_;
+      timer_.async_wait([func=std::move(func), epoch=epoch_](const openvpn_io::error_code& error) mutable
+			 {
+			   func(error, epoch);
+			 });
     }
-#   elif defined(OPENVPN_BIG_ENDIAN)
-    inline size_t e16rev(const size_t v)
-    {
-      return v;
-    }
-    inline size_t e16(const size_t v)
-    {
-      return 15-v;
-    }
-    inline size_t e4rev(const size_t v)
-    {
-      return v;
-    }
-    inline size_t e4(const size_t v)
-    {
-      return 3-v;
-    }
-    inline size_t e2rev(const size_t v)
-    {
-      return v;
-    }
-    inline size_t e2(const size_t v)
-    {
-      return 1-v;
-    }
-#   else
-#   error One of OPENVPN_LITTLE_ENDIAN or OPENVPN_BIG_ENDIAN must be defined
-#   endif
-  }
-} // namespace openvpn
+
+  private:
+    AsioTimer timer_;
+    epoch_t epoch_ = 0;
+  };
+}
