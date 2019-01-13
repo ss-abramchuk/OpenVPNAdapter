@@ -86,6 +86,12 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
 @property (nonatomic) BOOL autologinSessions;
 
 /**
+ If YES, consider AUTH_FAILED to be a non-fatal error,
+ and retry the connection after a pause.
+ */
+@property (nonatomic) BOOL retryOnAuthFailed;
+
+/**
  If YES, don't send client cert/key to peer
  */
 @property (nonatomic) BOOL disableClientCert;

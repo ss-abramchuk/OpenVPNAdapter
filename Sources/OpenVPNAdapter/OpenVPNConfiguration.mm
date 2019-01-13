@@ -340,6 +340,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.autologinSessions = autologinSessions;
 }
 
+- (BOOL)retryOnAuthFailed {
+    return _config.retryOnAuthFailed;
+}
+
+- (void)setRetryOnAuthFailed:(BOOL)retryOnAuthFailed {
+    _config.retryOnAuthFailed = retryOnAuthFailed;
+}
+
 - (BOOL)disableClientCert {
     return _config.disableClientCert;
 }
