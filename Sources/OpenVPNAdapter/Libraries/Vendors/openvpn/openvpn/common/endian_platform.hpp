@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2018 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -21,11 +21,15 @@
 
 #pragma once
 
-#if defined(HAVE_JSONCPP)
-#define HAVE_JSON
-#include "json/json.h"             // JsonCpp library
-#elif defined(HAVE_OPENVPN_COMMON)
-#define HAVE_JSON
-#define OPENVPN_JSON_INTERNAL
-#include <openvpn/common/json.hpp> // internal OpenVPN JSON implementation
+#include <openvpn/common/size.hpp>
+
+// test for machine endiannes
+#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#define OPENVPN_BIG_ENDIAN
+#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define OPENVPN_LITTLE_ENDIAN
+#endif
+#elif defined(_WIN32)
+#define OPENVPN_LITTLE_ENDIAN // assume that Windows is always little-endian
 #endif

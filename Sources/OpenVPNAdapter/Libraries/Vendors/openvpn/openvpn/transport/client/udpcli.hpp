@@ -181,8 +181,7 @@ namespace openvpn {
       Client(openvpn_io::io_context& io_context_arg,
 	     ClientConfig* config_arg,
 	     TransportClientParent* parent_arg)
-	:  io_context(io_context_arg),
-	   socket(io_context_arg),
+	:  socket(io_context_arg),
 	   config(config_arg),
 	   parent(parent_arg),
 	   resolver(io_context_arg),
@@ -274,7 +273,7 @@ namespace openvpn {
 #if defined(OPENVPN_PLATFORM_TYPE_UNIX) || defined(OPENVPN_PLATFORM_UWP)
 	if (config->socket_protect)
 	  {
-	    if (!config->socket_protect->socket_protect(socket.native_handle()))
+	    if (!config->socket_protect->socket_protect(socket.native_handle(), server_endpoint_addr()))
 	      {
 		config->stats->error(Error::SOCKET_PROTECT_ERROR);
 		stop();
@@ -321,7 +320,6 @@ namespace openvpn {
       std::string server_host;
       std::string server_port;
 
-      openvpn_io::io_context& io_context;
       openvpn_io::ip::udp::socket socket;
       ClientConfig::Ptr config;
       TransportClientParent* parent;

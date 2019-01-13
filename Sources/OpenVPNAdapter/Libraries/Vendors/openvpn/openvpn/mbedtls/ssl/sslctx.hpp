@@ -826,8 +826,15 @@ namespace openvpn {
 		  // set our own certificate, supporting chain (i.e. extra-certs), and external private key
 		  if (c.crt_chain)
 		    {
-		      epki_ctx.epki_enable(ctx, epki_decrypt, epki_sign, epki_key_len);
-		      mbedtls_ssl_conf_own_cert(sslconf, c.crt_chain->get(), epki_ctx.get());
+		      if (mbedtls_pk_get_type(&c.crt_chain.get()->get()->pk) == MBEDTLS_PK_RSA)
+			{
+			  epki_ctx.epki_enable(ctx, epki_decrypt, epki_sign, epki_key_len);
+			  mbedtls_ssl_conf_own_cert(sslconf, c.crt_chain->get(), epki_ctx.get());
+			}
+		      else
+			{
+			  throw MbedTLSException("cert has unsupported type for external pki support");
+			}
 		    }
 		  else
 		    throw MbedTLSException("cert is undefined");
@@ -1217,7 +1224,11 @@ namespace openvpn {
 	    {
 	      const int SHA_DIGEST_LEN = 20;
 	      static_assert(sizeof(AuthCert::issuer_fp) == SHA_DIGEST_LEN, "size inconsistency");
-	      mbedtls_sha1(cert->raw.p, cert->raw.len, ssl->authcert->issuer_fp);
+	      if(mbedtls_sha1_ret(cert->raw.p, cert->raw.len, ssl->authcert->issuer_fp))
+		{
+		  OPENVPN_LOG_SSL("VERIFY FAIL -- SHA1 calculation failed.");
+		  fail = true;
+		}
 	    }
 	}
       else if (depth == 0) // leaf-cert
