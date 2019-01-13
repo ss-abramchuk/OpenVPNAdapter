@@ -44,6 +44,12 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
 @property (nullable, nonatomic) NSString *server;
 
 /**
+ Use a different port than that specified in "remote"
+ option of profile
+ */
+@property (nonatomic) NSUInteger port;
+
+/**
  Force a given transport protocol
  */
 @property (nonatomic) OpenVPNTransportProtocol proto;

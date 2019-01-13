@@ -268,6 +268,18 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.serverOverride = serverOverride ? std::string([serverOverride UTF8String]) : "";
 }
 
+- (NSUInteger)port {
+    try {
+        return std::stoul(_config.portOverride, NULL);
+    } catch (...) {
+        return 0;
+    }
+}
+
+- (void)setPort:(NSUInteger)port {
+    _config.portOverride = std::to_string(port);
+}
+
 - (OpenVPNTransportProtocol)proto {
     NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
     return [OpenVPNConfiguration getTransportProtocolFromValue:currentValue];
