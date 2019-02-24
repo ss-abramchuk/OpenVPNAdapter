@@ -398,6 +398,16 @@
     _sessionName = nil;
     _packetFlowBridge = nil;
     _networkSettingsBuilder = nil;
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    
+    void (^completionHandler)(id<OpenVPNAdapterPacketFlow> _Nullable) = ^(id<OpenVPNAdapterPacketFlow> flow) {
+        dispatch_semaphore_signal(semaphore);
+    };
+    
+    [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:nil completionHandler:completionHandler];
+    
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
 }
 
 #pragma mark -

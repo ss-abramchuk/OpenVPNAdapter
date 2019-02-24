@@ -34,11 +34,11 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
  the TUN interface, or nil if an error occurred.
  
  @param openVPNAdapter The OpenVPNAdapter instance requesting this information.
- @param networkSettings The NEPacketTunnelNetworkSettings to be used for the tunnel.
- @param completionHandler The completion handler to be called with a NEPacketTunnelFlow object, or nil if an error occurred.
+ @param networkSettings The NEPacketTunnelNetworkSettings to be used for the tunnel. Provides nil to clear out the network settings.
+ @param completionHandler The completion handler to be called with a NEPacketTunnelFlow object, or nil if an error occurred or the network settings were cleared out.
  */
 - (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
-configureTunnelWithNetworkSettings:(NEPacketTunnelNetworkSettings *)networkSettings
+configureTunnelWithNetworkSettings:(nullable NEPacketTunnelNetworkSettings *)networkSettings
                  completionHandler:(void (^)(id<OpenVPNAdapterPacketFlow> _Nullable packetFlow))completionHandler
 NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
