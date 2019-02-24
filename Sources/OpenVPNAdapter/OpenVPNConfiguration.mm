@@ -308,14 +308,6 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.connTimeout = connectionTimeout;
 }
 
-- (BOOL)tunPersist {
-    return _config.tunPersist;
-}
-
-- (void)setTunPersist:(BOOL)tunPersist {
-    _config.tunPersist = tunPersist;
-}
-
 - (BOOL)googleDNSFallback {
     return _config.googleDnsFallback;
 }
