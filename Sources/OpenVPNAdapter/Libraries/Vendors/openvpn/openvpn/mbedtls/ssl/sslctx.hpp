@@ -36,6 +36,7 @@
 #include <mbedtls/sha1.h>
 #include <mbedtls/debug.h>
 #include <mbedtls/asn1.h>
+#include <mbedtls/version.h>
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>
@@ -1224,11 +1225,20 @@ namespace openvpn {
 	    {
 	      const int SHA_DIGEST_LEN = 20;
 	      static_assert(sizeof(AuthCert::issuer_fp) == SHA_DIGEST_LEN, "size inconsistency");
+#if MBEDTLS_VERSION_NUMBER < 0x02070000
+	      // mbed TLS 2.7.0 and newer deprecates mbedtls_sha1()
+	      // in favour of mbedtls_sha1_ret().
+
+	      // We support for older mbed TLS versions
+	      // to be able to build on Debian 9 and Ubuntu 16.
+	      mbedtls_sha1(cert->raw.p, cert->raw.len, ssl->authcert->issuer_fp);
+#else
 	      if(mbedtls_sha1_ret(cert->raw.p, cert->raw.len, ssl->authcert->issuer_fp))
 		{
 		  OPENVPN_LOG_SSL("VERIFY FAIL -- SHA1 calculation failed.");
 		  fail = true;
 		}
+#endif
 	    }
 	}
       else if (depth == 0) // leaf-cert
