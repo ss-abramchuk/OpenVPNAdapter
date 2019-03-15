@@ -268,6 +268,18 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.serverOverride = serverOverride ? std::string([serverOverride UTF8String]) : "";
 }
 
+- (NSUInteger)port {
+    try {
+        return std::stoul(_config.portOverride, NULL);
+    } catch (...) {
+        return 0;
+    }
+}
+
+- (void)setPort:(NSUInteger)port {
+    _config.portOverride = std::to_string(port);
+}
+
 - (OpenVPNTransportProtocol)proto {
     NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
     return [OpenVPNConfiguration getTransportProtocolFromValue:currentValue];
@@ -326,6 +338,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 - (void)setAutologinSessions:(BOOL)autologinSessions {
     _config.autologinSessions = autologinSessions;
+}
+
+- (BOOL)retryOnAuthFailed {
+    return _config.retryOnAuthFailed;
+}
+
+- (void)setRetryOnAuthFailed:(BOOL)retryOnAuthFailed {
+    _config.retryOnAuthFailed = retryOnAuthFailed;
 }
 
 - (BOOL)disableClientCert {

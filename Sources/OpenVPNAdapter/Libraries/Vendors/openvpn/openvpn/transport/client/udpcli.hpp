@@ -74,7 +74,7 @@ namespace openvpn {
       {}
     };
 
-    class Client : public TransportClient
+    class Client : public TransportClient, AsyncResolvableUDP
     {
       typedef RCPtr<Client> Ptr;
 
@@ -101,16 +101,11 @@ namespace openvpn {
 		  {
 		    openvpn_io::error_code error;
 		    openvpn_io::ip::udp::resolver::results_type results = resolver.resolve(server_host, server_port, error);
-		    do_resolve_(error, results);
+		    resolve_callback(error, results);
 		  }
 		else
 		  {
-		    resolver.async_resolve(server_host, server_port,
-					   [self=Ptr(this)](const openvpn_io::error_code& error, openvpn_io::ip::udp::resolver::results_type results)
-					   {
-					     OPENVPN_ASYNC_HANDLER;
-					     self->do_resolve_(error, results);
-					   });
+		    async_resolve_name(server_host, server_port);
 		  }
 	      }
 	  }
@@ -181,7 +176,7 @@ namespace openvpn {
       Client(openvpn_io::io_context& io_context_arg,
 	     ClientConfig* config_arg,
 	     TransportClientParent* parent_arg)
-	:  io_context(io_context_arg),
+	:  AsyncResolvableUDP(io_context_arg),
 	   socket(io_context_arg),
 	   config(config_arg),
 	   parent(parent_arg),
@@ -237,12 +232,13 @@ namespace openvpn {
 	      impl->stop();
 	    socket.close();
 	    resolver.cancel();
+	    async_resolve_cancel();
 	  }
       }
 
       // called after DNS resolution has succeeded or failed
-      void do_resolve_(const openvpn_io::error_code& error,
-		       openvpn_io::ip::udp::resolver::results_type results)
+      void resolve_callback(const openvpn_io::error_code& error,
+			    openvpn_io::ip::udp::resolver::results_type results) override
       {
 	if (!halt)
 	  {
@@ -274,7 +270,7 @@ namespace openvpn {
 #if defined(OPENVPN_PLATFORM_TYPE_UNIX) || defined(OPENVPN_PLATFORM_UWP)
 	if (config->socket_protect)
 	  {
-	    if (!config->socket_protect->socket_protect(socket.native_handle()))
+	    if (!config->socket_protect->socket_protect(socket.native_handle(), server_endpoint_addr()))
 	      {
 		config->stats->error(Error::SOCKET_PROTECT_ERROR);
 		stop();
@@ -321,7 +317,6 @@ namespace openvpn {
       std::string server_host;
       std::string server_port;
 
-      openvpn_io::io_context& io_context;
       openvpn_io::ip::udp::socket socket;
       ClientConfig::Ptr config;
       TransportClientParent* parent;

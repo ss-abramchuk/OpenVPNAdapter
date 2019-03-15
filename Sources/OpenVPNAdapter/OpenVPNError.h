@@ -64,6 +64,7 @@ typedef NS_ERROR_ENUM(OpenVPNAdapterErrorDomain, OpenVPNAdapterError) {
     OpenVPNAdapterErrorPrimaryExpire,
     OpenVPNAdapterErrorTLSVersionMin,
     OpenVPNAdapterErrorTLSAuthFail,
+    OpenVPNAdapterErrorTLSCryptMetaFail,
     OpenVPNAdapterErrorCertVerifyFail,
     OpenVPNAdapterErrorPEMPasswordFail,
     OpenVPNAdapterErrorAuthFailed,

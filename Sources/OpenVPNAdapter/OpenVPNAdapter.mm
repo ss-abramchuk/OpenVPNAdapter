@@ -347,6 +347,7 @@
         @"DISCONNECTED": @(OpenVPNAdapterEventDisconnected),
         @"CONNECTED": @(OpenVPNAdapterEventConnected),
         @"RECONNECTING": @(OpenVPNAdapterEventReconnecting),
+        @"AUTH_PENDING": @(OpenVPNAdapterEventAuthPending),
         @"RESOLVE": @(OpenVPNAdapterEventResolve),
         @"WAIT": @(OpenVPNAdapterEventWait),
         @"WAIT_PROXY": @(OpenVPNAdapterEventWaitProxy),
@@ -356,9 +357,11 @@
         @"ADD_ROUTES": @(OpenVPNAdapterEventAddRoutes),
         @"ECHO": @(OpenVPNAdapterEventEcho),
         @"INFO": @(OpenVPNAdapterEventInfo),
+        @"WARN": @(OpenVPNAdapterEventWarn),
         @"PAUSE": @(OpenVPNAdapterEventPause),
         @"RESUME": @(OpenVPNAdapterEventResume),
-        @"RELAY": @(OpenVPNAdapterEventRelay)
+        @"RELAY": @(OpenVPNAdapterEventRelay),
+        @"UNSUPPORTED_FEATURE": @(OpenVPNAdapterEventUnsupportedFeature)
     };
     
     OpenVPNAdapterEvent event = events[eventName] != nil ?

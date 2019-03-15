@@ -76,6 +76,7 @@
         @"PRIMARY_EXPIRE": @(OpenVPNAdapterErrorPrimaryExpire),
         @"TLS_VERSION_MIN": @(OpenVPNAdapterErrorTLSVersionMin),
         @"TLS_AUTH_FAIL": @(OpenVPNAdapterErrorTLSAuthFail),
+        @"TLS_CRYPT_META_FAIL": @(OpenVPNAdapterErrorTLSCryptMetaFail),
         @"CERT_VERIFY_FAIL": @(OpenVPNAdapterErrorCertVerifyFail),
         @"PEM_PASSWORD_FAIL": @(OpenVPNAdapterErrorPEMPasswordFail),
         @"AUTH_FAILED": @(OpenVPNAdapterErrorAuthFailed),
@@ -152,6 +153,7 @@
         case OpenVPNAdapterErrorPrimaryExpire: return @"Primary key context expired.";
         case OpenVPNAdapterErrorTLSVersionMin: return @"Peer cannot handshake at our minimum required TLS version.";
         case OpenVPNAdapterErrorTLSAuthFail: return @"tls-auth HMAC verification failed.";
+        case OpenVPNAdapterErrorTLSCryptMetaFail: return @"tls-crypt-v2 metadata verification failed.";
         case OpenVPNAdapterErrorCertVerifyFail: return @"Peer certificate verification failure.";
         case OpenVPNAdapterErrorPEMPasswordFail: return @"Incorrect or missing PEM private key decryption password.";
         case OpenVPNAdapterErrorAuthFailed: return @"General authentication failure";

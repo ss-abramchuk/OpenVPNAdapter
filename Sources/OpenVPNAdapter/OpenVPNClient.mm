@@ -141,7 +141,7 @@ void OpenVPNClient::tun_builder_teardown(bool disconnect) {
     [this->delegate resetSettings];
 }
 
-bool OpenVPNClient::socket_protect(int socket) {
+bool OpenVPNClient::socket_protect(int socket, std::string remote, bool ipv6) {
     return true;
 }
 
@@ -151,6 +151,14 @@ bool OpenVPNClient::pause_on_connection_timeout() {
 
 void OpenVPNClient::external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) { }
 void OpenVPNClient::external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) { }
+
+bool OpenVPNClient::remote_override_enabled() {
+    return false;
+}
+
+void OpenVPNClient::remote_override(ClientAPI::RemoteOverride& remote) {
+    // TODO: Override remote server
+}
 
 void OpenVPNClient::event(const ClientAPI::Event& ev) {
     NSString *name = [NSString stringWithUTF8String:ev.name.c_str()];

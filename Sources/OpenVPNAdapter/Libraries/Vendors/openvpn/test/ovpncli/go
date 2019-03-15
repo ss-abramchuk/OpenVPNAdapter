@@ -15,6 +15,7 @@ GCC_EXTRA="$GCC_EXTRA -DOPENVPN_SHOW_SESSION_TOKEN"
 [ "$BS64" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_BS64_DATA_LIMIT=2500000"
 [ "$ROVER" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_REMOTE_OVERRIDE"
 [ "$TLS" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_TLS_LINK"
+[ "$SITNL" = "1" ] && GCC_EXTRA="$GCC_EXTRA -DOPENVPN_USE_SITNL"
 if [ "$AGENT" = "1" ]; then
     GCC_EXTRA="$GCC_EXTRA -DOPENVPN_COMMAND_AGENT"
 fi
@@ -23,9 +24,9 @@ export GCC_EXTRA
 
 # determine platform
 if [ "$(uname)" == "Darwin" ]; then
-    export PROF=osx64
+    export PROF=${PROF:-osx64}
 elif [ "$(uname)" == "Linux" ]; then
-    export PROF=linux
+    export PROF=${PROF:-linux}
 else
     echo this script only knows how to build on Mac OS or Linux
 fi

@@ -259,10 +259,10 @@ namespace openvpn {
 	parent = parent_arg;
       }
 
-      virtual bool socket_protect(int socket)
+      bool socket_protect(int socket, IP::Addr endpoint) override
       {
 	if (parent)
-	  return parent->socket_protect(socket);
+	  return parent->socket_protect(socket, endpoint.to_string(), endpoint.is_ipv6());
 	else
 	  return true;
       }
@@ -858,6 +858,9 @@ namespace openvpn {
 #endif
       Log::Context log_context(this);
 #endif
+
+      OPENVPN_LOG(ClientAPI::OpenVPNClient::platform());
+
       return do_connect();
     }
 

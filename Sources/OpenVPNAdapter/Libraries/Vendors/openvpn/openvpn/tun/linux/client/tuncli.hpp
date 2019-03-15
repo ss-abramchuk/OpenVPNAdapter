@@ -30,7 +30,15 @@
 #include <openvpn/tun/builder/setup.hpp>
 #include <openvpn/tun/tunio.hpp>
 #include <openvpn/tun/persist/tunpersist.hpp>
+
+// check if Netlink has been selected at compile time
+#ifdef OPENVPN_USE_SITNL
+#include <openvpn/tun/linux/client/tunnetlink.hpp>
+#define TUN_LINUX TunNetlink
+#else
 #include <openvpn/tun/linux/client/tunsetup.hpp>
+#define TUN_LINUX TunLinux
+#endif
 
 namespace openvpn {
   namespace TunLinux {
@@ -114,7 +122,7 @@ namespace openvpn {
 	if (tun_setup_factory)
 	  return tun_setup_factory->new_setup_obj();
 	else
-	  return new TunLinux::Setup();
+	  return new TUN_LINUX::Setup();
       }
 
     private:
@@ -129,7 +137,7 @@ namespace openvpn {
       typedef Tun<Client*> TunImpl;
 
     public:
-      virtual void tun_start(const OptionList& opt, TransportClient& transcli, CryptoDCSettings&)
+      virtual void tun_start(const OptionList& opt, TransportClient& transcli, CryptoDCSettings&) override
       {
 	if (!impl)
 	  {
@@ -184,7 +192,7 @@ namespace openvpn {
 		  tun_setup = config->new_setup_obj();
 
 		  // create config object for tun setup layer
-		  Setup::Config tsconf;
+		  TUN_LINUX::Setup::Config tsconf;
 		  tsconf.layer = config->tun_prop.layer;
 		  tsconf.dev_name = config->dev_name;
 		  tsconf.txqueuelen = config->txqueuelen;
@@ -228,12 +236,12 @@ namespace openvpn {
 	  }
       }
 
-      virtual bool tun_send(BufferAllocated& buf)
+      virtual bool tun_send(BufferAllocated& buf) override
       {
 	return send(buf);
       }
 
-      virtual std::string tun_name() const
+      virtual std::string tun_name() const override
       {
 	if (impl)
 	  return impl->name();
@@ -241,7 +249,7 @@ namespace openvpn {
 	  return "UNDEF_TUN";
       }
 
-      virtual std::string vpn_ip4() const
+      virtual std::string vpn_ip4() const override
       {
 	if (state->vpn_ip4_addr.specified())
 	  return state->vpn_ip4_addr.to_string();
@@ -249,7 +257,7 @@ namespace openvpn {
 	  return "";
       }
 
-      virtual std::string vpn_ip6() const
+      virtual std::string vpn_ip6() const override
       {
 	if (state->vpn_ip6_addr.specified())
 	  return state->vpn_ip6_addr.to_string();
@@ -273,11 +281,11 @@ namespace openvpn {
 	  return "";
       }
 
-      virtual void set_disconnect()
+      virtual void set_disconnect() override
       {
       }
 
-      virtual void stop() { stop_(); }
+      virtual void stop() override { stop_(); }
       virtual ~Client() { stop_(); }
 
     private:
