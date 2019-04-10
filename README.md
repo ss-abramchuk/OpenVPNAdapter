@@ -247,7 +247,12 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     // `OpenVPNAdapterPacketFlow` method signatures are similar to `NEPacketTunnelFlow` so
     // you can just extend that class to adopt `OpenVPNAdapterPacketFlow` protocol and
     // send `self.packetFlow` to `completionHandler` callback.
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
+        // In order to direct all DNS queries first to the VPN DNS servers before the primary DNS servers
+        // send empty string to NEDNSSettings.matchDomains  
+        networkSettings?.dnsSettings?.matchDomains = [""]
+
+        // Specify the network settings for the current tunneling session.
         setTunnelNetworkSettings(settings) { (error) in
             completionHandler(error == nil ? self.packetFlow : nil)
         }
