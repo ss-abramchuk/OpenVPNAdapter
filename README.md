@@ -53,7 +53,7 @@ Then we need to create or load a VPN profile. [`NETunnelProviderManager`](https:
 ```swift
 NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
     guard error == nil else {
-        // Handle an occured error
+        // Handle an occurred error
         return
     }
 
@@ -65,7 +65,7 @@ The next step is to provide VPN settings to the instance of [`NETunnelProviderMa
 ```swift
 self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     guard error == nil else {
-        // Handle an occured error
+        // Handle an occurred error
         return
     }
 
@@ -107,7 +107,7 @@ self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     // Save configuration in the Network Extension preferences
     self.providerManager?.saveToPreferences(completionHandler: { (error) in
         if let error = error  {
-            // Handle an occured error
+            // Handle an occurred error
         }
     })
 }
@@ -118,14 +118,14 @@ Start VPN by calling the following code.
 ```swift
 self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     guard error == nil else {
-        // Handle an occured error
+        // Handle an occurred error
         return
     }
 
     do {
         try self.providerManager?.connection.startVPNTunnel()
     } catch {
-        // Handle an occured error
+        // Handle an occurred error
     }
 }
 ```
