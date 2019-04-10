@@ -19,25 +19,13 @@
 //    along with this program in the COPYING file.
 //    If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OPENVPN_COMMON_ENDIAN_H
-#define OPENVPN_COMMON_ENDIAN_H
+#pragma once
 
-#include <openvpn/common/size.hpp>
-
-// test for machine endiannes
-#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-#define OPENVPN_BIG_ENDIAN
-#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define OPENVPN_LITTLE_ENDIAN
-#endif
-#elif defined(_WIN32)
-#define OPENVPN_LITTLE_ENDIAN // assume that Windows is always little-endian
-#endif
+#include <openvpn/common/endian_platform.hpp>
 
 namespace openvpn {
   namespace Endian {
-#   ifdef OPENVPN_LITTLE_ENDIAN
+#   if defined(OPENVPN_LITTLE_ENDIAN)
     inline size_t e16(const size_t v)
     {
       return v;
@@ -62,7 +50,7 @@ namespace openvpn {
     {
       return 1-v;
     }
-#   elif OPENVPN_BIG_ENDIAN
+#   elif defined(OPENVPN_BIG_ENDIAN)
     inline size_t e16rev(const size_t v)
     {
       return v;
@@ -92,5 +80,3 @@ namespace openvpn {
 #   endif
   }
 } // namespace openvpn
-
-#endif // OPENVPN_COMMON_ENDIAN_H

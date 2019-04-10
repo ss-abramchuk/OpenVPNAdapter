@@ -395,7 +395,12 @@ namespace openvpn {
 	    tunconf->stats = cli_stats;
 	    tunconf->stop = config.stop;
 	    if (config.tun_persist)
+	    {
 	      tunconf->tun_persist.reset(new TunMac::TunPersist(true, false, nullptr));
+	      tunconf->tun_prop.remote_bypass = true;
+	      /* remote_list is required by remote_bypass to work */
+	      tunconf->tun_prop.remote_list = remote_list;
+	    }
 	    client_lifecycle.reset(new MacLifeCycle);
 #ifdef OPENVPN_COMMAND_AGENT
 	    tunconf->tun_setup_factory = UnixCommandAgent::new_agent(opt);
@@ -414,7 +419,12 @@ namespace openvpn {
 	    tunconf->stats = cli_stats;
 	    tunconf->stop = config.stop;
 	    if (config.tun_persist)
+	    {
 	      tunconf->tun_persist.reset(new TunWin::TunPersist(true, false, nullptr));
+	      tunconf->tun_prop.remote_bypass = true;
+	      /* remote_list is required by remote_bypass to work */
+	      tunconf->tun_prop.remote_list = remote_list;
+	    }
 #ifdef OPENVPN_COMMAND_AGENT
 	    tunconf->tun_setup_factory = WinCommandAgent::new_agent(opt);
 #endif
@@ -693,6 +703,7 @@ namespace openvpn {
       cp->dc_deferred = true; // defer data channel setup until after options pull
       cp->tls_auth_factory.reset(new CryptoOvpnHMACFactory<SSLLib::CryptoAPI>());
       cp->tls_crypt_factory.reset(new CryptoTLSCryptFactory<SSLLib::CryptoAPI>());
+      cp->tls_crypt_metadata_factory.reset(new CryptoTLSCryptMetadataFactory());
       cp->tlsprf_factory.reset(new CryptoTLSPRFFactory<SSLLib::CryptoAPI>());
       cp->ssl_factory = cc->new_factory();
       cp->load(opt, *proto_context_options, config.default_key_direction, false);

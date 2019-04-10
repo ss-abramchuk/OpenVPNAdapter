@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent) {
     OpenVPNAdapterEventDisconnected,
     OpenVPNAdapterEventConnected,
     OpenVPNAdapterEventReconnecting,
+    OpenVPNAdapterEventAuthPending,
     OpenVPNAdapterEventResolve,
     OpenVPNAdapterEventWait,
     OpenVPNAdapterEventWaitProxy,
@@ -24,8 +25,10 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent) {
     OpenVPNAdapterEventAddRoutes,
     OpenVPNAdapterEventEcho,
     OpenVPNAdapterEventInfo,
+    OpenVPNAdapterEventWarn,
     OpenVPNAdapterEventPause,
     OpenVPNAdapterEventResume,
     OpenVPNAdapterEventRelay,
+    OpenVPNAdapterEventUnsupportedFeature,
     OpenVPNAdapterEventUnknown
 };

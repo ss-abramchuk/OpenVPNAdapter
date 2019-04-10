@@ -268,6 +268,18 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.serverOverride = serverOverride ? std::string([serverOverride UTF8String]) : "";
 }
 
+- (NSUInteger)port {
+    try {
+        return std::stoul(_config.portOverride, NULL);
+    } catch (...) {
+        return 0;
+    }
+}
+
+- (void)setPort:(NSUInteger)port {
+    _config.portOverride = std::to_string(port);
+}
+
 - (OpenVPNTransportProtocol)proto {
     NSString *currentValue = [NSString stringWithUTF8String:_config.protoOverride.c_str()];
     return [OpenVPNConfiguration getTransportProtocolFromValue:currentValue];
@@ -296,14 +308,6 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.connTimeout = connectionTimeout;
 }
 
-- (BOOL)tunPersist {
-    return _config.tunPersist;
-}
-
-- (void)setTunPersist:(BOOL)tunPersist {
-    _config.tunPersist = tunPersist;
-}
-
 - (BOOL)googleDNSFallback {
     return _config.googleDnsFallback;
 }
@@ -326,6 +330,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 - (void)setAutologinSessions:(BOOL)autologinSessions {
     _config.autologinSessions = autologinSessions;
+}
+
+- (BOOL)retryOnAuthFailed {
+    return _config.retryOnAuthFailed;
+}
+
+- (void)setRetryOnAuthFailed:(BOOL)retryOnAuthFailed {
+    _config.retryOnAuthFailed = retryOnAuthFailed;
 }
 
 - (BOOL)disableClientCert {
@@ -465,7 +477,6 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     configuration.proto = self.proto;
     configuration.ipv6 = self.ipv6;
     configuration.connectionTimeout = self.connectionTimeout;
-    configuration.tunPersist = self.tunPersist;
     configuration.googleDNSFallback = self.googleDNSFallback;
     configuration.synchronousDNSLookup = self.synchronousDNSLookup;
     configuration.autologinSessions = self.autologinSessions;
@@ -492,7 +503,6 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     [aCoder encodeInteger:self.proto forKey:NSStringFromSelector(@selector(proto))];
     [aCoder encodeInteger:self.ipv6 forKey:NSStringFromSelector(@selector(ipv6))];
     [aCoder encodeInteger:self.connectionTimeout forKey:NSStringFromSelector(@selector(connectionTimeout))];
-    [aCoder encodeBool:self.tunPersist forKey:NSStringFromSelector(@selector(tunPersist))];
     [aCoder encodeBool:self.googleDNSFallback forKey:NSStringFromSelector(@selector(googleDNSFallback))];
     [aCoder encodeBool:self.synchronousDNSLookup forKey:NSStringFromSelector(@selector(synchronousDNSLookup))];
     [aCoder encodeBool:self.autologinSessions forKey:NSStringFromSelector(@selector(autologinSessions))];
@@ -519,7 +529,6 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
         self.proto = (OpenVPNTransportProtocol)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(proto))];
         self.ipv6 = (OpenVPNIPv6Preference)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(ipv6))];
         self.connectionTimeout = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(connectionTimeout))];
-        self.tunPersist = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(tunPersist))];
         self.googleDNSFallback = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(googleDNSFallback))];
         self.synchronousDNSLookup = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(synchronousDNSLookup))];
         self.autologinSessions = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(autologinSessions))];

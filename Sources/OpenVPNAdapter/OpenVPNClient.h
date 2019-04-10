@@ -83,11 +83,14 @@ public:
     bool tun_builder_persist() override;
     void tun_builder_teardown(bool disconnect) override;
     
-    bool socket_protect(int socket) override;
+    bool socket_protect(int socket, std::string remote, bool ipv6) override;
     bool pause_on_connection_timeout() override;
     
     void external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) override;
     void external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) override;
+    
+    bool remote_override_enabled() override;
+    void remote_override(ClientAPI::RemoteOverride& remote) override;
     
     void event(const ClientAPI::Event& event) override;
     void log(const ClientAPI::LogInfo& log) override;

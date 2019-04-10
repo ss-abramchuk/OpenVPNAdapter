@@ -44,6 +44,12 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
 @property (nullable, nonatomic) NSString *server;
 
 /**
+ Use a different port than that specified in "remote"
+ option of profile
+ */
+@property (nonatomic) NSUInteger port;
+
+/**
  Force a given transport protocol
  */
 @property (nonatomic) OpenVPNTransportProtocol proto;
@@ -57,11 +63,6 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
  Connection timeout in seconds, or 0 to retry indefinitely
  */
 @property (nonatomic) NSInteger connectionTimeout;
-
-/**
- Keep tun interface active during pauses or reconnections
- */
-@property (nonatomic) BOOL tunPersist;
 
 /**
  If YES and a redirect-gateway profile doesn't also define
@@ -78,6 +79,12 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
  Enable autologin sessions
  */
 @property (nonatomic) BOOL autologinSessions;
+
+/**
+ If YES, consider AUTH_FAILED to be a non-fatal error,
+ and retry the connection after a pause.
+ */
+@property (nonatomic) BOOL retryOnAuthFailed;
 
 /**
  If YES, don't send client cert/key to peer

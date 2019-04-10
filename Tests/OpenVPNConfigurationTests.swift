@@ -82,6 +82,26 @@ class OpenVPNConfigurationTests: XCTestCase {
         XCTAssert(configuration.settings == nil, "Empty settings should return nil")
     }
     
+    func testGetSetRemote() {
+        guard let originalProfile = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
+        
+        let originalServer = "192.168.1.200"
+        let originalPort: UInt = 12000
+        
+        let configuration = OpenVPNConfiguration()        
+        configuration.fileContent = originalProfile
+        
+        XCTAssertNil(configuration.server)
+        XCTAssertEqual(configuration.port, 0)
+        
+        configuration.server = originalServer
+        configuration.port = originalPort
+        
+        XCTAssertNotNil(configuration.server)
+        XCTAssertEqual(configuration.server, originalServer)
+        XCTAssertEqual(configuration.port, originalPort)
+    }
+    
     func testGetSetProto() {
         let originalOption: OpenVPNTransportProtocol = .UDP
         

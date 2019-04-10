@@ -31,9 +31,12 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <thread>
 
 #include <openvpn/io/io.hpp>
+#include <openvpn/asio/asiowork.hpp>
 
+#include <openvpn/common/bigmutex.hpp>
 #include <openvpn/common/exception.hpp>
 #include <openvpn/common/rc.hpp>
 #include <openvpn/common/options.hpp>
@@ -45,6 +48,7 @@
 #include <openvpn/transport/protocol.hpp>
 #include <openvpn/client/cliconstants.hpp>
 #include <openvpn/log/sessionstats.hpp>
+#include <openvpn/client/async_resolve.hpp>
 
 #if OPENVPN_DEBUG_REMOTELIST >= 1
 #define OPENVPN_LOG_REMOTELIST(x) OPENVPN_LOG(x)
@@ -53,7 +57,6 @@
 #endif
 
 namespace openvpn {
-
   class RemoteList : public RC<thread_unsafe_refcount>
   {
     // A single IP address that is part of a list of IP addresses
@@ -262,7 +265,7 @@ namespace openvpn {
     // This is useful in tun_persist mode, where it may be necessary
     // to pre-resolve all potential remote server items prior
     // to initial tunnel establishment.
-    class PreResolve : public RC<thread_unsafe_refcount>
+    class PreResolve : public virtual RC<thread_unsafe_refcount>, AsyncResolvableTCP
     {
     public:
       typedef RCPtr<PreResolve> Ptr;
@@ -276,8 +279,7 @@ namespace openvpn {
       PreResolve(openvpn_io::io_context& io_context_arg,
 		 const RemoteList::Ptr& remote_list_arg,
 		 const SessionStats::Ptr& stats_arg)
-	:  io_context(io_context_arg),
-	   resolver(io_context_arg),
+	:  AsyncResolvableTCP(io_context_arg),
 	   notify_callback(nullptr),
 	   remote_list(remote_list_arg),
 	   stats(stats_arg),
@@ -313,7 +315,7 @@ namespace openvpn {
       {
 	notify_callback = nullptr;
 	index = 0;
-	resolver.cancel();
+	async_resolve_cancel();
       }
 
     private:
@@ -336,14 +338,8 @@ namespace openvpn {
 		  }
 		else
 		  {
-		    // call into Asio to do the resolve operation
 		    OPENVPN_LOG_REMOTELIST("*** PreResolve RESOLVE on " << item.server_host << " : " << item.server_port);
-		    resolver.async_resolve(item.server_host, item.server_port,
-					   [self=Ptr(this)](const openvpn_io::error_code& error, openvpn_io::ip::tcp::resolver::results_type results)
-					   {
-					     OPENVPN_ASYNC_HANDLER;
-					     self->resolve_callback(error, results);
-					   });
+		    async_resolve_name(item.server_host, item.server_port);
 		    return;
 		  }
 	      }
@@ -364,7 +360,7 @@ namespace openvpn {
 
       // callback on resolve completion
       void resolve_callback(const openvpn_io::error_code& error,
-			    openvpn_io::ip::tcp::resolver::results_type results)
+			    openvpn_io::ip::tcp::resolver::results_type results) override
       {
 	if (notify_callback && index < remote_list->list.size())
 	  {
@@ -385,8 +381,6 @@ namespace openvpn {
 	  }
       }
 
-      openvpn_io::io_context& io_context;
-      openvpn_io::ip::tcp::resolver resolver;
       NotifyCallback* notify_callback;
       RemoteList::Ptr remote_list;
       SessionStats::Ptr stats;
