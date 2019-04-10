@@ -33,7 +33,7 @@ To install OpenVPNAdapter with Cocoapods, add the following lines to your `Podfi
 ```ruby
 target 'Your Target Name' do
   use_frameworks!
-  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.1.0'
+  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.2.0'
 end
 ```
 
@@ -53,7 +53,7 @@ Then we need to create or load a VPN profile. [`NETunnelProviderManager`](https:
 ```swift
 NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
     guard error == nil else {
-        // Handle an occured error
+        // Handle an occurred error
         return
     }
 
@@ -65,7 +65,7 @@ The next step is to provide VPN settings to the instance of [`NETunnelProviderMa
 ```swift
 self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     guard error == nil else {
-        // Handle an occured error
+        // Handle an occurred error
         return
     }
 
@@ -107,7 +107,7 @@ self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     // Save configuration in the Network Extension preferences
     self.providerManager?.saveToPreferences(completionHandler: { (error) in
         if let error = error  {
-            // Handle an occured error
+            // Handle an occurred error
         }
     })
 }
@@ -118,14 +118,14 @@ Start VPN by calling the following code.
 ```swift
 self.providerManager?.loadFromPreferences(completionHandler: { (error) in
     guard error == nil else {
-        // Handle an occured error
+        // Handle an occurred error
         return
     }
 
     do {
         try self.providerManager?.connection.startVPNTunnel()
     } catch {
-        // Handle an occured error
+        // Handle an occurred error
     }
 }
 ```
@@ -247,7 +247,12 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     // `OpenVPNAdapterPacketFlow` method signatures are similar to `NEPacketTunnelFlow` so
     // you can just extend that class to adopt `OpenVPNAdapterPacketFlow` protocol and
     // send `self.packetFlow` to `completionHandler` callback.
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
+        // In order to direct all DNS queries first to the VPN DNS servers before the primary DNS servers
+        // send empty string to NEDNSSettings.matchDomains  
+        networkSettings?.dnsSettings?.matchDomains = [""]
+
+        // Specify the network settings for the current tunneling session.
         setTunnelNetworkSettings(settings) { (error) in
             completionHandler(error == nil ? self.packetFlow : nil)
         }
@@ -320,7 +325,7 @@ extension NEPacketTunnelFlow: OpenVPNAdapterPacketFlow {}
 Any contributions and suggestions are welcome! But before creating a PR or an issue please read the [Contribution Guide](CONTRIBUTING.md).
 
 ## Acknowledgments
-Special thanks goes to @JonathanDowning for great help in development of this project and bug fixing.
+Special thanks goes to [@JonathanDowning](https://github.com/JonathanDowning) for great help in development of this project and bug fixing.
 
 ## License
 OpenVPNAdapter is available under the AGPLv3 license. See the [LICENSE](LICENSE) file for more info. Also this project has a few dependencies:

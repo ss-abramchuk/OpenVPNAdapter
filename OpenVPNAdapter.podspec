@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.name = "OpenVPNAdapter"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
   s.summary   = "Objective-C wrapper for OpenVPN library. Compatible with iOS and macOS."
   s.description = <<-DESC
     OpenVPNAdapter is an Objective-C framework that allows to easily configure and establish VPN connection using OpenVPN protocol.
@@ -143,7 +143,7 @@ Pod::Spec.new do |s|
 
     openvpn.xcconfig = {
       "HEADER_SEARCH_PATHS" => "${PODS_TARGET_SRCROOT}/#{openvpn_path}/**",
-      "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
+      "OTHER_CPLUSPLUSFLAGS" => "$(OTHER_CFLAGS) -DUSE_ASIO -DUSE_ASIO_THREADLOCAL -DASIO_STANDALONE -DASIO_NO_DEPRECATED -DASIO_HAS_STD_STRING_VIEW -DHAVE_LZ4 -DUSE_MBEDTLS -DOPENVPN_FORCE_TUN_NULL -DUSE_TUN_BUILDER"
     }
   end
 

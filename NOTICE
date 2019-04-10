@@ -4,7 +4,6 @@ Third party libraries used by the OpenVPNAdapter project:
 
 --------------------------------------------------------------------
 Dependency: https://github.com/OpenVPN/openvpn3
-Revision: 3e002c83ce2e9f9f40ddcee750d3cfa664238abe
 License type: GNU Affero General Public License - Version 3.0
 --------------------------------------------------------------------
 OpenVPN Library
@@ -675,7 +674,6 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 
 --------------------------------------------------------------------
 Dependency: https://github.com/ARMmbed/mbedtls
-Revision: 72ea31b026e1fc61b01662474aa5125817b968bc
 License type: Apache License - Version 2.0
 --------------------------------------------------------------------
 mbedTLS Library
@@ -886,7 +884,6 @@ limitations under the License.
 
 --------------------------------------------------------------------
 Dependency: https://github.com/chriskohlhoff/asio
-Revision: 72ea31b026e1fc61b01662474aa5125817b968bc
 License type: Boost Software License - Version 1.0
 --------------------------------------------------------------------
 ASIO Library
@@ -920,7 +917,6 @@ DEALINGS IN THE SOFTWARE.
 
 --------------------------------------------------------------------
 Dependency: https://github.com/lz4/lz4
-Revision: c10863b98e1503af90616ae99725ecd120265dfb
 License type: BSD 2-Clause License
 --------------------------------------------------------------------
 LZ4 Library
