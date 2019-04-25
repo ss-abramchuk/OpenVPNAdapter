@@ -8,7 +8,7 @@ CLANG_CXX_LANGUAGE_STANDARD = gnu++14
 CLANG_CXX_LIBRARY = libc++
 VENDORS_DIR = $(PROJECT_DIR)/Sources/OpenVPNAdapter/Libraries/Vendors
 HEADER_SEARCH_PATHS = "$(VENDORS_DIR)/asio/asio/include" "$(VENDORS_DIR)/lz4/include" "$(VENDORS_DIR)/mbedtls/include" "$(VENDORS_DIR)/openvpn"
-LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*] = "$(VENDORS_DIR)/lz4/lib/sim" "$(VENDORS_DIR)/mbedtls/lib/sim"
+LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*] = "$(VENDORS_DIR)/lz4/lib/ios" "$(VENDORS_DIR)/mbedtls/lib/ios"
 LIBRARY_SEARCH_PATHS[sdk=iphoneos*] = "$(VENDORS_DIR)/lz4/lib/ios" "$(VENDORS_DIR)/mbedtls/lib/ios"
 LIBRARY_SEARCH_PATHS[sdk=macosx*] = "$(VENDORS_DIR)/lz4/lib/macos" "$(VENDORS_DIR)/mbedtls/lib/macos"
 OTHER_LDFLAGS = -lmbedtls -lmbedx509 -lmbedcrypto -llz4
