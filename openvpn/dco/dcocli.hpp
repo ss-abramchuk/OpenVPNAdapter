@@ -34,7 +34,7 @@
 #include <openvpn/transport/client/transbase.hpp>
 #include <openvpn/tun/client/tunbase.hpp>
 #include <openvpn/tun/builder/capture.hpp>
-#include <openvpn/tun/linux/client/tuncli.hpp>
+#include <openvpn/tun/linux/client/tuniproute.hpp>
 #include <openvpn/transport/dco.hpp>
 #include <openvpn/kovpn/kovpn.hpp>
 #include <openvpn/kovpn/kodev.hpp>
@@ -336,12 +336,12 @@ namespace openvpn {
 		detect_vpn_ip_collision(*vpn_ip_collision, *po, config->trunk_unit, *remove_cmds);
 
 	      // trunk setup
-	      TunLinux::iface_config(state->iface_name,
-				     config->trunk_unit,
-				     *po,
-				     nullptr,
-				     *add_cmds,
-				     *remove_cmds);
+	      TunIPRoute::iface_config(state->iface_name,
+				      config->trunk_unit,
+				      *po,
+				      nullptr,
+				      *add_cmds,
+				      *remove_cmds);
 
 	      // Note that in trunking mode, kovpn must be
 	      // configured for source routing.
@@ -351,11 +351,11 @@ namespace openvpn {
 	  else
 	    {
 	      // non-trunk setup
-	      TunLinux::tun_config(state->iface_name,
-				   *po,
-				   &rtvec,
-				   *add_cmds,
-				   *remove_cmds);
+	      TunIPRoute::TunMethods::tun_config(state->iface_name,
+						 *po,
+						 &rtvec,
+						 *add_cmds,
+						 *remove_cmds);
 	    }
 
 	  // Add routes to DCO implementation
@@ -533,7 +533,6 @@ namespace openvpn {
 	config->transport.remote_list->get_endpoint(udp().server_endpoint);
 	OPENVPN_LOG("Contacting " << udp().server_endpoint << " via UDP");
 	transport_parent->transport_wait();
-	transport_parent->ip_hole_punch(server_endpoint_addr());
 	udp().socket.open(udp().server_endpoint.protocol());
 	udp().socket.async_connect(udp().server_endpoint, [self=Ptr(this)](const openvpn_io::error_code& error)
                                                           {
