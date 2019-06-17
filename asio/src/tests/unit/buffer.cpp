@@ -2,7 +2,7 @@
 // buffer.cpp
 // ~~~~~~~~~~
 //
-// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -62,18 +62,17 @@ void test()
     std::vector<mutable_buffer> mutable_buffer_sequence;
     std::vector<const_buffer> const_buffer_sequence;
 #if defined(ASIO_HAS_STD_STRING_VIEW)
-# if defined(ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW)
-    std::experimental::string_view string_view_data(string_data);
-# else // defined(ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW)
     std::string_view string_view_data(string_data);
-# endif // defined(ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW)
-#endif // defined(ASIO_HAS_STD_STRING_VIEW)
+#elif defined(ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW)
+    std::experimental::string_view string_view_data(string_data);
+#endif // defined(ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW)
 
     // mutable_buffer constructors.
 
     mutable_buffer mb1;
     mutable_buffer mb2(void_ptr_data, 1024);
     mutable_buffer mb3(mb1);
+    (void)mb3;
 
     // mutable_buffer functions.
 
@@ -110,7 +109,9 @@ void test()
     const_buffer cb1;
     const_buffer cb2(const_void_ptr_data, 1024);
     const_buffer cb3(cb1);
+    (void)cb3;
     const_buffer cb4(mb1);
+    (void)cb4;
 
     // const_buffer functions.
 
@@ -204,10 +205,10 @@ void test()
     mb1 = buffer(string_data, 1024);
     cb1 = buffer(const_string_data);
     cb1 = buffer(const_string_data, 1024);
-#if defined(ASIO_HAS_STD_STRING_VIEW)
+#if defined(ASIO_HAS_STRING_VIEW)
     cb1 = buffer(string_view_data);
     cb1 = buffer(string_view_data, 1024);
-#endif // defined(ASIO_HAS_STD_STRING_VIEW)
+#endif // defined(ASIO_HAS_STRING_VIEW)
 
     // buffer_copy function overloads.
 
@@ -321,6 +322,7 @@ void test()
     std::size_t size40 = db3.max_size();
     (void)size40;
 
+#if !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
     dynamic_string_buffer<char, std::string::traits_type,
       std::string::allocator_type>::const_buffers_type
         cb5 = db1.data();
@@ -339,9 +341,35 @@ void test()
 
     db1.commit(1024);
     db3.commit(1024);
+#endif // !defined(ASIO_NO_DYNAMIC_BUFFER_V1)
 
-    db1.consume(1024);
-    db3.consume(1024);
+    dynamic_string_buffer<char, std::string::traits_type,
+      std::string::allocator_type>::mutable_buffers_type
+        mb7 = db1.data(0, 1);
+    (void)mb7;
+    dynamic_vector_buffer<char, std::allocator<char> >::mutable_buffers_type
+      mb8 = db3.data(0, 1);
+    (void)mb8;
+
+    dynamic_string_buffer<char, std::string::traits_type,
+      std::string::allocator_type>::const_buffers_type
+        cb7 = static_cast<const dynamic_string_buffer<char,
+          std::string::traits_type,
+            std::string::allocator_type>&>(db1).data(0, 1);
+    (void)cb7;
+    dynamic_vector_buffer<char, std::allocator<char> >::const_buffers_type
+      cb8 = static_cast<const dynamic_vector_buffer<char,
+        std::allocator<char> >&>(db3).data(0, 1);
+    (void)cb8;
+
+    db1.grow(1024);
+    db3.grow(1024);
+
+    db1.shrink(1024);
+    db3.shrink(1024);
+
+    db1.consume(0);
+    db3.consume(0);
   }
   catch (std::exception&)
   {

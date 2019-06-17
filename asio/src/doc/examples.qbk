@@ -1,5 +1,5 @@
 [/
- / Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+ / Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
  /
  / Distributed under the Boost Software License, Version 1.0. (See accompanying
  / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,6 +19,9 @@ facilities. These examples do not make direct use of Boost C++ libraries.
 To show the changes between C++03 and C++11, these examples include a diff
 between the C++03 and C++11 versions.
 [/boostify: non-boost docs end here]
+
+* [link asio.examples.cpp17_examples C++17 Examples]: Selected examples
+illustrating C++17 usage in conjunction with Technical Specifications.
 
 
 [section:cpp03_examples C++03 Examples]
@@ -268,15 +271,15 @@ operations after a period of time.
 
 * [@../src/examples/cpp03/timeouts/async_tcp_client.cpp]
 * [@../src/examples/cpp03/timeouts/blocking_tcp_client.cpp]
+* [@../src/examples/cpp03/timeouts/blocking_token_tcp_client.cpp]
 * [@../src/examples/cpp03/timeouts/blocking_udp_client.cpp]
 * [@../src/examples/cpp03/timeouts/server.cpp]
 
 
 [heading Timers]
 
-Examples showing how to customise deadline_timer using different time types.
+Example showing how to customise basic_waitable_timer using a different clock type.
 
-* [@../src/examples/cpp03/timers/tick_count_timer.cpp]
 * [@../src/examples/cpp03/timers/time_t_timer.cpp]
 
 
@@ -442,6 +445,29 @@ library that wants to perform the I/O operations itself.
 * [@../src/examples/cpp11/nonblocking/third_party_lib.cpp] ([@examples/diffs/nonblocking/third_party_lib.cpp.html diff to C++03])
 
 
+[heading Operations]
+
+Examples showing how to implement composed asynchronous operations as reusable library functions.
+
+* [@../src/examples/cpp11/operations/composed_1.cpp]
+* [@../src/examples/cpp11/operations/composed_2.cpp]
+* [@../src/examples/cpp11/operations/composed_3.cpp]
+* [@../src/examples/cpp11/operations/composed_4.cpp]
+* [@../src/examples/cpp11/operations/composed_5.cpp]
+* [@../src/examples/cpp11/operations/composed_6.cpp]
+* [@../src/examples/cpp11/operations/composed_7.cpp]
+* [@../src/examples/cpp11/operations/composed_8.cpp]
+
+
+[heading SOCKS 4]
+
+Example client program implementing the SOCKS 4 protocol for communication via
+a proxy.
+
+* [@../src/examples/cpp11/socks4/sync_client.cpp] ([@examples/diffs/socks4/sync_client.cpp.html diff to C++03])
+* [@../src/examples/cpp11/socks4/socks4.hpp] ([@examples/diffs/socks4/socks4.hpp.html diff to C++03])
+
+
 [heading Spawn]
 
 Example of using the asio::spawn() function, a wrapper around the
@@ -452,6 +478,34 @@ coroutines.
 * [@../src/examples/cpp11/spawn/echo_server.cpp] ([@examples/diffs/spawn/echo_server.cpp.html diff to C++03])
 
 
+[heading SSL]
+
+Example client and server programs showing the use of the [link
+asio.reference.ssl__stream ssl::stream<>] template with asynchronous operations.
+
+* [@../src/examples/cpp11/ssl/client.cpp] ([@examples/diffs/ssl/client.cpp.html diff to C++03])
+* [@../src/examples/cpp11/ssl/server.cpp] ([@examples/diffs/ssl/server.cpp.html diff to C++03])
+
+
+[heading Timeouts]
+
+A collection of examples showing how to cancel long running asynchronous
+operations after a period of time.
+
+* [@../src/examples/cpp11/timeouts/async_tcp_client.cpp] ([@examples/diffs/timeouts/async_tcp_client.cpp.html diff to C++03])
+* [@../src/examples/cpp11/timeouts/blocking_tcp_client.cpp] ([@examples/diffs/timeouts/blocking_tcp_client.cpp.html diff to C++03])
+* [@../src/examples/cpp11/timeouts/blocking_token_tcp_client.cpp] ([@examples/diffs/timeouts/blocking_token_tcp_client.cpp.html diff to C++03])
+* [@../src/examples/cpp11/timeouts/blocking_udp_client.cpp] ([@examples/diffs/timeouts/blocking_udp_client.cpp.html diff to C++03])
+* [@../src/examples/cpp11/timeouts/server.cpp] ([@examples/diffs/timeouts/server.cpp.html diff to C++03])
+
+
+[heading Timers]
+
+Example showing how to customise basic_waitable_timer using a different clock type.
+
+* [@../src/examples/cpp11/timers/time_t_timer.cpp] ([@examples/diffs/timers/time_t_timer.cpp.html diff to C++03])
+
+
 [heading UNIX Domain Sockets]
 
 Examples showing how to use UNIX domain (local) sockets.
@@ -460,6 +514,44 @@ Examples showing how to use UNIX domain (local) sockets.
 * [@../src/examples/cpp11/local/iostream_client.cpp] ([@examples/diffs/local/iostream_client.cpp.html diff to C++03])
 * [@../src/examples/cpp11/local/stream_server.cpp] ([@examples/diffs/local/stream_server.cpp.html diff to C++03])
 * [@../src/examples/cpp11/local/stream_client.cpp] ([@examples/diffs/local/stream_client.cpp.html diff to C++03])
+
+
+[endsect]
+
+
+[section:cpp14_examples C++14 Examples]
+
+
+[heading Operations]
+
+Examples showing how to implement composed asynchronous operations as reusable library functions.
+
+* [@../src/examples/cpp14/operations/composed_1.cpp]
+* [@../src/examples/cpp14/operations/composed_2.cpp]
+* [@../src/examples/cpp14/operations/composed_3.cpp]
+* [@../src/examples/cpp14/operations/composed_4.cpp]
+* [@../src/examples/cpp14/operations/composed_5.cpp]
+* [@../src/examples/cpp14/operations/composed_6.cpp]
+* [@../src/examples/cpp14/operations/composed_7.cpp]
+* [@../src/examples/cpp14/operations/composed_8.cpp]
+
+
+[endsect]
+
+
+[section:cpp17_examples C++17 Examples]
+
+
+[heading Coroutines TS Support]
+
+Examples showing how to implement a chain of asynchronous operations using the
+Coroutines TS.
+
+* [@../src/examples/cpp17/coroutines_ts/echo_server.cpp]
+* [@../src/examples/cpp17/coroutines_ts/refactored_echo_server.cpp]
+* [@../src/examples/cpp17/coroutines_ts/double_buffered_echo_server.cpp]
+* [@../src/examples/cpp17/coroutines_ts/chat_server.cpp]
+* [@../src/examples/cpp17/coroutines_ts/range_based_for.cpp]
 
 
 [endsect]
