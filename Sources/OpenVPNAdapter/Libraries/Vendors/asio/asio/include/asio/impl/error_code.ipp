@@ -80,7 +80,7 @@ public:
     DWORD length = ::FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
         | FORMAT_MESSAGE_FROM_SYSTEM
         | FORMAT_MESSAGE_IGNORE_INSERTS, 0, value,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&msg, 0, 0);
+        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), (char*)&msg, 0, 0);
     detail::local_free_on_block_exit local_free_obj(msg);
     if (length && msg[length - 1] == '\n')
       msg[--length] = '\0';
