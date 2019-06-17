@@ -2,7 +2,7 @@
 <!DOCTYPE library PUBLIC "-//Boost//DTD BoostBook XML V1.0//EN" "../../../boost/tools/boostbook/dtd/boostbook.dtd">
 
 <!--
-  Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+  Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 
   Distributed under the Boost Software License, Version 1.0. (See accompanying
   file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,7 +26,9 @@
         <entry valign="top">
           <bridgehead renderas="sect3">Classes</bridgehead>
           <simplelist type="vert" columns="1">
+            <member><link linkend="asio.reference.bad_executor">bad_executor</link></member>
             <member><link linkend="asio.reference.coroutine">coroutine</link></member>
+            <member><link linkend="asio.reference.detached_t">detached_t</link></member>
             <member><link linkend="asio.reference.error_code">error_code</link></member>
             <member><link linkend="asio.reference.execution_context">execution_context</link></member>
             <member><link linkend="asio.reference.execution_context__id">execution_context::id</link></member>
@@ -40,8 +42,10 @@
             <member><link linkend="asio.reference.io_context__strand">io_context::strand</link></member>
             <member><link linkend="asio.reference.io_context__work">io_context::work</link> (deprecated)</member>
             <member><link linkend="asio.reference.service_already_exists">service_already_exists</link></member>
+            <member><link linkend="asio.reference.system_context">system_context</link></member>
             <member><link linkend="asio.reference.system_error">system_error</link></member>
             <member><link linkend="asio.reference.system_executor">system_executor</link></member>
+            <member><link linkend="asio.reference.this_coro__executor_t">this_coro::executor_t</link></member>
             <member><link linkend="asio.reference.thread">thread</link></member>
             <member><link linkend="asio.reference.thread_pool">thread_pool</link></member>
             <member><link linkend="asio.reference.thread_pool__executor_type">thread_pool::executor_type</link></member>
@@ -51,38 +55,49 @@
         <entry valign="top">
           <bridgehead renderas="sect3">Free Functions</bridgehead>
           <simplelist type="vert" columns="1">
-            <member><link linkend="asio.reference.add_service">add_service</link></member>
+            <member><link linkend="asio.reference.execution_context.add_service">add_service</link></member>
             <member><link linkend="asio.reference.asio_handler_allocate">asio_handler_allocate</link></member>
             <member><link linkend="asio.reference.asio_handler_deallocate">asio_handler_deallocate</link></member>
             <member><link linkend="asio.reference.asio_handler_invoke">asio_handler_invoke</link></member>
             <member><link linkend="asio.reference.asio_handler_is_continuation">asio_handler_is_continuation</link></member>
+            <member><link linkend="asio.reference.async_compose">async_compose</link></member>
+            <member><link linkend="asio.reference.async_initiate">async_initiate</link></member>
             <member><link linkend="asio.reference.bind_executor">bind_executor</link></member>
+            <member><link linkend="asio.reference.co_spawn">co_spawn</link></member>
             <member><link linkend="asio.reference.dispatch">dispatch</link></member>
             <member><link linkend="asio.reference.defer">defer</link></member>
             <member><link linkend="asio.reference.get_associated_allocator">get_associated_allocator</link></member>
             <member><link linkend="asio.reference.get_associated_executor">get_associated_executor</link></member>
-            <member><link linkend="asio.reference.has_service">has_service</link></member>
+            <member><link linkend="asio.reference.execution_context.has_service">has_service</link></member>
+            <member><link linkend="asio.reference.make_strand">make_strand</link></member>
             <member><link linkend="asio.reference.make_work_guard">make_work_guard</link></member>
             <member><link linkend="asio.reference.post">post</link></member>
+            <member><link linkend="asio.reference.redirect_error">redirect_error</link></member>
             <member><link linkend="asio.reference.spawn">spawn</link></member>
-            <member><link linkend="asio.reference.use_service">use_service</link></member>
+            <member><link linkend="asio.reference.execution_context.use_service">use_service</link></member>
           </simplelist>
         </entry>
         <entry valign="top">
           <bridgehead renderas="sect3">Class Templates</bridgehead>
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.async_completion">async_completion</link></member>
+            <member><link linkend="asio.reference.awaitable">awaitable</link></member>
             <member><link linkend="asio.reference.basic_io_object">basic_io_object</link></member>
             <member><link linkend="asio.reference.basic_yield_context">basic_yield_context</link></member>
             <member><link linkend="asio.reference.executor_binder">executor_binder</link></member>
             <member><link linkend="asio.reference.executor_work_guard">executor_work_guard</link></member>
+            <member><link linkend="asio.reference.redirect_error_t">redirect_error_t</link></member>
             <member><link linkend="asio.reference.strand">strand</link></member>
+            <member><link linkend="asio.reference.use_awaitable_t">use_awaitable_t</link></member>
             <member><link linkend="asio.reference.use_future_t">use_future_t</link></member>
           </simplelist>
           <bridgehead renderas="sect3">Special Values</bridgehead>
           <simplelist type="vert" columns="1">
+            <member><link linkend="asio.reference.detached">detached</link></member>
             <member><link linkend="asio.reference.executor_arg">executor_arg</link></member>
+            <member><link linkend="asio.reference.this_coro__executor">this_coro::executor</link></member>
             <member><link linkend="asio.reference.use_future">use_future</link></member>
+            <member><link linkend="asio.reference.use_awaitable">use_awaitable</link></member>
           </simplelist>
           <bridgehead renderas="sect3">Boost.Bind Placeholders</bridgehead>
           <simplelist type="vert" columns="1">
@@ -107,7 +122,6 @@
             <member><link linkend="asio.reference.associated_allocator">associated_allocator</link></member>
             <member><link linkend="asio.reference.associated_executor">associated_executor</link></member>
             <member><link linkend="asio.reference.async_result">async_result</link></member>
-            <member><link linkend="asio.reference.handler_type">handler_type </link> (deprecated)</member>
             <member><link linkend="asio.reference.is_executor">is_executor</link></member>
             <member><link linkend="asio.reference.uses_executor">uses_executor</link></member>
           </simplelist>
@@ -171,6 +185,8 @@
             <member><link linkend="asio.reference.buffer_cast">buffer_cast </link> (deprecated)</member>
             <member><link linkend="asio.reference.buffer_copy">buffer_copy</link></member>
             <member><link linkend="asio.reference.buffer_size">buffer_size</link></member>
+            <member><link linkend="asio.reference.buffer_sequence_begin">buffer_sequence_begin</link></member>
+            <member><link linkend="asio.reference.buffer_sequence_end">buffer_sequence_end</link></member>
             <member><link linkend="asio.reference.buffers_begin">buffers_begin</link></member>
             <member><link linkend="asio.reference.buffers_end">buffers_end</link></member>
             <member><link linkend="asio.reference.dynamic_buffer">dynamic_buffer</link></member>
@@ -188,6 +204,9 @@
           <bridgehead renderas="sect3">Type Traits</bridgehead>
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.is_const_buffer_sequence">is_const_buffer_sequence</link></member>
+            <member><link linkend="asio.reference.is_dynamic_buffer">is_dynamic_buffer</link></member>
+            <member><link linkend="asio.reference.is_dynamic_buffer_v1">is_dynamic_buffer_v1</link></member>
+            <member><link linkend="asio.reference.is_dynamic_buffer_v2">is_dynamic_buffer_v2</link></member>
             <member><link linkend="asio.reference.is_match_condition">is_match_condition</link></member>
             <member><link linkend="asio.reference.is_mutable_buffer_sequence">is_mutable_buffer_sequence</link></member>
             <member><link linkend="asio.reference.is_read_buffered">is_read_buffered</link></member>
@@ -205,6 +224,8 @@
             <member><link linkend="asio.reference.CompletionCondition">CompletionCondition</link></member>
             <member><link linkend="asio.reference.ConstBufferSequence">ConstBufferSequence</link></member>
             <member><link linkend="asio.reference.DynamicBuffer">DynamicBuffer</link></member>
+            <member><link linkend="asio.reference.DynamicBuffer_v1">DynamicBuffer_v1</link></member>
+            <member><link linkend="asio.reference.DynamicBuffer_v2">DynamicBuffer_v2</link></member>
             <member><link linkend="asio.reference.MutableBufferSequence">MutableBufferSequence</link></member>
             <member><link linkend="asio.reference.ReadHandler">ReadHandler</link></member>
             <member><link linkend="asio.reference.SyncRandomAccessReadDevice">SyncRandomAccessReadDevice</link></member>
@@ -254,12 +275,14 @@
             <member><link linkend="asio.reference.ip__address_v6">ip::address_v6</link></member>
             <member><link linkend="asio.reference.ip__address_v6_iterator">ip::address_v6_iterator</link></member>
             <member><link linkend="asio.reference.ip__address_v6_range">ip::address_v6_range</link></member>
+            <member><link linkend="asio.reference.ip__bad_address_cast">ip::bad_address_cast</link></member>
             <member><link linkend="asio.reference.ip__icmp">ip::icmp</link></member>
             <member><link linkend="asio.reference.ip__icmp.endpoint">ip::icmp::endpoint</link></member>
             <member><link linkend="asio.reference.ip__icmp.resolver">ip::icmp::resolver</link></member>
             <member><link linkend="asio.reference.ip__icmp.socket">ip::icmp::socket</link></member>
             <member><link linkend="asio.reference.ip__network_v4">ip::network_v4</link></member>
             <member><link linkend="asio.reference.ip__network_v6">ip::network_v6</link></member>
+            <member><link linkend="asio.reference.ip__resolver_base">ip::resolver_base</link></member>
             <member><link linkend="asio.reference.ip__resolver_query_base">ip::resolver_query_base</link></member>
             <member><link linkend="asio.reference.ip__tcp">ip::tcp</link></member>
             <member><link linkend="asio.reference.ip__tcp.acceptor">ip::tcp::acceptor</link></member>
@@ -271,6 +294,7 @@
             <member><link linkend="asio.reference.ip__udp.endpoint">ip::udp::endpoint</link></member>
             <member><link linkend="asio.reference.ip__udp.resolver">ip::udp::resolver</link></member>
             <member><link linkend="asio.reference.ip__udp.socket">ip::udp::socket</link></member>
+            <member><link linkend="asio.reference.ip__v4_mapped_t">ip::v4_mapped_t</link></member>
             <member><link linkend="asio.reference.socket_base">socket_base</link></member>
           </simplelist>
         </entry>
@@ -301,6 +325,7 @@
             <member><link linkend="asio.reference.ip__basic_resolver">ip::basic_resolver</link></member>
             <member><link linkend="asio.reference.ip__basic_resolver_entry">ip::basic_resolver_entry</link></member>
             <member><link linkend="asio.reference.ip__basic_resolver_iterator">ip::basic_resolver_iterator</link></member>
+            <member><link linkend="asio.reference.ip__basic_resolver_results">ip::basic_resolver_results</link></member>
             <member><link linkend="asio.reference.ip__basic_resolver_query">ip::basic_resolver_query</link></member>
           </simplelist>
         </entry>
@@ -415,6 +440,10 @@
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.ssl__stream">ssl::stream</link></member>
           </simplelist>
+          <bridgehead renderas="sect3">Error Codes</bridgehead>
+          <simplelist type="vert" columns="1">
+            <member><link linkend="asio.reference.ssl__error__stream_errors">ssl::error::stream_errors</link></member>
+          </simplelist>
           <bridgehead renderas="sect3">Type Requirements</bridgehead>
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.BufferedHandshakeHandler">BufferedHandshakeHandler</link></member>
@@ -427,6 +456,10 @@
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.serial_port">serial_port</link></member>
             <member><link linkend="asio.reference.serial_port_base">serial_port_base</link></member>
+          </simplelist>
+          <bridgehead renderas="sect3">Class templates</bridgehead>
+          <simplelist type="vert" columns="1">
+            <member><link linkend="asio.reference.basic_serial_port">basic_serial_port</link></member>
           </simplelist>
           <bridgehead renderas="sect3">Serial Port Options</bridgehead>
           <simplelist type="vert" columns="1">
@@ -447,6 +480,10 @@
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.signal_set">signal_set</link></member>
           </simplelist>
+          <bridgehead renderas="sect3">Class Templates</bridgehead>
+          <simplelist type="vert" columns="1">
+            <member><link linkend="asio.reference.basic_signal_set">basic_signal_set</link></member>
+          </simplelist>
           <bridgehead renderas="sect3">Type Requirements</bridgehead>
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.SignalHandler">SignalHandler</link></member>
@@ -455,17 +492,16 @@
       </row>
     </tbody>
   </tgroup>
-  <tgroup cols="4">
+  <tgroup cols="3">
     <colspec colname="a"/>
     <colspec colname="b"/>
     <colspec colname="c"/>
-    <colspec colname="d"/>
     <thead>
       <row>
         <entry valign="center" namest="a" nameend="b">
           <bridgehead renderas="sect2">POSIX-specific</bridgehead>
         </entry>
-        <entry valign="center" namest="c" nameend="d">
+        <entry valign="center" namest="c" nameend="c">
           <bridgehead renderas="sect2">Windows-specific</bridgehead>
         </entry>
       </row>
@@ -496,9 +532,11 @@
           <bridgehead renderas="sect3">Class Templates</bridgehead>
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.local__basic_endpoint">local::basic_endpoint</link></member>
+            <member><link linkend="asio.reference.posix__basic_descriptor">posix::basic_descriptor</link></member>
+            <member><link linkend="asio.reference.posix__basic_stream_descriptor">posix::basic_stream_descriptor</link></member>
           </simplelist>
         </entry>
-        <entry valign="top" namest="c" nameend="d">
+        <entry valign="top">
           <bridgehead renderas="sect3">Classes</bridgehead>
           <simplelist type="vert" columns="1">
             <member><link linkend="asio.reference.windows__object_handle">windows::object_handle</link></member>
@@ -506,6 +544,13 @@
             <member><link linkend="asio.reference.windows__overlapped_ptr">windows::overlapped_ptr</link></member>
             <member><link linkend="asio.reference.windows__random_access_handle">windows::random_access_handle</link></member>
             <member><link linkend="asio.reference.windows__stream_handle">windows::stream_handle</link></member>
+          </simplelist>
+          <bridgehead renderas="sect3">Class Templates</bridgehead>
+          <simplelist type="vert" columns="1">
+            <member><link linkend="asio.reference.windows__basic_object_handle">windows::basic_object_handle</link></member>
+            <member><link linkend="asio.reference.windows__basic_overlapped_handle">windows::basic_overlapped_handle</link></member>
+            <member><link linkend="asio.reference.windows__basic_random_access_handle">windows::basic_random_access_handle</link></member>
+            <member><link linkend="asio.reference.windows__basic_stream_handle">windows::basic_stream_handle</link></member>
           </simplelist>
         </entry>
       </row>
