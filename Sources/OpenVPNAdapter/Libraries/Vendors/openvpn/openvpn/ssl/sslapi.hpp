@@ -41,6 +41,7 @@
 #include <openvpn/ssl/tlsver.hpp>
 #include <openvpn/ssl/tls_remote.hpp>
 #include <openvpn/ssl/tls_cert_profile.hpp>
+#include <openvpn/ssl/sess_ticket.hpp>
 #include <openvpn/random/randapi.hpp>
 
 namespace openvpn {
@@ -65,7 +66,9 @@ namespace openvpn {
     virtual bool read_ciphertext_ready() const = 0;
     virtual BufferPtr read_ciphertext() = 0;
     virtual std::string ssl_handshake_details() const = 0;
-    virtual const AuthCert::Ptr& auth_cert() const = 0;
+    virtual bool did_full_handshake() = 0;
+    virtual const AuthCert::Ptr& auth_cert() = 0;
+    virtual void mark_no_cache() = 0; // prevent caching of client-side session (only meaningful when client_session_tickets is enabled)
     uint32_t get_tls_warnings() const
     {
       return tls_warnings;
@@ -87,8 +90,9 @@ namespace openvpn {
     // create a new SSLAPI instance
     virtual SSLAPI::Ptr ssl() = 0;
 
-    // like ssl() above but verify hostname against cert CommonName and/or SubjectAltName
-    virtual SSLAPI::Ptr ssl(const std::string& hostname) = 0;
+    // like ssl() above but optionally verify hostname against cert CommonName and/or
+    // SubjectAltName, and optionally set/lookup a cache key for this session.
+    virtual SSLAPI::Ptr ssl(const std::string* hostname, const std::string* cache_key) = 0;
 
     // client or server?
     virtual const Mode& mode() const = 0;
@@ -140,6 +144,8 @@ namespace openvpn {
     virtual void set_mode(const Mode& mode_arg) = 0;
     virtual const Mode& get_mode() const = 0;
     virtual void set_external_pki_callback(ExternalPKIBase* external_pki_arg) = 0; // private key alternative
+    virtual void set_session_ticket_handler(TLSSessionTicketBase* session_ticket_handler) = 0; // server side
+    virtual void set_client_session_tickets(const bool v) = 0; // client side
     virtual void set_private_key_password(const std::string& pwd) = 0;
     virtual void load_ca(const std::string& ca_txt, bool strict) = 0;
     virtual void load_crl(const std::string& crl_txt) = 0;
@@ -166,7 +172,6 @@ namespace openvpn {
     virtual void set_tls_cert_profile(const TLSCertProfile::Type type) = 0;
     virtual void set_tls_cert_profile_override(const std::string& override) = 0;
     virtual void set_local_cert_enabled(const bool v) = 0;
-    virtual void set_enable_renegotiation(const bool v) = 0;
     virtual void set_force_aes_cbc_ciphersuites(const bool v) = 0;
     virtual void set_x509_track(X509Track::ConfigSet x509_track_config_arg) = 0;
     virtual void set_rng(const RandomAPI::Ptr& rng_arg) = 0;

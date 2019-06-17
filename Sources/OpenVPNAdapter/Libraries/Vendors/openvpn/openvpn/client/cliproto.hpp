@@ -424,11 +424,6 @@ namespace openvpn {
 	Base::disable_keepalive(keepalive_ping, keepalive_timeout);
       }
 
-      virtual void ip_hole_punch(const IP::Addr& addr)
-      {
-	tun_factory->ip_hole_punch(addr);
-      }
-
       virtual void transport_pre_resolve()
       {
 	ClientEvent::Base::Ptr ev = new ClientEvent::Resolve();
@@ -1007,7 +1002,7 @@ namespace openvpn {
       void process_halt_restart(const ClientHalt& ch)
       {
 	if (!ch.psid() && creds)
-	  creds->can_retry_auth_with_cached_password(); // purge session ID
+	  creds->purge_session_id();
 	if (ch.restart())
 	  fatal_ = Error::CLIENT_RESTART;
 	else
