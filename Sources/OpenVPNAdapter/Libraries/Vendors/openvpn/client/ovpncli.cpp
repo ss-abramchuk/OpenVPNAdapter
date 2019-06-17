@@ -422,6 +422,7 @@ namespace openvpn {
 	IPv6Setting ipv6;
 	int conn_timeout = 0;
 	bool tun_persist = false;
+	bool wintun = false;
 	bool google_dns_fallback = false;
 	bool synchronous_dns_lookup = false;
 	bool autologin_sessions = false;
@@ -435,6 +436,7 @@ namespace openvpn {
 	std::string tls_version_min_override;
 	std::string tls_cert_profile_override;
 	std::string gui_version;
+	bool allow_local_lan_access;
 	ProtoContextOptions::Ptr proto_context_options;
 	PeerInfo::Set::Ptr extra_peer_info;
 	HTTPProxyTransport::Options::Ptr http_proxy_options;
@@ -665,6 +667,7 @@ namespace openvpn {
 	state->port_override = config.portOverride;
 	state->conn_timeout = config.connTimeout;
 	state->tun_persist = config.tunPersist;
+	state->wintun = config.wintun;
 	state->google_dns_fallback = config.googleDnsFallback;
 	state->synchronous_dns_lookup = config.synchronousDnsLookup;
 	state->autologin_sessions = config.autologinSessions;
@@ -684,6 +687,7 @@ namespace openvpn {
 	state->force_aes_cbc_ciphersuites = config.forceAesCbcCiphersuites;
 	state->tls_version_min_override = config.tlsVersionMinOverride;
 	state->tls_cert_profile_override = config.tlsCertProfileOverride;
+	state->allow_local_lan_access = config.allowLocalLanAccess;
 	state->gui_version = config.guiVersion;
 	state->alt_proxy = config.altProxy;
 	state->dco = config.dco;
@@ -936,6 +940,7 @@ namespace openvpn {
       cc.ipv6 = state->ipv6;
       cc.conn_timeout = state->conn_timeout;
       cc.tun_persist = state->tun_persist;
+      cc.wintun = state->wintun;
       cc.google_dns_fallback = state->google_dns_fallback;
       cc.synchronous_dns_lookup = state->synchronous_dns_lookup;
       cc.autologin_sessions = state->autologin_sessions;
@@ -959,6 +964,7 @@ namespace openvpn {
       cc.gui_version = state->gui_version;
       cc.extra_peer_info = state->extra_peer_info;
       cc.stop = state->async_stop_local();
+      cc.allow_local_lan_access = state->allow_local_lan_access;
 #ifdef OPENVPN_GREMLIN
       cc.gremlin_config = state->gremlin_config;
 #endif
@@ -1140,11 +1146,12 @@ namespace openvpn {
 	}
     }
 
-    OPENVPN_CLIENT_EXPORT bool OpenVPNClient::sign(const std::string& data, std::string& sig)
+    OPENVPN_CLIENT_EXPORT bool OpenVPNClient::sign(const std::string& data, std::string& sig, const std::string& algorithm)
     {
       ExternalPKISignRequest req;
       req.data = data;
       req.alias = state->external_pki_alias;
+      req.algorithm = algorithm;
       external_pki_sign_request(req); // call out to derived class for RSA signature
       if (!req.error)
 	{
@@ -1377,7 +1384,9 @@ namespace openvpn {
 #ifdef OPENVPN_GREMLIN
       ret += " GREMLIN";
 #endif
+#ifdef OPENVPN_DEBUG
       ret += " built on " __DATE__ " " __TIME__;
+#endif
       return ret;
     }
 

@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -771,7 +771,7 @@ signed_size_type recv(socket_type s, buf* bufs, size_t count,
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = asio::error::connection_refused;
   else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
-    ec.assign(0, ec.category());
+    result = 0;
   if (result != 0)
     return socket_error_retval;
   ec = asio::error_code();
@@ -925,7 +925,7 @@ signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = asio::error::connection_refused;
   else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
-    ec.assign(0, ec.category());
+    result = 0;
   if (result != 0)
     return socket_error_retval;
   ec = asio::error_code();
@@ -1502,7 +1502,8 @@ int setsockopt(socket_type s, state_type& state, int level, int optname,
     ec = asio::error_code();
 
 #if defined(__MACH__) && defined(__APPLE__) \
-  || defined(__NetBSD__) || defined(__FreeBSD__) || defined(__OpenBSD__)
+  || defined(__NetBSD__) || defined(__FreeBSD__) \
+  || defined(__OpenBSD__) || defined(__QNX__)
     // To implement portable behaviour for SO_REUSEADDR with UDP sockets we
     // need to also set SO_REUSEPORT on BSD-based platforms.
     if ((state & datagram_oriented)
@@ -2114,7 +2115,7 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
   if (result != 0 && af == ASIO_OS_DEF(AF_INET6) && scope_id != 0)
   {
     using namespace std; // For strcat and sprintf.
-    char if_name[IF_NAMESIZE + 1] = "%";
+    char if_name[(IF_NAMESIZE > 21 ? IF_NAMESIZE : 21) + 1] = "%";
     const in6_addr_type* ipv6_address = static_cast<const in6_addr_type*>(src);
     bool is_link_local = ((ipv6_address->s6_addr[0] == 0xfe)
         && ((ipv6_address->s6_addr[1] & 0xc0) == 0x80));

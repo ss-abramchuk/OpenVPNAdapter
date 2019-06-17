@@ -2,7 +2,7 @@
 // detail/win_global.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -58,7 +58,8 @@ T& win_global()
   {
     win_global_impl<T>::mutex_.init();
     static_mutex::scoped_lock lock(win_global_impl<T>::mutex_);
-    win_global_impl<T>::ptr_ = new T;
+    if (win_global_impl<T>::ptr_ == 0)
+      win_global_impl<T>::ptr_ = new T;
     win_global_impl<T>::tss_ptr_ = win_global_impl<T>::ptr_;
   }
 

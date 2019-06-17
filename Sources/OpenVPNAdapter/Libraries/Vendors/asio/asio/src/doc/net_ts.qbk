@@ -1,5 +1,5 @@
 [/
- / Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+ / Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
  /
  / Distributed under the Boost Software License, Version 1.0. (See accompanying
  / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -97,6 +97,13 @@ below shows the new Networking TS interfaces and the facilities they replace:
     []
   ]
   [
+    [[link asio.reference.io_context.io_context `io_context`] constructor
+    `concurrency_hint` parameter is type `int`]
+    [[link asio.reference.io_context.io_context `io_context`] constructor
+    `concurrency_hint` parameter is type `std::size_t`]
+    [The old constructor has not been retained as a deprecated overload.]
+  ]
+  [
     [[link asio.reference.execution_context `execution_context`], [link
     asio.reference.execution_context__service `execution_context::service`],
     and [link asio.reference.execution_context__id `execution_context::id`]]
@@ -135,8 +142,7 @@ below shows the new Networking TS interfaces and the facilities they replace:
   [
     [[link asio.reference.async_result `async_result`] with `CompletionToken`
     and `Signature` template parameters]
-    [[link asio.reference.handler_type `handler_type`] and single parameter
-    [link asio.reference.async_result_lt__Handler__gt_ `async_result`]]
+    [`handler_type` and single parameter `async_result`]
     [The `async_result` trait is now the single point of customisation for
     asynchronous operation completion handlers and return type.]
   ]

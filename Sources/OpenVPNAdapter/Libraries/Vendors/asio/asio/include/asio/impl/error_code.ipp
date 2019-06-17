@@ -2,7 +2,7 @@
 // impl/error_code.ipp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -80,7 +80,7 @@ public:
     DWORD length = ::FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
         | FORMAT_MESSAGE_FROM_SYSTEM
         | FORMAT_MESSAGE_IGNORE_INSERTS, 0, value,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&msg, 0, 0);
+        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), (char*)&msg, 0, 0);
     detail::local_free_on_block_exit local_free_obj(msg);
     if (length && msg[length - 1] == '\n')
       msg[--length] = '\0';

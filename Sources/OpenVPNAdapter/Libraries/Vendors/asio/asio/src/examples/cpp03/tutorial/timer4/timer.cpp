@@ -2,7 +2,7 @@
 // timer.cpp
 // ~~~~~~~~~
 //
-// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -11,13 +11,12 @@
 #include <iostream>
 #include <asio.hpp>
 #include <boost/bind.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 class printer
 {
 public:
   printer(asio::io_context& io)
-    : timer_(io, boost::posix_time::seconds(1)),
+    : timer_(io, asio::chrono::seconds(1)),
       count_(0)
   {
     timer_.async_wait(boost::bind(&printer::print, this));
@@ -35,13 +34,13 @@ public:
       std::cout << count_ << std::endl;
       ++count_;
 
-      timer_.expires_at(timer_.expires_at() + boost::posix_time::seconds(1));
+      timer_.expires_at(timer_.expiry() + asio::chrono::seconds(1));
       timer_.async_wait(boost::bind(&printer::print, this));
     }
   }
 
 private:
-  asio::deadline_timer timer_;
+  asio::steady_timer timer_;
   int count_;
 };
 

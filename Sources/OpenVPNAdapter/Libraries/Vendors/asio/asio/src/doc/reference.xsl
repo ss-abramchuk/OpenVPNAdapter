@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 <!--
-  Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+  Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 
   Distributed under the Boost Software License, Version 1.0. (See accompanying
   file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,7 +26,7 @@
 -->
 <xsl:template match="/doxygen">
 <xsl:text>[/
- / Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+ / Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
  /
  / Distributed under the Boost Software License, Version 1.0. (See accompanying
  / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -53,6 +53,8 @@
 [include requirements/ConnectHandler.qbk]
 [include requirements/ConstBufferSequence.qbk]
 [include requirements/DynamicBuffer.qbk]
+[include requirements/DynamicBuffer_v1.qbk]
+[include requirements/DynamicBuffer_v2.qbk]
 [include requirements/Endpoint.qbk]
 [include requirements/EndpointSequence.qbk]
 [include requirements/ExecutionContext.qbk]
@@ -65,6 +67,7 @@
 [include requirements/IoControlCommand.qbk]
 [include requirements/IoObjectService.qbk]
 [include requirements/IteratorConnectHandler.qbk]
+[include requirements/LegacyCompletionHandler.qbk]
 [include requirements/MoveAcceptHandler.qbk]
 [include requirements/MutableBufferSequence.qbk]
 [include requirements/ProtoAllocator.qbk]
@@ -102,7 +105,8 @@
             not(contains(compoundname, '_handler')) and
             not(contains(compoundname, 'std_allocator_void')) and
             not(contains(compoundname, 'thread_function')) and
-            not(contains(compoundname, 'context_impl'))">
+            not(contains(compoundname, 'context_impl')) and
+            not(contains(compoundname, 'initiate_'))">
           <xsl:call-template name="class"/>
         </xsl:if>
       </xsl:when>
@@ -111,10 +115,12 @@
             not(contains(ancestor::*/compoundname, '::detail')) and
             not(contains(ancestor::*/compoundname, '::service::key')) and
             not(contains(ancestor::*/compoundname, '_helper')) and
+            not(contains(ancestor::*/compoundname, 'initiate_')) and
             not(contains(name, '_helper')) and
             not(contains(name, 'std_allocator_void')) and
             not(contains(name, 'thread_function')) and
-            not(contains(name, 'io_context_impl'))">
+            not(contains(name, 'io_context_impl')) and
+            not(contains(name, 'initiate_'))">
           <xsl:call-template name="namespace-memberdef"/>
         </xsl:if>
       </xsl:otherwise>
@@ -846,7 +852,7 @@
   [[Name][Description]]
 <xsl:for-each select="
     sectiondef[@kind='public-type']/memberdef |
-    innerclass[@prot='public' and not(contains(., '_handler')) and not(contains(., 'thread_function'))]" mode="class-table">
+    innerclass[@prot='public' and not(contains(., '_handler')) and not(contains(., 'thread_function')) and not(contains(., 'initiate_'))]" mode="class-table">
   <xsl:sort select="concat(name, (.)[not(name)])"/>
   [
 <xsl:choose>
@@ -922,6 +928,7 @@
   </xsl:if>
   <xsl:if test="not($overload-position = 1) and not(briefdescription = preceding-sibling::*/briefdescription)">
     <xsl:value-of select="$newline"/>
+    <xsl:text>     [hr]</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>     </xsl:text>
     <xsl:value-of select="briefdescription"/>
@@ -970,6 +977,7 @@
   </xsl:if>
   <xsl:if test="not($overload-position = 1) and not(briefdescription = preceding-sibling::*/briefdescription)">
     <xsl:value-of select="$newline"/>
+    <xsl:text>     [hr]</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>     </xsl:text>
     <xsl:value-of select="briefdescription"/>
@@ -1019,6 +1027,7 @@
   </xsl:if>
   <xsl:if test="not($overload-position = 1) and not(briefdescription = preceding-sibling::*/briefdescription)">
     <xsl:value-of select="$newline"/>
+    <xsl:text>     [hr]</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>     </xsl:text>
     <xsl:value-of select="briefdescription"/>
@@ -1098,6 +1107,7 @@
   </xsl:if>
   <xsl:if test="not($overload-position = 1) and not(briefdescription = preceding-sibling::*/briefdescription)">
     <xsl:value-of select="$newline"/>
+    <xsl:text>     [hr]</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>     </xsl:text>
     <xsl:value-of select="briefdescription"/>
@@ -1493,6 +1503,9 @@
         <xsl:when test="declname = 'CompletionToken'">
           <xsl:value-of select="declname"/>
         </xsl:when>
+        <xsl:when test="declname = 'ConstBuffer'">
+          <xsl:value-of select="declname"/>
+        </xsl:when>
         <xsl:when test="declname = 'Context_Service'">
           <xsl:value-of select="declname"/>
         </xsl:when>
@@ -1517,16 +1530,34 @@
         <xsl:when test="declname = 'Executor'">
           <xsl:value-of select="concat('``[link asio.reference.Executor1 ', declname, ']``')"/>
         </xsl:when>
+        <xsl:when test="declname = 'Executor2'">
+          <xsl:value-of select="concat('``[link asio.reference.Executor1 ', declname, ']``')"/>
+        </xsl:when>
+        <xsl:when test="declname = 'F'">
+          <xsl:value-of select="declname"/>
+        </xsl:when>
         <xsl:when test="declname = 'Function'">
           <xsl:value-of select="declname"/>
         </xsl:when>
         <xsl:when test="declname = 'IoObjectService1'">
           <xsl:value-of select="concat('``[link asio.reference.IoObjectService ', declname, ']``')"/>
         </xsl:when>
+        <xsl:when test="declname = 'Implementation'">
+          <xsl:value-of select="declname"/>
+        </xsl:when>
+        <xsl:when test="declname = 'Initiation'">
+          <xsl:value-of select="declname"/>
+        </xsl:when>
+        <xsl:when test="declname = 'IoObjectsOrExecutors'">
+          <xsl:value-of select="declname"/>
+        </xsl:when>
         <xsl:when test="declname = 'Iterator'">
           <xsl:value-of select="declname"/>
         </xsl:when>
         <xsl:when test="declname = 'MatchCondition'">
+          <xsl:value-of select="declname"/>
+        </xsl:when>
+        <xsl:when test="declname = 'MutableBuffer'">
           <xsl:value-of select="declname"/>
         </xsl:when>
         <xsl:when test="declname = 'N'">
@@ -1555,6 +1586,9 @@
         </xsl:when>
         <xsl:when test="declname = 'Protocol1'">
           <xsl:value-of select="concat('``[link asio.reference.Protocol ', declname, ']``')"/>
+        </xsl:when>
+        <xsl:when test="declname = 'RawCompletionToken'">
+          <xsl:value-of select="declname"/>
         </xsl:when>
         <xsl:when test="declname = 'RawSocketService1'">
           <xsl:value-of select="concat('``[link asio.reference.RawSocketService ', declname, ']``')"/>
@@ -1685,18 +1719,10 @@
 <xsl:value-of select="$name"/>
 <xsl:text>] </xsl:text>
 
-<xsl:choose>
-  <xsl:when test="count(/doxygen/compounddef[@kind='group' and compoundname=$name]) &gt; 0">
-    <xsl:for-each select="/doxygen/compounddef[@kind='group' and compoundname=$name]">
-      <xsl:apply-templates select="briefdescription" mode="markup"/><xsl:text>
-      </xsl:text>
-    </xsl:for-each>
-  </xsl:when>
-  <xsl:otherwise>
-    <xsl:apply-templates select="briefdescription" mode="markup"/><xsl:text>
-    </xsl:text>
-  </xsl:otherwise>
-</xsl:choose>
+<xsl:for-each select="/doxygen/compounddef[@kind='group' and compoundname=$name]">
+  <xsl:apply-templates select="briefdescription" mode="markup"/>
+  <xsl:value-of select="$newline"/>
+</xsl:for-each>
 
 <xsl:for-each select="../memberdef[name = $unqualified-name]">
 <xsl:variable name="stripped-type">
@@ -1704,6 +1730,9 @@
    <xsl:with-param name="name" select="type"/>
  </xsl:call-template>
 </xsl:variable>
+<xsl:if test="position() = 1 or not(briefdescription = preceding-sibling::memberdef[1]/briefdescription)">
+  <xsl:apply-templates select="briefdescription" mode="markup"/>
+</xsl:if>
 <xsl:text>
 </xsl:text><xsl:apply-templates select="templateparamlist" mode="class-detail"/>
 <xsl:text>  </xsl:text><xsl:if test="string-length($stripped-type) &gt; 0"><xsl:value-of
