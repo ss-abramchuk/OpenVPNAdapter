@@ -134,6 +134,7 @@ namespace openvpn {
       bool echo = false;
       bool info = false;
       bool tun_persist = false;
+      bool wintun = false;
       bool google_dns_fallback = false;
       bool synchronous_dns_lookup = false;
       std::string private_key_password;
@@ -143,6 +144,7 @@ namespace openvpn {
       bool force_aes_cbc_ciphersuites = false;
       bool autologin_sessions = false;
       bool retry_on_auth_failed = false;
+      bool allow_local_lan_access = false;
       std::string tls_version_min_override;
       std::string tls_cert_profile_override;
       PeerInfo::Set::Ptr extra_peer_info;
@@ -347,6 +349,7 @@ namespace openvpn {
 	    tunconf->builder = config.builder;
 	    tunconf->tun_prop.session_name = session_name;
 	    tunconf->tun_prop.google_dns_fallback = config.google_dns_fallback;
+	    tunconf->tun_prop.allow_local_lan_access = config.allow_local_lan_access;
 	    if (tun_mtu)
 	      tunconf->tun_prop.mtu = tun_mtu;
 	    tunconf->frame = frame;
@@ -362,6 +365,9 @@ namespace openvpn {
 #if defined(OPENVPN_PLATFORM_ANDROID)
 	    // Android VPN API doesn't support excluded routes, so we must emulate them
 	    tunconf->eer_factory.reset(new EmulateExcludeRouteFactoryImpl(false));
+#endif
+#if defined(OPENVPN_PLATFORM_MAC)
+	    tunconf->tun_prefix = true;
 #endif
 	    if (config.tun_persist)
 	      tunconf->tun_persist.reset(new TunBuilderClient::TunPersist(true, tunconf->retain_sd, config.builder));
@@ -418,6 +424,7 @@ namespace openvpn {
 	    tunconf->frame = frame;
 	    tunconf->stats = cli_stats;
 	    tunconf->stop = config.stop;
+	    tunconf->wintun = config.wintun;
 	    if (config.tun_persist)
 	    {
 	      tunconf->tun_persist.reset(new TunWin::TunPersist(true, false, nullptr));
@@ -440,8 +447,9 @@ namespace openvpn {
 #endif
 	}
 
-      // verify that tun implementation can handle OSI layer declared by config
-      if (layer == Layer(Layer::OSI_LAYER_2) && !tun_factory->layer_2_supported())
+      // The Core Library itself does not handle TAP/OSI_LAYER_2 currently,
+      // so we bail out early whenever someone tries to use TAP configurations
+      if (layer == Layer(Layer::OSI_LAYER_2))
 	throw ErrorCode(Error::TAP_NOT_SUPPORTED, true, "OSI layer 2 tunnels are not currently supported");
 
       // server-poll-timeout

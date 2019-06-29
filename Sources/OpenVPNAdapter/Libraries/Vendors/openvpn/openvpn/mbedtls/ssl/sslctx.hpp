@@ -212,7 +212,6 @@ namespace openvpn {
 		 tls_version_min(TLSVersion::UNDEF),
 		 tls_cert_profile(TLSCertProfile::UNDEF),
 		 local_cert_enabled(true),
-		 enable_renegotiation(false),
 		 force_aes_cbc_ciphersuites(false),
 		 allow_name_constraints(false) {}
 
@@ -235,6 +234,18 @@ namespace openvpn {
       virtual void set_external_pki_callback(ExternalPKIBase* external_pki_arg)
       {
 	external_pki = external_pki_arg;
+      }
+
+      virtual void set_session_ticket_handler(TLSSessionTicketBase* session_ticket_handler_arg)
+      {
+	// fixme -- this method should be implemented for server-side TLS session resumption tickets
+	throw MbedTLSException("set_session_ticket_handler not implemented");
+      }
+
+      virtual void set_client_session_tickets(const bool v)
+      {
+	// fixme -- this method should be implemented for client-side TLS session resumption tickets
+	throw MbedTLSException("set_client_session_tickets not implemented");
       }
 
       virtual void set_private_key_password(const std::string& pwd)
@@ -395,11 +406,6 @@ namespace openvpn {
       virtual void set_local_cert_enabled(const bool v)
       {
 	local_cert_enabled = v;
-      }
-
-      virtual void set_enable_renegotiation(const bool v)
-      {
-	enable_renegotiation = v;
       }
 
       virtual void set_force_aes_cbc_ciphersuites(const bool v)
@@ -590,7 +596,6 @@ namespace openvpn {
       TLSCertProfile::Type tls_cert_profile;
       X509Track::ConfigSet x509_track_config;
       bool local_cert_enabled;
-      bool enable_renegotiation;
       bool force_aes_cbc_ciphersuites;
       bool allow_name_constraints;
       RandomAPI::Ptr rng;   // random data source
@@ -612,12 +617,12 @@ namespace openvpn {
     public:
       typedef RCPtr<SSL> Ptr;
 
-      virtual void start_handshake()
+      virtual void start_handshake() override
       {
 	mbedtls_ssl_handshake(ssl);
       }
 
-      virtual ssize_t write_cleartext_unbuffered(const void *data, const size_t size)
+      virtual ssize_t write_cleartext_unbuffered(const void *data, const size_t size) override
       {
 	const int status = mbedtls_ssl_write(ssl, (const unsigned char*)data, size);
 	if (status < 0)
@@ -633,7 +638,7 @@ namespace openvpn {
 	  return status;
       }
 
-      virtual ssize_t read_cleartext(void *data, const size_t capacity)
+      virtual ssize_t read_cleartext(void *data, const size_t capacity) override
       {
 	if (!overflow)
 	  {
@@ -656,12 +661,12 @@ namespace openvpn {
 	  throw ssl_ciphertext_in_overflow();
       }
 
-      virtual bool read_cleartext_ready() const
+      virtual bool read_cleartext_ready() const override
       {
 	return !ct_in.empty() || mbedtls_ssl_get_bytes_avail(ssl);
       }
 
-      virtual void write_ciphertext(const BufferPtr& buf)
+      virtual void write_ciphertext(const BufferPtr& buf) override
       {
 	if (ct_in.size() < MAX_CIPHERTEXT_IN)
 	  ct_in.write_buf(buf);
@@ -669,7 +674,7 @@ namespace openvpn {
 	  overflow = true;
       }
 
-      virtual void write_ciphertext_unbuffered(const unsigned char *data, const size_t size)
+      virtual void write_ciphertext_unbuffered(const unsigned char *data, const size_t size) override
       {
 	if (ct_in.size() < MAX_CIPHERTEXT_IN)
 	  ct_in.write(data, size);
@@ -677,17 +682,17 @@ namespace openvpn {
 	  overflow = true;
       }
 
-      virtual bool read_ciphertext_ready() const
+      virtual bool read_ciphertext_ready() const override
       {
 	return !ct_out.empty();
       }
 
-      virtual BufferPtr read_ciphertext()
+      virtual BufferPtr read_ciphertext() override
       {
 	return ct_out.read_buf();
       }
 
-      virtual std::string ssl_handshake_details() const
+      virtual std::string ssl_handshake_details() const override
       {
 	if (ssl)
 	  {
@@ -699,9 +704,19 @@ namespace openvpn {
 	return "";
       }
 
-      virtual const AuthCert::Ptr& auth_cert() const
+      virtual bool did_full_handshake() override
+      {
+	return false; // fixme -- not implemented
+      }
+
+      virtual const AuthCert::Ptr& auth_cert() override
       {
 	return authcert;
+      }
+
+      virtual void mark_no_cache() override
+      {
+	// fixme -- this method should be implemented for client-side TLS session resumption tickets
       }
 
       virtual ~SSL()
@@ -787,15 +802,12 @@ namespace openvpn {
 
 	  // Notes on SSL resume/renegotiation:
 	  // SSL resume on server side is controlled by ssl_set_session_cache.
-	  // SSL renegotiation on/off is handled here via ssl_set_renegotiation.
-	  // Without calling ssl_set_renegotiation, it defaults to
-	  // MBEDTLS_SSL_RENEGOTIATION_DISABLED and ssl_legacy_renegotiation defaults to
+	  // SSL renegotiation is disabled here via MBEDTLS_SSL_RENEGOTIATION_DISABLED
+	  // and ssl_legacy_renegotiation defaults to
 	  // MBEDTLS_SSL_LEGACY_NO_RENEGOTIATION.  To enable session tickets,
 	  // MBEDTLS_SSL_SESSION_TICKETS (compile flag) must be defined
 	  // in mbed TLS config.h.
-	  mbedtls_ssl_conf_renegotiation(sslconf,
-					 c.enable_renegotiation
-					 ? MBEDTLS_SSL_RENEGOTIATION_ENABLED : MBEDTLS_SSL_RENEGOTIATION_DISABLED);
+	  mbedtls_ssl_conf_renegotiation(sslconf, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
 
 	  mbedtls_ssl_conf_ciphersuites(sslconf, c.force_aes_cbc_ciphersuites ?
 					mbedtls_ctx_private::aes_cbc_ciphersuites :
@@ -982,9 +994,9 @@ namespace openvpn {
     }
 
     // like ssl() above but verify hostname against cert CommonName and/or SubjectAltName
-    virtual SSLAPI::Ptr ssl(const std::string& hostname)
+    virtual SSLAPI::Ptr ssl(const std::string* hostname, const std::string* cache_key)
     {
-      return SSL::Ptr(new SSL(this, hostname.c_str()));
+      return SSL::Ptr(new SSL(this, hostname ? hostname->c_str() : nullptr));
     }
 
     virtual const Mode& mode() const
@@ -1374,7 +1386,7 @@ namespace openvpn {
 
 	    /* get signature */
 	    std::string sig_b64;
-	    const bool status = self->config->external_pki->sign(from_b64, sig_b64);
+	    const bool status = self->config->external_pki->sign(from_b64, sig_b64, "RSA_PKCS1_PADDING");
 	    if (!status)
 	      throw ssl_external_pki("MbedTLS: could not obtain signature");
 

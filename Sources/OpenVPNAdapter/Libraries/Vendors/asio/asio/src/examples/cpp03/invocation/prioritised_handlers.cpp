@@ -2,7 +2,7 @@
 // prioritised_handlers.cpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -15,7 +15,7 @@
 
 using asio::ip::tcp;
 
-class handler_priority_queue : asio::execution_context
+class handler_priority_queue : public asio::execution_context
 {
 public:
   void add(int priority, boost::function<void()> function)
@@ -153,8 +153,8 @@ int main()
   client_socket.connect(acceptor.local_endpoint());
 
   // Set a deadline timer to expire immediately.
-  asio::deadline_timer timer(io_context);
-  timer.expires_at(boost::posix_time::neg_infin);
+  asio::steady_timer timer(io_context);
+  timer.expires_at(asio::steady_timer::time_point::min());
   timer.async_wait(pri_queue.wrap(42, middle_priority_handler));
 
   while (io_context.run_one())

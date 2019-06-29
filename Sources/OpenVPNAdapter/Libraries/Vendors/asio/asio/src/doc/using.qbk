@@ -1,5 +1,5 @@
 [/
- / Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+ / Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
  /
  / Distributed under the Boost Software License, Version 1.0. (See accompanying
  / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -290,16 +290,6 @@ Asio.
         `hash_map` objects will initially contain 53 buckets. The number of
         buckets will be increased to 389 and then 1543 as elements are added to
         the map.
-    ]
-  ]
-  [
-    [`ASIO_ENABLE_OLD_SERVICES`]
-    [
-      The service template parameters, and the corresponding classes, are
-      disabled by default. For example, instead of `basic_socket<Protocol,
-      SocketService>` we now have simply `basic_socket<Protocol>`. The old
-      interface can be enabled by defining the `ASIO_ENABLE_OLD_SERVICES`
-      macro.
     ]
   ]
 ]
