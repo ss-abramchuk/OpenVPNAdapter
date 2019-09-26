@@ -48,8 +48,7 @@
 #pragma mark - OpenVPNClient Lifecycle
 
 - (OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * __autoreleasing *)error {
-    ClientAPI::Config *config = new ClientAPI::Config(configuration.config);
-    ClientAPI::EvalConfig eval = self.vpnClient->apply_config(config);
+    ClientAPI::EvalConfig eval = self.vpnClient->apply_config(configuration.config);
     
     if (eval.error) {
         if (error) {

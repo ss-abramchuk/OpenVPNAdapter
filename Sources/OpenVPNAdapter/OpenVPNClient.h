@@ -63,7 +63,7 @@ public:
     OpenVPNClient(id<OpenVPNClientDelegate> _Nonnull delegate);
     ~OpenVPNClient();
     
-    ClientAPI::EvalConfig apply_config(ClientAPI::Config* _Nonnull config);
+    ClientAPI::EvalConfig apply_config(const ClientAPI::Config& config);
     
     bool tun_builder_new() override;
     

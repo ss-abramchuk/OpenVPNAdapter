@@ -24,11 +24,11 @@ OpenVPNClient::~OpenVPNClient() {
     if (this->config != nullptr) { delete this->config; }
 }
 
-ClientAPI::EvalConfig OpenVPNClient::apply_config(ClientAPI::Config* _Nonnull config) {
+ClientAPI::EvalConfig OpenVPNClient::apply_config(const ClientAPI::Config& config) {
     if (this->config != nullptr) { delete this->config; }
-    this->config = config;
+    this->config = new ClientAPI::Config(config);
     
-    return eval_config(*config);
+    return eval_config(config);
 }
 
 bool OpenVPNClient::tun_builder_new() {
