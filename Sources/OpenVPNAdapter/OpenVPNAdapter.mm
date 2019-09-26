@@ -48,7 +48,8 @@
 #pragma mark - OpenVPNClient Lifecycle
 
 - (OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * __autoreleasing *)error {
-    ClientAPI::EvalConfig eval = self.vpnClient->eval_config(configuration.config);
+    ClientAPI::Config *config = new ClientAPI::Config(configuration.config);
+    ClientAPI::EvalConfig eval = self.vpnClient->apply_config(config);
     
     if (eval.error) {
         if (error) {
@@ -398,7 +399,9 @@
     _sessionName = nil;
     _packetFlowBridge = nil;
     _networkSettingsBuilder = nil;
-    
+}
+
+- (void)resetTun {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     void (^completionHandler)(id<OpenVPNAdapterPacketFlow> _Nullable) = ^(id<OpenVPNAdapterPacketFlow> flow) {

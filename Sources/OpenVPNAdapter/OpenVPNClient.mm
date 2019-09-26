@@ -17,10 +17,24 @@ using ::IPv4::Addr;
 
 OpenVPNClient::OpenVPNClient(id<OpenVPNClientDelegate> delegate): ClientAPI::OpenVPNClient() {
     this->delegate = delegate;
+    this->config = nullptr;
+}
+
+OpenVPNClient::~OpenVPNClient() {
+    if (this->config != nullptr) { delete this->config; }
+}
+
+ClientAPI::EvalConfig OpenVPNClient::apply_config(ClientAPI::Config* _Nonnull config) {
+    if (this->config != nullptr) { delete this->config; }
+    this->config = config;
+    
+    return eval_config(*config);
 }
 
 bool OpenVPNClient::tun_builder_new() {
     [this->delegate resetSettings];
+    [this->delegate resetTun];
+    
     return true;
 }
 
@@ -134,11 +148,15 @@ int OpenVPNClient::tun_builder_establish() {
 }
 
 bool OpenVPNClient::tun_builder_persist() {
-    return true;
+    return config->tunPersist;
 }
 
 void OpenVPNClient::tun_builder_teardown(bool disconnect) {
     [this->delegate resetSettings];
+    
+    if (disconnect || !this->tun_builder_persist()) {
+        [this->delegate resetTun];
+    }
 }
 
 bool OpenVPNClient::socket_protect(int socket, std::string remote, bool ipv6) {
