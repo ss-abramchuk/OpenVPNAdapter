@@ -8,6 +8,8 @@
 
 #define OPENVPN_EXTERN extern
 
+#define TUNNEL_CONFIGURATION_TIMEOUT 30
+
 #import "OpenVPNAdapter.h"
 
 #import <NetworkExtension/NetworkExtension.h>
@@ -326,7 +328,7 @@
     
     [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:networkSettings completionHandler:completionHandler];
     
-    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, TUNNEL_CONFIGURATION_TIMEOUT * NSEC_PER_SEC));
     
     NSError *socketError;
     if (self.packetFlowBridge && [self.packetFlowBridge configureSocketsWithError:&socketError]) {
@@ -409,7 +411,7 @@
     
     [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:nil completionHandler:completionHandler];
     
-    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, TUNNEL_CONFIGURATION_TIMEOUT * NSEC_PER_SEC));
 }
 
 #pragma mark -
