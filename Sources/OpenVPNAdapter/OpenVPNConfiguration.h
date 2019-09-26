@@ -65,6 +65,11 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
 @property (nonatomic) NSInteger connectionTimeout;
 
 /**
+ Keep tun interface active during pauses or reconnections
+ */
+@property (nonatomic) BOOL tunPersist;
+
+/**
  If YES and a redirect-gateway profile doesn't also define
  DNS servers, use the standard Google DNS servers.
  */
