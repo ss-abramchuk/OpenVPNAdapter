@@ -80,7 +80,7 @@ def build(parms, srcfile, unit_test=False):
 
     if parms.get("USE_OPENSSL"):
         options['extra_inc'] += ' /DUSE_OPENSSL /I %s' % os.path.join(options['openssl'], 'inc32')
-        options['extra_lib_path'] += ' /LIBPATH:%s' % os.path.join(options['openssl'], 'out32')
+        options['extra_lib_path'] += ' /LIBPATH:%s' % os.path.join(options['openssl'], 'out32dll')
         options['extra_lib'] += ' libeay32.lib ssleay32.lib'
     else:
         options['extra_inc'] += ' /DUSE_MBEDTLS /I %s' % os.path.join(options['mbedtls'], 'include')
@@ -88,7 +88,7 @@ def build(parms, srcfile, unit_test=False):
         options['extra_lib'] += ' mbedtls.lib'
 
     # build it
-    vc_cmd(parms, r"cl %(extra_defs)s /DNOMINMAX /bigobj /D_CRT_SECURE_NO_WARNINGS /DUSE_ASIO /DASIO_STANDALONE /DASIO_NO_DEPRECATED /I %(asio)s\asio\include /DHAVE_LZ4 /I %(lz4)s %(extra_inc)s -DTAP_WIN_COMPONENT_ID=%(tap_component_id)s /I %(tap)s /I %(ovpn3)s\core /EHsc %(link_static_dynamic_flags)s /W0 %(dbg_rel_flags)s /nologo %(srcfile)s /link /LIBPATH:%(lz4)s%(extra_lib_path)s lz4.lib%(extra_lib)s ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib shell32.lib ole32.lib rpcrt4.lib Wtsapi32.lib" % options, arch=os.environ.get("ARCH"))
+    vc_cmd(parms, r"cl %(extra_defs)s /DNOMINMAX /bigobj /D_CRT_SECURE_NO_WARNINGS /DUSE_ASIO /DASIO_STANDALONE /DASIO_NO_DEPRECATED /I %(asio)s\asio\include /DHAVE_LZ4 /I %(lz4)s %(extra_inc)s -DTAP_WIN_COMPONENT_ID=%(tap_component_id)s /I %(tap)s /I %(ovpn3)s\core /EHsc %(link_static_dynamic_flags)s /W0 %(dbg_rel_flags)s /nologo %(srcfile)s /link /LIBPATH:%(lz4)s%(extra_lib_path)s lz4.lib%(extra_lib)s ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib shell32.lib ole32.lib rpcrt4.lib Wtsapi32.lib Setupapi.lib Cfgmgr32.lib" % options, arch=os.environ.get("ARCH"))
 
 if __name__ == "__main__":
     import sys

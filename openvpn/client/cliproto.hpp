@@ -506,7 +506,7 @@ namespace openvpn {
 	{
 	  const Option* o = opt.get_ptr("auth-token-user");
 	  if (o)
-	    username = base64->decode(o->get(1, 256));
+	    username = base64->decode(o->get(1, 340)); // 255 chars after base64 decode
 	}
 
 	// auth-token
@@ -601,6 +601,20 @@ namespace openvpn {
 
 		// send the Connected event
 		cli_events->add_event(connected_);
+
+		// Issue an event if compression is enabled
+		CompressContext::Type comp_type = Base::conf().comp_ctx.type();
+		if (comp_type != CompressContext::NONE
+		    && !CompressContext::is_any_stub(comp_type))
+		{
+		  std::ostringstream msg;
+		  msg << (proto_context_options->is_comp_asym()
+			  ? "Asymmetric compression enabled.  Server may send compressed data."
+			  : "Compression enabled.");
+		  msg << "  This may be a potential security issue.";
+		  ClientEvent::Base::Ptr ev = new ClientEvent::CompressionEnabled(msg.str());
+		  cli_events->add_event(std::move(ev));
+		}
 	      }
 	    else
 	      OPENVPN_LOG("Options continuation...");
@@ -739,6 +753,8 @@ namespace openvpn {
 
       virtual void tun_error(const Error::Type fatal_err, const std::string& err_text)
       {
+	if (fatal_err == Error::TUN_HALT)
+	  send_explicit_exit_notify();
 	if (fatal_err != Error::UNDEF)
 	  {
 	    fatal_ = fatal_err;

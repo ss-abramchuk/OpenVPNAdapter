@@ -53,6 +53,7 @@ namespace openvpn {
 
 #ifdef OPENVPN_TLS_LINK
       bool use_tls = false;
+      std::string tls_ca;
 #endif
 
 #ifdef OPENVPN_GREMLIN
@@ -311,14 +312,25 @@ namespace openvpn {
 #ifdef OPENVPN_TLS_LINK
 		if (config->use_tls)
 		{
+		  int flags = SSLConst::LOG_VERIFY_STATUS|SSLConst::ENABLE_CLIENT_SNI;
 		  SSLLib::SSLAPI::Config::Ptr ssl_conf;
 		  ssl_conf.reset(new SSLLib::SSLAPI::Config());
 		  ssl_conf->set_mode(Mode(Mode::CLIENT));
-		  ssl_conf->set_flags(SSLConst::LOG_VERIFY_STATUS|SSLConst::NO_VERIFY_PEER|
-				      SSLConst::ENABLE_SNI);
 		  ssl_conf->set_local_cert_enabled(false);
 		  ssl_conf->set_frame(config->frame);
 		  ssl_conf->set_rng(new SSLLib::RandomAPI(false));
+
+		  if (!config->tls_ca.empty())
+		  {
+		    ssl_conf->load_ca(config->tls_ca, true);
+		  }
+		  else
+		  {
+		    flags |= SSLConst::NO_VERIFY_PEER;
+		  }
+
+		  ssl_conf->set_flags(flags);
+		  ssl_factory = ssl_conf->new_factory();
 
 		  impl.reset(new LinkImplTLS(this,
 					     io_context,
@@ -327,7 +339,7 @@ namespace openvpn {
 					     config->free_list_max_size,
 					     config->frame,
 					     config->stats,
-					     ssl_conf->new_factory()));
+					     ssl_factory));
 		}
 		else
 #endif
@@ -370,6 +382,10 @@ namespace openvpn {
       LinkImpl::Base::protocol::endpoint server_endpoint;
       bool halt;
       bool stop_requeueing;
+
+#ifdef OPENVPN_TLS_LINK
+      SSLFactoryAPI::Ptr ssl_factory;
+#endif
     };
 
     inline TransportClient::Ptr ClientConfig::new_transport_client_obj(openvpn_io::io_context& io_context,
