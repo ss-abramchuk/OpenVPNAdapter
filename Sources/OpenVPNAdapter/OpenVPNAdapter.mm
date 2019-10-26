@@ -363,6 +363,7 @@
         @"PAUSE": @(OpenVPNAdapterEventPause),
         @"RESUME": @(OpenVPNAdapterEventResume),
         @"RELAY": @(OpenVPNAdapterEventRelay),
+        @"COMPRESSION_ENABLED": @(OpenVPNAdapterEventCompressionEnabled),
         @"UNSUPPORTED_FEATURE": @(OpenVPNAdapterEventUnsupportedFeature)
     };
     
