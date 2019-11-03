@@ -35,6 +35,8 @@
 #include <openvpn/common/stop.hpp>
 #include <openvpn/tun/builder/capture.hpp>
 
+#include <openvpn/tun/win/ringbuffer.hpp>
+
 namespace openvpn {
   namespace TunWin {
     struct SetupBase : public DestructorBase
@@ -46,7 +48,8 @@ namespace openvpn {
       virtual HANDLE establish(const TunBuilderCapture& pull,
 			       const std::wstring& openvpn_app_path,
 			       Stop* stop,
-			       std::ostream& os) = 0;
+			       std::ostream& os,
+			       RingBuffer::Ptr rings) = 0;
 
       virtual bool l2_ready(const TunBuilderCapture& pull) = 0;
 

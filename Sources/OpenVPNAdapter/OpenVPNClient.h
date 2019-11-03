@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tick;
 
 - (void)resetSettings;
+- (void)resetTun;
 @end
 
 NS_ASSUME_NONNULL_END
@@ -60,6 +61,9 @@ using namespace openvpn;
 class OpenVPNClient : public ClientAPI::OpenVPNClient {
 public:
     OpenVPNClient(id<OpenVPNClientDelegate> _Nonnull delegate);
+    ~OpenVPNClient();
+    
+    ClientAPI::EvalConfig apply_config(const ClientAPI::Config& config);
     
     bool tun_builder_new() override;
     
@@ -89,9 +93,6 @@ public:
     void external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) override;
     void external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) override;
     
-    bool remote_override_enabled() override;
-    void remote_override(ClientAPI::RemoteOverride& remote) override;
-    
     void event(const ClientAPI::Event& event) override;
     void log(const ClientAPI::LogInfo& log) override;
     
@@ -99,6 +100,7 @@ public:
     
 private:
     __weak id<OpenVPNClientDelegate> _Nonnull delegate;
+    ClientAPI::Config * _Nullable config;
 };
 
 

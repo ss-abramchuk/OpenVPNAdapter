@@ -262,7 +262,13 @@ namespace openvpn {
       bool socket_protect(int socket, IP::Addr endpoint) override
       {
 	if (parent)
-	  return parent->socket_protect(socket, endpoint.to_string(), endpoint.is_ipv6());
+	  {
+#if defined(OPENVPN_COMMAND_AGENT) && defined(OPENVPN_PLATFORM_WIN)
+	    return WinCommandAgent::add_bypass_route(endpoint);
+#else
+	    return parent->socket_protect(socket, endpoint.to_string(), endpoint.is_ipv6());
+#endif
+	  }
 	else
 	  return true;
       }
@@ -436,7 +442,10 @@ namespace openvpn {
 	std::string tls_version_min_override;
 	std::string tls_cert_profile_override;
 	std::string gui_version;
+	std::string sso_methods;
 	bool allow_local_lan_access;
+	std::string hw_addr_override;
+	std::string platform_version;
 	ProtoContextOptions::Ptr proto_context_options;
 	PeerInfo::Set::Ptr extra_peer_info;
 	HTTPProxyTransport::Options::Ptr http_proxy_options;
@@ -656,7 +665,7 @@ namespace openvpn {
       catch (const std::exception& e)
 	{
 	  eval.error = true;
-	  eval.message = Unicode::utf8_printable<std::string>(e.what(), 256);
+	  eval.message = Unicode::utf8_printable<std::string>(std::string("ERR_PROFILE_GENERIC: ") + e.what(), 256);
 	}
     }
 
@@ -689,6 +698,9 @@ namespace openvpn {
 	state->tls_cert_profile_override = config.tlsCertProfileOverride;
 	state->allow_local_lan_access = config.allowLocalLanAccess;
 	state->gui_version = config.guiVersion;
+	state->sso_methods = config.ssoMethods;
+	state->platform_version = config.platformVersion;
+	state->hw_addr_override = config.hwAddrOverride;
 	state->alt_proxy = config.altProxy;
 	state->dco = config.dco;
 	state->echo = config.echo;
@@ -799,6 +811,11 @@ namespace openvpn {
 	  ret.message = Unicode::utf8_printable<std::string>(e.what(), 256);
 	}
       return ret;
+    }
+
+    OPENVPN_CLIENT_EXPORT bool OpenVPNClient::socket_protect(int socket, std::string remote, bool ipv6)
+    {
+      return true;
     }
 
     OPENVPN_CLIENT_EXPORT bool OpenVPNClient::parse_dynamic_challenge(const std::string& cookie, DynamicChallenge& dc)
@@ -962,14 +979,17 @@ namespace openvpn {
       cc.tls_version_min_override = state->tls_version_min_override;
       cc.tls_cert_profile_override = state->tls_cert_profile_override;
       cc.gui_version = state->gui_version;
+      cc.sso_methods = state->sso_methods;
+      cc.hw_addr_override = state->hw_addr_override;
+      cc.platform_version = state->platform_version;
       cc.extra_peer_info = state->extra_peer_info;
       cc.stop = state->async_stop_local();
       cc.allow_local_lan_access = state->allow_local_lan_access;
 #ifdef OPENVPN_GREMLIN
       cc.gremlin_config = state->gremlin_config;
 #endif
-#if defined(USE_TUN_BUILDER)
       cc.socket_protect = &state->socket_protect;
+#if defined(USE_TUN_BUILDER)
       cc.builder = this;
 #endif
 #if defined(OPENVPN_EXTERNAL_TUN_FACTORY)

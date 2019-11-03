@@ -68,7 +68,8 @@ namespace openvpn {
       virtual HANDLE establish(const TunBuilderCapture& pull,
 			       const std::wstring& openvpn_app_path,
 			       Stop* stop,
-			       std::ostream& os) override // defined by SetupBase
+			       std::ostream& os,
+			       RingBuffer::Ptr ring_buffer) override // defined by SetupBase
       {
 	// close out old remove cmds, if they exist
 	destroy(os);
@@ -104,7 +105,7 @@ namespace openvpn {
 	switch (pull.layer())
 	  {
 	  case Layer::OSI_LAYER_3:
-	    adapter_config(th(), openvpn_app_path, tap, wintun, pull, false, *add_cmds, *remove_cmds, os);
+	    adapter_config(th(), openvpn_app_path, tap, pull, false, *add_cmds, *remove_cmds, os);
 	    break;
 	  case Layer::OSI_LAYER_2:
 	    adapter_config_l2(th(), openvpn_app_path, tap, pull, *add_cmds, *remove_cmds, os);
@@ -122,6 +123,9 @@ namespace openvpn {
 	// if layer 2, save state
 	if (pull.layer() == Layer::OSI_LAYER_2)
 	  l2_state.reset(new L2State(tap, openvpn_app_path));
+
+	if (ring_buffer)
+	  register_rings(th(), ring_buffer);
 
 	return th.release();
       }
@@ -162,7 +166,7 @@ namespace openvpn {
 	  {
 	    Win::ScopedHANDLE nh;
 	    ActionList::Ptr add_cmds(new ActionList());
-	    adapter_config(nh(), l2s->openvpn_app_path, l2s->tap, wintun, pull, true, *add_cmds, *remove_cmds, os);
+	    adapter_config(nh(), l2s->openvpn_app_path, l2s->tap, pull, true, *add_cmds, *remove_cmds, os);
 	    add_cmds->execute(os);
 	  }
       }
@@ -198,6 +202,20 @@ namespace openvpn {
       {
 	std::ostringstream os;
 	destroy(os);
+      }
+
+      static void add_bypass_route(const std::string& route,
+				   bool ipv6,
+				   ActionList& add_cmds,
+				   ActionList& remove_cmds_bypass_gw)
+      {
+	const Util::DefaultGateway gw;
+
+	if (!ipv6)
+	  {
+	    add_cmds.add(new WinCmd("netsh interface ip add route " + route + "/32 " + to_string(gw.interface_index()) + ' ' + gw.gateway_address() + " store=active"));
+	    remove_cmds_bypass_gw.add(new WinCmd("netsh interface ip delete route " + route + "/32 " + to_string(gw.interface_index()) + ' ' + gw.gateway_address() + " store=active"));
+	  }
       }
 
     private:
@@ -250,12 +268,36 @@ namespace openvpn {
 	int indices[2] = {0, 0};
       };
 
+      void register_rings(HANDLE handle, RingBuffer::Ptr ring_buffer)
+      {
+	TUN_REGISTER_RINGS rings;
+
+	ZeroMemory(&rings, sizeof(rings));
+
+	rings.receive.ring = ring_buffer->receive_ring();
+	rings.receive.tail_moved = ring_buffer->receive_ring_tail_moved();
+	rings.receive.ring_size = sizeof(rings.receive.ring->data);
+
+	rings.send.ring = ring_buffer->send_ring();
+	rings.send.tail_moved = ring_buffer->send_ring_tail_moved();
+	rings.send.ring_size = sizeof(rings.send.ring->data);
+
+	{
+	  Win::Impersonate imp(true);
+
+	  if (!DeviceIoControl(handle, TUN_IOCTL_REGISTER_RINGS, &rings, sizeof(rings), NULL, NULL, NULL, NULL))
+	    {
+	      const Win::LastError err;
+	      throw ErrorCode(Error::TUN_REGISTER_RINGS_ERROR, true, "Error registering ring buffers: " + err.message());
+	    }
+	}
+      }
+
 #if _WIN32_WINNT >= 0x0600
       // Configure TAP adapter on Vista and higher
       void adapter_config(HANDLE th,
 			  const std::wstring& openvpn_app_path,
 			  const Util::TapNameGuidPair& tap,
-			  bool wintun,
 			  const TunBuilderCapture& pull,
 			  const bool l2_post,
 			  ActionList& create,

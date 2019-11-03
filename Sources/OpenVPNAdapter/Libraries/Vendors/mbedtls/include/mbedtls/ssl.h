@@ -1611,7 +1611,7 @@ void mbedtls_ssl_conf_ca_chain( mbedtls_ssl_config *conf,
  *                 provision more than one cert/key pair (eg one ECDSA, one
  *                 RSA with SHA-256, one RSA with SHA-1). An adequate
  *                 certificate will be selected according to the client's
- *                 advertised capabilities. In case mutliple certificates are
+ *                 advertised capabilities. In case multiple certificates are
  *                 adequate, preference is given to the one set by the first
  *                 call to this function, then second, etc.
  *
@@ -1621,6 +1621,14 @@ void mbedtls_ssl_conf_ca_chain( mbedtls_ssl_config *conf,
  *                 be ignored and our only cert will be sent regardless of
  *                 whether it matches those preferences - the server can then
  *                 decide what it wants to do with it.
+ *
+ * \note           The provided \p pk_key needs to match the public key in the
+ *                 first certificate in \p own_cert, or all handshakes using
+ *                 that certificate will fail. It is your responsibility
+ *                 to ensure that; this function will not perform any check.
+ *                 You may use mbedtls_pk_check_pair() in order to perform
+ *                 this check yourself, but be aware that this function can
+ *                 be computationally expensive on some key types.
  *
  * \param conf     SSL configuration
  * \param own_cert own public certificate chain
@@ -2102,12 +2110,27 @@ void mbedtls_ssl_conf_cert_req_ca_list( mbedtls_ssl_config *conf,
 
 #if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
 /**
- * \brief          Set the maximum fragment length to emit and/or negotiate
- *                 (Default: MBEDTLS_SSL_MAX_CONTENT_LEN, usually 2^14 bytes)
+ * \brief          Set the maximum fragment length to emit and/or negotiate.
+ *                 (Typical: #MBEDTLS_SSL_MAX_CONTENT_LEN, by default that is
+ *                 set to `2^14` bytes)
  *                 (Server: set maximum fragment length to emit,
- *                 usually negotiated by the client during handshake
+ *                 usually negotiated by the client during handshake)
  *                 (Client: set maximum fragment length to emit *and*
  *                 negotiate with the server during handshake)
+ *                 (Default: #MBEDTLS_SSL_MAX_FRAG_LEN_NONE)
+ *
+ * \note           With TLS, this currently only affects ApplicationData (sent
+ *                 with \c mbedtls_ssl_read()), not handshake messages.
+ *                 With DTLS, this affects both ApplicationData and handshake.
+ *
+ * \note           On the client side, the maximum fragment length extension
+ *                 *will not* be used, unless the maximum fragment length has
+ *                 been set via this function to a value different than
+ *                 #MBEDTLS_SSL_MAX_FRAG_LEN_NONE.
+ *
+ * \note           This sets the maximum length for a record's payload,
+ *                 excluding record overhead that will be added to it, see
+ *                 \c mbedtls_ssl_get_record_expansion().
  *
  * \param conf     SSL configuration
  * \param mfl_code Code for maximum fragment length (allowed values:
@@ -2309,13 +2332,14 @@ size_t mbedtls_ssl_get_bytes_avail( const mbedtls_ssl_context *ssl );
 /**
  * \brief          Return the result of the certificate verification
  *
- * \param ssl      SSL context
+ * \param ssl      The SSL context to use.
  *
- * \return         0 if successful,
- *                 -1 if result is not available (eg because the handshake was
- *                 aborted too early), or
- *                 a combination of BADCERT_xxx and BADCRL_xxx flags, see
- *                 x509.h
+ * \return         \c 0 if the certificate verification was successful.
+ * \return         \c -1u if the result is not available. This may happen
+ *                 e.g. if the handshake aborts early, or a verification
+ *                 callback returned a fatal error.
+ * \return         A bitwise combination of \c MBEDTLS_X509_BADCERT_XXX
+ *                 and \c MBEDTLS_X509_BADCRL_XXX failure flags; see x509.h.
  */
 uint32_t mbedtls_ssl_get_verify_result( const mbedtls_ssl_context *ssl );
 
@@ -2610,7 +2634,7 @@ void mbedtls_ssl_free( mbedtls_ssl_context *ssl );
  *                 mbedtls_ssl_config_defaults() or mbedtls_ssl_config_free().
  *
  * \note           You need to call mbedtls_ssl_config_defaults() unless you
- *                 manually set all of the relevent fields yourself.
+ *                 manually set all of the relevant fields yourself.
  *
  * \param conf     SSL configuration context
  */

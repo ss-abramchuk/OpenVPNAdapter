@@ -35,6 +35,7 @@
 #include <openvpn/crypto/static_key.hpp>
 #include <openvpn/crypto/cryptoalgs.hpp>
 #include <openvpn/openssl/util/error.hpp>
+#include <openvpn/openssl/compat.hpp>
 
 namespace openvpn {
   namespace OpenSSLCrypto {
@@ -75,7 +76,7 @@ namespace openvpn {
 	  throw openssl_cipher_mode_error();
 	erase();
 	ctx = EVP_CIPHER_CTX_new ();
-	EVP_CIPHER_CTX_init (ctx);
+	EVP_CIPHER_CTX_reset (ctx);
 	if (!EVP_CipherInit_ex (ctx, cipher_type(alg), nullptr, key, nullptr, mode))
 	  {
 	    openssl_clear_error_stack();
@@ -177,7 +178,6 @@ namespace openvpn {
       {
 	if (initialized)
 	  {
-	    EVP_CIPHER_CTX_cleanup(ctx);
 	    EVP_CIPHER_CTX_free (ctx);
 	    initialized = false;
 	  }

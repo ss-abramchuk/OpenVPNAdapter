@@ -24,6 +24,12 @@
 #ifndef MBEDTLS_HMAC_DRBG_H
 #define MBEDTLS_HMAC_DRBG_H
 
+#if !defined(MBEDTLS_CONFIG_FILE)
+#include "config.h"
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
+
 #include "md.h"
 
 #if defined(MBEDTLS_THREADING_C)
@@ -76,7 +82,7 @@ extern "C" {
  */
 typedef struct
 {
-    /* Working state: the key K is not stored explicitely,
+    /* Working state: the key K is not stored explicitly,
      * but is implied by the HMAC context */
     mbedtls_md_context_t md_ctx;                    /*!< HMAC context (inc. K)  */
     unsigned char V[MBEDTLS_MD_MAX_SIZE];  /*!< V in the spec          */
@@ -195,11 +201,31 @@ void mbedtls_hmac_drbg_set_reseed_interval( mbedtls_hmac_drbg_context *ctx,
  * \param additional    Additional data to update state with, or NULL
  * \param add_len       Length of additional data, or 0
  *
+ * \return              \c 0 on success, or an error from the underlying
+ *                      hash calculation.
+ *
+ * \note                Additional data is optional, pass NULL and 0 as second
+ *                      third argument if no additional data is being used.
+ */
+int mbedtls_hmac_drbg_update_ret( mbedtls_hmac_drbg_context *ctx,
+                       const unsigned char *additional, size_t add_len );
+
+/**
+ * \brief               HMAC_DRBG update state
+ *
+ * \warning             This function cannot report errors. You should use
+ *                      mbedtls_hmac_drbg_update_ret() instead.
+ *
+ * \param ctx           HMAC_DRBG context
+ * \param additional    Additional data to update state with, or NULL
+ * \param add_len       Length of additional data, or 0
+ *
  * \note                Additional data is optional, pass NULL and 0 as second
  *                      third argument if no additional data is being used.
  */
 void mbedtls_hmac_drbg_update( mbedtls_hmac_drbg_context *ctx,
-                       const unsigned char *additional, size_t add_len );
+                               const unsigned char *additional,
+                               size_t add_len );
 
 /**
  * \brief               HMAC_DRBG reseeding (extracts data from entropy source)

@@ -25,10 +25,12 @@
 #define OPENVPN_MBEDTLS_UTIL_RANDAPI_H
 
 #include <string>
+#include <cstdint>
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/rc.hpp>
 #include <openvpn/common/exception.hpp>
+#include <openvpn/random/randistrib.hpp>
 
 namespace openvpn {
 
@@ -92,6 +94,41 @@ namespace openvpn {
 	return start;
       else
 	return start + rand_get_positive<T>() % (end - start + 1);
+    }
+
+    // Return a uniformly distributed random number in the range [0, end).
+    // This version is strictly 32-bit only and optimizes by avoiding
+    // integer division.
+    std::uint32_t randrange32(const std::uint32_t end)
+    {
+      std::uint32_t r;
+      rand_fill(r);
+      return rand32_distribute(r, end);
+    }
+
+    // Return a uniformly distributed random number in the range [start, end].
+    // This version is strictly 32-bit only and optimizes by avoiding
+    // integer division.
+    std::uint32_t randrange32(const std::uint32_t start, const std::uint32_t end)
+    {
+      if (start >= end)
+	return start;
+      else
+	return start + randrange32(end - start + 1);
+    }
+
+    // Return a random byte
+    std::uint8_t randbyte()
+    {
+      std::uint8_t byte;
+      rand_fill(byte);
+      return byte;
+    }
+
+    // Return a random boolean
+    bool randbool()
+    {
+      return bool(randbyte() & 1);
     }
 
     // Throw an exception if algorithm is not crypto-strength.

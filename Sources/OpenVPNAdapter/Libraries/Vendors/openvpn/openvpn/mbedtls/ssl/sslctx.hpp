@@ -248,6 +248,18 @@ namespace openvpn {
 	throw MbedTLSException("set_client_session_tickets not implemented");
       }
 
+      virtual void set_sni_handler(SNI::HandlerBase* sni_handler)
+      {
+	// fixme -- this method should be implemented on the server-side for SNI
+	throw MbedTLSException("set_sni_handler not implemented");
+      }
+
+      virtual void set_sni_name(const std::string& sni_name_arg)
+      {
+	// fixme -- this method should be implemented on the client-side for SNI
+	throw MbedTLSException("set_sni_name not implemented");
+      }
+
       virtual void set_private_key_password(const std::string& pwd)
       {
 	priv_key_pwd = pwd;
@@ -339,10 +351,10 @@ namespace openvpn {
 	return dh->extract();
       }
 
-      virtual PKType private_key_type() const
+      virtual PKType::Type private_key_type() const
       {
 	if (!priv_key)
-	  return PK_NONE;
+	  return PKType::PK_NONE;
 	return priv_key->key_type();
       }
 
@@ -467,6 +479,13 @@ namespace openvpn {
 
 	allow_name_constraints = lflags & LF_ALLOW_NAME_CONSTRAINTS;
 
+	// sni
+	{
+	  const std::string name = opt.get_optional("sni", 1, 256);
+	  if (!name.empty())
+	    set_sni_name(name);
+	}
+
 	// ca
 	{
 	  std::string ca_txt = opt.cat("ca");
@@ -542,6 +561,13 @@ namespace openvpn {
 	{
 	}
       }
+
+#ifdef HAVE_JSON
+      virtual SSLConfigAPI::Ptr json_override(const Json::Value& root, const bool load_cert_key) const
+      {
+	throw MbedTLSException("json_override not implemented");
+      }
+#endif
 
       bool name_constraints_allowed() const
       {
@@ -709,7 +735,7 @@ namespace openvpn {
 	return false; // fixme -- not implemented
       }
 
-      virtual const AuthCert::Ptr& auth_cert() override
+      virtual const AuthCert::Ptr& auth_cert() const override
       {
 	return authcert;
       }
@@ -791,11 +817,23 @@ namespace openvpn {
 #endif
 	    }
 
-	  // peer must present a valid certificate unless SSLConst::NO_VERIFY_PEER is set
-	  mbedtls_ssl_conf_authmode(sslconf,
-				    (c.flags & SSLConst::NO_VERIFY_PEER)
-				    ? MBEDTLS_SSL_VERIFY_NONE
-				    : MBEDTLS_SSL_VERIFY_REQUIRED);
+
+	  {
+	    // peer must present a valid certificate unless SSLConst::NO_VERIFY_PEER.
+	    // Presenting a valid certificate can be made optional by specifying
+	    // SSL:Const::PEER_CERT_OPTIONAL
+
+	    int authmode;
+
+	    if (c.flags & SSLConst::NO_VERIFY_PEER)
+	      authmode = MBEDTLS_SSL_VERIFY_NONE;
+	    else if (c.flags & SSLConst::PEER_CERT_OPTIONAL)
+	      throw MbedTLSException("Optional peer verification not supported");
+	    else
+	      authmode = MBEDTLS_SSL_VERIFY_REQUIRED;
+
+	    mbedtls_ssl_conf_authmode(sslconf, authmode);
+	  }
 
 	  // set verify callback
 	  mbedtls_ssl_conf_verify(sslconf, c.mode.is_server() ? verify_callback_server : verify_callback_client, this);
@@ -825,7 +863,7 @@ namespace openvpn {
 	  // In pre-mbedtls-2.x the hostname for the CA chain was set in ssl_set_ca_chain().
 	  // From mbedtls-2.x, the hostname must be set via mbedtls_ssl_set_hostname()
 	  // https://tls.mbed.org/kb/how-to/upgrade-2.0
-	  if (hostname && ((c.flags & SSLConst::ENABLE_SNI) || c.ca_chain))
+	  if (hostname && ((c.flags & SSLConst::ENABLE_CLIENT_SNI) || c.ca_chain))
 	    {
 	      if (mbedtls_ssl_set_hostname(ssl, hostname))
 		throw MbedTLSException("mbedtls_ssl_set_hostname failed");
@@ -1423,6 +1461,16 @@ namespace openvpn {
     }
   };
 
+  inline const std::string get_ssl_library_version()
+  {
+    unsigned int ver = mbedtls_version_get_number();
+    std::string version = "mbed TLS " +
+			  std::to_string((ver>>24)&0xff) +
+			  "." + std::to_string((ver>>16)&0xff) +
+			  "." + std::to_string((ver>>8)&0xff);
+
+    return version;
+  }
 } // namespace openvpn
 
 #endif
