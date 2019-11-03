@@ -399,11 +399,12 @@
 
 - (void)resetSettings {
     _sessionName = nil;
-    _packetFlowBridge = nil;
     _networkSettingsBuilder = nil;
 }
 
 - (void)resetTun {
+    _packetFlowBridge = nil;
+    
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     void (^completionHandler)(id<OpenVPNAdapterPacketFlow> _Nullable) = ^(id<OpenVPNAdapterPacketFlow> flow) {
