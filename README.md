@@ -33,7 +33,7 @@ To install OpenVPNAdapter with Cocoapods, add the following lines to your `Podfi
 ```ruby
 target 'Your Target Name' do
   use_frameworks!
-  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.3.0'
+  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.4.0'
 end
 ```
 
@@ -176,6 +176,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         configuration.settings = [
             // Additional parameters as key:value pairs may be provided here
         ]
+
+        // Add this line if you want to keep TUN interface active during pauses or reconnections
+        configuration.tunPersist = true
 
         // Apply OpenVPN configuration
         let properties: OpenVPNProperties
