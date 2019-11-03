@@ -153,10 +153,7 @@ bool OpenVPNClient::tun_builder_persist() {
 
 void OpenVPNClient::tun_builder_teardown(bool disconnect) {
     [this->delegate resetSettings];
-    
-    if (disconnect || !this->tun_builder_persist()) {
-        [this->delegate resetTun];
-    }
+    [this->delegate resetTun];
 }
 
 bool OpenVPNClient::socket_protect(int socket, std::string remote, bool ipv6) {
@@ -169,14 +166,6 @@ bool OpenVPNClient::pause_on_connection_timeout() {
 
 void OpenVPNClient::external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) { }
 void OpenVPNClient::external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) { }
-
-bool OpenVPNClient::remote_override_enabled() {
-    return false;
-}
-
-void OpenVPNClient::remote_override(ClientAPI::RemoteOverride& remote) {
-    // TODO: Override remote server
-}
 
 void OpenVPNClient::event(const ClientAPI::Event& ev) {
     NSString *name = [NSString stringWithUTF8String:ev.name.c_str()];

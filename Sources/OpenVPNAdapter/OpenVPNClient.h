@@ -93,9 +93,6 @@ public:
     void external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) override;
     void external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) override;
     
-    bool remote_override_enabled() override;
-    void remote_override(ClientAPI::RemoteOverride& remote) override;
-    
     void event(const ClientAPI::Event& event) override;
     void log(const ClientAPI::LogInfo& log) override;
     
