@@ -70,9 +70,10 @@ class OpenVPNConfigurationTests: XCTestCase {
             return
         }
         
-        let equals = originalSettings.elementsEqual(returnedSettings) { (first, second) -> Bool in
-            first.key == second.key && first.value == second.value
+        let equals = originalSettings.allSatisfy { (key, value) in
+            returnedSettings[key] == value
         }
+        
         XCTAssert(equals)
         
         configuration.settings = [:]

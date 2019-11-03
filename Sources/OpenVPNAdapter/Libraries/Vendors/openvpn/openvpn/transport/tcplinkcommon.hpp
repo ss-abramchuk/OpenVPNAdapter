@@ -14,6 +14,7 @@
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/rc.hpp>
 #include <openvpn/common/socktypes.hpp>
+#include <openvpn/error/excode.hpp>
 #include <openvpn/frame/frame.hpp>
 #include <openvpn/log/sessionstats.hpp>
 #include <openvpn/transport/tcplinkbase.hpp>
@@ -182,9 +183,22 @@ namespace openvpn {
 			       }
 			       catch (const std::exception& e)
 			       {
+			         Error::Type err = Error::TCP_SIZE_ERROR;
+				 const char *msg = "TCP_SIZE_ERROR";
+			         // if exception is an ExceptionCode, translate the code
+				 // to return status string
+				 {
+				   const ExceptionCode *ec = dynamic_cast<const ExceptionCode *>(&e);
+				   if (ec && ec->code_defined())
+				   {
+				     err = ec->code();
+				     msg = ec->what();
+				   }
+				 }
+
 			         OPENVPN_LOG_TCPLINK_ERROR("TCP packet extract exception: " << e.what());
-				 self->stats->error(Error::TCP_SIZE_ERROR);
-				 self->read_handler->tcp_error_handler("TCP_SIZE_ERROR");
+				 self->stats->error(err);
+				 self->read_handler->tcp_error_handler(msg);
 				 self->stop();
 			       }
 			     });

@@ -57,6 +57,7 @@
         @"TUN_IFACE_CREATE": @(OpenVPNAdapterErrorTUNIfaceCreate),
         @"TUN_IFACE_DISABLED": @(OpenVPNAdapterErrorTUNIfaceDisabled),
         @"TUN_ERROR": @(OpenVPNAdapterErrorTUNError),
+        @"TUN_REGISTER_RINGS_ERROR": @(OpenVPNAdapterErrorTUNRegisterRingsError),
         @"TAP_NOT_SUPPORTED": @(OpenVPNAdapterErrorTAPNotSupported),
         @"REROUTE_GW_NO_DNS": @(OpenVPNAdapterErrorRerouteGatewayNoDns),
         @"TRANSPORT_ERROR": @(OpenVPNAdapterErrorTransportError),
@@ -82,6 +83,7 @@
         @"AUTH_FAILED": @(OpenVPNAdapterErrorAuthFailed),
         @"CLIENT_HALT": @(OpenVPNAdapterErrorClientHalt),
         @"CLIENT_RESTART": @(OpenVPNAdapterErrorClientRestart),
+        @"TUN_HALT": @(OpenVPNAdapterErrorTUNHalt),
         @"RELAY": @(OpenVPNAdapterErrorRelay),
         @"RELAY_ERROR": @(OpenVPNAdapterErrorRelayError),
         @"N_PAUSE": @(OpenVPNAdapterErrorPauseNumber),
@@ -134,6 +136,7 @@
         case OpenVPNAdapterErrorTUNIfaceCreate: return @"Error creating TUN/TAP interface.";
         case OpenVPNAdapterErrorTUNIfaceDisabled: return @"TUN/TAP interface is disabled.";
         case OpenVPNAdapterErrorTUNError: return @"General tun error.";
+        case OpenVPNAdapterErrorTUNRegisterRingsError: return @"Error registering ring buffers with wintun.";
         case OpenVPNAdapterErrorTAPNotSupported: return @"Dev TAP is present in profile but not supported.";
         case OpenVPNAdapterErrorRerouteGatewayNoDns: return @"redirect-gateway specified without alt DNS servers.";
         case OpenVPNAdapterErrorTransportError: return @"General transport error";
@@ -159,6 +162,7 @@
         case OpenVPNAdapterErrorAuthFailed: return @"General authentication failure";
         case OpenVPNAdapterErrorClientHalt: return @"HALT message from server received.";
         case OpenVPNAdapterErrorClientRestart: return @"RESTART message from server received.";
+        case OpenVPNAdapterErrorTUNHalt: return @"Halt command from tun interface";
         case OpenVPNAdapterErrorRelay: return @"RELAY message from server received.";
         case OpenVPNAdapterErrorRelayError: return @"RELAY error.";
         case OpenVPNAdapterErrorPauseNumber: return nil;

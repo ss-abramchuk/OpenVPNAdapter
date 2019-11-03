@@ -260,6 +260,30 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.guiVersion = guiVersion ? std::string([guiVersion UTF8String]) : "";
 }
 
+- (NSString *)ssoMethods {
+    return !_config.ssoMethods.empty() ? [NSString stringWithUTF8String:_config.ssoMethods.c_str()] : nil;
+}
+
+- (void)setSsoMethods:(NSString *)ssoMethods {
+    _config.ssoMethods = ssoMethods ? std::string([ssoMethods UTF8String]) : "";
+}
+
+- (NSString *)hardwareAdressOverride {
+    return !_config.hwAddrOverride.empty() ? [NSString stringWithUTF8String:_config.hwAddrOverride.c_str()] : nil;
+}
+
+- (void)setHardwareAdressOverride:(NSString *)hardwareAdressOverride {
+    _config.hwAddrOverride = hardwareAdressOverride ? std::string([hardwareAdressOverride UTF8String]) : "";
+}
+
+- (NSString *)platformVersion {
+    return !_config.platformVersion.empty() ? [NSString stringWithUTF8String:_config.platformVersion.c_str()] : nil;
+}
+
+- (void)setPlatformVersion:(NSString *)platformVersion {
+    _config.platformVersion = platformVersion ? std::string([platformVersion UTF8String]) : "";
+}
+
 - (NSString *)server {
     return !_config.serverOverride.empty() ? [NSString stringWithUTF8String:_config.serverOverride.c_str()] : nil;
 }
@@ -306,6 +330,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
 
 - (void)setConnectionTimeout:(NSInteger)connectionTimeout {
     _config.connTimeout = connectionTimeout;
+}
+
+- (BOOL)tunPersist {
+    return _config.tunPersist;
+}
+
+- (void)setTunPersist:(BOOL)tunPersist {
+    _config.tunPersist = tunPersist;
 }
 
 - (BOOL)googleDNSFallback {
@@ -473,10 +505,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     configuration.fileContent = [self.fileContent copyWithZone:zone];
     configuration.settings = [self.settings copyWithZone:zone];
     configuration.guiVersion = [self.guiVersion copyWithZone:zone];
+    configuration.ssoMethods = [self.ssoMethods copyWithZone:zone];
+    configuration.hardwareAdressOverride = [self.hardwareAdressOverride copyWithZone:zone];
+    configuration.platformVersion = [self.platformVersion copyWithZone:zone];
     configuration.server = [self.server copyWithZone:zone];
     configuration.proto = self.proto;
     configuration.ipv6 = self.ipv6;
     configuration.connectionTimeout = self.connectionTimeout;
+    configuration.tunPersist = self.tunPersist;
     configuration.googleDNSFallback = self.googleDNSFallback;
     configuration.synchronousDNSLookup = self.synchronousDNSLookup;
     configuration.autologinSessions = self.autologinSessions;
@@ -499,10 +535,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     [aCoder encodeObject:self.fileContent forKey:NSStringFromSelector(@selector(fileContent))];
     [aCoder encodeObject:self.settings forKey:NSStringFromSelector(@selector(settings))];
     [aCoder encodeObject:self.guiVersion forKey:NSStringFromSelector(@selector(guiVersion))];
+    [aCoder encodeObject:self.ssoMethods forKey:NSStringFromSelector(@selector(ssoMethods))];
+    [aCoder encodeObject:self.hardwareAdressOverride forKey:NSStringFromSelector(@selector(hardwareAdressOverride))];
+    [aCoder encodeObject:self.platformVersion forKey:NSStringFromSelector(@selector(platformVersion))];
     [aCoder encodeObject:self.server forKey:NSStringFromSelector(@selector(server))];
     [aCoder encodeInteger:self.proto forKey:NSStringFromSelector(@selector(proto))];
     [aCoder encodeInteger:self.ipv6 forKey:NSStringFromSelector(@selector(ipv6))];
     [aCoder encodeInteger:self.connectionTimeout forKey:NSStringFromSelector(@selector(connectionTimeout))];
+    [aCoder encodeBool:self.tunPersist forKey:NSStringFromSelector(@selector(tunPersist))];
     [aCoder encodeBool:self.googleDNSFallback forKey:NSStringFromSelector(@selector(googleDNSFallback))];
     [aCoder encodeBool:self.synchronousDNSLookup forKey:NSStringFromSelector(@selector(synchronousDNSLookup))];
     [aCoder encodeBool:self.autologinSessions forKey:NSStringFromSelector(@selector(autologinSessions))];
@@ -525,10 +565,14 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
         self.fileContent = [aDecoder decodeObjectOfClass:[NSData class] forKey:NSStringFromSelector(@selector(fileContent))];
         self.settings = [aDecoder decodeObjectOfClass:[NSDictionary class] forKey:NSStringFromSelector(@selector(settings))];
         self.guiVersion = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(guiVersion))];
+        self.ssoMethods = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(ssoMethods))];
+        self.hardwareAdressOverride = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(hardwareAdressOverride))];
+        self.platformVersion = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(platformVersion))];
         self.server = [aDecoder decodeObjectOfClass:[NSString class] forKey:NSStringFromSelector(@selector(server))];
         self.proto = (OpenVPNTransportProtocol)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(proto))];
         self.ipv6 = (OpenVPNIPv6Preference)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(ipv6))];
         self.connectionTimeout = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(connectionTimeout))];
+        self.tunPersist = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(tunPersist))];
         self.googleDNSFallback = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(googleDNSFallback))];
         self.synchronousDNSLookup = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(synchronousDNSLookup))];
         self.autologinSessions = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(autologinSessions))];

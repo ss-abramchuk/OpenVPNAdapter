@@ -32,10 +32,12 @@
 #include <openvpn/common/rc.hpp>
 #include <openvpn/common/options.hpp>
 #include <openvpn/common/mode.hpp>
+#include <openvpn/common/jsonlib.hpp>
 #include <openvpn/buffer/buffer.hpp>
 #include <openvpn/frame/frame.hpp>
 #include <openvpn/auth/authcert.hpp>
 #include <openvpn/pki/epkibase.hpp>
+#include <openvpn/pki/pktype.hpp>
 #include <openvpn/ssl/kuparse.hpp>
 #include <openvpn/ssl/nscert.hpp>
 #include <openvpn/ssl/tlsver.hpp>
@@ -45,6 +47,10 @@
 #include <openvpn/random/randapi.hpp>
 
 namespace openvpn {
+
+  namespace SNI {
+    class HandlerBase;
+  }
 
   class SSLAPI : public RC<thread_unsafe_refcount>
   {
@@ -67,7 +73,7 @@ namespace openvpn {
     virtual BufferPtr read_ciphertext() = 0;
     virtual std::string ssl_handshake_details() const = 0;
     virtual bool did_full_handshake() = 0;
-    virtual const AuthCert::Ptr& auth_cert() = 0;
+    virtual const AuthCert::Ptr& auth_cert() const = 0;
     virtual void mark_no_cache() = 0; // prevent caching of client-side session (only meaningful when client_session_tickets is enabled)
     uint32_t get_tls_warnings() const
     {
@@ -103,15 +109,6 @@ namespace openvpn {
   public:
     typedef RCPtr<SSLConfigAPI> Ptr;
 
-    enum PKType {
-      PK_UNKNOWN = 0,
-      PK_NONE,
-      PK_DSA,
-      PK_RSA,
-      PK_EC,
-      PK_ECDSA,
-    };
-
     enum LoadFlags {
       LF_PARSE_MODE                     = (1<<0),
       LF_ALLOW_CLIENT_CERT_NOT_REQUIRED = (1<<1),
@@ -121,21 +118,21 @@ namespace openvpn {
 
     std::string private_key_type_string() const
     {
-      PKType type = private_key_type();
+      PKType::Type type = private_key_type();
 
       switch (type)
       {
-      case PK_NONE:
+      case PKType::PK_NONE:
 	return "None";
-      case PK_DSA:
+      case PKType::PK_DSA:
 	return "DSA";
-      case PK_RSA:
+      case PKType::PK_RSA:
 	return "RSA";
-      case PK_EC:
+      case PKType::PK_EC:
 	return "EC";
-      case PK_ECDSA:
+      case PKType::PK_ECDSA:
 	return "ECDSA";
-      case PK_UNKNOWN:
+      case PKType::PK_UNKNOWN:
       default:
 	return "Unknown";
       }
@@ -146,6 +143,8 @@ namespace openvpn {
     virtual void set_external_pki_callback(ExternalPKIBase* external_pki_arg) = 0; // private key alternative
     virtual void set_session_ticket_handler(TLSSessionTicketBase* session_ticket_handler) = 0; // server side
     virtual void set_client_session_tickets(const bool v) = 0; // client side
+    virtual void set_sni_handler(SNI::HandlerBase* sni_handler) = 0; // server side
+    virtual void set_sni_name(const std::string& sni_name_arg) = 0; // client side
     virtual void set_private_key_password(const std::string& pwd) = 0;
     virtual void load_ca(const std::string& ca_txt, bool strict) = 0;
     virtual void load_crl(const std::string& crl_txt) = 0;
@@ -159,7 +158,7 @@ namespace openvpn {
     virtual std::vector<std::string> extract_extra_certs() const = 0;
     virtual std::string extract_private_key() const = 0;
     virtual std::string extract_dh() const = 0;
-    virtual PKType private_key_type() const = 0;
+    virtual PKType::Type private_key_type() const = 0;
     virtual size_t private_key_length() const = 0;
     virtual void set_frame(const Frame::Ptr& frame_arg) = 0;
     virtual void set_debug_level(const int debug_level) = 0;
@@ -177,6 +176,10 @@ namespace openvpn {
     virtual void set_rng(const RandomAPI::Ptr& rng_arg) = 0;
     virtual void load(const OptionList& opt, const unsigned int lflags) = 0;
 
+#ifdef HAVE_JSON
+    virtual SSLConfigAPI::Ptr json_override(const Json::Value& root, const bool load_cert_key) const = 0;
+#endif
+
     virtual std::string validate_cert(const std::string& cert_txt) const = 0;
     virtual std::string validate_cert_list(const std::string& certs_txt) const = 0;
     virtual std::string validate_crl(const std::string& crl_txt) const = 0;
@@ -185,6 +188,15 @@ namespace openvpn {
 
     virtual SSLFactoryAPI::Ptr new_factory() = 0;
   };
+
+  /**
+   * Reports a human readable string of the SSL library in use and its version.
+   * E.g. mbed TLS 1.2.4
+   *
+   * @return a human readable SSL library version string
+   */
+  inline const std::string get_ssl_library_version();
+
 }
 
 #endif

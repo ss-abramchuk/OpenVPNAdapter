@@ -17,10 +17,24 @@ using ::IPv4::Addr;
 
 OpenVPNClient::OpenVPNClient(id<OpenVPNClientDelegate> delegate): ClientAPI::OpenVPNClient() {
     this->delegate = delegate;
+    this->config = nullptr;
+}
+
+OpenVPNClient::~OpenVPNClient() {
+    if (this->config != nullptr) { delete this->config; }
+}
+
+ClientAPI::EvalConfig OpenVPNClient::apply_config(const ClientAPI::Config& config) {
+    if (this->config != nullptr) { delete this->config; }
+    this->config = new ClientAPI::Config(config);
+    
+    return eval_config(config);
 }
 
 bool OpenVPNClient::tun_builder_new() {
     [this->delegate resetSettings];
+    [this->delegate resetTun];
+    
     return true;
 }
 
@@ -134,11 +148,12 @@ int OpenVPNClient::tun_builder_establish() {
 }
 
 bool OpenVPNClient::tun_builder_persist() {
-    return true;
+    return config->tunPersist;
 }
 
 void OpenVPNClient::tun_builder_teardown(bool disconnect) {
     [this->delegate resetSettings];
+    [this->delegate resetTun];
 }
 
 bool OpenVPNClient::socket_protect(int socket, std::string remote, bool ipv6) {
@@ -151,14 +166,6 @@ bool OpenVPNClient::pause_on_connection_timeout() {
 
 void OpenVPNClient::external_pki_cert_request(ClientAPI::ExternalPKICertRequest& certreq) { }
 void OpenVPNClient::external_pki_sign_request(ClientAPI::ExternalPKISignRequest& signreq) { }
-
-bool OpenVPNClient::remote_override_enabled() {
-    return false;
-}
-
-void OpenVPNClient::remote_override(ClientAPI::RemoteOverride& remote) {
-    // TODO: Override remote server
-}
 
 void OpenVPNClient::event(const ClientAPI::Event& ev) {
     NSString *name = [NSString stringWithUTF8String:ev.name.c_str()];

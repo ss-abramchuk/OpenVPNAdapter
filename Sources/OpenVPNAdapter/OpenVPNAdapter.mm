@@ -8,6 +8,8 @@
 
 #define OPENVPN_EXTERN extern
 
+#define TUNNEL_CONFIGURATION_TIMEOUT 30
+
 #import "OpenVPNAdapter.h"
 
 #import <NetworkExtension/NetworkExtension.h>
@@ -48,7 +50,7 @@
 #pragma mark - OpenVPNClient Lifecycle
 
 - (OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * __autoreleasing *)error {
-    ClientAPI::EvalConfig eval = self.vpnClient->eval_config(configuration.config);
+    ClientAPI::EvalConfig eval = self.vpnClient->apply_config(configuration.config);
     
     if (eval.error) {
         if (error) {
@@ -326,7 +328,7 @@
     
     [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:networkSettings completionHandler:completionHandler];
     
-    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, TUNNEL_CONFIGURATION_TIMEOUT * NSEC_PER_SEC));
     
     NSError *socketError;
     if (self.packetFlowBridge && [self.packetFlowBridge configureSocketsWithError:&socketError]) {
@@ -361,6 +363,7 @@
         @"PAUSE": @(OpenVPNAdapterEventPause),
         @"RESUME": @(OpenVPNAdapterEventResume),
         @"RELAY": @(OpenVPNAdapterEventRelay),
+        @"COMPRESSION_ENABLED": @(OpenVPNAdapterEventCompressionEnabled),
         @"UNSUPPORTED_FEATURE": @(OpenVPNAdapterEventUnsupportedFeature)
     };
     
@@ -396,8 +399,11 @@
 
 - (void)resetSettings {
     _sessionName = nil;
-    _packetFlowBridge = nil;
     _networkSettingsBuilder = nil;
+}
+
+- (void)resetTun {
+    _packetFlowBridge = nil;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
@@ -407,7 +413,7 @@
     
     [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:nil completionHandler:completionHandler];
     
-    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, TUNNEL_CONFIGURATION_TIMEOUT * NSEC_PER_SEC));
 }
 
 #pragma mark -

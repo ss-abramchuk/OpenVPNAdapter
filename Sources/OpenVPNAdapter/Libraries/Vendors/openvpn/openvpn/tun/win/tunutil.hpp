@@ -35,6 +35,12 @@
 #include <ws2tcpip.h> // for IPv6
 #include <tlhelp32.h> // for impersonating as LocalSystem
 
+
+#include <SetupAPI.h>
+#include <devguid.h>
+#include <cfgmgr32.h>
+#include <ndisguid.h>
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -342,93 +348,123 @@ namespace openvpn {
 	}
       };
 
-      inline HANDLE impersonate_as_system()
+      struct DeviceInstanceIdInterfacePair
       {
-	HANDLE thread_token, process_snapshot, winlogon_process, winlogon_token, duplicated_token, file_handle;
-	PROCESSENTRY32 entry = {};
-	entry.dwSize = sizeof(PROCESSENTRY32);
-	BOOL ret;
-	DWORD pid = 0;
-	TOKEN_PRIVILEGES privileges = {};
-	privileges.PrivilegeCount = 1;
-	privileges.Privileges->Attributes = SE_PRIVILEGE_ENABLED;
+	std::string net_cfg_instance_id;
+	std::string device_interface_list;
+      };
 
-	if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &privileges.Privileges[0].Luid))
-	  return INVALID_HANDLE_VALUE;
-	if (!ImpersonateSelf(SecurityImpersonation))
-	  return INVALID_HANDLE_VALUE;
-	if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES, FALSE, &thread_token))
-	  {
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
-	if (!AdjustTokenPrivileges(thread_token, FALSE, &privileges, sizeof(privileges), NULL, NULL))
-	  {
-	    CloseHandle(thread_token);
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
-	CloseHandle(thread_token);
+      class DevInfoSetHelper
+      {
+      public:
+	DevInfoSetHelper()
+	{
+	  handle = SetupDiGetClassDevsEx(&GUID_DEVCLASS_NET, NULL, NULL, DIGCF_PRESENT, NULL, NULL, NULL);
+	}
 
-	process_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-	if (process_snapshot == INVALID_HANDLE_VALUE)
-	  {
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
-	for (ret = Process32First(process_snapshot, &entry); ret; ret = Process32Next(process_snapshot, &entry))
-	  {
-	    if (!_stricmp(entry.szExeFile, "winlogon.exe"))
-	      {
-		pid = entry.th32ProcessID;
-		break;
-	      }
-	  }
-	CloseHandle(process_snapshot);
-	if (!pid)
-	  {
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
+	bool is_valid()
+	{
+	  return handle != INVALID_HANDLE_VALUE;
+	}
 
-	winlogon_process = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
-	if (!winlogon_process)
-	  {
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
+	operator HDEVINFO()
+	{
+	  return handle;
+	}
 
-	if (!OpenProcessToken(winlogon_process, TOKEN_IMPERSONATE | TOKEN_DUPLICATE, &winlogon_token))
-	  {
-	    CloseHandle(winlogon_process);
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
-	CloseHandle(winlogon_process);
+	~DevInfoSetHelper()
+	{
+	  if (is_valid())
+	    {
+	      SetupDiDestroyDeviceInfoList(handle);
+	    }
+	}
 
-	if (!DuplicateToken(winlogon_token, SecurityImpersonation, &duplicated_token))
-	  {
-	    CloseHandle(winlogon_token);
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
-	CloseHandle(winlogon_token);
+      private:
+	HDEVINFO handle;
+      };
 
-	if (!SetThreadToken(NULL, duplicated_token))
-	  {
-	    CloseHandle(duplicated_token);
-	    RevertToSelf();
-	    return INVALID_HANDLE_VALUE;
-	  }
-	CloseHandle(duplicated_token);
-      }
+      struct DeviceInstanceIdInterfaceList : public std::vector<DeviceInstanceIdInterfacePair>
+      {
+	DeviceInstanceIdInterfaceList()
+	{
+	  DevInfoSetHelper device_info_set;
+	  if (!device_info_set.is_valid())
+	    return;
+
+	  for (DWORD i = 0;; ++i)
+	    {
+	      SP_DEVINFO_DATA dev_info_data;
+	      ZeroMemory(&dev_info_data, sizeof(SP_DEVINFO_DATA));
+	      dev_info_data.cbSize = sizeof(SP_DEVINFO_DATA);
+	      BOOL res = SetupDiEnumDeviceInfo(device_info_set, i, &dev_info_data);
+	      if (!res)
+		{
+		  if (GetLastError() == ERROR_NO_MORE_ITEMS)
+		    break;
+		  else
+		    continue;
+		}
+
+	      Win::RegKey regkey;
+	      *regkey.ref() = SetupDiOpenDevRegKey(device_info_set, &dev_info_data, DICS_FLAG_GLOBAL, 0, DIREG_DRV, KEY_QUERY_VALUE);
+	      if (!regkey.defined())
+		continue;
+
+	      std::string str_net_cfg_instance_id;
+
+	      DWORD size;
+	      LONG status = RegQueryValueExA(regkey(), "NetCfgInstanceId", NULL, NULL, NULL, &size);
+	      if (status != ERROR_SUCCESS)
+		continue;
+	      BufferAllocatedType<char, thread_unsafe_refcount> buf_net_cfg_inst_id(size, BufferAllocated::CONSTRUCT_ZERO);
+
+	      status = RegQueryValueExA(regkey(), "NetCfgInstanceId", NULL, NULL, (LPBYTE)buf_net_cfg_inst_id.data(), &size);
+	      if (status == ERROR_SUCCESS)
+		{
+		  buf_net_cfg_inst_id.data()[size - 1] = '\0';
+		  str_net_cfg_instance_id = std::string(buf_net_cfg_inst_id.data());
+		}
+	      else
+		continue;
+
+	      res = SetupDiGetDeviceInstanceId(device_info_set, &dev_info_data, NULL, 0, &size);
+	      if (res != FALSE && GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+		continue;
+
+	      BufferAllocatedType<char, thread_unsafe_refcount> buf_dev_inst_id(size, BufferAllocated::CONSTRUCT_ZERO);
+	      if (!SetupDiGetDeviceInstanceId(device_info_set, &dev_info_data, buf_dev_inst_id.data(), size, &size))
+		continue;
+	      buf_dev_inst_id.set_size(size);
+
+	      ULONG dev_interface_list_size = 0;
+	      CONFIGRET cr = CM_Get_Device_Interface_List_Size(&dev_interface_list_size,
+							       (LPGUID)& GUID_DEVINTERFACE_NET,
+							       buf_dev_inst_id.data(),
+							       CM_GET_DEVICE_INTERFACE_LIST_PRESENT);
+
+	      if (cr != CR_SUCCESS)
+		continue;
+
+	      BufferAllocatedType<char, thread_unsafe_refcount> buf_dev_iface_list(dev_interface_list_size, BufferAllocated::CONSTRUCT_ZERO);
+	      cr = CM_Get_Device_Interface_List((LPGUID)& GUID_DEVINTERFACE_NET, buf_dev_inst_id.data(),
+						buf_dev_iface_list.data(),
+      						dev_interface_list_size,
+						CM_GET_DEVICE_INTERFACE_LIST_PRESENT);
+	      if (cr != CR_SUCCESS)
+		continue;
+
+	      DeviceInstanceIdInterfacePair pair;
+	      pair.net_cfg_instance_id = str_net_cfg_instance_id;
+	      pair.device_interface_list = std::string(buf_dev_iface_list.data());
+	      push_back(pair);
+	    }
+	}
+      };
 
       // given a TAP GUID, form the pathname of the TAP device node
-      inline std::string tap_path(const TapNameGuidPair& tap, bool wintun)
+      inline std::string tap_path(const TapNameGuidPair& tap)
       {
-	if (wintun)
-	  return std::string(USERMODEDEVICEDIR) + "WINTUN" + std::to_string(tap.net_luid_index);
-	else
 	  return std::string(USERMODEDEVICEDIR) + tap.guid + std::string(TAP_WIN_SUFFIX);
       }
 
@@ -440,31 +476,49 @@ namespace openvpn {
       {
 	Win::ScopedHANDLE hand;
 
+	std::unique_ptr<DeviceInstanceIdInterfaceList> inst_id_interface_list;
+	if (wintun)
+	  inst_id_interface_list.reset(new DeviceInstanceIdInterfaceList());
+
 	// iterate over list of TAP adapters on system
 	for (TapNameGuidPairList::const_iterator i = guids.begin(); i != guids.end(); i++)
 	  {
 	    const TapNameGuidPair& tap = *i;
-	    const std::string path = tap_path(tap, wintun);
 
-	    // wintun device can be only opened under LocalSystem account
+	    std::string path;
+
 	    if (wintun)
-	      impersonate_as_system();
-
-	    hand.reset(::CreateFileA(path.c_str(),
-				     GENERIC_READ | GENERIC_WRITE,
-				     0, /* was: FILE_SHARE_READ */
-				     0,
-				     OPEN_EXISTING,
-				     FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
-				     0));
-	    if (wintun)
-	      RevertToSelf();
-
-	    if (hand.defined())
 	      {
-		used = tap;
-		path_opened = path;
-		break;
+		for (const auto& inst_id_interface : *inst_id_interface_list)
+		  {
+		    if (inst_id_interface.net_cfg_instance_id != tap.guid)
+		      continue;
+
+		    path = inst_id_interface.device_interface_list;
+		    break;
+		  }
+	      }
+	    else
+	      {
+		path = tap_path(tap);
+	      }
+
+	    if (path.length() > 0)
+	      {
+		hand.reset(::CreateFileA(path.c_str(),
+			   GENERIC_READ | GENERIC_WRITE,
+			   0, /* was: FILE_SHARE_READ */
+			   0,
+			   OPEN_EXISTING,
+			   FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED,
+			   0));
+
+		if (hand.defined())
+		  {
+		    used = tap;
+		    path_opened = path;
+		    break;
+		  }
 	      }
 	  }
 	return hand.release();

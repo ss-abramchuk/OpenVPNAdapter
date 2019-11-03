@@ -29,6 +29,7 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent) {
     OpenVPNAdapterEventPause,
     OpenVPNAdapterEventResume,
     OpenVPNAdapterEventRelay,
+    OpenVPNAdapterEventCompressionEnabled,
     OpenVPNAdapterEventUnsupportedFeature,
     OpenVPNAdapterEventUnknown
 };

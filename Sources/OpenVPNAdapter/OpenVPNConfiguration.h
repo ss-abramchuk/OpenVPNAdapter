@@ -38,6 +38,26 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
 @property (nullable, nonatomic) NSString *guiVersion;
 
 /**
+ Set to a comma seperated list of supported SSO mechanisms that may
+ be signalled via INFO_PRE to the client.
+ "openurl" is to continue authentication by opening an url in a browser
+ "crtext" gives a challenge response in text format that needs to
+ responded via control channel.
+ Passed to the server as IV_SSO.
+*/
+@property (nullable, nonatomic) NSString *ssoMethods;
+
+/**
+ Override the string that is passed as IV_HWADDR to the server.
+*/
+@property (nullable, nonatomic) NSString *hardwareAdressOverride;
+
+/**
+ Set the string that is passed to the server as IV_PLAT_VER
+*/
+@property (nullable, nonatomic) NSString *platformVersion;
+
+/**
  Use a different server than that specified in "remote"
  option of profile
  */
@@ -63,6 +83,11 @@ typedef NS_ENUM(NSInteger, OpenVPNTLSCertProfile);
  Connection timeout in seconds, or 0 to retry indefinitely
  */
 @property (nonatomic) NSInteger connectionTimeout;
+
+/**
+ Keep tun interface active during pauses or reconnections
+ */
+@property (nonatomic) BOOL tunPersist;
 
 /**
  If YES and a redirect-gateway profile doesn't also define
