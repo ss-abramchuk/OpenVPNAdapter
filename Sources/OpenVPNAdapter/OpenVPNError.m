@@ -6,7 +6,7 @@
 //
 //
 
-#import <OpenVPNError.h>
+#import "OpenVPNError.h"
 
 NSString *const OpenVPNAdapterErrorDomain = @"me.ss-abramchuk.openvpn-adapter.error-domain";
 NSString *const OpenVPNIdentityErrorDomain = @"me.ss-abramchuk.openvpn-identity.error-domain";
