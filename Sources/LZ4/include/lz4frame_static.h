@@ -1,0 +1,1 @@
+../lib/lz4frame_static.h
