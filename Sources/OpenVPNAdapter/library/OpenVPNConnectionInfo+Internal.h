@@ -8,7 +8,7 @@
 
 #import "OpenVPNConnectionInfo.h"
 
-#include "ovpncli.hpp"
+#include <ovpnapi.hpp>
 
 using namespace openvpn;
 

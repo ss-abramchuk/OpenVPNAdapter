@@ -7,7 +7,7 @@
 //
 #import "OpenVPNCredentials.h"
 
-#include "ovpncli.hpp"
+#include <ovpnapi.hpp>
 
 using namespace openvpn;
 

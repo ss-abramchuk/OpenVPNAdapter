@@ -8,7 +8,7 @@
 
 #import "OpenVPNTransportStats.h"
 
-#include "ovpncli.hpp"
+#include <ovpnapi.hpp>
 
 using namespace openvpn;
 
