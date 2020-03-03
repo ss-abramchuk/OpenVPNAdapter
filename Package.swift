@@ -15,8 +15,10 @@ let package = Package(
         .target(
             name: "OpenVPNAdapter",
             dependencies: [
+                .target(name: "mbedTLS"),
                 .target(name: "OpenVPN3")
             ],
+            sources: ["library"],
             cxxSettings: [
                 .headerSearchPath("../OpenVPN3"),
             ]
