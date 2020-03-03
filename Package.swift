@@ -22,11 +22,7 @@ let package = Package(
             cxxSettings: [
                 .headerSearchPath("../ASIO/asio/include"),
                 .headerSearchPath("../OpenVPN3"),
-                .define("ASIO_STANDALONE"),
-                .define("ASIO_NO_DEPRECATED"),
-                .define("ASIO_HAS_STD_STRING_VIEW"),
-                .define("USE_ASIO"),
-                .define("USE_ASIO_THREADLOCAL")
+                .define("USE_ASIO")
             ]
         ),
         .target(
