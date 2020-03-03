@@ -16,7 +16,7 @@ let package = Package(
             name: "OpenVPNAdapter",
             dependencies: [
                 .target(name: "mbedTLS"),
-                .target(name: "OpenVPN3")
+                .target(name: "OpenVPNClient")
             ],
             sources: ["library"],
             cxxSettings: [
@@ -46,15 +46,15 @@ let package = Package(
             ]
         ),
         .target(
-            name: "OpenVPN3",
+            name: "OpenVPNClient",
             dependencies: [
                 .target(name: "LZ4"),
                 .target(name: "mbedTLS")
             ],
             sources: ["library"],
             cxxSettings: [
-                .headerSearchPath("."),
                 .headerSearchPath("../ASIO/asio/include"),
+                .headerSearchPath("../OpenVPN3"),
                 .define("ASIO_STANDALONE"),
                 .define("ASIO_NO_DEPRECATED"),
                 .define("ASIO_HAS_STD_STRING_VIEW"),
