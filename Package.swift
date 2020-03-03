@@ -51,13 +51,13 @@ let package = Package(
             cxxSettings: [
                 .headerSearchPath("../ASIO/asio/include"),
                 .headerSearchPath("../OpenVPN3"),
+                .define("USE_ASIO"),
+                .define("USE_ASIO_THREADLOCAL"),
                 .define("ASIO_STANDALONE"),
                 .define("ASIO_NO_DEPRECATED"),
                 .define("ASIO_HAS_STD_STRING_VIEW"),
-                .define("USE_ASIO"),
-                .define("USE_ASIO_THREADLOCAL"),
-                .define("HAVE_LZ4"),
                 .define("USE_MBEDTLS"),
+                .define("HAVE_LZ4"),
                 .define("OPENVPN_FORCE_TUN_NULL"),
                 .define("USE_TUN_BUILDER")
             ]
