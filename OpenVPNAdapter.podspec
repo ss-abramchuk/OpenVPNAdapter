@@ -70,6 +70,7 @@ Pod::Spec.new do |s|
     asio_path = "Sources/ASIO"
 
     asio.public_header_files = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
+    asio.preserve_paths = "#{asio_path}/asio/include/**/*.{hpp,ipp}"
   end
 
   s.subspec "LZ4" do |lz4|
@@ -94,7 +95,7 @@ Pod::Spec.new do |s|
     openvpn_path = "Sources/OpenVPN3"
 
     openvpn.public_header_files = "#{openvpn_path}/openvpn/**/*.hpp"
-    openvpn.preserve_paths = "#{openvpn_path}/client/*.{hpp,cpp}"
+    openvpn.preserve_paths = "#{openvpn_path}/openvpn/**/*.hpp", "#{openvpn_path}/client/*.{hpp,cpp}"
   end
 
   s.subspec "OpenVPNClient" do |client|
