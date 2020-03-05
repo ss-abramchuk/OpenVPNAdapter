@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/ss.abramchuk/Sources.localized/open-source.localized/openvpn-adapter/OpenVPNAdapter.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>
