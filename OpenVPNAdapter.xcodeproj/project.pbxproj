@@ -7,6 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C97E5F6E24122F12005C2EBC /* NSArray+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */; };
+		C97E5F7024122F22005C2EBC /* NSError+OpenVPNError.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */; };
+		C97E5F7224122F5C005C2EBC /* OpenVPNClient.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */; };
+		C97E5F7424122FE6005C2EBC /* OpenVPNAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7324122FE6005C2EBC /* OpenVPNAdapter.h */; };
+		C97E5F762412300A005C2EBC /* OpenVPNAdapterEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F752412300A005C2EBC /* OpenVPNAdapterEvent.h */; };
+		C97E5F7824123019005C2EBC /* OpenVPNAdapterPacketFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7724123019005C2EBC /* OpenVPNAdapterPacketFlow.h */; };
+		C97E5F7A24123022005C2EBC /* OpenVPNCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7924123022005C2EBC /* OpenVPNCertificate.h */; };
+		C97E5F7C24123037005C2EBC /* OpenVPNCompressionMode.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7B24123036005C2EBC /* OpenVPNCompressionMode.h */; };
+		C97E5F7E24123046005C2EBC /* OpenVPNConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7D24123046005C2EBC /* OpenVPNConfiguration.h */; };
+		C97E5F8024123051005C2EBC /* OpenVPNConfiguration+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7F24123051005C2EBC /* OpenVPNConfiguration+Internal.h */; };
+		C97E5F822412305C005C2EBC /* OpenVPNConnectionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F812412305C005C2EBC /* OpenVPNConnectionInfo.h */; };
+		C97E5F8424123067005C2EBC /* OpenVPNConnectionInfo+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F8324123066005C2EBC /* OpenVPNConnectionInfo+Internal.h */; };
+		C97E5F8624123072005C2EBC /* OpenVPNCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F8524123072005C2EBC /* OpenVPNCredentials.h */; };
+		C97E5F882412307B005C2EBC /* OpenVPNCredentials+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F872412307B005C2EBC /* OpenVPNCredentials+Internal.h */; };
+		C97E5F8A24123088005C2EBC /* OpenVPNError.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F8924123088005C2EBC /* OpenVPNError.h */; };
+		C97E5F8C24123091005C2EBC /* OpenVPNInterfaceStats.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F8B24123090005C2EBC /* OpenVPNInterfaceStats.h */; };
+		C97E5F8E2412309E005C2EBC /* OpenVPNInterfaceStats+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F8D2412309E005C2EBC /* OpenVPNInterfaceStats+Internal.h */; };
+		C97E5F90241230B3005C2EBC /* OpenVPNIPv6Preference.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F8F241230B3005C2EBC /* OpenVPNIPv6Preference.h */; };
+		C97E5F92241230C6005C2EBC /* OpenVPNKeyType.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F91241230C6005C2EBC /* OpenVPNKeyType.h */; };
+		C97E5F94241230D9005C2EBC /* OpenVPNMinTLSVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F93241230D9005C2EBC /* OpenVPNMinTLSVersion.h */; };
+		C97E5F96241230E9005C2EBC /* OpenVPNNetworkSettingsBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F95241230E9005C2EBC /* OpenVPNNetworkSettingsBuilder.h */; };
+		C97E5F98241230F7005C2EBC /* OpenVPNPacket.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F97241230F7005C2EBC /* OpenVPNPacket.h */; };
+		C97E5F9A24123135005C2EBC /* OpenVPNPacketFlowBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F9924123135005C2EBC /* OpenVPNPacketFlowBridge.h */; };
+		C97E5F9C2412313F005C2EBC /* OpenVPNPrivateKey.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F9B2412313F005C2EBC /* OpenVPNPrivateKey.h */; };
+		C97E5F9E2412314A005C2EBC /* OpenVPNProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F9D24123149005C2EBC /* OpenVPNProperties.h */; };
+		C97E5FA024123152005C2EBC /* OpenVPNProperties+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F9F24123151005C2EBC /* OpenVPNProperties+Internal.h */; };
+		C97E5FA22412315D005C2EBC /* OpenVPNReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FA12412315C005C2EBC /* OpenVPNReachability.h */; };
+		C97E5FA424123168005C2EBC /* OpenVPNReachability+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FA324123168005C2EBC /* OpenVPNReachability+Internal.h */; };
+		C97E5FA62412317B005C2EBC /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FA52412317B005C2EBC /* OpenVPNReachabilityStatus.h */; };
+		C97E5FA824123186005C2EBC /* OpenVPNReachabilityTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FA724123186005C2EBC /* OpenVPNReachabilityTracker.h */; };
+		C97E5FAA24123196005C2EBC /* OpenVPNServerEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FA924123196005C2EBC /* OpenVPNServerEntry.h */; };
+		C97E5FAC241231AA005C2EBC /* OpenVPNServerEntry+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FAB241231AA005C2EBC /* OpenVPNServerEntry+Internal.h */; };
+		C97E5FAE241231B3005C2EBC /* OpenVPNSessionToken.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FAD241231B3005C2EBC /* OpenVPNSessionToken.h */; };
+		C97E5FB0241231BB005C2EBC /* OpenVPNSessionToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FAF241231BB005C2EBC /* OpenVPNSessionToken+Internal.h */; };
+		C97E5FB2241231DA005C2EBC /* OpenVPNTLSCertProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB1241231D9005C2EBC /* OpenVPNTLSCertProfile.h */; };
+		C97E5FB4241231F7005C2EBC /* OpenVPNTransportStats.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB3241231F7005C2EBC /* OpenVPNTransportStats.h */; };
+		C97E5FB6241231FF005C2EBC /* OpenVPNTransportStats+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB5241231FF005C2EBC /* OpenVPNTransportStats+Internal.h */; };
+		C97E5FB824123211005C2EBC /* OpenVPNTransportProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB724123211005C2EBC /* OpenVPNTransportProtocol.h */; };
+		C97E5FBB2412344D005C2EBC /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9EABF3124110BE200D828D4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9EABF3024110BE200D828D4 /* SystemConfiguration.framework */; };
 		C9EABF772411215C00D828D4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9EABF642411189800D828D4 /* UIKit.framework */; platformFilter = ios; };
 		OBJ_250 /* lz4.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* lz4.c */; };
@@ -174,6 +213,46 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+OpenVPNAdditions.h"; sourceTree = "<group>"; };
+		C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+OpenVPNError.h"; sourceTree = "<group>"; };
+		C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNClient.h; sourceTree = "<group>"; };
+		C97E5F7324122FE6005C2EBC /* OpenVPNAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapter.h; sourceTree = "<group>"; };
+		C97E5F752412300A005C2EBC /* OpenVPNAdapterEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapterEvent.h; sourceTree = "<group>"; };
+		C97E5F7724123019005C2EBC /* OpenVPNAdapterPacketFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapterPacketFlow.h; sourceTree = "<group>"; };
+		C97E5F7924123022005C2EBC /* OpenVPNCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCertificate.h; sourceTree = "<group>"; };
+		C97E5F7B24123036005C2EBC /* OpenVPNCompressionMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCompressionMode.h; sourceTree = "<group>"; };
+		C97E5F7D24123046005C2EBC /* OpenVPNConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNConfiguration.h; sourceTree = "<group>"; };
+		C97E5F7F24123051005C2EBC /* OpenVPNConfiguration+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNConfiguration+Internal.h"; sourceTree = "<group>"; };
+		C97E5F812412305C005C2EBC /* OpenVPNConnectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNConnectionInfo.h; sourceTree = "<group>"; };
+		C97E5F8324123066005C2EBC /* OpenVPNConnectionInfo+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNConnectionInfo+Internal.h"; sourceTree = "<group>"; };
+		C97E5F8524123072005C2EBC /* OpenVPNCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCredentials.h; sourceTree = "<group>"; };
+		C97E5F872412307B005C2EBC /* OpenVPNCredentials+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNCredentials+Internal.h"; sourceTree = "<group>"; };
+		C97E5F8924123088005C2EBC /* OpenVPNError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNError.h; sourceTree = "<group>"; };
+		C97E5F8B24123090005C2EBC /* OpenVPNInterfaceStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNInterfaceStats.h; sourceTree = "<group>"; };
+		C97E5F8D2412309E005C2EBC /* OpenVPNInterfaceStats+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNInterfaceStats+Internal.h"; sourceTree = "<group>"; };
+		C97E5F8F241230B3005C2EBC /* OpenVPNIPv6Preference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNIPv6Preference.h; sourceTree = "<group>"; };
+		C97E5F91241230C6005C2EBC /* OpenVPNKeyType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNKeyType.h; sourceTree = "<group>"; };
+		C97E5F93241230D9005C2EBC /* OpenVPNMinTLSVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNMinTLSVersion.h; sourceTree = "<group>"; };
+		C97E5F95241230E9005C2EBC /* OpenVPNNetworkSettingsBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNNetworkSettingsBuilder.h; sourceTree = "<group>"; };
+		C97E5F97241230F7005C2EBC /* OpenVPNPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNPacket.h; sourceTree = "<group>"; };
+		C97E5F9924123135005C2EBC /* OpenVPNPacketFlowBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNPacketFlowBridge.h; sourceTree = "<group>"; };
+		C97E5F9B2412313F005C2EBC /* OpenVPNPrivateKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNPrivateKey.h; sourceTree = "<group>"; };
+		C97E5F9D24123149005C2EBC /* OpenVPNProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNProperties.h; sourceTree = "<group>"; };
+		C97E5F9F24123151005C2EBC /* OpenVPNProperties+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNProperties+Internal.h"; sourceTree = "<group>"; };
+		C97E5FA12412315C005C2EBC /* OpenVPNReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNReachability.h; sourceTree = "<group>"; };
+		C97E5FA324123168005C2EBC /* OpenVPNReachability+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNReachability+Internal.h"; sourceTree = "<group>"; };
+		C97E5FA52412317B005C2EBC /* OpenVPNReachabilityStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNReachabilityStatus.h; sourceTree = "<group>"; };
+		C97E5FA724123186005C2EBC /* OpenVPNReachabilityTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNReachabilityTracker.h; sourceTree = "<group>"; };
+		C97E5FA924123196005C2EBC /* OpenVPNServerEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNServerEntry.h; sourceTree = "<group>"; };
+		C97E5FAB241231AA005C2EBC /* OpenVPNServerEntry+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNServerEntry+Internal.h"; sourceTree = "<group>"; };
+		C97E5FAD241231B3005C2EBC /* OpenVPNSessionToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNSessionToken.h; sourceTree = "<group>"; };
+		C97E5FAF241231BB005C2EBC /* OpenVPNSessionToken+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNSessionToken+Internal.h"; sourceTree = "<group>"; };
+		C97E5FB1241231D9005C2EBC /* OpenVPNTLSCertProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNTLSCertProfile.h; sourceTree = "<group>"; };
+		C97E5FB3241231F7005C2EBC /* OpenVPNTransportStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNTransportStats.h; sourceTree = "<group>"; };
+		C97E5FB5241231FF005C2EBC /* OpenVPNTransportStats+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenVPNTransportStats+Internal.h"; sourceTree = "<group>"; };
+		C97E5FB724123211005C2EBC /* OpenVPNTransportProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNTransportProtocol.h; sourceTree = "<group>"; };
+		C97E5FB92412334B005C2EBC /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Umbrella-Header.h"; sourceTree = "<group>"; };
 		C9EABF3024110BE200D828D4 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C9EABF3224110E7500D828D4 /* ovpnapi.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ovpnapi.hpp; sourceTree = "<group>"; };
 		C9EABF3324110E7500D828D4 /* ovpncli.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ovpncli.hpp; sourceTree = "<group>"; };
@@ -582,25 +661,63 @@
 		OBJ_27 /* library */ = {
 			isa = PBXGroup;
 			children = (
+				C97E5F752412300A005C2EBC /* OpenVPNAdapterEvent.h */,
+				C97E5F7724123019005C2EBC /* OpenVPNAdapterPacketFlow.h */,
+				C97E5F7B24123036005C2EBC /* OpenVPNCompressionMode.h */,
+				C97E5F8F241230B3005C2EBC /* OpenVPNIPv6Preference.h */,
+				C97E5F91241230C6005C2EBC /* OpenVPNKeyType.h */,
+				C97E5FB1241231D9005C2EBC /* OpenVPNTLSCertProfile.h */,
+				C97E5F93241230D9005C2EBC /* OpenVPNMinTLSVersion.h */,
+				C97E5FB724123211005C2EBC /* OpenVPNTransportProtocol.h */,
+				C97E5FA52412317B005C2EBC /* OpenVPNReachabilityStatus.h */,
+				C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */,
 				OBJ_28 /* NSArray+OpenVPNAdditions.m */,
+				C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */,
 				OBJ_29 /* NSError+OpenVPNError.m */,
+				C97E5F7324122FE6005C2EBC /* OpenVPNAdapter.h */,
 				OBJ_30 /* OpenVPNAdapter.mm */,
+				C97E5F7924123022005C2EBC /* OpenVPNCertificate.h */,
 				OBJ_31 /* OpenVPNCertificate.m */,
+				C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */,
 				OBJ_32 /* OpenVPNClient.mm */,
+				C97E5F7D24123046005C2EBC /* OpenVPNConfiguration.h */,
+				C97E5F7F24123051005C2EBC /* OpenVPNConfiguration+Internal.h */,
 				OBJ_33 /* OpenVPNConfiguration.mm */,
+				C97E5F812412305C005C2EBC /* OpenVPNConnectionInfo.h */,
+				C97E5F8324123066005C2EBC /* OpenVPNConnectionInfo+Internal.h */,
 				OBJ_34 /* OpenVPNConnectionInfo.mm */,
+				C97E5F8524123072005C2EBC /* OpenVPNCredentials.h */,
+				C97E5F872412307B005C2EBC /* OpenVPNCredentials+Internal.h */,
 				OBJ_35 /* OpenVPNCredentials.mm */,
+				C97E5F8924123088005C2EBC /* OpenVPNError.h */,
 				OBJ_36 /* OpenVPNError.m */,
+				C97E5F8B24123090005C2EBC /* OpenVPNInterfaceStats.h */,
+				C97E5F8D2412309E005C2EBC /* OpenVPNInterfaceStats+Internal.h */,
 				OBJ_37 /* OpenVPNInterfaceStats.mm */,
+				C97E5F95241230E9005C2EBC /* OpenVPNNetworkSettingsBuilder.h */,
 				OBJ_38 /* OpenVPNNetworkSettingsBuilder.m */,
+				C97E5F97241230F7005C2EBC /* OpenVPNPacket.h */,
 				OBJ_39 /* OpenVPNPacket.mm */,
+				C97E5F9924123135005C2EBC /* OpenVPNPacketFlowBridge.h */,
 				OBJ_40 /* OpenVPNPacketFlowBridge.mm */,
+				C97E5F9B2412313F005C2EBC /* OpenVPNPrivateKey.h */,
 				OBJ_41 /* OpenVPNPrivateKey.m */,
+				C97E5F9D24123149005C2EBC /* OpenVPNProperties.h */,
+				C97E5F9F24123151005C2EBC /* OpenVPNProperties+Internal.h */,
 				OBJ_42 /* OpenVPNProperties.mm */,
+				C97E5FA12412315C005C2EBC /* OpenVPNReachability.h */,
+				C97E5FA324123168005C2EBC /* OpenVPNReachability+Internal.h */,
 				OBJ_43 /* OpenVPNReachability.mm */,
+				C97E5FA724123186005C2EBC /* OpenVPNReachabilityTracker.h */,
 				OBJ_44 /* OpenVPNReachabilityTracker.mm */,
+				C97E5FA924123196005C2EBC /* OpenVPNServerEntry.h */,
+				C97E5FAB241231AA005C2EBC /* OpenVPNServerEntry+Internal.h */,
 				OBJ_45 /* OpenVPNServerEntry.mm */,
+				C97E5FAD241231B3005C2EBC /* OpenVPNSessionToken.h */,
+				C97E5FAF241231BB005C2EBC /* OpenVPNSessionToken+Internal.h */,
 				OBJ_46 /* OpenVPNSessionToken.mm */,
+				C97E5FB3241231F7005C2EBC /* OpenVPNTransportStats.h */,
+				C97E5FB5241231FF005C2EBC /* OpenVPNTransportStats+Internal.h */,
 				OBJ_47 /* OpenVPNTransportStats.mm */,
 			);
 			path = library;
@@ -631,6 +748,8 @@
 				OBJ_68 /* OpenVPNTransportStats.h */,
 				OBJ_69 /* OpenVPNSessionToken.h */,
 				OBJ_70 /* OpenVPNCertificate.h */,
+				C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */,
+				C97E5FB92412334B005C2EBC /* module.modulemap */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -790,28 +909,67 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 0;
 			files = (
+				C97E5F7A24123022005C2EBC /* OpenVPNCertificate.h in Headers */,
+				C97E5FAA24123196005C2EBC /* OpenVPNServerEntry.h in Headers */,
 				OBJ_281 /* OpenVPNCompressionMode.h in Headers */,
+				C97E5F8424123067005C2EBC /* OpenVPNConnectionInfo+Internal.h in Headers */,
+				C97E5F98241230F7005C2EBC /* OpenVPNPacket.h in Headers */,
 				OBJ_282 /* OpenVPNKeyType.h in Headers */,
+				C97E5F7024122F22005C2EBC /* NSError+OpenVPNError.h in Headers */,
 				OBJ_283 /* OpenVPNAdapterEvent.h in Headers */,
 				OBJ_284 /* OpenVPNError.h in Headers */,
 				OBJ_285 /* OpenVPNTransportProtocol.h in Headers */,
+				C97E5F96241230E9005C2EBC /* OpenVPNNetworkSettingsBuilder.h in Headers */,
+				C97E5FA22412315D005C2EBC /* OpenVPNReachability.h in Headers */,
+				C97E5F762412300A005C2EBC /* OpenVPNAdapterEvent.h in Headers */,
+				C97E5FB824123211005C2EBC /* OpenVPNTransportProtocol.h in Headers */,
+				C97E5FB4241231F7005C2EBC /* OpenVPNTransportStats.h in Headers */,
+				C97E5F7824123019005C2EBC /* OpenVPNAdapterPacketFlow.h in Headers */,
+				C97E5F8A24123088005C2EBC /* OpenVPNError.h in Headers */,
+				C97E5FB6241231FF005C2EBC /* OpenVPNTransportStats+Internal.h in Headers */,
+				C97E5F9C2412313F005C2EBC /* OpenVPNPrivateKey.h in Headers */,
+				C97E5F8E2412309E005C2EBC /* OpenVPNInterfaceStats+Internal.h in Headers */,
+				C97E5F6E24122F12005C2EBC /* NSArray+OpenVPNAdditions.h in Headers */,
 				OBJ_286 /* OpenVPNTLSCertProfile.h in Headers */,
+				C97E5FAE241231B3005C2EBC /* OpenVPNSessionToken.h in Headers */,
+				C97E5F9E2412314A005C2EBC /* OpenVPNProperties.h in Headers */,
+				C97E5FA62412317B005C2EBC /* OpenVPNReachabilityStatus.h in Headers */,
 				OBJ_287 /* OpenVPNPrivateKey.h in Headers */,
+				C97E5F7424122FE6005C2EBC /* OpenVPNAdapter.h in Headers */,
 				OBJ_288 /* OpenVPNInterfaceStats.h in Headers */,
 				OBJ_289 /* OpenVPNProperties.h in Headers */,
 				OBJ_290 /* OpenVPNReachability.h in Headers */,
 				OBJ_291 /* OpenVPNIPv6Preference.h in Headers */,
+				C97E5F8C24123091005C2EBC /* OpenVPNInterfaceStats.h in Headers */,
+				C97E5F7C24123037005C2EBC /* OpenVPNCompressionMode.h in Headers */,
+				C97E5F92241230C6005C2EBC /* OpenVPNKeyType.h in Headers */,
+				C97E5F94241230D9005C2EBC /* OpenVPNMinTLSVersion.h in Headers */,
+				C97E5F7E24123046005C2EBC /* OpenVPNConfiguration.h in Headers */,
+				C97E5FA024123152005C2EBC /* OpenVPNProperties+Internal.h in Headers */,
+				C97E5FB2241231DA005C2EBC /* OpenVPNTLSCertProfile.h in Headers */,
 				OBJ_292 /* OpenVPNAdapterPacketFlow.h in Headers */,
+				C97E5FA824123186005C2EBC /* OpenVPNReachabilityTracker.h in Headers */,
 				OBJ_293 /* OpenVPNMinTLSVersion.h in Headers */,
+				C97E5F7224122F5C005C2EBC /* OpenVPNClient.h in Headers */,
 				OBJ_294 /* OpenVPNAdapter.h in Headers */,
 				OBJ_295 /* OpenVPNConnectionInfo.h in Headers */,
 				OBJ_296 /* OpenVPNReachabilityStatus.h in Headers */,
+				C97E5F822412305C005C2EBC /* OpenVPNConnectionInfo.h in Headers */,
+				C97E5F882412307B005C2EBC /* OpenVPNCredentials+Internal.h in Headers */,
 				OBJ_297 /* OpenVPNServerEntry.h in Headers */,
 				OBJ_298 /* OpenVPNConfiguration.h in Headers */,
+				C97E5F9A24123135005C2EBC /* OpenVPNPacketFlowBridge.h in Headers */,
+				C97E5F8624123072005C2EBC /* OpenVPNCredentials.h in Headers */,
+				C97E5FB0241231BB005C2EBC /* OpenVPNSessionToken+Internal.h in Headers */,
+				C97E5F8024123051005C2EBC /* OpenVPNConfiguration+Internal.h in Headers */,
 				OBJ_299 /* OpenVPNCredentials.h in Headers */,
 				OBJ_300 /* OpenVPNTransportStats.h in Headers */,
 				OBJ_301 /* OpenVPNSessionToken.h in Headers */,
+				C97E5FA424123168005C2EBC /* OpenVPNReachability+Internal.h in Headers */,
 				OBJ_302 /* OpenVPNCertificate.h in Headers */,
+				C97E5FAC241231AA005C2EBC /* OpenVPNServerEntry+Internal.h in Headers */,
+				C97E5F90241230B3005C2EBC /* OpenVPNIPv6Preference.h in Headers */,
+				C97E5FBB2412344D005C2EBC /* Umbrella-Header.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
