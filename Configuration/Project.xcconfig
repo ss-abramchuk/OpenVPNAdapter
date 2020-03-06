@@ -3,6 +3,9 @@ TARGETED_DEVICE_FAMILY = 1,2
 
 HEADER_SEARCH_PATHS = $(inherited) $(SRCROOT)/Sources/OpenVPNAdapter/include $(SRCROOT)/Sources/OpenVPNClient/include $(SRCROOT)/Sources/LZ4/include $(SRCROOT)/Sources/mbedTLS/include $(SRCROOT)/Sources/ASIO/asio/include $(SRCROOT)/Sources/OpenVPN3
 
+CLANG_CXX_LANGUAGE_STANDARD = gnu++14
+CLANG_CXX_LIBRARY = libc++
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // iOS-specific settings
