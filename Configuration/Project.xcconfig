@@ -1,11 +1,20 @@
 SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx
 TARGETED_DEVICE_FAMILY = 1,2
 
+HEADER_SEARCH_PATHS = $(inherited) $(SRCROOT)/Sources/OpenVPNAdapter/include $(SRCROOT)/Sources/OpenVPNClient/include $(SRCROOT)/Sources/LZ4/include $(SRCROOT)/Sources/mbedTLS/include $(SRCROOT)/Sources/ASIO/asio/include $(SRCROOT)/Sources/OpenVPN3
+
+CLANG_CXX_LANGUAGE_STANDARD = gnu++14
+CLANG_CXX_LIBRARY = libc++
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // iOS-specific settings
 //
 IPHONEOS_DEPLOYMENT_TARGET = 9.0
+
+SDKROOT[arch=arm64] = iphoneos
+SDKROOT[arch=armv7] = iphoneos
+SDKROOT[arch=armv7s] = iphoneos
 
 VALID_ARCHS[sdk=iphoneos*] = arm64 armv7 armv7s
 VALID_ARCHS[sdk=iphonesimulator*] = i386 x86_64
@@ -18,6 +27,9 @@ LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*] =  @executable_path/Frameworks @lo
 // macOS-specific settings
 //
 MACOSX_DEPLOYMENT_TARGET = 10.11
+
+SDKROOT[arch=i386] = macosx
+SDKROOT[arch=x86_64] = macosx
 
 VALID_ARCHS[sdk=macosx*] = i386 x86_64
 
