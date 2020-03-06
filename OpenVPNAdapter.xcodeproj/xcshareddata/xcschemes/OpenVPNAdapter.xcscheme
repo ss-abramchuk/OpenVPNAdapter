@@ -14,37 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OpenVPNAdapter::OpenVPNClient"
-               BuildableName = "OpenVPNClient.framework"
-               BlueprintName = "OpenVPNClient"
-               ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "OpenVPNAdapter::mbedTLS"
                BuildableName = "mbedTLS.framework"
                BlueprintName = "mbedTLS"
-               ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OpenVPNAdapter::OpenVPNAdapter"
-               BuildableName = "OpenVPNAdapter.framework"
-               BlueprintName = "OpenVPNAdapter"
                ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -62,6 +34,34 @@
                ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "OpenVPNAdapter::OpenVPNClient"
+               BuildableName = "OpenVPNClient.framework"
+               BlueprintName = "OpenVPNClient"
+               ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "OpenVPNAdapter::OpenVPNAdapter"
+               BuildableName = "OpenVPNAdapter.framework"
+               BlueprintName = "OpenVPNAdapter"
+               ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -70,6 +70,21 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C97E5FCC24123F2E005C2EBC"
+               BuildableName = "OpenVPNAdapterTests.xctest"
+               BlueprintName = "OpenVPNAdapterTests"
+               ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "OpenVPNReachabilityTests">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -89,6 +104,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "OpenVPNAdapter::OpenVPNClient"
+            BuildableName = "OpenVPNClient.framework"
+            BlueprintName = "OpenVPNClient"
+            ReferencedContainer = "container:OpenVPNAdapter.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

@@ -45,7 +45,14 @@
 		C97E5FB4241231F7005C2EBC /* OpenVPNTransportStats.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB3241231F7005C2EBC /* OpenVPNTransportStats.h */; };
 		C97E5FB6241231FF005C2EBC /* OpenVPNTransportStats+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB5241231FF005C2EBC /* OpenVPNTransportStats+Internal.h */; };
 		C97E5FB824123211005C2EBC /* OpenVPNTransportProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB724123211005C2EBC /* OpenVPNTransportProtocol.h */; };
-		C97E5FBB2412344D005C2EBC /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C97E5FDD24123F48005C2EBC /* OpenVPNConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD724123F48005C2EBC /* OpenVPNConfigurationTests.swift */; };
+		C97E5FDE24123F48005C2EBC /* CustomFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD824123F48005C2EBC /* CustomFlow.swift */; };
+		C97E5FDF24123F48005C2EBC /* OpenVPNAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD924123F48005C2EBC /* OpenVPNAdapterTests.swift */; };
+		C97E5FE024123F48005C2EBC /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FDA24123F48005C2EBC /* VPNProfile.swift */; };
+		C97E5FE124123F48005C2EBC /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FDB24123F48005C2EBC /* Bundle.swift */; };
+		C97E5FE624124B0E005C2EBC /* Umbrella-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C97E5FE724124B6F005C2EBC /* LZ4.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "OpenVPNAdapter::LZ4::Product" /* LZ4.framework */; };
+		C97E5FEC24124B73005C2EBC /* mbedTLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "OpenVPNAdapter::mbedTLS::Product" /* mbedTLS.framework */; };
 		C9EABF3124110BE200D828D4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9EABF3024110BE200D828D4 /* SystemConfiguration.framework */; };
 		C9EABF772411215C00D828D4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9EABF642411189800D828D4 /* UIKit.framework */; platformFilter = ios; };
 		OBJ_250 /* lz4.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* lz4.c */; };
@@ -95,8 +102,6 @@
 		OBJ_301 /* OpenVPNSessionToken.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_69 /* OpenVPNSessionToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_302 /* OpenVPNCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_70 /* OpenVPNCertificate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_304 /* OpenVPNClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "OpenVPNAdapter::OpenVPNClient::Product" /* OpenVPNClient.framework */; };
-		OBJ_305 /* LZ4.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "OpenVPNAdapter::LZ4::Product" /* LZ4.framework */; };
-		OBJ_306 /* mbedTLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "OpenVPNAdapter::mbedTLS::Product" /* mbedTLS.framework */; };
 		OBJ_322 /* ovpncli.mm in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_73 /* ovpncli.mm */; };
 		OBJ_324 /* mbedTLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "OpenVPNAdapter::mbedTLS::Product" /* mbedTLS.framework */; };
 		OBJ_325 /* LZ4.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "OpenVPNAdapter::LZ4::Product" /* LZ4.framework */; };
@@ -175,6 +180,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		C97E5FE224124652005C2EBC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "OpenVPNAdapter::OpenVPNAdapter";
+			remoteInfo = OpenVPNAdapter;
+		};
+		C97E5FE924124B6F005C2EBC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "OpenVPNAdapter::LZ4";
+			remoteInfo = LZ4;
+		};
+		C97E5FEE24124B73005C2EBC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "OpenVPNAdapter::mbedTLS";
+			remoteInfo = mbedTLS;
+		};
 		C9EABF2A2411076400D828D4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
@@ -195,20 +221,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = "OpenVPNAdapter::OpenVPNClient";
 			remoteInfo = OpenVPNClient;
-		};
-		C9EABF2D2411076400D828D4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "OpenVPNAdapter::LZ4";
-			remoteInfo = LZ4;
-		};
-		C9EABF2E2411076400D828D4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "OpenVPNAdapter::mbedTLS";
-			remoteInfo = mbedTLS;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -253,6 +265,13 @@
 		C97E5FB724123211005C2EBC /* OpenVPNTransportProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNTransportProtocol.h; sourceTree = "<group>"; };
 		C97E5FB92412334B005C2EBC /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Umbrella-Header.h"; sourceTree = "<group>"; };
+		C97E5FCD24123F2E005C2EBC /* OpenVPNAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenVPNAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNReachabilityTests.swift; sourceTree = "<group>"; };
+		C97E5FD724123F48005C2EBC /* OpenVPNConfigurationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNConfigurationTests.swift; sourceTree = "<group>"; };
+		C97E5FD824123F48005C2EBC /* CustomFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomFlow.swift; sourceTree = "<group>"; };
+		C97E5FD924123F48005C2EBC /* OpenVPNAdapterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNAdapterTests.swift; sourceTree = "<group>"; };
+		C97E5FDA24123F48005C2EBC /* VPNProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VPNProfile.swift; sourceTree = "<group>"; };
+		C97E5FDB24123F48005C2EBC /* Bundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		C9EABF3024110BE200D828D4 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C9EABF3224110E7500D828D4 /* ovpnapi.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ovpnapi.hpp; sourceTree = "<group>"; };
 		C9EABF3324110E7500D828D4 /* ovpncli.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ovpncli.hpp; sourceTree = "<group>"; };
@@ -463,6 +482,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C97E5FCA24123F2E005C2EBC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		OBJ_254 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
@@ -475,10 +501,10 @@
 			buildActionMask = 0;
 			files = (
 				OBJ_304 /* OpenVPNClient.framework in Frameworks */,
-				OBJ_305 /* LZ4.framework in Frameworks */,
 				C9EABF3124110BE200D828D4 /* SystemConfiguration.framework in Frameworks */,
-				OBJ_306 /* mbedTLS.framework in Frameworks */,
+				C97E5FEC24124B73005C2EBC /* mbedTLS.framework in Frameworks */,
 				C9EABF772411215C00D828D4 /* UIKit.framework in Frameworks */,
+				C97E5FE724124B6F005C2EBC /* LZ4.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,6 +527,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C97E5FD524123F48005C2EBC /* OpenVPNAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				C97E5FDB24123F48005C2EBC /* Bundle.swift */,
+				C97E5FDA24123F48005C2EBC /* VPNProfile.swift */,
+				C97E5FD824123F48005C2EBC /* CustomFlow.swift */,
+				C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */,
+				C97E5FD724123F48005C2EBC /* OpenVPNConfigurationTests.swift */,
+				C97E5FD924123F48005C2EBC /* OpenVPNAdapterTests.swift */,
+			);
+			name = OpenVPNAdapter;
+			path = Tests/OpenVPNAdapter;
+			sourceTree = "<group>";
+		};
 		C9EABF2F24110BE100D828D4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -633,6 +673,7 @@
 		OBJ_231 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C97E5FD524123F48005C2EBC /* OpenVPNAdapter */,
 			);
 			name = Tests;
 			sourceTree = SOURCE_ROOT;
@@ -644,6 +685,7 @@
 				"OpenVPNAdapter::OpenVPNAdapter::Product" /* OpenVPNAdapter.framework */,
 				"OpenVPNAdapter::OpenVPNClient::Product" /* OpenVPNClient.framework */,
 				"OpenVPNAdapter::LZ4::Product" /* LZ4.framework */,
+				C97E5FCD24123F2E005C2EBC /* OpenVPNAdapterTests.xctest */,
 			);
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -653,6 +695,8 @@
 			children = (
 				OBJ_48 /* include */,
 				OBJ_27 /* library */,
+				C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */,
+				C97E5FB92412334B005C2EBC /* module.modulemap */,
 			);
 			name = OpenVPNAdapter;
 			path = Sources/OpenVPNAdapter;
@@ -748,8 +792,6 @@
 				OBJ_68 /* OpenVPNTransportStats.h */,
 				OBJ_69 /* OpenVPNSessionToken.h */,
 				OBJ_70 /* OpenVPNCertificate.h */,
-				C97E5FBA2412344D005C2EBC /* Umbrella-Header.h */,
-				C97E5FB92412334B005C2EBC /* module.modulemap */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -770,8 +812,8 @@
 			children = (
 				OBJ_8 /* LZ4 */,
 				OBJ_76 /* mbedTLS */,
-				OBJ_26 /* OpenVPNAdapter */,
 				OBJ_71 /* OpenVPNClient */,
+				OBJ_26 /* OpenVPNAdapter */,
 			);
 			name = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -969,13 +1011,31 @@
 				OBJ_302 /* OpenVPNCertificate.h in Headers */,
 				C97E5FAC241231AA005C2EBC /* OpenVPNServerEntry+Internal.h in Headers */,
 				C97E5F90241230B3005C2EBC /* OpenVPNIPv6Preference.h in Headers */,
-				C97E5FBB2412344D005C2EBC /* Umbrella-Header.h in Headers */,
+				C97E5FE624124B0E005C2EBC /* Umbrella-Header.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		C97E5FCC24123F2E005C2EBC /* OpenVPNAdapterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C97E5FD424123F2E005C2EBC /* Build configuration list for PBXNativeTarget "OpenVPNAdapterTests" */;
+			buildPhases = (
+				C97E5FC924123F2E005C2EBC /* Sources */,
+				C97E5FCA24123F2E005C2EBC /* Frameworks */,
+				C97E5FCB24123F2E005C2EBC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C97E5FE324124652005C2EBC /* PBXTargetDependency */,
+			);
+			name = OpenVPNAdapterTests;
+			productName = OpenVPNAdapterTests;
+			productReference = C97E5FCD24123F2E005C2EBC /* OpenVPNAdapterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		"OpenVPNAdapter::LZ4" /* LZ4 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = OBJ_246 /* Build configuration list for PBXNativeTarget "LZ4" */;
@@ -1004,8 +1064,8 @@
 			);
 			dependencies = (
 				OBJ_307 /* PBXTargetDependency */,
-				OBJ_309 /* PBXTargetDependency */,
-				OBJ_310 /* PBXTargetDependency */,
+				C97E5FEA24124B6F005C2EBC /* PBXTargetDependency */,
+				C97E5FEF24124B73005C2EBC /* PBXTargetDependency */,
 			);
 			name = OpenVPNAdapter;
 			productName = OpenVPNAdapter;
@@ -1053,7 +1113,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 9999;
+				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 9999;
+				TargetAttributes = {
+					C97E5FCC24123F2E005C2EBC = {
+						CreatedOnToolsVersion = 11.3.1;
+					};
+				};
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "OpenVPNAdapter" */;
 			compatibilityVersion = "Xcode 11.0";
@@ -1071,11 +1137,34 @@
 				"OpenVPNAdapter::mbedTLS" /* mbedTLS */,
 				"OpenVPNAdapter::OpenVPNClient" /* OpenVPNClient */,
 				"OpenVPNAdapter::OpenVPNAdapter" /* OpenVPNAdapter */,
+				C97E5FCC24123F2E005C2EBC /* OpenVPNAdapterTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		C97E5FCB24123F2E005C2EBC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		C97E5FC924123F2E005C2EBC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C97E5FE124123F48005C2EBC /* Bundle.swift in Sources */,
+				C97E5FDD24123F48005C2EBC /* OpenVPNConfigurationTests.swift in Sources */,
+				C97E5FDF24123F48005C2EBC /* OpenVPNAdapterTests.swift in Sources */,
+				C97E5FDE24123F48005C2EBC /* CustomFlow.swift in Sources */,
+				C97E5FE024123F48005C2EBC /* VPNProfile.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		OBJ_249 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
@@ -1204,20 +1293,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		C97E5FE324124652005C2EBC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "OpenVPNAdapter::OpenVPNAdapter" /* OpenVPNAdapter */;
+			targetProxy = C97E5FE224124652005C2EBC /* PBXContainerItemProxy */;
+		};
+		C97E5FEA24124B6F005C2EBC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "OpenVPNAdapter::LZ4" /* LZ4 */;
+			targetProxy = C97E5FE924124B6F005C2EBC /* PBXContainerItemProxy */;
+		};
+		C97E5FEF24124B73005C2EBC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "OpenVPNAdapter::mbedTLS" /* mbedTLS */;
+			targetProxy = C97E5FEE24124B73005C2EBC /* PBXContainerItemProxy */;
+		};
 		OBJ_307 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "OpenVPNAdapter::OpenVPNClient" /* OpenVPNClient */;
 			targetProxy = C9EABF2C2411076400D828D4 /* PBXContainerItemProxy */;
-		};
-		OBJ_309 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "OpenVPNAdapter::LZ4" /* LZ4 */;
-			targetProxy = C9EABF2D2411076400D828D4 /* PBXContainerItemProxy */;
-		};
-		OBJ_310 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "OpenVPNAdapter::mbedTLS" /* mbedTLS */;
-			targetProxy = C9EABF2E2411076400D828D4 /* PBXContainerItemProxy */;
 		};
 		OBJ_326 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1232,6 +1326,126 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		C97E5FD224123F2E005C2EBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Manual;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = OpenVPNAdapter.xcodeproj/OpenVPNAdapterTests_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-adapter-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C97E5FD324123F2E005C2EBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = OpenVPNAdapter.xcodeproj/OpenVPNAdapterTests_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "me.ss-abramchuk.openvpn-adapter-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		OBJ_247 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C9EABF7524111E9C00D828D4 /* LZ4.xcconfig */;
@@ -1517,6 +1731,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C97E5FD424123F2E005C2EBC /* Build configuration list for PBXNativeTarget "OpenVPNAdapterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C97E5FD224123F2E005C2EBC /* Debug */,
+				C97E5FD324123F2E005C2EBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		OBJ_2 /* Build configuration list for PBXProject "OpenVPNAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
