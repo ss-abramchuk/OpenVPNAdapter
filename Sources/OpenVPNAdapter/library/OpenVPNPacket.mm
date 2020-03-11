@@ -9,8 +9,6 @@
 
 #include <arpa/inet.h>
 
-#include <openvpn/ip/ipcommon.hpp>
-
 @interface OpenVPNPacket () {
     NSData *_data;
     NSNumber *_protocolFamily;
@@ -22,7 +20,6 @@
 
 - (instancetype)initWithVPNData:(NSData *)data {
     if (self = [super init]) {
-#if TARGET_OS_IPHONE
         // Get network protocol family from data prefix
         NSUInteger prefix_size = sizeof(uint32_t);
         
@@ -32,25 +29,6 @@
         
         NSRange range = NSMakeRange(prefix_size, data.length - prefix_size);
         NSData *packetData = [data subdataWithRange:range];
-#else
-        // Get network protocol family from packet header
-        uint8_t header = 0;
-        [data getBytes:&header length:1];
-        
-        uint32_t protocol = PF_UNSPEC;
-        
-        uint32_t version = openvpn::IPCommon::version(header);
-        switch (version) {
-            case 4:
-                protocol = PF_INET;
-                break;
-            case 6:
-                protocol = PF_INET6;
-                break;
-        }
-
-        NSData *packetData = data;
-#endif
         
         _data = packetData;
         _protocolFamily = @(protocol);
@@ -67,8 +45,7 @@
 }
 
 - (NSData *)vpnData {
-#if TARGET_OS_IPHONE
-    // Prepend data with network protocol. It should be done because OpenVPN on iOS uses uint32_t prefixes containing network
+    // Prepend data with network protocol. It should be done because OpenVPN uses uint32_t prefixes containing network
     // protocol.
     uint32_t prefix = CFSwapInt32HostToBig(_protocolFamily.unsignedIntegerValue);
     NSUInteger prefix_size = sizeof(uint32_t);
@@ -79,9 +56,6 @@
     [data appendData:_data];
     
     return data;
-#else
-    return _data;
-#endif
 }
 
 - (NSData *)packetFlowData {
