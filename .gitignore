@@ -49,6 +49,11 @@ playground.xcworkspace
 
 Carthage/Build
 
+# Swift PM
+
+.build/
+.swiftpm
+
 ## macOS generated
 
 # General
