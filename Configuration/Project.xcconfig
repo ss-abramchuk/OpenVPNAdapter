@@ -19,9 +19,6 @@ SDKROOT[arch=armv7s] = iphoneos
 VALID_ARCHS[sdk=iphoneos*] = arm64 armv7 armv7s
 VALID_ARCHS[sdk=iphonesimulator*] = i386 x86_64
 
-LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*] =  @executable_path/Frameworks @loader_path/Frameworks
-LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*] =  @executable_path/Frameworks @loader_path/Frameworks
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 // macOS-specific settings
@@ -32,5 +29,3 @@ SDKROOT[arch=i386] = macosx
 SDKROOT[arch=x86_64] = macosx
 
 VALID_ARCHS[sdk=macosx*] = i386 x86_64
-
-LD_RUNPATH_SEARCH_PATHS[sdk=macosx*] =  @executable_path/../Frameworks @loader_path/../Frameworks
