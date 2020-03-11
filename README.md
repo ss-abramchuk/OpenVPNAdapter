@@ -5,6 +5,8 @@
 ![macOS Versions](https://img.shields.io/badge/macOS-10.11+-yellow.svg)
 ![Xcode Version](https://img.shields.io/badge/Xcode-11.0+-yellow.svg)
 ![Carthage Compatible](https://img.shields.io/badge/Carthage-Compatible-4BC51D.svg?style=flat)
+![Cocoapods Compatible](https://img.shields.io/badge/Cocoapods-Compatible-4BC51D.svg?style=flat)
+![Swift Package Manager Compatible](https://img.shields.io/badge/Swift%20Package%20Manager-Compatible-4BC51D.svg?style=flat)
 ![License](https://img.shields.io/badge/License-AGPLv3-lightgrey.svg)
 
 ## Overview
@@ -38,6 +40,9 @@ end
 ```
 
 And run `$ pod install`.
+
+### Swift Package Manager
+Add `OpenVPNAdapter` package to your project using File > Swift Packages > Add Package Dependency menu. Xcode 11 will automatically retrieve all necessary dependencies. In addition to that you need to add `SystemConfiguration` framework to the Frameworks and Libraries. If you work on iOS project add `UIKit` as well.
 
 ## Usage
 At first, you need to add a Packet Tunnel Provider extension to the project and configure provision profiles for both the container app and the extension. There are official documentation and many tutorials describing how to do it so we won't dwell on this in detail.
