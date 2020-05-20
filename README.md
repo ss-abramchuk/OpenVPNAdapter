@@ -182,8 +182,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             // Additional parameters as key:value pairs may be provided here
         ]
 
-        // Add this line if you want to keep TUN interface active during pauses or reconnections
-        configuration.tunPersist = true
+        // Uncomment this line if you want to keep TUN interface active during pauses or reconnections
+        // configuration.tunPersist = true
 
         // Apply OpenVPN configuration
         let properties: OpenVPNProperties
