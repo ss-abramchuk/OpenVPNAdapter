@@ -40,9 +40,10 @@
 
 @implementation OpenVPNAdapter
 
-- (instancetype)init {
+- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
     if (self = [super init]) {
         _vpnClient = new OpenVPNClient(self);
+        _packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] initWithPacketFlow:packetFlow];
     }
     return self;
 }
@@ -56,7 +57,7 @@
         if (error) {
             NSString *message = [NSString stringWithUTF8String:eval.message.c_str()];
             *error = [NSError ovpn_errorObjectForAdapterError:OpenVPNAdapterErrorConfigurationFailure
-                                          description:@"Failed to apply OpenVPN configuration"
+                                          description:@"Failed to apply OpenVPN configuration."
                                               message:message
                                                 fatal:YES];
         }
@@ -74,7 +75,7 @@
         if (error) {
             NSString *message = [NSString stringWithUTF8String:status.message.c_str()];
             *error = [NSError ovpn_errorObjectForAdapterError:OpenVPNAdapterErrorCredentialsFailure
-                                          description:@"Failed to provide OpenVPN credentials"
+                                          description:@"Failed to provide OpenVPN credentials."
                                               message:message
                                                 fatal:YES];
         }
@@ -87,7 +88,7 @@
 
 - (void)connect {
     dispatch_queue_attr_t attributes = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0);
-    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-adapter.connection", attributes);
+    dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-adapter.connection.", attributes);
     dispatch_async(connectQueue, ^{
         OpenVPNClient::init_process();
         
@@ -123,7 +124,7 @@
     
     NSString *message = [NSString stringWithUTF8String:status.message.c_str()];
     NSError *error = [NSError ovpn_errorObjectForAdapterError:adapterError
-                                          description:@"Failed to establish connection with OpenVPN server"
+                                          description:@"Failed to establish connection with OpenVPN server."
                                               message:message
                                                 fatal:YES];
 
@@ -315,23 +316,35 @@
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
-    __weak typeof(self) weakSelf = self;
-    void (^completionHandler)(id<OpenVPNAdapterPacketFlow> _Nullable) = ^(id<OpenVPNAdapterPacketFlow> flow) {
-        __strong typeof(self) self = weakSelf;
-        
-        if (flow && (self.packetFlowBridge == nil || self.packetFlowBridge != flow)) {
-            self.packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] initWithPacketFlow:flow];
-        }
-        
+    __block NSError *configurationError;
+    void (^completionHandler)(NSError *error) = ^(NSError *error) {
+        configurationError = error;
         dispatch_semaphore_signal(semaphore);
     };
     
     [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:networkSettings completionHandler:completionHandler];
     
-    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, TUNNEL_CONFIGURATION_TIMEOUT * NSEC_PER_SEC));
+    long timeout = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, TUNNEL_CONFIGURATION_TIMEOUT * NSEC_PER_SEC));
+    if (timeout) { return NO; }
+    
+    if (configurationError) {
+        NSDictionary *userInfo = @{
+            NSLocalizedDescriptionKey: @"Failed to configure tunnel using provided settings. Check underlying error for more details.",
+            NSUnderlyingErrorKey: configurationError,
+            OpenVPNAdapterErrorFatalKey: @(YES)
+        };
+        
+        NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
+                                             code:OpenVPNAdapterErrorTUNSetupFailed
+                                         userInfo:userInfo];
+        
+        [self.delegate openVPNAdapter:self handleError:error];
+        
+        return NO;
+    }
     
     NSError *socketError;
-    if (self.packetFlowBridge && [self.packetFlowBridge configureSocketsWithError:&socketError]) {
+    if ([self.packetFlowBridge configureSocketsWithError:&socketError]) {
         [self.packetFlowBridge startReading];
         return YES;
     } else {
@@ -407,13 +420,29 @@
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
-    void (^completionHandler)(id<OpenVPNAdapterPacketFlow> _Nullable) = ^(id<OpenVPNAdapterPacketFlow> flow) {
+    __block NSError *configurationError;
+    void (^completionHandler)(NSError *error) = ^(NSError *error) {
+        configurationError = error;
         dispatch_semaphore_signal(semaphore);
     };
     
     [self.delegate openVPNAdapter:self configureTunnelWithNetworkSettings:nil completionHandler:completionHandler];
     
     dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, TUNNEL_CONFIGURATION_TIMEOUT * NSEC_PER_SEC));
+    
+    if (configurationError) {
+        NSDictionary *userInfo = @{
+            NSLocalizedDescriptionKey: @"Failed to reset tunnel. Check underlying error for more details.",
+            NSUnderlyingErrorKey: configurationError,
+            OpenVPNAdapterErrorFatalKey: @(YES)
+        };
+        
+        NSError *error = [NSError errorWithDomain:OpenVPNAdapterErrorDomain
+                                             code:OpenVPNAdapterErrorTUNSetupFailed
+                                         userInfo:userInfo];
+        
+        [self.delegate openVPNAdapter:self handleError:error];
+    }
 }
 
 #pragma mark -

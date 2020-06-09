@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
  */
 - (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
 configureTunnelWithNetworkSettings:(nullable NEPacketTunnelNetworkSettings *)networkSettings
-                 completionHandler:(void (^)(id<OpenVPNAdapterPacketFlow> _Nullable packetFlow))completionHandler
+                 completionHandler:(void (^)(NSError *error))completionHandler
 NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
 /**
@@ -125,6 +125,11 @@ NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
  The transport statistics.
  */
 @property (nonatomic, readonly) OpenVPNTransportStats *transportStatistics;
+
+/**
+ 
+ */
+- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow;
 
 /**
  Applies the given configuration object.
