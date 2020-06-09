@@ -15,20 +15,7 @@
 #import "OpenVPNPacket.h"
 #import "OpenVPNAdapterPacketFlow.h"
 
-@interface OpenVPNPacketFlowBridge ()
-
-@property (nonatomic) id<OpenVPNAdapterPacketFlow> packetFlow;
-
-@end
-
 @implementation OpenVPNPacketFlowBridge
-
-- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
-    if (self = [super init]) {
-        _packetFlow = packetFlow;
-    }
-    return self;
-}
 
 #pragma mark - Sockets Configuration
 

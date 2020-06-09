@@ -14,11 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OpenVPNPacketFlowBridge: NSObject
 
+@property (nonatomic, weak) id<OpenVPNAdapterPacketFlow> packetFlow;
+
 @property (nonatomic, readonly) CFSocketRef openVPNSocket;
 @property (nonatomic, readonly) CFSocketRef packetFlowSocket;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)configureSocketsWithError:(NSError **)error;
 - (void)invalidateSocketsIfNeeded;

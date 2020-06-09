@@ -32,7 +32,7 @@ class OpenVPNAdapterTests: XCTestCase {
     func testApplyConfiguration() {
         guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
         
-        let adapter = OpenVPNAdapter(packetFlow: customFlow)
+        let adapter = OpenVPNAdapter()
 
         let configuration = OpenVPNConfiguration()
         configuration.fileContent = vpnConfiguration
@@ -52,7 +52,7 @@ class OpenVPNAdapterTests: XCTestCase {
     }
     
     func testProvideCredentials() {
-        let adapter = OpenVPNAdapter(packetFlow: customFlow)
+        let adapter = OpenVPNAdapter()
         
         let credentials = OpenVPNCredentials()
         credentials.username = "username"
@@ -71,7 +71,7 @@ class OpenVPNAdapterTests: XCTestCase {
     func testConnection() {
         guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
         
-        let adapter = OpenVPNAdapter(packetFlow: customFlow)
+        let adapter = OpenVPNAdapter()
 
         let configuration = OpenVPNConfiguration()
         configuration.fileContent = vpnConfiguration
@@ -99,6 +99,7 @@ class OpenVPNAdapterTests: XCTestCase {
 
         expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
 
+        adapter.packetFlow = customFlow
         adapter.delegate = self
         adapter.connect()
 

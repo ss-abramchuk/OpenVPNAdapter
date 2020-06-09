@@ -40,10 +40,10 @@
 
 @implementation OpenVPNAdapter
 
-- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
+- (instancetype)init {
     if (self = [super init]) {
         _vpnClient = new OpenVPNClient(self);
-        _packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] initWithPacketFlow:packetFlow];
+        _packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] init];
     }
     return self;
 }
@@ -87,6 +87,8 @@
 }
 
 - (void)connect {
+    NSAssert(self.packetFlow != nil, @"packetFlow property shouldn't be nil, set it before trying to establish connection.");
+    
     dispatch_queue_attr_t attributes = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0);
     dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-adapter.connection.", attributes);
     dispatch_async(connectQueue, ^{
@@ -164,6 +166,14 @@
 - (OpenVPNNetworkSettingsBuilder *)networkSettingsBuilder {
     if (!_networkSettingsBuilder) { _networkSettingsBuilder = [[OpenVPNNetworkSettingsBuilder alloc] init]; }
     return _networkSettingsBuilder;
+}
+
+- (id<OpenVPNAdapterPacketFlow>)packetFlow {
+    return self.packetFlowBridge.packetFlow;
+}
+
+- (void)setPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
+    self.packetFlowBridge.packetFlow = packetFlow;
 }
 
 #pragma mark - OpenVPNClientDelegate

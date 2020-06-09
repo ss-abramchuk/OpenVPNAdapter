@@ -97,6 +97,11 @@ NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
 @property (nonatomic, class, readonly) NSString *platform;
 
 /**
+ 
+ */
+@property (nonatomic, weak) id<OpenVPNAdapterPacketFlow> packetFlow;
+
+/**
  The object that acts as the delegate of the adapter.
  */
 @property (nonatomic, weak) id<OpenVPNAdapterDelegate> delegate;
@@ -125,11 +130,6 @@ NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
  The transport statistics.
  */
 @property (nonatomic, readonly) OpenVPNTransportStats *transportStatistics;
-
-/**
- 
- */
-- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow;
 
 /**
  Applies the given configuration object.
@@ -180,8 +180,6 @@ NS_SWIFT_NAME(apply(configuration:));
  Disconnect from the tunnel.
  */
 - (void)disconnect;
-
-- (instancetype) init NS_UNAVAILABLE;
 
 @end
 
