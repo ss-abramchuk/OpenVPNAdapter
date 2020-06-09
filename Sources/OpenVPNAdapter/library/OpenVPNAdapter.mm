@@ -319,7 +319,7 @@
     void (^completionHandler)(id<OpenVPNAdapterPacketFlow> _Nullable) = ^(id<OpenVPNAdapterPacketFlow> flow) {
         __strong typeof(self) self = weakSelf;
         
-        if (flow) {
+        if (flow && (self.packetFlowBridge == nil || self.packetFlowBridge != flow)) {
             self.packetFlowBridge = [[OpenVPNPacketFlowBridge alloc] initWithPacketFlow:flow];
         }
         
@@ -403,7 +403,7 @@
 }
 
 - (void)resetTun {
-    _packetFlowBridge = nil;
+    [_packetFlowBridge invalidateSocketsIfNeeded];
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
