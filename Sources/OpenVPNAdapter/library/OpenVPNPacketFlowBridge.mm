@@ -46,7 +46,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (socketpair(PF_LOCAL, SOCK_DGRAM, IPPROTO_IP, sockets) == -1) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to create a pair of connected sockets",
+                NSLocalizedDescriptionKey: @"Failed to create a pair of connected sockets.",
                 NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
@@ -68,7 +68,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (!(_packetFlowSocket && _openVPNSocket)) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to create core foundation sockets from native sockets",
+                NSLocalizedDescriptionKey: @"Failed to create core foundation sockets from native sockets.",
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
             
@@ -99,7 +99,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (setsockopt(socketHandle, SOL_SOCKET, SO_RCVBUF, &buf_value, buf_len) == -1) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to setup buffer size for input",
+                NSLocalizedDescriptionKey: @"Failed to setup buffer size for input.",
                 NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
@@ -115,7 +115,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (setsockopt(socketHandle, SOL_SOCKET, SO_SNDBUF, &buf_value, buf_len) == -1) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to setup buffer size for output",
+                NSLocalizedDescriptionKey: @"Failed to setup buffer size for output.",
                 NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
@@ -135,11 +135,15 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (_openVPNSocket) {
         CFSocketInvalidate(_openVPNSocket);
         CFRelease(_openVPNSocket);
+        
+        _openVPNSocket = NULL;
     }
     
     if (_packetFlowSocket) {
         CFSocketInvalidate(_packetFlowSocket);
         CFRelease(_packetFlowSocket);
+        
+        _packetFlowSocket = NULL;
     }
 }
 
@@ -157,6 +161,8 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark - TUN -> VPN
 
 - (void)writePackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols toSocket:(CFSocketRef)socket {
+    if (socket == NULL) { return; }
+    
     [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
         NSNumber *protocolFamily = protocols[idx];
         OpenVPNPacket *packet = [[OpenVPNPacket alloc] initWithPacketFlowData:data protocolFamily:protocolFamily];
