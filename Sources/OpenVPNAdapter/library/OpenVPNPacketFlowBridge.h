@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)configureSocketsWithError:(NSError **)error;
+- (void)invalidateSocketsIfNeeded;
+
 - (void)startReading;
 
 @end

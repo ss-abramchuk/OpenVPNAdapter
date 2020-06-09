@@ -131,6 +131,18 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return YES;
 }
 
+- (void)invalidateSocketsIfNeeded {
+    if (_openVPNSocket) {
+        CFSocketInvalidate(_openVPNSocket);
+        CFRelease(_openVPNSocket);
+    }
+    
+    if (_packetFlowSocket) {
+        CFSocketInvalidate(_packetFlowSocket);
+        CFRelease(_packetFlowSocket);
+    }
+}
+
 - (void)startReading {
     __weak typeof(self) weakSelf = self;
     
@@ -170,11 +182,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark -
 
 - (void)dealloc {
-    CFSocketInvalidate(_openVPNSocket);
-    CFRelease(_openVPNSocket);
-    
-    CFSocketInvalidate(_packetFlowSocket);
-    CFRelease(_packetFlowSocket);
+    [self invalidateSocketsIfNeeded];
 }
 
 @end
