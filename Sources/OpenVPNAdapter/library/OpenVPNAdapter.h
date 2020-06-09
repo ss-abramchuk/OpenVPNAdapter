@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
  */
 - (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
 configureTunnelWithNetworkSettings:(nullable NEPacketTunnelNetworkSettings *)networkSettings
-                 completionHandler:(void (^)(NSError *error))completionHandler
+                 completionHandler:(void (^)(NSError * _Nullable error))completionHandler
 NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
 /**
@@ -180,6 +180,8 @@ NS_SWIFT_NAME(apply(configuration:));
  Disconnect from the tunnel.
  */
 - (void)disconnect;
+
+- (instancetype) init NS_UNAVAILABLE;
 
 @end
 
