@@ -149,7 +149,9 @@ extension NEPacketTunnelFlow: OpenVPNAdapterPacketFlow {}
 class PacketTunnelProvider: NEPacketTunnelProvider {
 
     lazy var vpnAdapter: OpenVPNAdapter = {
-        let adapter = OpenVPNAdapter(packetFlow: packetFlow)
+        let adapter = OpenVPNAdapter()
+
+        adapter.packetFlow = self.packetFlow
         adapter.delegate = self
 
         return adapter
