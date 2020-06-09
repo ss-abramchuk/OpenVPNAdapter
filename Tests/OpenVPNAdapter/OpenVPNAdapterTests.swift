@@ -32,7 +32,7 @@ class OpenVPNAdapterTests: XCTestCase {
     func testApplyConfiguration() {
         guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
         
-        let adapter = OpenVPNAdapter()
+        let adapter = OpenVPNAdapter(packetFlow: customFlow)
 
         let configuration = OpenVPNConfiguration()
         configuration.fileContent = vpnConfiguration
@@ -52,7 +52,7 @@ class OpenVPNAdapterTests: XCTestCase {
     }
     
     func testProvideCredentials() {
-        let adapter = OpenVPNAdapter()
+        let adapter = OpenVPNAdapter(packetFlow: customFlow)
         
         let credentials = OpenVPNCredentials()
         credentials.username = "username"
@@ -71,7 +71,7 @@ class OpenVPNAdapterTests: XCTestCase {
     func testConnection() {
         guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
         
-        let adapter = OpenVPNAdapter()
+        let adapter = OpenVPNAdapter(packetFlow: customFlow)
 
         let configuration = OpenVPNConfiguration()
         configuration.fileContent = vpnConfiguration
@@ -110,9 +110,8 @@ class OpenVPNAdapterTests: XCTestCase {
 }
 
 extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
-    
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
-        completionHandler(customFlow)
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (Error?) -> Void) {
+        completionHandler(nil)
     }
     
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?) {
