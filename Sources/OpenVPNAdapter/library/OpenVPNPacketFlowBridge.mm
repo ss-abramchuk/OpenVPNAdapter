@@ -135,6 +135,8 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 }
 
 - (void)startReading {
+    NSAssert(self.packetFlow != nil, @"packetFlow property shouldn't be nil, set it before start reading packets.");
+    
     __weak typeof(self) weakSelf = self;
     
     [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> *packets, NSArray<NSNumber *> *protocols) {
@@ -161,6 +163,8 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark - VPN -> TUN
 
 - (void)writePackets:(NSArray<OpenVPNPacket *> *)packets toPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
+    NSAssert(packetFlow != nil, @"packetFlow shouldn't be nil, check provided parameter before start writing packets.");
+    
     NSMutableArray<NSData *> *flowPackets = [[NSMutableArray alloc] init];
     NSMutableArray<NSNumber *> *protocols = [[NSMutableArray alloc] init];
     
