@@ -150,8 +150,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     lazy var vpnAdapter: OpenVPNAdapter = {
         let adapter = OpenVPNAdapter()
-
-        adapter.packetFlow = self.packetFlow
         adapter.delegate = self
 
         return adapter
@@ -239,7 +237,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         // Establish connection and wait for .connected event
         startHandler = completionHandler
-        vpnAdapter.connect()
+        vpnAdapter.connect(using: packetFlow)
     }
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
