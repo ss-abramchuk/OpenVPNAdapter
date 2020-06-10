@@ -97,11 +97,6 @@ NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
 @property (nonatomic, class, readonly) NSString *platform;
 
 /**
- 
- */
-@property (nonatomic, weak) id<OpenVPNAdapterPacketFlow> packetFlow;
-
-/**
  The object that acts as the delegate of the adapter.
  */
 @property (nonatomic, weak) id<OpenVPNAdapterDelegate> delegate;
@@ -154,8 +149,10 @@ NS_SWIFT_NAME(apply(configuration:));
 
 /**
  Starts the tunnel.
+ 
+ @param packetFlow The object implementing OpenVPNAdapterPacketFlow protocol.
  */
-- (void)connect;
+- (void)connectUsingPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow NS_SWIFT_NAME(connect(using:));
 
 /**
  Pauses the tunnel.
