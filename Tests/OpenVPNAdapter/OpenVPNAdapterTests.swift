@@ -99,9 +99,8 @@ class OpenVPNAdapterTests: XCTestCase {
 
         expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
 
-        adapter.packetFlow = customFlow
         adapter.delegate = self
-        adapter.connect()
+        adapter.connect(using: customFlow)
 
         waitForExpectations(timeout: 30.0) { (error) in
             adapter.disconnect()
