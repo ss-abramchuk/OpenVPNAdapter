@@ -100,7 +100,7 @@ class OpenVPNAdapterTests: XCTestCase {
         expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
 
         adapter.delegate = self
-        adapter.connect()
+        adapter.connect(using: customFlow)
 
         waitForExpectations(timeout: 30.0) { (error) in
             adapter.disconnect()
@@ -110,9 +110,8 @@ class OpenVPNAdapterTests: XCTestCase {
 }
 
 extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
-    
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
-        completionHandler(customFlow)
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (Error?) -> Void) {
+        completionHandler(nil)
     }
     
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?) {

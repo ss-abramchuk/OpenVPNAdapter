@@ -15,20 +15,7 @@
 #import "OpenVPNPacket.h"
 #import "OpenVPNAdapterPacketFlow.h"
 
-@interface OpenVPNPacketFlowBridge ()
-
-@property (nonatomic) id<OpenVPNAdapterPacketFlow> packetFlow;
-
-@end
-
 @implementation OpenVPNPacketFlowBridge
-
-- (instancetype)initWithPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
-    if (self = [super init]) {
-        _packetFlow = packetFlow;
-    }
-    return self;
-}
 
 #pragma mark - Sockets Configuration
 
@@ -46,7 +33,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (socketpair(PF_LOCAL, SOCK_DGRAM, IPPROTO_IP, sockets) == -1) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to create a pair of connected sockets",
+                NSLocalizedDescriptionKey: @"Failed to create a pair of connected sockets.",
                 NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
@@ -68,7 +55,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (!(_packetFlowSocket && _openVPNSocket)) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to create core foundation sockets from native sockets",
+                NSLocalizedDescriptionKey: @"Failed to create core foundation sockets from native sockets.",
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
             
@@ -99,7 +86,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (setsockopt(socketHandle, SOL_SOCKET, SO_RCVBUF, &buf_value, buf_len) == -1) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to setup buffer size for input",
+                NSLocalizedDescriptionKey: @"Failed to setup buffer size for input.",
                 NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
@@ -115,7 +102,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (setsockopt(socketHandle, SOL_SOCKET, SO_SNDBUF, &buf_value, buf_len) == -1) {
         if (error) {
             NSDictionary *userInfo = @{
-                NSLocalizedDescriptionKey: @"Failed to setup buffer size for output",
+                NSLocalizedDescriptionKey: @"Failed to setup buffer size for output.",
                 NSLocalizedFailureReasonErrorKey: [NSString stringWithUTF8String:strerror(errno)],
                 OpenVPNAdapterErrorFatalKey: @(YES)
             };
@@ -131,7 +118,25 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     return YES;
 }
 
+- (void)invalidateSocketsIfNeeded {
+    if (_openVPNSocket) {
+        CFSocketInvalidate(_openVPNSocket);
+        CFRelease(_openVPNSocket);
+        
+        _openVPNSocket = NULL;
+    }
+    
+    if (_packetFlowSocket) {
+        CFSocketInvalidate(_packetFlowSocket);
+        CFRelease(_packetFlowSocket);
+        
+        _packetFlowSocket = NULL;
+    }
+}
+
 - (void)startReading {
+    NSAssert(self.packetFlow != nil, @"packetFlow property shouldn't be nil, set it before start reading packets.");
+    
     __weak typeof(self) weakSelf = self;
     
     [self.packetFlow readPacketsWithCompletionHandler:^(NSArray<NSData *> *packets, NSArray<NSNumber *> *protocols) {
@@ -145,6 +150,8 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark - TUN -> VPN
 
 - (void)writePackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols toSocket:(CFSocketRef)socket {
+    if (socket == NULL) { return; }
+    
     [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
         NSNumber *protocolFamily = protocols[idx];
         OpenVPNPacket *packet = [[OpenVPNPacket alloc] initWithPacketFlowData:data protocolFamily:protocolFamily];
@@ -156,6 +163,8 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark - VPN -> TUN
 
 - (void)writePackets:(NSArray<OpenVPNPacket *> *)packets toPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
+    NSAssert(packetFlow != nil, @"packetFlow shouldn't be nil, check provided parameter before start writing packets.");
+    
     NSMutableArray<NSData *> *flowPackets = [[NSMutableArray alloc] init];
     NSMutableArray<NSNumber *> *protocols = [[NSMutableArray alloc] init];
     
@@ -170,11 +179,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 #pragma mark -
 
 - (void)dealloc {
-    CFSocketInvalidate(_openVPNSocket);
-    CFRelease(_openVPNSocket);
-    
-    CFSocketInvalidate(_packetFlowSocket);
-    CFRelease(_packetFlowSocket);
+    [self invalidateSocketsIfNeeded];
 }
 
 @end
