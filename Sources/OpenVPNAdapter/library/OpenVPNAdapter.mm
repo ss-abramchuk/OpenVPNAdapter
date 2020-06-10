@@ -87,6 +87,8 @@
 }
 
 - (void)connectUsingPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow {
+    NSAssert(self.delegate != nil, @"delegate property shouldn't be nil, set it before trying to establish connection.");
+    
     self.packetFlowBridge.packetFlow = packetFlow;
     
     dispatch_queue_attr_t attributes = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0);
