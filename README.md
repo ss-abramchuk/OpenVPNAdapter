@@ -141,6 +141,11 @@ Packet Tunnel Provider extension uses [`NEPacketTunnelProvider`](https://develop
 import NetworkExtension
 import OpenVPNAdapter
 
+// Extend NEPacketTunnelFlow to adopt OpenVPNAdapterPacketFlow protocol so that
+// `self.packetFlow` could be sent to `completionHandler` callback of OpenVPNAdapterDelegate
+// method openVPNAdapter(openVPNAdapter:configureTunnelWithNetworkSettings:completionHandler).
+extension NEPacketTunnelFlow: OpenVPNAdapterPacketFlow {}
+
 class PacketTunnelProvider: NEPacketTunnelProvider {
 
     lazy var vpnAdapter: OpenVPNAdapter = {
@@ -182,8 +187,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             // Additional parameters as key:value pairs may be provided here
         ]
 
-        // Add this line if you want to keep TUN interface active during pauses or reconnections
-        configuration.tunPersist = true
+        // Uncomment this line if you want to keep TUN interface active during pauses or reconnections
+        // configuration.tunPersist = true
 
         // Apply OpenVPN configuration
         let properties: OpenVPNProperties
@@ -226,13 +231,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         // WiFi the adapter still uses cellular data. Changing reachability forces
         // reconnection so the adapter will use actual connection.
         vpnReachability.startTracking { [weak self] status in
-            guard status != .notReachable else { return }
+            guard status == .reachableViaWiFi else { return }
             self?.vpnAdapter.reconnect(interval: 5)
         }
 
         // Establish connection and wait for .connected event
         startHandler = completionHandler
-        vpnAdapter.connect()
+        vpnAdapter.connect(using: packetFlow)
     }
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
@@ -255,15 +260,13 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     // `OpenVPNAdapterPacketFlow` method signatures are similar to `NEPacketTunnelFlow` so
     // you can just extend that class to adopt `OpenVPNAdapterPacketFlow` protocol and
     // send `self.packetFlow` to `completionHandler` callback.
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (OpenVPNAdapterPacketFlow?) -> Void) {
+    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (Error?) -> Void) {
         // In order to direct all DNS queries first to the VPN DNS servers before the primary DNS servers
         // send empty string to NEDNSSettings.matchDomains  
         networkSettings?.dnsSettings?.matchDomains = [""]
 
-        // Specify the network settings for the current tunneling session.
-        setTunnelNetworkSettings(settings) { (error) in
-            completionHandler(error == nil ? self.packetFlow : nil)
-        }
+        // Set the network settings for the current tunneling session.
+        setTunnelNetworkSettings(networkSettings, completionHandler: completionHandler)
     }
 
     // Process events returned by the OpenVPN library
@@ -322,11 +325,6 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     }
 
 }
-
-// Extend NEPacketTunnelFlow to adopt OpenVPNAdapterPacketFlow protocol so that
-// `self.packetFlow` could be sent to `completionHandler` callback of OpenVPNAdapterDelegate
-// method openVPNAdapter(openVPNAdapter:configureTunnelWithNetworkSettings:completionHandler).
-extension NEPacketTunnelFlow: OpenVPNAdapterPacketFlow {}
 ```
 
 ## Contributing

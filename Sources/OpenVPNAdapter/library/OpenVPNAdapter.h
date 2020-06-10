@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
  */
 - (void)openVPNAdapter:(OpenVPNAdapter *)openVPNAdapter
 configureTunnelWithNetworkSettings:(nullable NEPacketTunnelNetworkSettings *)networkSettings
-                 completionHandler:(void (^)(id<OpenVPNAdapterPacketFlow> _Nullable packetFlow))completionHandler
+                 completionHandler:(void (^)(NSError * _Nullable error))completionHandler
 NS_SWIFT_NAME(openVPNAdapter(_:configureTunnelWithNetworkSettings:completionHandler:));
 
 /**
@@ -149,8 +149,10 @@ NS_SWIFT_NAME(apply(configuration:));
 
 /**
  Starts the tunnel.
+ 
+ @param packetFlow The object implementing OpenVPNAdapterPacketFlow protocol.
  */
-- (void)connect;
+- (void)connectUsingPacketFlow:(id<OpenVPNAdapterPacketFlow>)packetFlow NS_SWIFT_NAME(connect(using:));
 
 /**
  Pauses the tunnel.
