@@ -24,7 +24,7 @@ class OpenVPNConfigurationTests: XCTestCase {
     }
     
     func testGetSetProfile() {
-        guard let originalProfile = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
+        guard let originalProfile = VPNProfile.general.configuration.data(using: .utf8) else { fatalError() }
         
         let configuration = OpenVPNConfiguration()
         
@@ -84,7 +84,7 @@ class OpenVPNConfigurationTests: XCTestCase {
     }
     
     func testGetSetRemote() {
-        guard let originalProfile = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
+        guard let originalProfile = VPNProfile.general.configuration.data(using: .utf8) else { fatalError() }
         
         let originalServer = "192.168.1.200"
         let originalPort: UInt = 12000
