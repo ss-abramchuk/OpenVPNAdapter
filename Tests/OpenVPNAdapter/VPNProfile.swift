@@ -19,7 +19,7 @@ struct VPNProfile {
 
 extension VPNProfile {
     ///
-    static let tlsClient: VPNProfile = {
+    static let caOnly: VPNProfile = {
         let configuration: String = <#OPENVPN_CONFIGURATION#>
         
         let username: String? = <#OPENVPN_USERNAME#>
@@ -31,7 +31,7 @@ extension VPNProfile {
     }()
     
     ///
-    static let certWithKey: VPNProfile = {
+    static let caWithCertAndKey: VPNProfile = {
         let configuration: String = <#OPENVPN_CONFIGURATION#>
         
         let username: String? = <#OPENVPN_USERNAME#>
