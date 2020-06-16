@@ -29,52 +29,16 @@ class OpenVPNAdapterTests: XCTestCase {
         super.tearDown()
     }
     
-    func testApplyConfiguration() {
-        guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
+    // Test connection to the VPN server without cert and key
+    func testConnectionCAOnly() {
+        guard let vpnConfiguration = VPNProfile.caOnly.configuration.data(using: .utf8) else { fatalError() }
         
         let adapter = OpenVPNAdapter()
 
         let configuration = OpenVPNConfiguration()
         configuration.fileContent = vpnConfiguration
-        configuration.settings = ["auth-user-pass": ""]
-
-        let result: OpenVPNProperties
-        do {
-            result = try adapter.apply(configuration: configuration)
-        } catch {
-            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
-            return
-        }
-
-        XCTAssert(result.remoteHost == VPNProfile.remoteHost)
-        XCTAssert(result.remotePort == VPNProfile.remotePort)
-        XCTAssert(result.autologin == false)
-    }
-    
-    func testProvideCredentials() {
-        let adapter = OpenVPNAdapter()
-        
-        let credentials = OpenVPNCredentials()
-        credentials.username = "username"
-        credentials.password = "password"
-        
-        do {
-            try adapter.provide(credentials: credentials)
-        } catch {
-            XCTFail("Failed to provide credentials. \(error)")
-            return
-        }
-    }
-    
-    
-    // Test connection to the VPN server
-    func testConnection() {
-        guard let vpnConfiguration = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
-        
-        let adapter = OpenVPNAdapter()
-
-        let configuration = OpenVPNConfiguration()
-        configuration.fileContent = vpnConfiguration
+        configuration.settings = VPNProfile.caOnly.settings
+        configuration.disableClientCert = true
         
         let result: OpenVPNProperties
         do {
@@ -86,8 +50,49 @@ class OpenVPNAdapterTests: XCTestCase {
         
         if !result.autologin {
             let credentials = OpenVPNCredentials()
-            credentials.username = VPNProfile.username
-            credentials.password = VPNProfile.password
+            credentials.username = VPNProfile.caOnly.username
+            credentials.password = VPNProfile.caOnly.password
+            
+            do {
+                try adapter.provide(credentials: credentials)
+            } catch {
+                XCTFail("Failed to provide credentials. \(error)")
+                return
+            }
+        }
+
+        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
+
+        adapter.delegate = self
+        adapter.connect(using: customFlow)
+
+        waitForExpectations(timeout: 30.0) { (error) in
+            adapter.disconnect()
+        }
+    }
+    
+    // Test connection to the VPN server with cert and key
+    func testConnectionCAWithCertAndKey() {
+        guard let vpnConfiguration = VPNProfile.caWithCertAndKey.configuration.data(using: .utf8) else { fatalError() }
+        
+        let adapter = OpenVPNAdapter()
+
+        let configuration = OpenVPNConfiguration()
+        configuration.fileContent = vpnConfiguration
+        configuration.settings = VPNProfile.caWithCertAndKey.settings
+        
+        let result: OpenVPNProperties
+        do {
+            result = try adapter.apply(configuration: configuration)
+        } catch {
+            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
+            return
+        }
+        
+        if !result.autologin {
+            let credentials = OpenVPNCredentials()
+            credentials.username = VPNProfile.caWithCertAndKey.username
+            credentials.password = VPNProfile.caWithCertAndKey.password
             
             do {
                 try adapter.provide(credentials: credentials)
