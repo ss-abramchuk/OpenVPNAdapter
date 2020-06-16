@@ -112,6 +112,36 @@ class OpenVPNAdapterTests: XCTestCase {
         }
     }
     
+    // Test connection to the VPN server without credentials
+    func testConnectionWithoutCredentials() {
+        guard let vpnConfiguration = VPNProfile.withoutCredentials.configuration.data(using: .utf8) else { fatalError() }
+        
+        let adapter = OpenVPNAdapter()
+
+        let configuration = OpenVPNConfiguration()
+        configuration.fileContent = vpnConfiguration
+        configuration.settings = VPNProfile.withoutCredentials.settings
+        
+        let result: OpenVPNProperties
+        do {
+            result = try adapter.apply(configuration: configuration)
+        } catch {
+            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
+            return
+        }
+        
+        XCTAssertTrue(result.autologin)
+
+        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
+
+        adapter.delegate = self
+        adapter.connect(using: customFlow)
+
+        waitForExpectations(timeout: 30.0) { (error) in
+            adapter.disconnect()
+        }
+    }
+    
 }
 
 extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
