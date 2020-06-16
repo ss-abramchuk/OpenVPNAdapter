@@ -19,7 +19,31 @@ struct VPNProfile {
 
 extension VPNProfile {
     ///
+    static let general: VPNProfile = {
+        let configuration: String = <#OPENVPN_CONFIGURATION#>
+        
+        let username: String? = <#OPENVPN_USERNAME#>
+        let password: String? = <#OPENVPN_PASSWORD#>
+        
+        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
+
+        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
+    }()
+    
+    ///
     static let caOnly: VPNProfile = {
+        let configuration: String = <#OPENVPN_CONFIGURATION#>
+        
+        let username: String? = <#OPENVPN_USERNAME#>
+        let password: String? = <#OPENVPN_PASSWORD#>
+        
+        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
+
+        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
+    }()
+    
+    ///
+    static let caWithCertAndKey: VPNProfile = {
         let configuration: String = <#OPENVPN_CONFIGURATION#>
         
         let username: String? = <#OPENVPN_USERNAME#>
@@ -31,7 +55,7 @@ extension VPNProfile {
     }()
     
     ///
-    static let caWithCertAndKey: VPNProfile = {
+    static let withoutCredentials: VPNProfile = {
         let configuration: String = <#OPENVPN_CONFIGURATION#>
         
         let username: String? = <#OPENVPN_USERNAME#>
