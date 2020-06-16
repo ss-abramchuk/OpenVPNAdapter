@@ -9,11 +9,30 @@
 import Foundation
 
 struct VPNProfile {
-    static let username: String = <#OPENVPN_USERNAME#>
-    static let password: String = <#OPENVPN_PASSWORD#>
+    let configuration: String
     
-    static let configuration: String = <#OPENVPN_CONFIGURATION#>
+    let username: String?
+    let password: String?
+}
+
+extension VPNProfile {
+    ///
+    static let tlsClient: VPNProfile = {
+        let configuration: String = <#OPENVPN_CONFIGURATION#>
+        
+        let username: String? = <#OPENVPN_USERNAME#>
+        let password: String? = <#OPENVPN_PASSWORD#>
+        
+        return VPNProfile(configuration: configuration, username: username, password: password)
+    }()
     
-    static let remoteHost: String = <#OPENVPN_REMOTE_HOST#>
-    static let remotePort: Int = <#OPENVPN_REMOTE_PORT#>
+    ///
+    static let certWithKey: VPNProfile = {
+        let configuration: String = <#OPENVPN_CONFIGURATION#>
+        
+        let username: String? = <#OPENVPN_USERNAME#>
+        let password: String? = <#OPENVPN_PASSWORD#>
+        
+        return VPNProfile(configuration: configuration, username: username, password: password)
+    }()
 }
