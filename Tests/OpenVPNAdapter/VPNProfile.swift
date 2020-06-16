@@ -13,6 +13,8 @@ struct VPNProfile {
     
     let username: String?
     let password: String?
+    
+    let settings: [String: String]?
 }
 
 extension VPNProfile {
@@ -23,7 +25,9 @@ extension VPNProfile {
         let username: String? = <#OPENVPN_USERNAME#>
         let password: String? = <#OPENVPN_PASSWORD#>
         
-        return VPNProfile(configuration: configuration, username: username, password: password)
+        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
+        
+        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
     }()
     
     ///
@@ -33,6 +37,8 @@ extension VPNProfile {
         let username: String? = <#OPENVPN_USERNAME#>
         let password: String? = <#OPENVPN_PASSWORD#>
         
-        return VPNProfile(configuration: configuration, username: username, password: password)
+        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
+        
+        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
     }()
 }
