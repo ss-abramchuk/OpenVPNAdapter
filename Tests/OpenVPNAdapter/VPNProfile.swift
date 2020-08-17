@@ -11,6 +11,10 @@ import Foundation
 struct VPNProfile {
     let configuration: String
     
+    let ca: String?
+    let cert: String?
+    let key: String?
+    
     let username: String?
     let password: String?
     
@@ -22,47 +26,24 @@ extension VPNProfile {
     static let general: VPNProfile = {
         let configuration: String = <#OPENVPN_CONFIGURATION#>
         
+        let ca: String? = <#OPENVPN_CA#>
+        let cert: String? = <#OPENVPN_CERT#>
+        let key: String? = <#OPENVPN_KEY#>
+        
         let username: String? = <#OPENVPN_USERNAME#>
         let password: String? = <#OPENVPN_PASSWORD#>
         
         let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
+        
+        return VPNProfile(
+            configuration: configuration, ca: ca, cert: cert, key: key,
+            username: username, password: password, settings: settings
+        )
+    }()
+}
 
-        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
-    }()
-    
-    ///
-    static let caOnly: VPNProfile = {
-        let configuration: String = <#OPENVPN_CONFIGURATION#>
-        
-        let username: String? = <#OPENVPN_USERNAME#>
-        let password: String? = <#OPENVPN_PASSWORD#>
-        
-        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
-
-        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
-    }()
-    
-    ///
-    static let caWithCertAndKey: VPNProfile = {
-        let configuration: String = <#OPENVPN_CONFIGURATION#>
-        
-        let username: String? = <#OPENVPN_USERNAME#>
-        let password: String? = <#OPENVPN_PASSWORD#>
-        
-        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
-        
-        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
-    }()
-    
-    ///
-    static let withoutCredentials: VPNProfile = {
-        let configuration: String = <#OPENVPN_CONFIGURATION#>
-        
-        let username: String? = <#OPENVPN_USERNAME#>
-        let password: String? = <#OPENVPN_PASSWORD#>
-        
-        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
-        
-        return VPNProfile(configuration: configuration, username: username, password: password, settings: settings)
-    }()
+extension VPNProfile {
+    static let profileCollection = [
+        VPNProfile.general
+    ]
 }
