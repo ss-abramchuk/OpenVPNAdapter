@@ -9,6 +9,8 @@
 import Foundation
 
 struct VPNProfile {
+    let name: String
+    
     let configuration: String
     
     let ca: String?
@@ -24,6 +26,8 @@ struct VPNProfile {
 extension VPNProfile {
     ///
     static let general: VPNProfile = {
+        let name: String = <#OPENVPN_PROFILE_NAME#>
+        
         let configuration: String = <#OPENVPN_CONFIGURATION#>
         
         let ca: String? = <#OPENVPN_CA#>
@@ -36,7 +40,7 @@ extension VPNProfile {
         let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
         
         return VPNProfile(
-            configuration: configuration, ca: ca, cert: cert, key: key,
+            name: name, configuration: configuration, ca: ca, cert: cert, key: key,
             username: username, password: password, settings: settings
         )
     }()
