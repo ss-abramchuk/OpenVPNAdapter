@@ -9,13 +9,14 @@
 import Foundation
 
 struct VPNProfile {
-    let name: String
+    let profileName: String
     
     let configuration: String
     
-    let ca: String?
     let cert: String?
     let key: String?
+    
+    let keyPassword: String?
     
     let username: String?
     let password: String?
@@ -24,30 +25,25 @@ struct VPNProfile {
 }
 
 extension VPNProfile {
-    ///
-    static let general: VPNProfile = {
-        let name: String = <#OPENVPN_PROFILE_NAME#>
-        
+
+    static let live: VPNProfile = {
+        let profileName: String = <#OPENVPN_PROFILE_NAME#>
+
         let configuration: String = <#OPENVPN_CONFIGURATION#>
-        
-        let ca: String? = <#OPENVPN_CA#>
+
         let cert: String? = <#OPENVPN_CERT#>
         let key: String? = <#OPENVPN_KEY#>
+
+        let keyPassword: String? = <#PRIVATE_KEY_PASSWORD#>
         
         let username: String? = <#OPENVPN_USERNAME#>
         let password: String? = <#OPENVPN_PASSWORD#>
-        
+
         let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
-        
+
         return VPNProfile(
-            name: name, configuration: configuration, ca: ca, cert: cert, key: key,
+            profileName: profileName, configuration: configuration, cert: cert, key: key, keyPassword: keyPassword,
             username: username, password: password, settings: settings
         )
     }()
-}
-
-extension VPNProfile {
-    static let profileCollection = [
-        VPNProfile.general
-    ]
 }
