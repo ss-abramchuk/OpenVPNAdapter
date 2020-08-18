@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C910EAE524EBB1DA0081AF13 /* OpenVPNReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */; };
 		C97E5F6E24122F12005C2EBC /* NSArray+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */; };
 		C97E5F7024122F22005C2EBC /* NSError+OpenVPNError.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */; };
 		C97E5F7224122F5C005C2EBC /* OpenVPNClient.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */; };
@@ -1160,6 +1161,7 @@
 				C97E5FE124123F48005C2EBC /* Bundle.swift in Sources */,
 				C97E5FDD24123F48005C2EBC /* OpenVPNConfigurationTests.swift in Sources */,
 				C97E5FDF24123F48005C2EBC /* OpenVPNAdapterTests.swift in Sources */,
+				C910EAE524EBB1DA0081AF13 /* OpenVPNReachabilityTests.swift in Sources */,
 				C97E5FDE24123F48005C2EBC /* CustomFlow.swift in Sources */,
 				C97E5FE024123F48005C2EBC /* VPNProfile.swift in Sources */,
 			);
