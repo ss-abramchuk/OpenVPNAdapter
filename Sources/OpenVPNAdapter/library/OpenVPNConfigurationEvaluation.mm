@@ -26,6 +26,7 @@ using namespace openvpn;
         _friendlyName = !eval.friendlyName.empty() ? [NSString stringWithUTF8String:eval.friendlyName.c_str()] : nil;
         
         _autologin = eval.autologin;
+        _externalPki = eval.externalPki;
         
         _staticChallenge = !eval.staticChallenge.empty() ? [NSString stringWithUTF8String:eval.staticChallenge.c_str()] : nil;
         _staticChallengeEcho = eval.staticChallengeEcho;

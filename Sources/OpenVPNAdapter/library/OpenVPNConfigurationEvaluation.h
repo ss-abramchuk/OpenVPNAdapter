@@ -34,6 +34,11 @@ typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol);
 @property (readonly, nonatomic) BOOL autologin;
 
 /**
+ If YES this is an External PKI profile (no cert or key directives)
+ */
+@property (readonly, nonatomic) BOOL externalPki;
+
+/**
  Static challenge, may be empty, ignored if autologin
  */
 @property (nullable, readonly, nonatomic) NSString *staticChallenge;
