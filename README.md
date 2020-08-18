@@ -35,7 +35,7 @@ To install OpenVPNAdapter with Cocoapods, add the following lines to your `Podfi
 ```ruby
 target 'Your Target Name' do
   use_frameworks!
-  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.6.0'
+  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.7.0'
 end
 ```
 
@@ -191,16 +191,16 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         // configuration.tunPersist = true
 
         // Apply OpenVPN configuration
-        let properties: OpenVPNProperties
+        let evaluation: OpenVPNConfigurationEvaluation
         do {
-            properties = try vpnAdapter.apply(configuration: configuration)
+            evaluation = try vpnAdapter.apply(configuration: configuration)
         } catch {
             completionHandler(error)
             return
         }
 
         // Provide credentials if needed
-        if !properties.autologin {
+        if !evaluation.autologin {
             // If your VPN configuration requires user credentials you can provide them by
             // `protocolConfiguration.username` and `protocolConfiguration.passwordReference`
             // properties. It is recommended to use persistent keychain reference to a keychain
