@@ -127,12 +127,23 @@ NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
 @property (nonatomic, readonly) OpenVPNTransportStats *transportStatistics;
 
 /**
+ Evaluate the given configuration object and determine needed credentials.
+
+ @param configuration The configuration object.
+ @param error If there is an error applying the configuration, upon return contains an error object that describes the problem.
+ @return An object describing the configuration which has been evaluated.
+ */
++ (nullable OpenVPNConfigurationEvaluation *)evaluateConfiguration:(OpenVPNConfiguration *)configuration
+                                                             error:(NSError **)error
+NS_SWIFT_NAME(evaluate(configuration:));
+
+/**
  Applies the given configuration object.
  Call this method prior to connecting, this method has no effect after calling connect.
 
  @param configuration The configuration object.
  @param error If there is an error applying the configuration, upon return contains an error object that describes the problem.
- @return A properties object describing the configuration which has been applied.
+ @return An object describing the configuration which has been applied.
  */
 - (nullable OpenVPNConfigurationEvaluation *)applyConfiguration:(OpenVPNConfiguration *)configuration
                                              error:(NSError **)error
