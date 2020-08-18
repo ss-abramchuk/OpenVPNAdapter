@@ -1,5 +1,5 @@
 //
-//  OpenVPNProperties.h
+//  OpenVPNConfigurationEvaluation.h
 //  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 26.04.17.
@@ -11,7 +11,7 @@
 typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol);
 @class OpenVPNServerEntry;
 
-@interface OpenVPNProperties : NSObject
+@interface OpenVPNConfigurationEvaluation : NSObject
 
 /**
  This username must be used with profile

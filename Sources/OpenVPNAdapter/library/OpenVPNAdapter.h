@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, OpenVPNAdapterEvent);
 @class OpenVPNConnectionInfo;
 @class OpenVPNCredentials;
 @class OpenVPNInterfaceStats;
-@class OpenVPNProperties;
+@class OpenVPNConfigurationEvaluation;
 @class OpenVPNTransportStats;
 @class OpenVPNSessionToken;
 
@@ -134,7 +134,7 @@ NS_SWIFT_NAME(openVPNAdapter(_:handleEvent:message:));
  @param error If there is an error applying the configuration, upon return contains an error object that describes the problem.
  @return A properties object describing the configuration which has been applied.
  */
-- (nullable OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration
+- (nullable OpenVPNConfigurationEvaluation *)applyConfiguration:(OpenVPNConfiguration *)configuration
                                              error:(NSError **)error
 NS_SWIFT_NAME(apply(configuration:));
 

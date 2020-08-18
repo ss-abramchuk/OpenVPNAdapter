@@ -1,13 +1,13 @@
 //
-//  OpenVPNProperties.m
+//  OpenVPNConfigurationEvaluation.m
 //  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 26.04.17.
 //
 //
 
-#import "OpenVPNProperties.h"
-#import "OpenVPNProperties+Internal.h"
+#import "OpenVPNConfigurationEvaluation.h"
+#import "OpenVPNConfigurationEvaluation+Internal.h"
 
 #include <openvpn/common/number.hpp>
 
@@ -16,7 +16,7 @@
 
 using namespace openvpn;
 
-@implementation OpenVPNProperties
+@implementation OpenVPNConfigurationEvaluation
 
 - (instancetype)initWithEvalConfig:(ClientAPI::EvalConfig)eval {
     if (self = [super init]) {
