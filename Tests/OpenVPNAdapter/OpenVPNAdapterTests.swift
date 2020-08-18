@@ -12,46 +12,124 @@ import NetworkExtension
 
 class OpenVPNAdapterTests: XCTestCase {
     
-    enum ExpectationsType {
-        case connection
+    private class CustomFlow: NSObject, OpenVPNAdapterPacketFlow {
+        
+        func readPackets(completionHandler: @escaping ([Data], [NSNumber]) -> Void) {
+            
+        }
+        
+        func writePackets(_ packets: [Data], withProtocols protocols: [NSNumber]) -> Bool {
+            return true
+        }
+        
     }
     
-    let customFlow = CustomFlow()
+    private class AdapterDelegate: NSObject, OpenVPNAdapterDelegate {
+        
+        let settingsHandler: (NEPacketTunnelNetworkSettings?) -> Void
+        let errorHandler: (Error) -> Void
+        let eventHandler: (OpenVPNAdapterEvent) -> Void
+        
+        init(
+            settingsHandler: @escaping (NEPacketTunnelNetworkSettings?) -> Void,
+            errorHandler: @escaping (Error) -> Void,
+            eventHandler: @escaping (OpenVPNAdapterEvent) -> Void
+        ) {
+            self.settingsHandler = settingsHandler
+            self.errorHandler = errorHandler
+            self.eventHandler = eventHandler
+            
+            super.init()
+        }
+        
+        func openVPNAdapter(
+            _ openVPNAdapter: OpenVPNAdapter,
+            configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?,
+            completionHandler: @escaping (Error?) -> Void
+        ) {
+            settingsHandler(networkSettings)
+            completionHandler(nil)
+        }
+        
+        func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleError error: Error) {
+            errorHandler(error)
+        }
+        
+        func openVPNAdapter(
+            _ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?
+        ) {
+            eventHandler(event)
+        }
+        
+        func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleLogMessage logMessage: String) {
+            print(logMessage)
+        }
+    }
     
-    var expectations = [ExpectationsType : XCTestExpectation]()
+    private let customFlow = CustomFlow()
     
     override func setUp() {
         super.setUp()
-        expectations.removeAll()
     }
     
     override func tearDown() {
         super.tearDown()
     }
     
-    // Test connection to the VPN server without cert and key
-    func testConnectionCAOnly() {
-        guard let vpnConfiguration = VPNProfile.caOnly.configuration.data(using: .utf8) else { fatalError() }
-        
-        let adapter = OpenVPNAdapter()
-
+    func testVPNConnection() {
         let configuration = OpenVPNConfiguration()
-        configuration.fileContent = vpnConfiguration
-        configuration.settings = VPNProfile.caOnly.settings
-        configuration.disableClientCert = true
+        configuration.fileContent = VPNProfile.live.configuration.data(using: .utf8)
+         
+        var settings = VPNProfile.live.settings ?? [:]
         
-        let result: OpenVPNProperties
+        if let key = VPNProfile.live.key, let cert = VPNProfile.live.cert {
+            settings["cert"] = cert.replacingOccurrences(of: "\n", with: "\\n")
+            settings["key"] = key.replacingOccurrences(of: "\n", with: "\\n")
+        }
+        
+        configuration.settings = settings
+        
+        let preEvaluation: OpenVPNConfigurationEvaluation
         do {
-            result = try adapter.apply(configuration: configuration)
+            preEvaluation = try OpenVPNAdapter.evaluate(configuration: configuration)
         } catch {
-            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
+            XCTFail("Evaluation failed due to error: \(error)")
             return
         }
         
-        if !result.autologin {
+        guard !preEvaluation.externalPki else {
+            XCTFail("Currently profile cannot be External PKI as it is not imlemented yet.")
+            return
+        }
+        
+        if preEvaluation.isPrivateKeyPasswordRequired {
+            guard let keyPassword = VPNProfile.live.keyPassword else {
+                XCTFail("Private key password required.")
+                return
+            }
+            
+            configuration.privateKeyPassword = keyPassword
+        }
+        
+        let adapter = OpenVPNAdapter()
+        
+        let finalEvaluation: OpenVPNConfigurationEvaluation
+        do {
+            finalEvaluation = try adapter.apply(configuration: configuration)
+        } catch {
+            XCTFail("Failed to apply OpenVPN configuration due to error: \(error)")
+            return
+        }
+        
+        if !finalEvaluation.autologin {
+            guard let username = VPNProfile.live.username, let password = VPNProfile.live.password else {
+                XCTFail("If unable to autologin, username and password must be provided.")
+                return
+            }
+            
             let credentials = OpenVPNCredentials()
-            credentials.username = VPNProfile.caOnly.username
-            credentials.password = VPNProfile.caOnly.password
+            credentials.username = username
+            credentials.password = password
             
             do {
                 try adapter.provide(credentials: credentials)
@@ -61,119 +139,28 @@ class OpenVPNAdapterTests: XCTestCase {
             }
         }
 
-        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
-
-        adapter.delegate = self
-        adapter.connect(using: customFlow)
-
-        waitForExpectations(timeout: 30.0) { (error) in
-            adapter.disconnect()
-        }
-    }
-    
-    // Test connection to the VPN server with cert and key
-    func testConnectionCAWithCertAndKey() {
-        guard let vpnConfiguration = VPNProfile.caWithCertAndKey.configuration.data(using: .utf8) else { fatalError() }
+        let connectionExpectation = XCTestExpectation(
+            description: "Establish connection using \(VPNProfile.live.profileName)"
+        )
         
-        let adapter = OpenVPNAdapter()
-
-        let configuration = OpenVPNConfiguration()
-        configuration.fileContent = vpnConfiguration
-        configuration.settings = VPNProfile.caWithCertAndKey.settings
-        
-        let result: OpenVPNProperties
-        do {
-            result = try adapter.apply(configuration: configuration)
-        } catch {
-            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
-            return
-        }
-        
-        if !result.autologin {
-            let credentials = OpenVPNCredentials()
-            credentials.username = VPNProfile.caWithCertAndKey.username
-            credentials.password = VPNProfile.caWithCertAndKey.password
-            
-            do {
-                try adapter.provide(credentials: credentials)
-            } catch {
-                XCTFail("Failed to provide credentials. \(error)")
-                return
+        let adapterDelegate = AdapterDelegate(
+            settingsHandler: { (settings) in
+                
+            },
+            errorHandler: { (error) in
+                XCTFail("Failed to establish conection due to error: \(error)")
+            },
+            eventHandler: { (event) in
+                guard event == .connected else { return }
+                
+                connectionExpectation.fulfill()
+                adapter.disconnect()
             }
-        }
-
-        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
-
-        adapter.delegate = self
+        )
+        
+        adapter.delegate = adapterDelegate
         adapter.connect(using: customFlow)
-
-        waitForExpectations(timeout: 30.0) { (error) in
-            adapter.disconnect()
-        }
-    }
-    
-    // Test connection to the VPN server without credentials
-    func testConnectionWithoutCredentials() {
-        guard let vpnConfiguration = VPNProfile.withoutCredentials.configuration.data(using: .utf8) else { fatalError() }
         
-        let adapter = OpenVPNAdapter()
-
-        let configuration = OpenVPNConfiguration()
-        configuration.fileContent = vpnConfiguration
-        configuration.settings = VPNProfile.withoutCredentials.settings
-        
-        let result: OpenVPNProperties
-        do {
-            result = try adapter.apply(configuration: configuration)
-        } catch {
-            XCTFail("Failed to configure OpenVPN adapted due to error: \(error)")
-            return
-        }
-        
-        XCTAssertTrue(result.autologin)
-
-        expectations[.connection] = expectation(description: "me.ss-abramchuk.openvpn-adapter.connection")
-
-        adapter.delegate = self
-        adapter.connect(using: customFlow)
-
-        waitForExpectations(timeout: 30.0) { (error) in
-            adapter.disconnect()
-        }
+        wait(for: [connectionExpectation], timeout: 15.0)
     }
-    
-}
-
-extension OpenVPNAdapterTests: OpenVPNAdapterDelegate {
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (Error?) -> Void) {
-        completionHandler(nil)
-    }
-    
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?) {
-        switch event {
-        case .connected:
-            guard let connectionExpectation = expectations[.connection] else { return }
-            connectionExpectation.fulfill()
-            
-        case .disconnected:
-            break
-            
-        default:
-            break
-        }
-    }
-    
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleError error: Error) {
-        if let connectionExpectation = expectations[.connection] {
-            XCTFail("Failed to establish conection.")
-            connectionExpectation.fulfill()
-        }
-        
-        dump(error)
-    }
-    
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleLogMessage logMessage: String) {
-        print(logMessage)
-    }
-    
 }
