@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		C910EAE524EBB1DA0081AF13 /* OpenVPNReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */; };
 		C910EAE724EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h in Headers */ = {isa = PBXBuildFile; fileRef = C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C910EAEE24EBBFB60081AF13 /* client.crt in Resources */ = {isa = PBXBuildFile; fileRef = C910EAEB24EBBFB60081AF13 /* client.crt */; };
+		C910EAEF24EBBFB60081AF13 /* ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = C910EAEC24EBBFB60081AF13 /* ca.crt */; };
+		C910EAF024EBBFB60081AF13 /* client.key in Resources */ = {isa = PBXBuildFile; fileRef = C910EAED24EBBFB60081AF13 /* client.key */; };
+		C910EAF224EBC6F90081AF13 /* client.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C910EAF124EBC6F90081AF13 /* client.ovpn */; };
 		C97E5F6E24122F12005C2EBC /* NSArray+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */; };
 		C97E5F7024122F22005C2EBC /* NSError+OpenVPNError.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */; };
 		C97E5F7224122F5C005C2EBC /* OpenVPNClient.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */; };
@@ -227,6 +231,10 @@
 
 /* Begin PBXFileReference section */
 		C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNConfigurationEvaluation.h; sourceTree = "<group>"; };
+		C910EAEB24EBBFB60081AF13 /* client.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = client.crt; sourceTree = "<group>"; };
+		C910EAEC24EBBFB60081AF13 /* ca.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ca.crt; sourceTree = "<group>"; };
+		C910EAED24EBBFB60081AF13 /* client.key */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = client.key; sourceTree = "<group>"; };
+		C910EAF124EBC6F90081AF13 /* client.ovpn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = client.ovpn; sourceTree = "<group>"; };
 		C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+OpenVPNAdditions.h"; sourceTree = "<group>"; };
 		C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+OpenVPNError.h"; sourceTree = "<group>"; };
 		C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNClient.h; sourceTree = "<group>"; };
@@ -528,6 +536,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C910EAEA24EBBFB60081AF13 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C910EAF124EBC6F90081AF13 /* client.ovpn */,
+				C910EAEB24EBBFB60081AF13 /* client.crt */,
+				C910EAEC24EBBFB60081AF13 /* ca.crt */,
+				C910EAED24EBBFB60081AF13 /* client.key */,
+			);
+			name = Resources;
+			path = Tests/Resources;
+			sourceTree = "<group>";
+		};
 		C97E5FD524123F48005C2EBC /* OpenVPNAdapter */ = {
 			isa = PBXGroup;
 			children = (
@@ -674,6 +694,7 @@
 		OBJ_231 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C910EAEA24EBBFB60081AF13 /* Resources */,
 				C97E5FD524123F48005C2EBC /* OpenVPNAdapter */,
 			);
 			name = Tests;
@@ -1148,6 +1169,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C910EAEE24EBBFB60081AF13 /* client.crt in Resources */,
+				C910EAF024EBBFB60081AF13 /* client.key in Resources */,
+				C910EAEF24EBBFB60081AF13 /* ca.crt in Resources */,
+				C910EAF224EBC6F90081AF13 /* client.ovpn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
