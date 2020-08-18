@@ -26,7 +26,7 @@ FOUNDATION_EXPORT const unsigned char OpenVPNAdapterVersionString[];
 #import <OpenVPNAdapter/OpenVPNConfiguration.h>
 #import <OpenVPNAdapter/OpenVPNCredentials.h>
 #import <OpenVPNAdapter/OpenVPNServerEntry.h>
-#import <OpenVPNAdapter/OpenVPNProperties.h>
+#import <OpenVPNAdapter/OpenVPNConfigurationEvaluation.h>
 #import <OpenVPNAdapter/OpenVPNConnectionInfo.h>
 #import <OpenVPNAdapter/OpenVPNSessionToken.h>
 #import <OpenVPNAdapter/OpenVPNTransportStats.h>

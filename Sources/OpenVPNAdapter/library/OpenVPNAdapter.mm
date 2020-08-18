@@ -24,7 +24,7 @@
 #import "OpenVPNConfiguration+Internal.h"
 #import "OpenVPNConnectionInfo+Internal.h"
 #import "OpenVPNInterfaceStats+Internal.h"
-#import "OpenVPNProperties+Internal.h"
+#import "OpenVPNConfigurationEvaluation+Internal.h"
 #import "OpenVPNSessionToken+Internal.h"
 #import "OpenVPNTransportStats+Internal.h"
 #import "NSError+OpenVPNError.h"
@@ -50,22 +50,40 @@
 
 #pragma mark - OpenVPNClient Lifecycle
 
-- (OpenVPNProperties *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * __autoreleasing *)error {
++ (nullable OpenVPNConfigurationEvaluation *)evaluateConfiguration:(OpenVPNConfiguration *)configuration error:(NSError **)error {
+    ClientAPI::EvalConfig eval = OpenVPNClient::eval_config_static(configuration.config);
+    
+    if (eval.error) {
+        if (error) {
+            NSString *message = [NSString stringWithUTF8String:eval.message.c_str()];
+            *error = [NSError ovpn_errorObjectForAdapterError:OpenVPNAdapterErrorConfigurationFailure
+                                                  description:@"Failed to evaluate OpenVPN configuration."
+                                                      message:message
+                                                        fatal:YES];
+        }
+        
+        return nil;
+    }
+    
+    return [[OpenVPNConfigurationEvaluation alloc] initWithEvalConfig:eval];
+}
+
+- (OpenVPNConfigurationEvaluation *)applyConfiguration:(OpenVPNConfiguration *)configuration error:(NSError * __autoreleasing *)error {
     ClientAPI::EvalConfig eval = self.vpnClient->apply_config(configuration.config);
     
     if (eval.error) {
         if (error) {
             NSString *message = [NSString stringWithUTF8String:eval.message.c_str()];
             *error = [NSError ovpn_errorObjectForAdapterError:OpenVPNAdapterErrorConfigurationFailure
-                                          description:@"Failed to apply OpenVPN configuration."
-                                              message:message
-                                                fatal:YES];
+                                                  description:@"Failed to apply OpenVPN configuration."
+                                                      message:message
+                                                        fatal:YES];
         }
         
         return nil;
     }
     
-    return [[OpenVPNProperties alloc] initWithEvalConfig:eval];
+    return [[OpenVPNConfigurationEvaluation alloc] initWithEvalConfig:eval];
 }
 
 - (BOOL)provideCredentials:(OpenVPNCredentials *)credentials error:(NSError * __autoreleasing *)error {

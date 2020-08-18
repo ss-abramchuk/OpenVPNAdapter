@@ -9,11 +9,41 @@
 import Foundation
 
 struct VPNProfile {
-    static let username: String = <#OPENVPN_USERNAME#>
-    static let password: String = <#OPENVPN_PASSWORD#>
+    let profileName: String
     
-    static let configuration: String = <#OPENVPN_CONFIGURATION#>
+    let configuration: String
     
-    static let remoteHost: String = <#OPENVPN_REMOTE_HOST#>
-    static let remotePort: Int = <#OPENVPN_REMOTE_PORT#>
+    let cert: String?
+    let key: String?
+    
+    let keyPassword: String?
+    
+    let username: String?
+    let password: String?
+    
+    let settings: [String: String]?
+}
+
+extension VPNProfile {
+
+    static let live: VPNProfile = {
+        let profileName: String = <#OPENVPN_PROFILE_NAME#>
+
+        let configuration: String = <#OPENVPN_CONFIGURATION#>
+
+        let cert: String? = <#OPENVPN_CERT#>
+        let key: String? = <#OPENVPN_KEY#>
+
+        let keyPassword: String? = <#PRIVATE_KEY_PASSWORD#>
+        
+        let username: String? = <#OPENVPN_USERNAME#>
+        let password: String? = <#OPENVPN_PASSWORD#>
+
+        let settings: [String: String]? = <#OPENVPN_ADDITIONAL_SETTINGS#>
+
+        return VPNProfile(
+            profileName: profileName, configuration: configuration, cert: cert, key: key, keyPassword: keyPassword,
+            username: username, password: password, settings: settings
+        )
+    }()
 }

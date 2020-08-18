@@ -7,7 +7,11 @@
 //
 
 import XCTest
+
+#if os(macOS)
 import CoreWLAN
+#endif
+
 @testable import OpenVPNAdapter
 
 class OpenVPNReachabilityTests: XCTestCase {
@@ -22,6 +26,7 @@ class OpenVPNReachabilityTests: XCTestCase {
         super.tearDown()
     }
     
+    #if os(macOS)
     func testReachability() {
         let wifiClient = CWWiFiClient.shared()
         guard let interface = wifiClient.interface() else {
@@ -62,4 +67,5 @@ class OpenVPNReachabilityTests: XCTestCase {
         waitForExpectations(timeout: 30.0, handler: nil)
     }
     
+    #endif
 }
