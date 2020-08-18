@@ -1692,7 +1692,7 @@
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
 				);
 				MACH_O_TYPE = staticlib;
-				MARKETING_VERSION = 2.7.12;
+				MARKETING_VERSION = 2.7.13;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = mbedTLS;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1721,7 +1721,7 @@
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
 				);
 				MACH_O_TYPE = staticlib;
-				MARKETING_VERSION = 2.7.12;
+				MARKETING_VERSION = 2.7.13;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = mbedTLS;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
