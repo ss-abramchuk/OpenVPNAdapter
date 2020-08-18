@@ -67,6 +67,9 @@
         @"UDP_CONNECT_ERROR": @(OpenVPNAdapterErrorUDPConnectError),
         @"SSL_ERROR": @(OpenVPNAdapterErrorSSLError),
         @"SSL_PARTIAL_WRITE": @(OpenVPNAdapterErrorSSLPartialWrite),
+        @"SSL_CA_MD_TOO_WEAK": @(OpenVPNAdapterErrorSSLCaMdTooWeak),
+        @"SSL_CA_KEY_TOO_SMALL": @(OpenVPNAdapterErrorSSLCaKeyTooSmall),
+        @"SSL_DH_KEY_TOO_SMALL": @(OpenVPNAdapterErrorSSLDhKeyTooSmall),
         @"ENCAPSULATION_ERROR": @(OpenVPNAdapterErrorEncapsulationError),
         @"EPKI_CERT_ERROR": @(OpenVPNAdapterErrorEPKICertError),
         @"EPKI_SIGN_ERROR": @(OpenVPNAdapterErrorEPKISignError),
@@ -146,6 +149,9 @@
         case OpenVPNAdapterErrorUDPConnectError: return @"Client error on UDP connect.";
         case OpenVPNAdapterErrorSSLError: return @"Errors resulting from read/write on SSL object.";
         case OpenVPNAdapterErrorSSLPartialWrite: return @"SSL object did not process all written cleartext.";
+        case OpenVPNAdapterErrorSSLCaMdTooWeak: return @"CA message digest is too weak";
+        case OpenVPNAdapterErrorSSLCaKeyTooSmall: return @"CA key is too small";
+        case OpenVPNAdapterErrorSSLDhKeyTooSmall: return @"DH key is too small";
         case OpenVPNAdapterErrorEncapsulationError: return @"Exceptions thrown during packet encapsulation.";
         case OpenVPNAdapterErrorEPKICertError: return @"Error obtaining certificate from External PKI provider.";
         case OpenVPNAdapterErrorEPKISignError: return @"Error obtaining RSA signature from External PKI provider.";
