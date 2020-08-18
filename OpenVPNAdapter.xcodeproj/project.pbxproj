@@ -52,7 +52,6 @@
 		C97E5FB6241231FF005C2EBC /* OpenVPNTransportStats+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB5241231FF005C2EBC /* OpenVPNTransportStats+Internal.h */; };
 		C97E5FB824123211005C2EBC /* OpenVPNTransportProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5FB724123211005C2EBC /* OpenVPNTransportProtocol.h */; };
 		C97E5FDD24123F48005C2EBC /* OpenVPNConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD724123F48005C2EBC /* OpenVPNConfigurationTests.swift */; };
-		C97E5FDE24123F48005C2EBC /* CustomFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD824123F48005C2EBC /* CustomFlow.swift */; };
 		C97E5FDF24123F48005C2EBC /* OpenVPNAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD924123F48005C2EBC /* OpenVPNAdapterTests.swift */; };
 		C97E5FE024123F48005C2EBC /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FDA24123F48005C2EBC /* VPNProfile.swift */; };
 		C97E5FE124123F48005C2EBC /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FDB24123F48005C2EBC /* Bundle.swift */; };
@@ -278,7 +277,6 @@
 		C97E5FCD24123F2E005C2EBC /* OpenVPNAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenVPNAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNReachabilityTests.swift; sourceTree = "<group>"; };
 		C97E5FD724123F48005C2EBC /* OpenVPNConfigurationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNConfigurationTests.swift; sourceTree = "<group>"; };
-		C97E5FD824123F48005C2EBC /* CustomFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomFlow.swift; sourceTree = "<group>"; };
 		C97E5FD924123F48005C2EBC /* OpenVPNAdapterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenVPNAdapterTests.swift; sourceTree = "<group>"; };
 		C97E5FDA24123F48005C2EBC /* VPNProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VPNProfile.swift; sourceTree = "<group>"; };
 		C97E5FDB24123F48005C2EBC /* Bundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
@@ -553,7 +551,6 @@
 			children = (
 				C97E5FDB24123F48005C2EBC /* Bundle.swift */,
 				C97E5FDA24123F48005C2EBC /* VPNProfile.swift */,
-				C97E5FD824123F48005C2EBC /* CustomFlow.swift */,
 				C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */,
 				C97E5FD724123F48005C2EBC /* OpenVPNConfigurationTests.swift */,
 				C97E5FD924123F48005C2EBC /* OpenVPNAdapterTests.swift */,
@@ -1187,7 +1184,6 @@
 				C97E5FDD24123F48005C2EBC /* OpenVPNConfigurationTests.swift in Sources */,
 				C97E5FDF24123F48005C2EBC /* OpenVPNAdapterTests.swift in Sources */,
 				C910EAE524EBB1DA0081AF13 /* OpenVPNReachabilityTests.swift in Sources */,
-				C97E5FDE24123F48005C2EBC /* CustomFlow.swift in Sources */,
 				C97E5FE024123F48005C2EBC /* VPNProfile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
