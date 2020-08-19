@@ -9,8 +9,6 @@
 import XCTest
 @testable import OpenVPNAdapter
 
-// TODO: Test getting/setting of all properties of OpenVPNConfiguration
-
 class OpenVPNConfigurationTests: XCTestCase {
     
     override func setUp() {
@@ -23,135 +21,148 @@ class OpenVPNConfigurationTests: XCTestCase {
         super.tearDown()
     }
     
-    func testGetSetProfile() {
-        guard let originalProfile = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
-        
+    func testEvaluateEmptyConfig() {
         let configuration = OpenVPNConfiguration()
         
-        guard configuration.fileContent == nil else {
-            XCTFail("Empty file content should return nil")
-            return
+        do {
+            let _ = try OpenVPNAdapter.evaluate(configuration: configuration)
+            XCTFail("We shouldn't be here, evaluation should fail.")
+        } catch {
+            guard let fatal = (error as NSError).userInfo[OpenVPNAdapterErrorFatalKey] as? Bool else {
+                XCTFail("Error should contain OpenVPNAdapterErrorFatalKey.")
+                return
+            }
+            
+            XCTAssert(fatal)
         }
-        
-        configuration.fileContent = originalProfile
-        
-        guard let returnedProfile = configuration.fileContent else {
-            XCTFail("Returned file content should not be nil")
-            return
-        }
-        
-        XCTAssert(originalProfile.elementsEqual(returnedProfile))
-        
-        configuration.fileContent = nil
-        XCTAssert(configuration.fileContent == nil, "Empty file content should return nil")
-        
-        configuration.fileContent = Data()
-        XCTAssert(configuration.fileContent == nil, "Empty file content should return nil")
     }
     
-    func testGetSetSettings() {
-        let originalSettings = [
+    func testEvaluateManuallyPopulatedConfig() {
+        let configuration = OpenVPNConfiguration()
+        
+        guard let caURL = Bundle.current.url(forResource: "ca", withExtension: "crt"),
+            let caContent = try? String(contentsOf: caURL, encoding: .utf8)
+        else {
+            fatalError("Failed to get ca.crt, check its existance in the Resources folder.")
+        }
+        
+        guard let certURL = Bundle.current.url(forResource: "client", withExtension: "crt"),
+            let certContent = try? String(contentsOf: certURL, encoding: .utf8)
+        else {
+            fatalError("Failed to get client.crt, check its existance in the Resources folder.")
+        }
+        
+        guard let keyURL = Bundle.current.url(forResource: "client", withExtension: "key"),
+            let keyContent = try? String(contentsOf: keyURL, encoding: .utf8)
+        else {
+            fatalError("Failed to get client.key, check its existance in the Resources folder.")
+        }
+        
+        configuration.settings = [
             "client": "",
             "dev": "tun",
-            "remote-cert-tls" : "server"
+            "proto": "udp",
+            "remote": "my-server.com 1194",
+            "resolv-retry": "infinite",
+            "nobind": "",
+            "auth-user-pass": "",
+            "cipher": "AES-256-CBC",
+            "comp-lzo": "",
+            "verb": "3",
+            "ca": caContent.replacingOccurrences(of: "\n", with: "\\n"),
+            "cert": certContent.replacingOccurrences(of: "\n", with: "\\n"),
+            "key": keyContent.replacingOccurrences(of: "\n", with: "\\n")
         ]
         
+        let evaluation: OpenVPNConfigurationEvaluation
+        do {
+            evaluation = try OpenVPNAdapter.evaluate(configuration: configuration)
+        } catch {
+            XCTFail("Evaluation failed due to error: \(error)")
+            return
+        }
+        
+        XCTAssert(evaluation.remoteHost == "my-server.com")
+        XCTAssert(evaluation.remotePort == 1194)
+        
+        XCTAssert(
+            !evaluation.autologin, "Username and password are required so autologin should be false."
+        )
+        
+        XCTAssert(
+            !evaluation.externalPki,
+            "Key and cert were provided to the configuration so it shouldn't be External PKI profile."
+        )
+    }
+    
+    func testEvaluateConfigFromFile() {
         let configuration = OpenVPNConfiguration()
         
-        guard configuration.settings == nil else {
-            XCTFail("Empty settings should return nil")
+        guard let configURL = Bundle.current.url(forResource: "client", withExtension: "ovpn"),
+            let configContent = try? Data(contentsOf: configURL)
+        else {
+            fatalError("Failed to get client.ovpn, check its existance in the Resources folder.")
+        }
+        
+        configuration.fileContent = configContent
+        
+        let evaluation: OpenVPNConfigurationEvaluation
+        do {
+            evaluation = try OpenVPNAdapter.evaluate(configuration: configuration)
+        } catch {
+            XCTFail("Evaluation failed due to error: \(error)")
             return
         }
         
-        configuration.settings = originalSettings
+        XCTAssert(evaluation.remoteHost == "my-server.com")
+        XCTAssert(evaluation.remotePort == 1194)
         
-        guard let returnedSettings = configuration.settings else {
-            XCTFail("Returned settings should not be nil")
-            return
-        }
+        XCTAssert(
+            !evaluation.autologin, "Username and password required so autologin should be false."
+        )
         
-        let equals = originalSettings.allSatisfy { (key, value) in
-            returnedSettings[key] == value
-        }
-        
-        XCTAssert(equals)
-        
-        configuration.settings = [:]
-        XCTAssert(configuration.settings == nil, "Empty settings should return nil")
-        
-        configuration.settings = nil
-        XCTAssert(configuration.settings == nil, "Empty settings should return nil")
+        XCTAssert(
+            evaluation.externalPki,
+            "Key and cert were not provided to the configuration so it should be External PKI profile."
+        )
     }
     
-    func testGetSetRemote() {
-        guard let originalProfile = VPNProfile.configuration.data(using: .utf8) else { fatalError() }
-        
-        let originalServer = "192.168.1.200"
-        let originalPort: UInt = 12000
-        
-        let configuration = OpenVPNConfiguration()        
-        configuration.fileContent = originalProfile
-        
-        XCTAssertNil(configuration.server)
-        XCTAssertEqual(configuration.port, 0)
-        
-        configuration.server = originalServer
-        configuration.port = originalPort
-        
-        XCTAssertNotNil(configuration.server)
-        XCTAssertEqual(configuration.server, originalServer)
-        XCTAssertEqual(configuration.port, originalPort)
-    }
-    
-    func testGetSetProto() {
-        let originalOption: OpenVPNTransportProtocol = .UDP
-        
+    func testSetConfigurationProperties() {
         let configuration = OpenVPNConfiguration()
         
-        guard configuration.proto == .default else {
-            XCTFail("proto option should return default value")
-            return
+        guard let configURL = Bundle.current.url(forResource: "client", withExtension: "ovpn"),
+            let configContent = try? Data(contentsOf: configURL)
+        else {
+            fatalError("Failed to get client.ovpn, check its existance in the Resources folder.")
         }
         
-        configuration.proto = originalOption
-        guard configuration.proto == originalOption else {
-            XCTFail("proto option should be equal to original value (enabled)")
-            return
-        }
+        configuration.fileContent = configContent
+        configuration.settings = [
+            "persist-key": "",
+            "persist-tun": ""
+        ]
+        
+        configuration.server = "another-server.com"
+        configuration.port = 5000
+        
+        XCTAssert(configuration.proto == .default)
+        
+        configuration.proto = .adaptive
+        configuration.tlsCertProfile = .preferred
+        
+        XCTAssert(configuration.fileContent?.elementsEqual(configContent) == true)
+        XCTAssert(configuration.settings?["persist-key"] != nil)
+        XCTAssert(configuration.settings?["persist-tun"] != nil)
+        
+        XCTAssert(configuration.server == "another-server.com")
+        XCTAssert(configuration.port == 5000)
+        
+        XCTAssert(configuration.proto == .adaptive)
+        XCTAssert(configuration.tlsCertProfile == .preferred)
+        
+        XCTAssert(configuration.ipv6 == .default)
+        
+        configuration.ipv6 = .enabled
+        XCTAssert(configuration.ipv6 == .enabled)
     }
-    
-    func testGetSetIPv6() {  
-        let originalOption: OpenVPNIPv6Preference = .enabled
-        
-        let configuration = OpenVPNConfiguration()
-        
-        guard configuration.ipv6 == .default else {
-            XCTFail("IPv6 option should return default value")
-            return
-        }
-        
-        configuration.ipv6 = originalOption
-        guard configuration.ipv6 == originalOption else {
-            XCTFail("IPv6 option should be equal to original value (enabled)")
-            return
-        }
-    }
-    
-    func testGetSetTLSCertProfile() {
-        let originalOption: OpenVPNTLSCertProfile = .preferred
-        
-        let configuration = OpenVPNConfiguration()
-        
-        guard configuration.tlsCertProfile == .default else {
-            XCTFail("TLS Cert Profile option should return default value")
-            return
-        }
-        
-        configuration.tlsCertProfile = originalOption
-        guard configuration.tlsCertProfile == originalOption else {
-            XCTFail("TLS Cert Profile option should be equal to original value (preferred)")
-            return
-        }
-    }
-    
 }

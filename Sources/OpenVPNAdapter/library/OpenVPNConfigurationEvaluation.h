@@ -1,5 +1,5 @@
 //
-//  OpenVPNProperties.h
+//  OpenVPNConfigurationEvaluation.h
 //  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 26.04.17.
@@ -11,7 +11,7 @@
 typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol);
 @class OpenVPNServerEntry;
 
-@interface OpenVPNProperties : NSObject
+@interface OpenVPNConfigurationEvaluation : NSObject
 
 /**
  This username must be used with profile
@@ -32,6 +32,11 @@ typedef NS_ENUM(NSInteger, OpenVPNTransportProtocol);
  If YES no creds required, otherwise username/password required
  */
 @property (readonly, nonatomic) BOOL autologin;
+
+/**
+ If YES this is an External PKI profile (no cert or key directives)
+ */
+@property (readonly, nonatomic) BOOL externalPki;
 
 /**
  Static challenge, may be empty, ignored if autologin

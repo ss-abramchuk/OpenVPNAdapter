@@ -1,13 +1,13 @@
 //
-//  OpenVPNProperties.m
+//  OpenVPNConfigurationEvaluation.m
 //  OpenVPN Adapter
 //
 //  Created by Sergey Abramchuk on 26.04.17.
 //
 //
 
-#import "OpenVPNProperties.h"
-#import "OpenVPNProperties+Internal.h"
+#import "OpenVPNConfigurationEvaluation.h"
+#import "OpenVPNConfigurationEvaluation+Internal.h"
 
 #include <openvpn/common/number.hpp>
 
@@ -16,7 +16,7 @@
 
 using namespace openvpn;
 
-@implementation OpenVPNProperties
+@implementation OpenVPNConfigurationEvaluation
 
 - (instancetype)initWithEvalConfig:(ClientAPI::EvalConfig)eval {
     if (self = [super init]) {
@@ -26,6 +26,7 @@ using namespace openvpn;
         _friendlyName = !eval.friendlyName.empty() ? [NSString stringWithUTF8String:eval.friendlyName.c_str()] : nil;
         
         _autologin = eval.autologin;
+        _externalPki = eval.externalPki;
         
         _staticChallenge = !eval.staticChallenge.empty() ? [NSString stringWithUTF8String:eval.staticChallenge.c_str()] : nil;
         _staticChallengeEcho = eval.staticChallengeEcho;
