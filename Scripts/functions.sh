@@ -9,9 +9,9 @@ function apply_patches()
 
     cd /tmp
 
-    for file in ${CURRENT_DIR}/${DEP_PATCH_DIR}/*.patch; do
-        echo Applying patch: $file
-        git apply --directory ${CURRENT_DIR}/${DEP_SRC_DIR} --unsafe-path $file
+    for FILE in ${CURRENT_DIR}/${DEP_PATCH_DIR}/*.patch; do
+        echo Applying patch: $FILE
+        git apply --directory ${CURRENT_DIR}/${DEP_SRC_DIR} --unsafe-path $FILE
     done
 
     popd
@@ -30,9 +30,9 @@ function reverse_patches()
 
     REVERSED_PATCHES=$(ls -1 ${CURRENT_DIR}/${DEP_PATCH_DIR}/*.patch | sort -r)
 
-    for file in $REVERSED_PATCHES; do
-        echo Reverse patch: $file
-        git apply --reverse --directory ${CURRENT_DIR}/${DEP_SRC_DIR} --unsafe-path $file
+    for FILE in $REVERSED_PATCHES; do
+        echo Reverse patch: $FILE
+        git apply --reverse --directory ${CURRENT_DIR}/${DEP_SRC_DIR} --unsafe-path $FILE
     done
 
     popd
