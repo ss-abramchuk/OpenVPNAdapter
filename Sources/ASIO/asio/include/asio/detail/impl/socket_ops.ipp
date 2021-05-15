@@ -3340,23 +3340,6 @@ asio::error_code getaddrinfo(const char* host,
 #elif !defined(ASIO_HAS_GETADDRINFO)
   int error = getaddrinfo_emulation(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
-#elif defined(ASIO_HAS_GETADDRINFO) && defined(ASIO_APPLE_NAT64)
-  // For NAT64 compatibility, Apple recommends to set AI_DEFAULT flags
-  addrinfo_type new_hints = hints;
-  new_hints.ai_flags |= AI_DEFAULT;
-  int error = ::getaddrinfo(host, service, &new_hints, result);
-
-  // iOS bug workaround: sometimes iOS getaddrinfo() returns a non-zero scope ID
-  // for non-link-local addresses.  Workaround by forcing scope ID to 0 for
-  // non-link-local addresses.
-  if (!error && (*result)->ai_family == AF_INET6)
-  {
-    sockaddr_in6* a6 = (sockaddr_in6*)(*result)->ai_addr;
-    if (a6->sin6_scope_id && !(IN6_IS_ADDR_LINKLOCAL(&a6->sin6_addr) || IN6_IS_ADDR_MC_NODELOCAL(&a6->sin6_addr) || IN6_IS_ADDR_MC_LINKLOCAL(&a6->sin6_addr)))
-      a6->sin6_scope_id = 0;
-  }
-
-  return ec = translate_addrinfo_error(error);
 #else
   int error = ::getaddrinfo(host, service, &hints, result);
 #if defined(__MACH__) && defined(__APPLE__)

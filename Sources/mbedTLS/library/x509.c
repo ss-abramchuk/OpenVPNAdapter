@@ -564,20 +564,13 @@ static int x509_parse_time( unsigned char **p, size_t len, size_t yearlen,
     /*
      * Parse seconds if present
      */
-    if ( len >= 2 && **p >= '0' && **p <= '9' )
+    if ( len >= 2 )
     {
         CHECK( x509_parse_int( p, 2, &tm->sec ) );
         len -= 2;
     }
     else
-    {
-#if defined(MBEDTLS_RELAXED_X509_DATE)
-	/* if relaxed mode, allow seconds to be absent */
-	tm->sec = 0;
-#else
         return ( MBEDTLS_ERR_X509_INVALID_DATE );
-#endif
-    }
 
     /*
      * Parse trailing 'Z' if present
@@ -587,15 +580,6 @@ static int x509_parse_time( unsigned char **p, size_t len, size_t yearlen,
         (*p)++;
         len--;
     }
-#if defined(MBEDTLS_RELAXED_X509_DATE)
-    else if ( len == 5 && **p == '+' )
-    {
-	int tz; /* throwaway timezone */
-	(*p)++;
-	CHECK( x509_parse_int( p, 4, &tz ) );
-	return 0;
-    }
-#endif
 
     /*
      * We should have parsed all characters at this point

@@ -4668,9 +4668,6 @@ int mbedtls_ssl_parse_certificate( mbedtls_ssl_context *ssl )
 
     mbedtls_x509_crt_init( ssl->session_negotiate->peer_cert );
 
-    ssl->session_negotiate->peer_cert->allowed_unsupported_critical_exts =
-        ssl->conf->allowed_unsupported_critical_exts;
-
     i += 3;
 
     while( i < ssl->in_hslen )
@@ -6628,11 +6625,6 @@ void mbedtls_ssl_conf_renegotiation_period( mbedtls_ssl_config *conf,
     memcpy( conf->renego_period, period, 8 );
 }
 #endif /* MBEDTLS_SSL_RENEGOTIATION */
-
-void mbedtls_ssl_conf_allow_unsupported_critical_exts( mbedtls_ssl_config *conf, uint32_t exts )
-{
-    conf->allowed_unsupported_critical_exts = exts;
-}
 
 #if defined(MBEDTLS_SSL_SESSION_TICKETS)
 #if defined(MBEDTLS_SSL_CLI_C)
