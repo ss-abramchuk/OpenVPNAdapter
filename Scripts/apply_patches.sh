@@ -2,13 +2,13 @@
 
 set -e
 
-. functions.sh
+. Scripts/functions.sh
 
-ASIO_SRC_DIR="../Sources/ASIO"
-ASIO_PATCH_DIR="../Sources/OpenVPN3/deps/asio/patches"
+ASIO_SRC_DIR="Sources/ASIO"
+ASIO_PATCH_DIR="Sources/OpenVPN3/deps/asio/patches"
 
-MBEDTLS_SRC_DIR="../Sources/mbedTLS"
-MBEDTLS_PATCH_DIR="../Sources/OpenVPN3/deps/mbedtls/patches"
+MBEDTLS_SRC_DIR="Sources/mbedTLS"
+MBEDTLS_PATCH_DIR="Sources/OpenVPN3/deps/mbedtls/patches"
 
 if [ "$1" = "--reverse" ]; then
     reverse_patches ${ASIO_SRC_DIR} ${ASIO_PATCH_DIR}
