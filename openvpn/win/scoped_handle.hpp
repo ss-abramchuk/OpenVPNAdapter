@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -87,17 +87,10 @@ namespace openvpn {
       {
 	if (defined())
 	  {
-	    __try
-	      {
-		const BOOL ret = ::CloseHandle(handle);
-		//OPENVPN_LOG("**** SH CLOSE hand=" << handle << " ret=" << ret);
-		handle = nullptr;
-		return ret != 0;
-	      }
-	    __except (EXCEPTION_EXECUTE_HANDLER)
-	      {
-		return false;
-	      }
+	    const BOOL ret = ::CloseHandle(handle);
+	    //OPENVPN_LOG("**** SH CLOSE hand=" << handle << " ret=" << ret);
+	    handle = nullptr;
+	    return ret != 0;
 	  }
 	else
 	  return true;

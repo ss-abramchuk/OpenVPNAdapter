@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2019 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -48,7 +48,7 @@ namespace unittests
 	argv.emplace_back("mode");
 	argv.emplace_back("tun");
 	argv.emplace_back(std::move(name));
-	system_cmd(argv[0], argv, nullptr, pipe, 0);
+	system_cmd(argv[0], argv, nullptr, pipe, 0, nullptr);
       }
 
       void remove_device(std::string name)
@@ -61,7 +61,7 @@ namespace unittests
 	argv.emplace_back("mode");
 	argv.emplace_back("tun");
 	argv.emplace_back(std::move(name));
-	system_cmd(argv[0], argv, nullptr, pipe, 0);
+	system_cmd(argv[0], argv, nullptr, pipe, 0, nullptr);
       }
 
     protected:
@@ -90,7 +90,7 @@ namespace unittests
 	add_device(dev2);
       }
 
-      virtual void TearDown()
+      void TearDown() override
       {
 	remove_device(dev);
 	remove_device(dev2);
@@ -101,7 +101,7 @@ namespace unittests
       {
 	// runs command, reads output and calls a callback
 	RedirectPipe::InOut pipe;
-	ASSERT_EQ(system_cmd(argv[0], argv, nullptr, pipe, 0), 0) << "failed to run command " << argv[0];
+	ASSERT_EQ(system_cmd(argv[0], argv, nullptr, pipe, 0, nullptr), 0) << "failed to run command " << argv[0];
 
 	SplitLines sl(pipe.out);
 	bool called = false;

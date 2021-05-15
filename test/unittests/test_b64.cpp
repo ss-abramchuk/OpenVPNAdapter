@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2019 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -47,7 +47,7 @@ std::string ssllib_b64enc(const char* text, size_t textlen)
 
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL); //Ignore newlines - write everything in one line
     BIO_write(bio, text, (int)textlen);
-    BIO_flush(bio);
+    EXPECT_TRUE(BIO_flush(bio) == 1);
     const char* encdata;
     long len = BIO_get_mem_data(bio, &encdata);
 
@@ -117,22 +117,23 @@ TEST(Base64, tooshortdest)
     EXPECT_THROW(b64.decode(buf, 2, enc), Base64::base64_decode_out_of_bound_error);
 }
 
-void b64_test_bad(const Base64& b64, const std::string& text)
+void b64_test_bad_decode(const Base64& b64, const std::string& text)
 {
     std::string dec;
     EXPECT_THROW(b64.decode(dec, text), Base64::base64_decode_error);
 }
 
-TEST(Base64, badencode)
+TEST(Base64, baddecode)
 {
     const Base64 b64;
 
-    b64_test_bad(b64, "plausible deniability");
-    b64_test_bad(b64, "plausible != deniability");
-    b64_test_bad(b64, "x");
-    b64_test_bad(b64, "====");
-    b64_test_bad(b64, "xxxx=");
-    b64_test_bad(b64, "01*=");
+    b64_test_bad_decode(b64, "!@#$%^&*()_");
+    b64_test_bad_decode(b64, "plausible deniability");
+    b64_test_bad_decode(b64, "plausible != deniability");
+    b64_test_bad_decode(b64, "x");
+    b64_test_bad_decode(b64, "====");
+    b64_test_bad_decode(b64, "xxxx=");
+    b64_test_bad_decode(b64, "01*=");
 }
 
 TEST(Base64, encode)
@@ -171,7 +172,7 @@ TEST(Base64, binary_data)
     for(unsigned int i=0;i<20;i++)
     {
         char* data = new char[i];
-        for (int j=0;j<i;j++)
+        for (unsigned int j=0;j<i;j++)
 	{
             data[j]=(char)(std::rand() & 0xff);
 	}

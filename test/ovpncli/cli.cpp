@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -53,6 +53,11 @@
 // don't export core symbols
 #define OPENVPN_CORE_API_VISIBILITY_HIDDEN
 
+// use SITNL on Linux by default
+#if defined(OPENVPN_PLATFORM_LINUX) && !defined(OPENVPN_USE_IPROUTE2) && !defined(OPENVPN_USE_SITNL)
+#define OPENVPN_USE_SITNL
+#endif
+
 // should be included before other openvpn includes,
 // with the exception of openvpn/log includes
 #include <client/ovpncli.cpp>
@@ -87,17 +92,13 @@
 
 #if defined(OPENVPN_PLATFORM_LINUX)
 
-// use SITNL by default
-#ifndef OPENVPN_USE_IPROUTE2
-#define OPENVPN_USE_SITNL
-#endif
-
 #include <openvpn/tun/linux/client/tuncli.hpp>
 
 // we use a static polymorphism and define a
 // platform-specific TunSetup class, responsible
 // for setting up tun device
 #define TUN_CLASS_SETUP TunLinuxSetup::Setup<TUN_LINUX>
+#include <openvpn/tun/linux/client/tuncli.hpp>
 #elif defined(OPENVPN_PLATFORM_MAC)
 #include <openvpn/tun/mac/client/tuncli.hpp>
 #define TUN_CLASS_SETUP TunMac::Setup
@@ -258,6 +259,11 @@ public:
   }
 #endif
 
+  void set_write_url_fn(const std::string& fn)
+  {
+    write_url_fn = fn;
+  }
+
 private:
   virtual void event(const ClientAPI::Event& ev) override
   {
@@ -287,6 +293,10 @@ private:
       {
 	// launch URL
 	const std::string url_str = ev.info.substr(9);
+
+	if (!write_url_fn.empty())
+	  write_string(write_url_fn, url_str + '\n');
+
 #ifdef OPENVPN_PLATFORM_MAC
 	std::thread thr([url_str]() {
 	    CFURLRef url = CFURLCreateWithBytes(
@@ -443,7 +453,8 @@ private:
 				  argv,
 				  nullptr,
 				  pio,
-				  RedirectPipe::IGNORE_ERR);
+				  RedirectPipe::IGNORE_ERR,
+				  nullptr);
     if (!status)
       {
 	const std::string out = string::first_line(pio.out);
@@ -472,6 +483,8 @@ private:
 #ifdef OPENVPN_REMOTE_OVERRIDE
   std::string remote_override_cmd;
 #endif
+
+  std::string write_url_fn;
 };
 
 static Client *the_client = nullptr; // GLOBAL
@@ -710,6 +723,8 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
     { "auto-sess",      no_argument,        nullptr,      'a' },
     { "auth-retry",     no_argument,        nullptr,      'Y' },
     { "tcprof-override", required_argument, nullptr,      'X' },
+    { "write-url",      required_argument,  nullptr,      'Z' },
+    { "sso-methods",	required_argument,   nullptr,	  'S' },
     { "ssl-debug",      required_argument,  nullptr,       1  },
     { "epki-cert",      required_argument,  nullptr,       2  },
     { "epki-ca",        required_argument,  nullptr,       3  },
@@ -747,6 +762,7 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
 	std::string proxyPassword;
 	std::string peer_info;
 	std::string gremlin;
+	std::string ssoMethods;
 	bool eval = false;
 	bool self_test = false;
 	bool cachePassword = false;
@@ -770,10 +786,11 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
 #ifdef OPENVPN_REMOTE_OVERRIDE
 	std::string remote_override_cmd;
 #endif
+	std::string write_url_fn;
 
 	int ch;
 	optind = 1;
-	while ((ch = getopt_long(argc, argv, "BAdeTCxfgjwmvaYu:p:r:D:P:6:s:t:c:z:M:h:q:U:W:I:G:k:X:R:", longopts, nullptr)) != -1)
+	while ((ch = getopt_long(argc, argv, "BAdeTCxfgjwmvaYu:p:r:D:P:6:s:S:t:c:z:M:h:q:U:W:I:G:k:X:R:Z:", longopts, nullptr)) != -1)
 	  {
 	    switch (ch)
 	      {
@@ -827,6 +844,9 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
 	      case 'R':
 		port = optarg;
 		break;
+	      case 'S':
+	        ssoMethods = optarg;
+	        break;
 	      case 't':
 		timeout = ::atoi(optarg);
 		break;
@@ -909,6 +929,9 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
 	      case 'G':
 		gremlin = optarg;
 		break;
+	      case 'Z':
+		write_url_fn = optarg;
+		break;
 	      default:
 		throw usage();
 	      }
@@ -983,7 +1006,7 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
 	      config.gremlinConfig = gremlin;
 	      config.info = true;
 	      config.wintun = wintun;
-	      config.ssoMethods = "openurl";
+	      config.ssoMethods =ssoMethods;
 #if defined(OPENVPN_OVPNCLI_SINGLE_THREAD)
 	      config.clockTickMS = 250;
 #endif
@@ -991,7 +1014,7 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
 	      if (!epki_cert_fn.empty())
 		config.externalPkiAlias = "epki"; // dummy string
 
-	      PeerInfo::Set::parse_csv(peer_info, config.peerInfo);
+	      PeerInfo::Set::parse_flexible(peer_info, config.peerInfo);
 
 	      // allow -s server override to reference a friendly name
 	      // in the config.
@@ -1090,6 +1113,8 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
                   client.set_remote_override_cmd(remote_override_cmd);
 #endif
 
+		  client.set_write_url_fn(write_url_fn);
+
 		  std::cout << "CONNECTING..." << std::endl;
 
 		  // start the client thread
@@ -1162,11 +1187,13 @@ int openvpn_client(int argc, char *argv[], const std::string* profile_content)
       std::cout << "--auth-retry, -Y      : retry connection on auth failure" << std::endl;
       std::cout << "--persist-tun, -j     : keep TUN interface open across reconnects" << std::endl;
       std::cout << "--wintun, -w          : use WinTun instead of TAP-Windows6 on Windows" << std::endl;
-      std::cout << "--peer-info, -I       : peer info key/value list in the form K1=V1,K2=V2,..." << std::endl;
+      std::cout << "--peer-info, -I       : peer info key/value list in the form K1=V1,K2=V2,... or @kv.json" << std::endl;
       std::cout << "--gremlin, -G         : gremlin info (send_delay_ms, recv_delay_ms, send_drop_prob, recv_drop_prob)" << std::endl;
       std::cout << "--epki-ca             : simulate external PKI cert supporting intermediate/root certs" << std::endl;
       std::cout << "--epki-cert           : simulate external PKI cert" << std::endl;
       std::cout << "--epki-key            : simulate external PKI private key" << std::endl;
+      std::cout << "--sso-methods         : auth pending methods to announce via IV_SSO" << std::endl;
+      std::cout << "--write-url, -Z       : write INFO URL to file" << std::endl;
       ret = 2;
     }
   return ret;
@@ -1187,7 +1214,6 @@ int main(int argc, char *argv[])
 #endif
 
   try {
-    Client::init_process();
     ret = openvpn_client(argc, argv, nullptr);
   }
   catch (const std::exception& e)
@@ -1195,7 +1221,6 @@ int main(int argc, char *argv[])
       std::cout << "Main thread exception: " << e.what() << std::endl;
       ret = 1;
     }  
-  Client::uninit_process();
   return ret;
 }
 

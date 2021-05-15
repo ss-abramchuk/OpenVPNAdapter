@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -21,8 +21,7 @@
 
 // API for random number implementations.
 
-#ifndef OPENVPN_MBEDTLS_UTIL_RANDAPI_H
-#define OPENVPN_MBEDTLS_UTIL_RANDAPI_H
+#pragma once
 
 #include <string>
 #include <cstdint>
@@ -148,5 +147,3 @@ namespace openvpn {
   };
 
 }
-
-#endif
