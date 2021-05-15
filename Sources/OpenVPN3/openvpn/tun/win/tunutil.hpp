@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -36,10 +36,15 @@
 #include <tlhelp32.h> // for impersonating as LocalSystem
 
 
-#include <SetupAPI.h>
+#include <setupapi.h>
 #include <devguid.h>
 #include <cfgmgr32.h>
+
+#ifdef __MINGW32__
+#include <ddk/ndisguid.h>
+#else
 #include <ndisguid.h>
+#endif
 
 #include <string>
 #include <vector>
@@ -80,6 +85,9 @@ namespace openvpn {
 	// generally defined on cl command line
 	const char COMPONENT_ID[] = OPENVPN_STRINGIZE(TAP_WIN_COMPONENT_ID); // CONST GLOBAL
 	const char WINTUN_COMPONENT_ID[] = "wintun"; // CONST GLOBAL
+
+	const char ROOT_COMPONENT_ID[] = "root\\" OPENVPN_STRINGIZE(TAP_WIN_COMPONENT_ID);
+	const char ROOT_WINTUN_COMPONENT_ID[] = "root\\wintun"; 
       }
 
       using TapGuidLuid = std::pair<std::string, DWORD>;
@@ -150,7 +158,8 @@ namespace openvpn {
 	    if (status != ERROR_SUCCESS || data_type != REG_SZ)
 	      continue;
 	    strbuf[len] = '\0';
-	    if (std::strcmp(strbuf, wintun ? WINTUN_COMPONENT_ID : COMPONENT_ID))
+	    if (string::strcasecmp(strbuf, wintun ? WINTUN_COMPONENT_ID : COMPONENT_ID) &&
+	      string::strcasecmp(strbuf, wintun ? ROOT_WINTUN_COMPONENT_ID : ROOT_COMPONENT_ID))
 	      continue;
 
 	    TapGuidLuid tgl;
@@ -544,12 +553,10 @@ namespace openvpn {
       }
 
       // set TAP adapter to topology net30
-      inline void tap_configure_topology_net30(HANDLE th, const IP::Addr& local_addr, const unsigned int prefix_len)
+      inline void tap_configure_topology_net30(HANDLE th, const IP::Addr& local_addr, const IP::Addr& remote_addr)
       {
 	const IPv4::Addr local = local_addr.to_ipv4();
-	const IPv4::Addr netmask = IPv4::Addr::netmask_from_prefix_len(prefix_len);
-	const IPv4::Addr network = local & netmask;
-	const IPv4::Addr remote = network + 1;
+	const IPv4::Addr remote = remote_addr.to_ipv4();
 
 	std::uint32_t ep[2];
 	ep[0] = htonl(local.to_uint32());
@@ -607,7 +614,7 @@ namespace openvpn {
 	{
 	  if (list)
 	    {
-	      for (unsigned int i = 0; i < list->NumAdapters; ++i)
+	      for (LONG i = 0; i < list->NumAdapters; ++i)
 		{
 		  IP_ADAPTER_INDEX_MAP* inter = &list->Adapter[i];
 		  if (index == inter->Index)
@@ -653,7 +660,7 @@ namespace openvpn {
       inline void flush_arp(const DWORD adapter_index,
 			    std::ostream& os)
       {
-	const DWORD status = ::FlushIpNetTable(adapter_index);
+	const DWORD status = ::FlushIpNetTable2(AF_INET, adapter_index);
 	if (status == NO_ERROR)
 	  os << "TAP: ARP flush succeeded" << std::endl;
 	else
@@ -1065,12 +1072,13 @@ namespace openvpn {
       }
 #endif
 
-      // Get the current default gateway
-      class DefaultGateway
+      class BestGateway
       {
       public:
-	DefaultGateway()
-	  : index(DWORD(-1))
+	/**
+	 * Construct object which represents default gateway
+	 */
+	BestGateway()
 	{
 	  std::unique_ptr<const MIB_IPFORWARDTABLE> rt(windows_routing_table());
 	  if (rt)
@@ -1091,6 +1099,85 @@ namespace openvpn {
 	    }
 	}
 
+	/**
+	 * Construct object which represents best gateway to given
+	 * destination, excluding gateway on VPN interface. Gateway is chosen
+	 * first by the longest prefix match and then by metric. If destination
+	 * is in local network, no gateway is selected and "local_route" flag is set.
+	 *
+	 * @param dest destination IPv4 address
+	 * @param vpn_interface_index index of VPN interface which is excluded from gateway selection
+	 */
+	BestGateway(const std::string& dest, DWORD vpn_interface_index)
+	{
+	  DWORD dest_addr;
+	  auto res = inet_pton(AF_INET, dest.c_str(), &dest_addr);
+	  switch (res)
+	    {
+	    case -1:
+	      OPENVPN_THROW(tun_win_util, "GetBestGateway: error converting IPv4 address " << dest << " to int: " << ::WSAGetLastError());
+
+	    case 0:
+	      OPENVPN_THROW(tun_win_util, "GetBestGateway: " << dest << " is not a valid IPv4 address");
+	    }
+
+	  {
+	    MIB_IPFORWARDROW row;
+	    DWORD res2 = GetBestRoute(dest_addr, 0, &row);
+	    if (res2 != NO_ERROR)
+	      {
+		OPENVPN_THROW(tun_win_util, "GetBestGateway: error retrieving the best route for " << dest << ": " << res2);
+	      }
+
+	    if (row.dwForwardType == MIB_IPROUTE_TYPE_DIRECT)
+	      {
+		local_route_ = true;
+		return;
+	      }
+	  }
+
+	  std::unique_ptr<const MIB_IPFORWARDTABLE> rt(windows_routing_table());
+	  if (rt)
+	    {
+	      const MIB_IPFORWARDROW* gw = nullptr;
+	      for (size_t i = 0; i < rt->dwNumEntries; ++i)
+		{
+		  const MIB_IPFORWARDROW* row = &rt->table[i];
+		  // does route match?
+		  if ((dest_addr & row->dwForwardMask) == (row->dwForwardDest & row->dwForwardMask))
+		    {
+		      // skip gateway on VPN interface
+		      if ((vpn_interface_index != DWORD(-1)) && (row->dwForwardIfIndex == vpn_interface_index))
+			{
+			  OPENVPN_LOG("GetBestGateway: skip gateway " <<
+				      IPv4::Addr::from_uint32(ntohl(row->dwForwardNextHop)).to_string() <<
+				      " on VPN interface " << vpn_interface_index);
+			  continue;
+			}
+
+		      if (!gw)
+			{
+			  gw = row;
+			  continue;
+			}
+
+		      auto cur_prefix = IPv4::Addr::prefix_len_32(ntohl(gw->dwForwardMask));
+		      auto new_prefix = IPv4::Addr::prefix_len_32(ntohl(row->dwForwardMask));
+		      auto new_metric_is_higher = row->dwForwardMetric1 > gw->dwForwardMetric1;
+
+		      if ((new_prefix > cur_prefix) || ((new_prefix == cur_prefix) && (new_metric_is_higher)))
+			gw = row;
+		    }
+		}
+	      if (gw)
+		{
+		  index = gw->dwForwardIfIndex;
+		  addr = IPv4::Addr::from_uint32(ntohl(gw->dwForwardNextHop)).to_string();
+		  OPENVPN_LOG("GetBestGateway: selected gateway " << addr << " on adapter " << index << " for destination " << dest);
+		}
+	    }
+	}
+
 	bool defined() const
 	{
 	  return index != DWORD(-1) && !addr.empty();
@@ -1106,9 +1193,19 @@ namespace openvpn {
 	  return addr;
 	}
 
+	/**
+	 * Return true if destination, provided to constructor,
+	 * doesn't require gateway, false otherwise.
+	 */
+	bool local_route() const
+	{
+	  return local_route_;
+	}
+
       private:
-	DWORD index;
+	DWORD index = -1;
 	std::string addr;
+	bool local_route_ = false;
       };
 
       // An action to delete all routes on an interface
@@ -1216,6 +1313,129 @@ namespace openvpn {
 	}
       };
 
+      namespace TunNETSH
+      {
+	class AddRoute4Cmd : public Action
+	{
+	public:
+	  typedef RCPtr<AddRoute4Cmd> Ptr;
+
+	  AddRoute4Cmd(const std::string& route_address,
+		       int prefix_length,
+		       const TunWin::Util::TapNameGuidPair& tap,
+		       const std::string& gw_address,
+		       int metric,
+		       bool add)
+	  {
+	    std::ostringstream os;
+	    os << "netsh interface ip ";
+	    if (add)
+	      os << "add ";
+	    else
+	      os << "delete ";
+	    os << "route " << route_address << "/" << std::to_string(prefix_length) << " " << tap.index_or_name() << " " << gw_address << " ";
+	    if (add && metric >= 0)
+	      os << "metric=" << std::to_string(metric) << " ";
+	    os << "store=active";
+	    cmd.reset(new WinCmd(os.str()));
+	  };
+
+	  void execute(std::ostream& os) override
+	  {
+	    cmd->execute(os);
+	  }
+
+	  std::string to_string() const override
+	  {
+	    return cmd->to_string();
+	  }
+
+	private:
+	  WinCmd::Ptr cmd;
+	};
+      }
+
+      namespace TunIPHELPER
+      {
+	static SOCKADDR_INET sockaddr_inet(short family, const std::string& addr)
+	{
+	  SOCKADDR_INET sa;
+	  ZeroMemory(&sa, sizeof(sa));
+	  sa.si_family = family;
+	  inet_pton(family, addr.c_str(), family == AF_INET ? &(sa.Ipv4.sin_addr) : (PVOID) & (sa.Ipv6.sin6_addr));
+	  return sa;
+	}
+
+	static DWORD InterfaceLuid(const std::string& iface_name, PNET_LUID luid)
+	{
+	  auto wide_name = wstring::from_utf8(iface_name);
+	  return ConvertInterfaceAliasToLuid(wide_name.c_str(), luid);
+	}
+
+	class AddRoute4Cmd : public Action
+	{
+	public:
+	  typedef RCPtr<AddRoute4Cmd> Ptr;
+
+	  AddRoute4Cmd(const std::string& route_address,
+		       int prefix_length,
+		       const TunWin::Util::TapNameGuidPair& tap,
+		       const std::string& gw_address,
+		       int metric,
+		       bool add) : add(add)
+	  {
+	    os_ << "IPHelper: ";
+	    if (add)
+	      os_ << "add ";
+	    else
+	      os_ << "delete ";
+	    os_ << "route " << route_address << "/" << std::to_string(prefix_length) << " " << tap.index_or_name() << " " << gw_address << " ";
+	    os_ << "metric=" << std::to_string(metric);
+
+	    ZeroMemory(&fwd_row, sizeof(fwd_row));
+	    fwd_row.ValidLifetime = 0xffffffff;
+	    fwd_row.PreferredLifetime = 0xffffffff;
+	    fwd_row.Protocol = (NL_ROUTE_PROTOCOL)MIB_IPPROTO_NETMGMT;
+	    fwd_row.Metric = metric;
+	    fwd_row.DestinationPrefix.Prefix = sockaddr_inet(AF_INET, route_address);
+	    fwd_row.DestinationPrefix.PrefixLength = prefix_length;
+	    fwd_row.NextHop = sockaddr_inet(AF_INET, gw_address);
+
+	    if (tap.index_defined())
+	      fwd_row.InterfaceIndex = tap.index;
+	    else if (!tap.name.empty())
+	      {
+		NET_LUID luid;
+		auto err = InterfaceLuid(tap.name, &luid);
+		if (err)
+		  OPENVPN_THROW(tun_win_util, "Cannot convert interface name " << tap.name << " to LUID");
+		fwd_row.InterfaceLuid = luid;
+	      }
+	  };
+
+	  void execute(std::ostream& os) override
+	  {
+	    os << os_.str() << std::endl;
+	    DWORD res;
+	    if (add)
+	      res = CreateIpForwardEntry2(&fwd_row);
+	    else
+	      res = DeleteIpForwardEntry2(&fwd_row);
+	    if (res)
+	      os << "cannot modify route: error " << res << std::endl;
+	  }
+
+	  std::string to_string() const override
+	  {
+	    return os_.str();
+	  }
+
+	private:
+	  MIB_IPFORWARD_ROW2 fwd_row;
+	  bool add;
+	  std::ostringstream os_;
+	};
+      }
     }
   }
 }

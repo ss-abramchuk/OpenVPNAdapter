@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -272,7 +272,7 @@ namespace openvpn {
 	    {
 	      if (route.ipv6)
 		{
-		  if (!pull.block_ipv6)
+		  if (local6 && !pull.block_ipv6)
 		    add_del_route(route.address, route.prefix_length, local6->gateway, iface_name, R_ADD_ALL|R_IPv6, rtvec, create, destroy);
 		}
 	      else

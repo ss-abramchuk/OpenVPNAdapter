@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -214,11 +214,6 @@ namespace openvpn {
     struct Reconnecting : public Base
     {
       Reconnecting() : Base(RECONNECTING) {}
-    };
-
-    struct AuthPending : public Base
-    {
-      AuthPending() : Base(AUTH_PENDING) {}
     };
 
     struct GetConfig : public Base
@@ -438,6 +433,12 @@ namespace openvpn {
     struct Info : public ReasonBase
     {
       Info(std::string value) : ReasonBase(INFO, std::move(value)) {}
+    };
+
+    struct AuthPending : public ReasonBase
+    {
+      int timeout;
+      AuthPending(int timeout, std::string value): ReasonBase(AUTH_PENDING, std::move(value)), timeout(timeout) {}
     };
 
     struct Warn : public ReasonBase

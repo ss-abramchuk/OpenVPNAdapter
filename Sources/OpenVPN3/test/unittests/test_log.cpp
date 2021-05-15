@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -31,8 +31,6 @@
 // the include from ovpncli.cpp breaks with duplicate symbols
 #include <openvpn/common/base64.hpp>
 
-#undef OPENVPN_EXTERN
-#define OPENVPN_EXTERN
 
 #include <client/ovpncli.cpp>
 

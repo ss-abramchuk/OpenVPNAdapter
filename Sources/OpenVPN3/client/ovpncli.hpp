@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -91,6 +91,9 @@ namespace openvpn {
 
       // optional list of user-selectable VPN servers
       std::vector<ServerEntry> serverList;
+
+      // optional, values are "tap-windows6" and "wintun"
+      std::string windowsDriver;
     };
 
     // used to pass credentials to VPN core
@@ -273,6 +276,13 @@ namespace openvpn {
       //   preferred-default -- use preferred as the default if profile
       //                        doesn't specify tls-cert-profile
       std::string tlsCertProfileOverride;
+
+      // Overrides the list of tls ciphers like the tls-cipher option
+      std::string tlsCipherList;
+
+      // Overrides the list of TLS 1.3 ciphersuites like the tls-ciphersuites
+      // option
+      std::string tlsCiphersuitesList;
 
       // Pass custom key/value pairs to OpenVPN server.
       std::vector<KeyValue> peerInfo;
@@ -457,13 +467,6 @@ namespace openvpn {
     public:
       OpenVPNClient();
       virtual ~OpenVPNClient();
-
-      // Call me first, before calling any other method (static or instance methods)
-      // in this class.
-      static void init_process();
-
-      // Release any resources allocated by init_process.
-      static void uninit_process();
 
       // Read an OpenVPN profile that might contain external
       // file references, returning a unified profile.

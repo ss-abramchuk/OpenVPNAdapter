@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2019 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -29,6 +29,7 @@
 #include <openssl/rsa.h>
 #include <openssl/dsa.h>
 #include <openssl/hmac.h>
+#include <openssl/err.h>
 
 // make sure type 94 doesn't collide with anything in bio.h
 // Start with the same number as before
@@ -88,8 +89,10 @@ inline HMAC_CTX *HMAC_CTX_new()
 
 inline void HMAC_CTX_free(HMAC_CTX *ctx)
 {
-  HMAC_CTX_cleanup(ctx);
-  delete ctx;
+  if (ctx) {
+    HMAC_CTX_cleanup(ctx);
+    delete ctx;
+  }
 }
 
 inline EVP_MD_CTX *EVP_MD_CTX_new()
@@ -304,6 +307,23 @@ inline void RSA_get0_key(const RSA *rsa, const BIGNUM **n, const BIGNUM **e, con
     *d = rsa->d;
 }
 
+inline EC_KEY *EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey)
+{
+    if (pkey->type != EVP_PKEY_EC) {
+        return NULL;
+    }
+    return pkey->pkey.ec;
+}
+
+inline int EC_GROUP_order_bits(const EC_GROUP *group)
+{
+    BIGNUM *order = BN_new();
+    EC_GROUP_get_order(group, order, NULL);
+    int bits = BN_num_bits(order);
+    BN_free(order);
+    return bits;
+}
+
 /* Renamed in OpenSSL 1.1 */
 #define X509_get0_pubkey X509_get_pubkey
 #define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT RSA_F_RSA_EAY_PRIVATE_ENCRYPT
@@ -345,5 +365,10 @@ inline const BIGNUM *DSA_get0_p(const DSA *d)
     const BIGNUM *p;
     DSA_get0_pqg(d, &p, nullptr, nullptr);
     return p;
+}
+
+inline int SSL_CTX_set1_groups(SSL_CTX *ctx, int *glist, int glistlen)
+{
+    return SSL_CTX_set1_curves(ctx, glist, glistlen);
 }
 #endif
