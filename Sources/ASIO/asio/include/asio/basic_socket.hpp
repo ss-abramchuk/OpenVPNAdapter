@@ -953,6 +953,8 @@ public:
     {
       const protocol_type protocol = peer_endpoint.protocol();
       impl_.get_service().open(impl_.get_implementation(), protocol, open_ec);
+      if (!open_ec)
+          async_connect_post_open(protocol, open_ec);
     }
 
     return async_initiate<ConnectHandler, void (asio::error_code)>(
@@ -1791,7 +1793,7 @@ protected:
    * This function destroys the socket, cancelling any outstanding asynchronous
    * operations associated with the socket as if by calling @c cancel.
    */
-  ~basic_socket()
+  virtual ~basic_socket()
   {
   }
 
@@ -1807,6 +1809,11 @@ protected:
 #endif
 
 private:
+  // optional user code hook immediately after socket open in async_connect
+  virtual void async_connect_post_open(const protocol_type& protocol, asio::error_code& ec)
+  {
+  }
+
   // Disallow copying and assignment.
   basic_socket(const basic_socket&) ASIO_DELETED;
   basic_socket& operator=(const basic_socket&) ASIO_DELETED;

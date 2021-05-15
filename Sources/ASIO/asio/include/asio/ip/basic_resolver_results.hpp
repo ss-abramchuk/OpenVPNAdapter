@@ -18,6 +18,7 @@
 #include "asio/detail/config.hpp"
 #include <cstddef>
 #include <cstring>
+#include <algorithm>
 #include "asio/detail/socket_ops.hpp"
 #include "asio/detail/socket_types.hpp"
 #include "asio/ip/basic_resolver_iterator.hpp"
@@ -297,6 +298,20 @@ public:
       const basic_resolver_results& b)
   {
     return !a.equal(b);
+  }
+
+#define HAVE_ASIO_RESOLVER_RESULTS_DATA
+
+  /// Return a pointer to the underlying results vector.
+  auto* data()
+  {
+    return this->values_.get();
+  }
+
+  /// Return a const pointer to the underlying results vector.
+  const auto* cdata() const
+  {
+    return this->values_.get();
   }
 
 private:

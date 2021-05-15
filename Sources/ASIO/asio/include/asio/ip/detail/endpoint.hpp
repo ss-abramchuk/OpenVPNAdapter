@@ -24,6 +24,11 @@
 
 #include "asio/detail/push_options.hpp"
 
+#if defined(ASIO_USE_KOVPN_ROUTE_ID)
+#include <cstdint>
+#include <uapi/ovpn/mark.h>
+#endif
+
 namespace asio {
 namespace ip {
 namespace detail {
@@ -118,6 +123,47 @@ public:
   ASIO_DECL std::string to_string() const;
 #endif // !defined(ASIO_NO_IOSTREAM)
 
+#if defined(ASIO_USE_KOVPN_ROUTE_ID)
+  int get_route_id() const
+  {
+    if (is_v4())
+      {
+	if (data_.v4_sin_ovpn_magic == SIN_OVPN_MAGIC)
+	  return OVPN_MARK_ROUTE_ID(data_.v4_sin_ovpn_route_id);
+      }
+    else
+      {
+	if ((data_.v6.sin6_flowinfo & htonl(SIN6_FLOWINFO_OVPN_MASK)) == htonl(SIN6_FLOWINFO_OVPN_MAGIC))
+	  return OVPN_MARK_ROUTE_ID(ntohl(data_.v6.sin6_flowinfo));
+      }
+    return -1;
+  }
+
+  void set_route_id(const int route_id)
+  {
+    if (is_v4())
+      {
+	if (route_id >= 0)
+	  {
+	    data_.v4_sin_ovpn_magic = SIN_OVPN_MAGIC;
+	    data_.v4_sin_ovpn_route_id = OVPN_MARK_ROUTE_ID(route_id);
+	  }
+	else
+	  {
+	    data_.v4_sin_ovpn_magic = 0;
+	    data_.v4_sin_ovpn_route_id = 0;
+	  }
+      }
+    else
+      {
+	if (route_id >= 0)
+	  data_.v6.sin6_flowinfo = htonl(OVPN_MARK_ROUTE_ID(route_id) | SIN6_FLOWINFO_OVPN_MAGIC);
+	else
+	  data_.v6.sin6_flowinfo = 0;
+      }
+  }
+#endif
+
 private:
   // The underlying IP socket address.
   union data_union
@@ -125,6 +171,15 @@ private:
     asio::detail::socket_addr_type base;
     asio::detail::sockaddr_in4_type v4;
     asio::detail::sockaddr_in6_type v6;
+#if defined(ASIO_USE_KOVPN_ROUTE_ID)
+    struct {
+      std::uint8_t head_[8];
+
+      // mirrors definition in <linux-kernel>/include/uapi/linux/in.h
+      std::uint32_t v4_sin_ovpn_magic;
+      std::uint32_t v4_sin_ovpn_route_id;
+    };
+#endif
   } data_;
 };
 
