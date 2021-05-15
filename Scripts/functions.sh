@@ -28,7 +28,9 @@ function reverse_patches()
 
     cd /tmp
 
-    for file in ${CURRENT_DIR}/${DEP_PATCH_DIR}/*.patch; do
+    REVERSED_PATCHES=$(ls -1 ${CURRENT_DIR}/${DEP_PATCH_DIR}/*.patch | sort -r)
+
+    for file in $REVERSED_PATCHES; do
         echo Reverse patch: $file
         git apply --reverse --directory ${CURRENT_DIR}/${DEP_SRC_DIR} --unsafe-path $file
     done
