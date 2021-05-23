@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -27,6 +27,7 @@
 
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
+#include <openssl/dh.h>
 
 #include <openvpn/common/size.hpp>
 #include <openvpn/common/exception.hpp>

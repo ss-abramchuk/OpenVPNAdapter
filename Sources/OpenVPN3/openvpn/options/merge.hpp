@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -265,7 +265,7 @@ namespace openvpn {
 				  if (authfile != "auto" && authfile != "auto-nct")
 				    {
 				      opt.ref(3) = "auto";
-				      profile_content_ += opt.escape();
+				      profile_content_ += opt.escape(false);
 				      profile_content_ += '\n';
 				      opt.ref(0) = "http-proxy-user-pass";
 				      opt.ref(1) = authfile;

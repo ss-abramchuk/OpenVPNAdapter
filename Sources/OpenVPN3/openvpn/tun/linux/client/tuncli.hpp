@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -30,15 +30,7 @@
 #include <openvpn/tun/builder/setup.hpp>
 #include <openvpn/tun/tunio.hpp>
 #include <openvpn/tun/persist/tunpersist.hpp>
-
-// check if Netlink has been selected at compile time
-#ifdef OPENVPN_USE_SITNL
-#include <openvpn/tun/linux/client/tunnetlink.hpp>
-#define TUN_LINUX openvpn::TunNetlink::TunMethods
-#else
-#include <openvpn/tun/linux/client/tuniproute.hpp>
-#define TUN_LINUX openvpn::TunIPRoute::TunMethods
-#endif
+#include <openvpn/tun/linux/client/tunmethods.hpp>
 
 namespace openvpn {
   namespace TunLinux {

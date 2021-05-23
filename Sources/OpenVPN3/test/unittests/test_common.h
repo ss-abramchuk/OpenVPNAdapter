@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2019 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -31,6 +31,6 @@
 /* Without the asio.hpp include we get winsocket.h related errors
  * See also https://stackoverflow.com/questions/9750344/boostasio-winsock-and-winsock-2-compatibility-issue
  */
-#include <asio.hpp>
-#include <openvpn/log/logbasesimple.hpp>
+#include <openvpn/io/io.hpp>
+#include "test_helper.hpp"
 #include <gtest/gtest.h>

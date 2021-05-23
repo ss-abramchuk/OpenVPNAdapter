@@ -1,4 +1,4 @@
-//    Copyright (C) 2012-2018 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 
 // Base class for TCP link objects.
 
@@ -345,7 +345,7 @@ namespace openvpn {
 	    requeue = gremlin_recv(buf);
 	  else
 #endif
-	    requeue = read_handler->tcp_read_handler(buf);
+	  requeue = read_handler->tcp_read_handler(buf);
 	}
 
 	return requeue;

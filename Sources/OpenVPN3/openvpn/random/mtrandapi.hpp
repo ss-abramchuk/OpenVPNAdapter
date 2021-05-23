@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -64,11 +64,7 @@ namespace openvpn {
     // Return true if algorithm is crypto-strength
     virtual bool is_crypto() const
     {
-#ifdef OPENVPN_INSECURE_RANDOM // DO NOT enable in production!
-      return true;
-#else
       return false;
-#endif
     }
 
     // Fill buffer with random bytes

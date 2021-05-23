@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2019 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -26,12 +26,19 @@
 // requesting them not to be declared with OPENVPN_EXTERN
 
 #include <asio.hpp>
-#include <openvpn/log/logbasesimple.hpp>
+#include "test_helper.hpp"
 #include <openvpn/ssl/sslchoose.hpp>
+#include <openvpn/init/initprocess.hpp>
 
+openvpn::LogOutputCollector *testLog;
 
 int main (int argc, char **argv)
 {
+  testLog = new openvpn::LogOutputCollector();
   ::testing::InitGoogleTest (&argc, argv);
-  return RUN_ALL_TESTS ();
+  openvpn::InitProcess::Init init;
+  auto ret = RUN_ALL_TESTS ();
+
+  delete testLog;
+  return ret;
 }

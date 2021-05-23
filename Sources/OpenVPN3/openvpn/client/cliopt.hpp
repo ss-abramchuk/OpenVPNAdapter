@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -100,7 +100,7 @@
 #include <openvpn/pt/ptproxy.hpp>
 #endif
 
-#if defined(ENABLE_DCO)
+#if defined(ENABLE_KOVPN) || defined(ENABLE_OVPNDCO)
 #include <openvpn/dco/dcocli.hpp>
 #endif
 
@@ -144,12 +144,13 @@ namespace openvpn {
       bool disable_client_cert = false;
       int ssl_debug_level = 0;
       int default_key_direction = -1;
-      bool force_aes_cbc_ciphersuites = false;
       bool autologin_sessions = false;
       bool retry_on_auth_failed = false;
       bool allow_local_lan_access = false;
       std::string tls_version_min_override;
       std::string tls_cert_profile_override;
+      std::string tls_cipher_list;
+      std::string tls_ciphersuite_list;
       PeerInfo::Set::Ptr extra_peer_info;
 #ifdef OPENVPN_GREMLIN
       Gremlin::Config::Ptr gremlin_config;
@@ -220,7 +221,7 @@ namespace openvpn {
       rng.reset(new SSLLib::RandomAPI(false));
       prng.reset(new SSLLib::RandomAPI(true));
 
-#if defined(ENABLE_DCO) && !defined(OPENVPN_FORCE_TUN_NULL) && !defined(OPENVPN_EXTERNAL_TUN_FACTORY)
+#if (defined(ENABLE_KOVPN) || defined(ENABLE_OVPNDCO)) && !defined(OPENVPN_FORCE_TUN_NULL) && !defined(OPENVPN_EXTERNAL_TUN_FACTORY)
       if (config.dco)
 	dco = DCOTransport::new_controller();
 #else
@@ -325,6 +326,9 @@ namespace openvpn {
       if (dco)
 	{
 	  DCO::TunConfig tunconf;
+#if defined(USE_TUN_BUILDER)
+	  dco->builder = config.builder;
+#endif
 	  tunconf.tun_prop.layer = layer;
 	  tunconf.tun_prop.session_name = session_name;
 	  if (tun_mtu)
@@ -712,9 +716,6 @@ namespace openvpn {
       if (relay_mode)
 	lflags |= SSLConfigAPI::LF_RELAY_MODE;
 
-      if (opt.exists("allow-name-constraints"))
-	lflags |= SSLConfigAPI::LF_ALLOW_NAME_CONSTRAINTS;
-
       // client SSL config
       SSLLib::SSLAPI::Config::Ptr cc(new SSLLib::SSLAPI::Config());
       cc->set_external_pki_callback(config.external_pki);
@@ -724,10 +725,11 @@ namespace openvpn {
       cc->set_rng(rng);
       cc->set_local_cert_enabled(pcc.clientCertEnabled() && !config.disable_client_cert);
       cc->set_private_key_password(config.private_key_password);
-      cc->set_force_aes_cbc_ciphersuites(config.force_aes_cbc_ciphersuites);
       cc->load(opt, lflags);
       cc->set_tls_version_min_override(config.tls_version_min_override);
       cc->set_tls_cert_profile_override(config.tls_cert_profile_override);
+      cc->set_tls_cipher_list(config.tls_cipher_list);
+      cc->set_tls_ciphersuite_list(config.tls_ciphersuite_list);
       if (!cc->get_mode().is_client())
 	throw option_error("only client configuration supported");
 
@@ -743,7 +745,6 @@ namespace openvpn {
       cp->ssl_factory = cc->new_factory();
       cp->load(opt, *proto_context_options, config.default_key_direction, false);
       cp->set_xmit_creds(!autologin || pcc.hasEmbeddedPassword() || autologin_sessions);
-      cp->force_aes_cbc_ciphersuites = config.force_aes_cbc_ciphersuites; // also used to disable proto V2
       cp->extra_peer_info = build_peer_info(config, pcc, autologin_sessions);
       cp->frame = frame;
       cp->now = &now_;
@@ -786,6 +787,7 @@ namespace openvpn {
 	  transconf.frame = frame;
 	  transconf.stats = cli_stats;
 	  transconf.server_addr_float = server_addr_float;
+	  transconf.socket_protect = socket_protect;
 	  transport_factory = dco->new_transport_factory(transconf);
 	}
       else if (alt_proxy)

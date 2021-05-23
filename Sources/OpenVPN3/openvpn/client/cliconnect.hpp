@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -294,7 +294,7 @@ namespace openvpn {
 	}
     }
 
-    virtual void pre_resolve_done()
+    virtual void pre_resolve_done() override
     {
       if (!halt)
 	new_client();
@@ -351,11 +351,11 @@ namespace openvpn {
 	}
     }
 
-    void conn_timer_start()
+    void conn_timer_start(int timeout)
     {
-      if (!conn_timer_pending && conn_timeout > 0)
+      if (!conn_timer_pending && timeout > 0)
 	{
-	  conn_timer.expires_after(Time::Duration::seconds(conn_timeout));
+	  conn_timer.expires_after(Time::Duration::seconds(timeout));
 	  conn_timer.async_wait([self=Ptr(this), gen=generation](const openvpn_io::error_code& error)
                                 {
                                   OPENVPN_ASYNC_HANDLER;
@@ -376,7 +376,7 @@ namespace openvpn {
       return true;
     }
 
-    virtual void client_proto_connected()
+    virtual void client_proto_connected() override
     {
       conn_timer.cancel();
       conn_timer_pending = false;
@@ -412,7 +412,22 @@ namespace openvpn {
                                     });
     }
 
-    virtual void client_proto_terminate()
+    virtual void client_proto_auth_pending_timeout(int timeout) override
+    {
+      if (conn_timer_pending)
+	{
+	  auto timer_left = std::chrono::duration_cast<std::chrono::seconds>(conn_timer.expiry() - AsioTimer::clock_type::now()).count();
+	  if(timer_left < timeout)
+	    {
+	      OPENVPN_LOG("Extending connection timeout from " << timer_left  << " to " << timeout << " for pending authentification");
+	      conn_timer.cancel();
+	      conn_timer_pending = false;
+	      conn_timer_start(timeout);
+	    }
+	}
+    }
+
+    virtual void client_proto_terminate() override
     {
       if (!halt)
 	{
@@ -634,28 +649,28 @@ namespace openvpn {
                                          self->server_poll_callback(gen, error);
                                        });
 	}
-      conn_timer_start();
+      conn_timer_start(conn_timeout);
       client->start();
     }
 
     // ClientLifeCycle::NotifyCallback callbacks
 
-    virtual void cln_stop()
+    virtual void cln_stop() override
     {
       thread_safe_stop();
     }
 
-    virtual void cln_pause(const std::string& reason)
+    virtual void cln_pause(const std::string& reason) override
     {
       thread_safe_pause(reason);
     }
 
-    virtual void cln_resume()
+    virtual void cln_resume() override
     {
       thread_safe_resume();
     }
 
-    virtual void cln_reconnect(int seconds)
+    virtual void cln_reconnect(int seconds) override
     {
       thread_safe_reconnect(seconds);
     }

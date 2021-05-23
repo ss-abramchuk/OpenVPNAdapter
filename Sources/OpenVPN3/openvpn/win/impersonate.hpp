@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2018 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include <Windows.h>
-#include <Lmcons.h>
+#include <windows.h>
+#include <lmcons.h>
 #include <wtsapi32.h>
 
 #include <openvpn/win/winerr.hpp>
@@ -72,7 +72,7 @@ namespace openvpn {
     private:
       void impersonate_as_local_system()
       {
-	HANDLE thread_token, process_snapshot, winlogon_process, winlogon_token, duplicated_token, file_handle;
+	HANDLE thread_token, process_snapshot, winlogon_process, winlogon_token, duplicated_token;
 	PROCESSENTRY32 entry = {};
 	entry.dwSize = sizeof(PROCESSENTRY32);
 	BOOL ret;

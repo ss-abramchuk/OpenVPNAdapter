@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -215,6 +215,7 @@ namespace openvpn {
 		const std::string& key_txt = o->get(1, Option::MULTILINE);
 		privateKeyPasswordRequired_ = (
 	            key_txt.find("-----BEGIN RSA PRIVATE KEY-----\nProc-Type: 4,ENCRYPTED\n") != std::string::npos
+	         || key_txt.find("-----BEGIN EC PRIVATE KEY-----\nProc-Type: 4,ENCRYPTED\n") != std::string::npos
 		 || key_txt.find("-----BEGIN ENCRYPTED PRIVATE KEY-----") != std::string::npos
 		);
 	      }
@@ -238,6 +239,15 @@ namespace openvpn {
 	      if (remoteList)
 		profileName_ = remoteList->first_server_host();
 	    }
+
+	  // windows-driver
+	  {
+	    const Option* o = options.get_ptr("windows-driver");
+	    if (o)
+	      {
+		windowsDriver_ = o->get(1, 256);
+	      }
+	  }
 	}
 
 	// friendly name
@@ -292,9 +302,6 @@ namespace openvpn {
 	}
 
 	unsigned int lflags = SSLConfigAPI::LF_PARSE_MODE;
-
-	if (options.exists("allow-name-constraints"))
-	  lflags |= SSLConfigAPI::LF_ALLOW_NAME_CONSTRAINTS;
 
 	// ssl lib configuration
 	try {
@@ -435,6 +442,8 @@ namespace openvpn {
 
     // return first remote directive in config
     const RemoteItem& firstRemoteListItem() const { return firstRemoteListItem_; }
+
+    const std::string& windowsDriver() const { return windowsDriver_; }
 
     std::string to_string() const
     {
@@ -716,6 +725,7 @@ namespace openvpn {
     ProtoContext::Config::Ptr protoConfig;
     SSLLib::SSLAPI::Config::Ptr sslConfig;
     std::string dev;
+    std::string windowsDriver_;
   };
 }
 

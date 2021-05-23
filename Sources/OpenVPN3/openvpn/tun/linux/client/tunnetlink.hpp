@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2018 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -431,6 +431,58 @@ namespace openvpn {
       R_ADD_ALL=R_ADD_SYS|R_ADD_DCO,
     };
 
+    /**
+     * @brief Add new interface
+     *
+     * @param os output stream to where error message is written
+     * @param dev interface name
+     * @param type interface link type (such as "ovpn-dco")
+     * @return int 0 on success, negative error code on error
+     */
+    inline int iface_new(std::ostringstream& os, const std::string& dev, const std::string& type)
+    {
+      int ret = -1;
+
+      if (dev.empty())
+      {
+	os << "Error: can't call NetlinkLinkNew with no interface" << std::endl;
+	return ret;
+      }
+
+      if (type.empty())
+      {
+	os << "Error: can't call NetlinkLinkNew with no interfacei type" << std::endl;
+	return ret;
+      }
+
+      ret = SITNL::net_iface_new(dev, type);
+      if (ret)
+      {
+	os << "Error while executing NetlinkLinkNew " << dev << ": " << ret << std::endl;
+      }
+
+      return ret;
+    }
+
+    inline int iface_del(std::ostringstream& os, const std::string& dev)
+    {
+      int ret = -1;
+
+      if (dev.empty())
+      {
+	os << "Error: can't call NetlinkLinkDel with no interface" << std::endl;
+	return ret;
+      }
+
+      ret = SITNL::net_iface_del(dev);
+      if (ret)
+      {
+	os << "Error while executing NetlinkLinkDel " << dev << ": " << ret << std::endl;
+      }
+
+      return ret;
+    }
+
     /*inline IPv4::Addr cvt_pnr_ip_v4(const std::string& hexaddr)
     {
       BufferAllocated v(4, BufferAllocated::CONSTRUCT_ZERO);
@@ -619,7 +671,7 @@ namespace openvpn {
 	    {
 	      if (route.ipv6)
 		{
-		  if (!pull.block_ipv6)
+		  if (local6 && !pull.block_ipv6)
 		    add_del_route(route.address, route.prefix_length, local6->gateway, iface_name, R_ADD_ALL|R_IPv6, rtvec, create, destroy);
 		}
 	      else
@@ -693,7 +745,7 @@ namespace openvpn {
 	  add_del_route(address, 32, gw.v4.addr().to_string(), gw.dev(), R_ADD_SYS, rtvec, create, destroy);
 
 	if (ipv6 && gw.v6.defined())
-	  add_del_route(address, 128, gw.v6.addr().to_string(), gw.dev(), R_ADD_SYS, rtvec, create, destroy);
+	  add_del_route(address, 128, gw.v6.addr().to_string(), gw.dev(), R_IPv6|R_ADD_SYS, rtvec, create, destroy);
       }
     };
   }

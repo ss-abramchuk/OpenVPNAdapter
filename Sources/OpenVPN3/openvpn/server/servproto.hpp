@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -275,10 +275,13 @@ namespace openvpn {
 
       // Disable keepalive for rest of session, but fetch
       // the keepalive parameters (in seconds).
+      // Also, allow the management layer to override parameters.
       virtual void disable_keepalive(unsigned int& keepalive_ping,
 				     unsigned int& keepalive_timeout) override
       {
 	Base::disable_keepalive(keepalive_ping, keepalive_timeout);
+	if (ManLink::send)
+	  ManLink::send->keepalive_override(keepalive_ping, keepalive_timeout);
       }
 
       // override the data channel factory
@@ -300,7 +303,6 @@ namespace openvpn {
 	      ManClientInstance::Factory::Ptr man_factory_arg,
 	      TunClientInstance::Factory::Ptr tun_factory_arg)
 	: Base(factory.clone_proto_config(), factory.stats),
-	  io_context(io_context_arg),
 	  housekeeping_timer(io_context_arg),
 	  disconnect_at(Time::infinite()),
 	  stats(factory.stats),
@@ -528,7 +530,7 @@ namespace openvpn {
 	set_housekeeping_timer();
       }
 
-      virtual void schedule_disconnect(const unsigned int seconds)
+      virtual void schedule_disconnect(const unsigned int seconds) override
       {
 	if (halt || disconnect_type == DT_HALT_RESTART)
 	  return;
@@ -537,7 +539,7 @@ namespace openvpn {
 	set_housekeeping_timer();
       }
 
-      virtual void schedule_auth_pending_timeout(const unsigned int seconds)
+      virtual void schedule_auth_pending_timeout(const unsigned int seconds) override
       {
 	if (halt || (disconnect_type >= DT_RELAY_TRANSITION) || !seconds)
 	  return;
@@ -714,8 +716,6 @@ namespace openvpn {
 	    break;
 	  }
       }
-
-      openvpn_io::io_context& io_context;
 
       // higher values are higher priority
       enum DisconnectType {
