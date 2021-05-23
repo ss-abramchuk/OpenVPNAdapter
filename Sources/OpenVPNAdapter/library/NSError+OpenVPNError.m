@@ -98,6 +98,7 @@
         @"KEV_NEGOTIATE_ERROR": @(OpenVPNAdapterErrorKevNegotiateError),
         @"KEV_PENDING_ERROR": @(OpenVPNAdapterErrorKevPendingError),
         @"N_KEV_EXPIRE": @(OpenVPNAdapterErrorKevExpireNumber),
+        @"KEY_EXPANSION_ERROR": @(OpenVPNAdapterErrorKeyExpansionError),
         @"PKTID_INVALID": @(OpenVPNAdapterErrorPKTIDInvalid),
         @"PKTID_BACKTRACK": @(OpenVPNAdapterErrorPKTIDBacktrack),
         @"PKTID_EXPIRE": @(OpenVPNAdapterErrorPKTIDExpire),
@@ -180,6 +181,7 @@
         case OpenVPNAdapterErrorKevNegotiateError: return nil;
         case OpenVPNAdapterErrorKevPendingError: return nil;
         case OpenVPNAdapterErrorKevExpireNumber: return nil;
+        case OpenVPNAdapterErrorKeyExpansionError: return nil;
         case OpenVPNAdapterErrorPKTIDInvalid: return nil;
         case OpenVPNAdapterErrorPKTIDBacktrack: return nil;
         case OpenVPNAdapterErrorPKTIDExpire: return nil;
