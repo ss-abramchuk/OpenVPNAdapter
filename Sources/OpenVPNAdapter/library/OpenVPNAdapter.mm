@@ -112,12 +112,8 @@
     dispatch_queue_attr_t attributes = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0);
     dispatch_queue_t connectQueue = dispatch_queue_create("me.ss-abramchuk.openvpn-adapter.connection.", attributes);
     dispatch_async(connectQueue, ^{
-        OpenVPNClient::init_process();
-        
         ClientAPI::Status status = self.vpnClient->connect();
         [self handleConnectionStatus:status];
-        
-        OpenVPNClient::uninit_process();
     });
 }
 
