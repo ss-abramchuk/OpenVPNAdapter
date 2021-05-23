@@ -442,6 +442,30 @@ NSString *const OpenVPNTLSCertProfileDefaultValue = @"default";
     _config.tlsCertProfileOverride = std::string([value UTF8String]);
 }
 
+- (void)setTlsCipherList:(NSArray<NSString *> *)tlsCipherList {
+    NSString *cipherList = tlsCipherList ? [tlsCipherList componentsJoinedByString:@":"] : @"";
+    _config.tlsCipherList = std::string([cipherList UTF8String]);
+}
+
+- (NSArray<NSString *> *)tlsCipherList {
+    if (_config.tlsCipherList.empty()) { return nil; }
+    
+    NSString *cipherList = [NSString stringWithUTF8String:_config.tlsCipherList.c_str()];
+    return [cipherList componentsSeparatedByString:@":"];
+}
+
+- (void)setTlsCiphersuitesList:(NSArray<NSString *> *)tlsCiphersuitesList {
+    NSString *cipherList = tlsCiphersuitesList ? [tlsCiphersuitesList componentsJoinedByString:@":"] : @"";
+    _config.tlsCiphersuitesList = std::string([cipherList UTF8String]);
+}
+
+- (NSArray<NSString *> *)tlsCiphersuitesList {
+    if (_config.tlsCiphersuitesList.empty()) { return nil; }
+    
+    NSString *ciphersuitesList = [NSString stringWithUTF8String:_config.tlsCiphersuitesList.c_str()];
+    return [ciphersuitesList componentsSeparatedByString:@":"];
+}
+
 - (NSDictionary<NSString *,NSString *> *)peerInfo {
     if (_config.peerInfo.empty()) {
         return nil;
