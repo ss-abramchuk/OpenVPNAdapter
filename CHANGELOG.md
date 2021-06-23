@@ -3,6 +3,7 @@
 ## Unreleased
 - **Added**: Configuration properties to override tls-cipher and tls-ciphersuites.
 - **Updated**: openvpn3 library to 3.6.1 version, ASIO library to 1.16.1 version.
+- **Fixed**: Broken support ot the SPM.
 
 ## 0.7.0
 - **Added**: An option to evaluate configuration without creating an instance of `OpenVPNAdapter`.
