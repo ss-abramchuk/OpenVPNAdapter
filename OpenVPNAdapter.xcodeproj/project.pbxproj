@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C90F316D2683BC12002F1A6C /* OpenVPNAdapterDeclaration.h in Headers */ = {isa = PBXBuildFile; fileRef = C90F316C2683BC11002F1A6C /* OpenVPNAdapterDeclaration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C910EAE524EBB1DA0081AF13 /* OpenVPNReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */; };
 		C910EAE724EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h in Headers */ = {isa = PBXBuildFile; fileRef = C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C910EAEE24EBBFB60081AF13 /* client.crt in Resources */ = {isa = PBXBuildFile; fileRef = C910EAEB24EBBFB60081AF13 /* client.crt */; };
@@ -96,7 +97,6 @@
 		OBJ_291 /* OpenVPNIPv6Preference.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_59 /* OpenVPNIPv6Preference.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_292 /* OpenVPNAdapterPacketFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_60 /* OpenVPNAdapterPacketFlow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_293 /* OpenVPNMinTLSVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_61 /* OpenVPNMinTLSVersion.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		OBJ_294 /* OpenVPNAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_62 /* OpenVPNAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_295 /* OpenVPNConnectionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_63 /* OpenVPNConnectionInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_296 /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_64 /* OpenVPNReachabilityStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_297 /* OpenVPNServerEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_65 /* OpenVPNServerEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -229,6 +229,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C90F316C2683BC11002F1A6C /* OpenVPNAdapterDeclaration.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = OpenVPNAdapterDeclaration.h; sourceTree = "<group>"; };
 		C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = OpenVPNConfigurationEvaluation.h; sourceTree = "<group>"; };
 		C910EAEB24EBBFB60081AF13 /* client.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = client.crt; sourceTree = "<group>"; };
 		C910EAEC24EBBFB60081AF13 /* ca.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ca.crt; sourceTree = "<group>"; };
@@ -457,7 +458,6 @@
 		OBJ_59 /* OpenVPNIPv6Preference.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNIPv6Preference.h; sourceTree = "<group>"; };
 		OBJ_60 /* OpenVPNAdapterPacketFlow.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNAdapterPacketFlow.h; sourceTree = "<group>"; };
 		OBJ_61 /* OpenVPNMinTLSVersion.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNMinTLSVersion.h; sourceTree = "<group>"; };
-		OBJ_62 /* OpenVPNAdapter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNAdapter.h; sourceTree = "<group>"; };
 		OBJ_63 /* OpenVPNConnectionInfo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNConnectionInfo.h; sourceTree = "<group>"; };
 		OBJ_64 /* OpenVPNReachabilityStatus.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNReachabilityStatus.h; sourceTree = "<group>"; };
 		OBJ_65 /* OpenVPNServerEntry.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNServerEntry.h; sourceTree = "<group>"; };
@@ -800,9 +800,9 @@
 				C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */,
 				OBJ_58 /* OpenVPNReachability.h */,
 				OBJ_59 /* OpenVPNIPv6Preference.h */,
+				C90F316C2683BC11002F1A6C /* OpenVPNAdapterDeclaration.h */,
 				OBJ_60 /* OpenVPNAdapterPacketFlow.h */,
 				OBJ_61 /* OpenVPNMinTLSVersion.h */,
-				OBJ_62 /* OpenVPNAdapter.h */,
 				OBJ_63 /* OpenVPNConnectionInfo.h */,
 				OBJ_64 /* OpenVPNReachabilityStatus.h */,
 				OBJ_65 /* OpenVPNServerEntry.h */,
@@ -1011,13 +1011,13 @@
 				C97E5FA824123186005C2EBC /* OpenVPNReachabilityTracker.h in Headers */,
 				OBJ_293 /* OpenVPNMinTLSVersion.h in Headers */,
 				C97E5F7224122F5C005C2EBC /* OpenVPNClient.h in Headers */,
-				OBJ_294 /* OpenVPNAdapter.h in Headers */,
 				OBJ_295 /* OpenVPNConnectionInfo.h in Headers */,
 				OBJ_296 /* OpenVPNReachabilityStatus.h in Headers */,
 				C97E5F822412305C005C2EBC /* OpenVPNConnectionInfo.h in Headers */,
 				C97E5F882412307B005C2EBC /* OpenVPNCredentials+Internal.h in Headers */,
 				OBJ_297 /* OpenVPNServerEntry.h in Headers */,
 				OBJ_298 /* OpenVPNConfiguration.h in Headers */,
+				C90F316D2683BC12002F1A6C /* OpenVPNAdapterDeclaration.h in Headers */,
 				C97E5F9A24123135005C2EBC /* OpenVPNPacketFlowBridge.h in Headers */,
 				C97E5F8624123072005C2EBC /* OpenVPNCredentials.h in Headers */,
 				C97E5FB0241231BB005C2EBC /* OpenVPNSessionToken+Internal.h in Headers */,
