@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C90F316D2683BC12002F1A6C /* OpenVPNAdapterDeclaration.h in Headers */ = {isa = PBXBuildFile; fileRef = C90F316C2683BC11002F1A6C /* OpenVPNAdapterDeclaration.h */; };
+		C90F316D2683BC12002F1A6C /* OpenVPNAdapterDeclaration.h in Headers */ = {isa = PBXBuildFile; fileRef = C90F316C2683BC11002F1A6C /* OpenVPNAdapterDeclaration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C910EAE524EBB1DA0081AF13 /* OpenVPNReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E5FD624123F48005C2EBC /* OpenVPNReachabilityTests.swift */; };
 		C910EAE724EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h in Headers */ = {isa = PBXBuildFile; fileRef = C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C910EAEE24EBBFB60081AF13 /* client.crt in Resources */ = {isa = PBXBuildFile; fileRef = C910EAEB24EBBFB60081AF13 /* client.crt */; };
