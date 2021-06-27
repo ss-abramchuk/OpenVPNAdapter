@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -49,8 +49,11 @@
 #include <openvpn/ssl/sslconsts.hpp>
 #include <openvpn/ssl/sslapi.hpp>
 #include <openvpn/ssl/ssllog.hpp>
+#include <openvpn/ssl/verify_x509_name.hpp>
+#include <openvpn/ssl/iana_ciphers.hpp>
 
 #include <openvpn/mbedtls/pki/x509cert.hpp>
+#include <openvpn/mbedtls/pki/x509certinfo.hpp>
 #include <openvpn/mbedtls/pki/x509crl.hpp>
 #include <openvpn/mbedtls/pki/dh.hpp>
 #include <openvpn/mbedtls/pki/pkctx.hpp>
@@ -66,13 +69,6 @@ namespace openvpn {
 
   namespace mbedtls_ctx_private {
     namespace {
-      const int aes_cbc_ciphersuites[] = // CONST GLOBAL
-	{
-	  MBEDTLS_TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
-	  MBEDTLS_TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
-	  0
-	};
-
       /*
        * This is a modified list from mbed TLS ssl_ciphersuites.c.
        * We removed some SHA1 methods near the top of the list to
@@ -211,9 +207,7 @@ namespace openvpn {
 		 ns_cert_type(NSCert::NONE),
 		 tls_version_min(TLSVersion::UNDEF),
 		 tls_cert_profile(TLSCertProfile::UNDEF),
-		 local_cert_enabled(true),
-		 force_aes_cbc_ciphersuites(false),
-		 allow_name_constraints(false) {}
+		 local_cert_enabled(true) {}
 
       virtual SSLFactoryAPI::Ptr new_factory()
       {
@@ -410,6 +404,23 @@ namespace openvpn {
 	tls_cert_profile = type;
       }
 
+      virtual void set_tls_cipher_list(const std::string& override)
+      {
+	if(!override.empty())
+	  tls_cipher_list = override;
+      }
+
+      virtual void set_tls_ciphersuite_list(const std::string& override)
+      {
+	// mbed TLS does not have TLS 1.3 support
+      }
+
+      virtual void set_tls_groups(const std::string& groups)
+      {
+        if (!groups.empty())
+          tls_groups = groups;
+      }
+
       virtual void set_tls_cert_profile_override(const std::string& override)
       {
 	TLSCertProfile::apply_override(tls_cert_profile, override);
@@ -418,11 +429,6 @@ namespace openvpn {
       virtual void set_local_cert_enabled(const bool v)
       {
 	local_cert_enabled = v;
-      }
-
-      virtual void set_force_aes_cbc_ciphersuites(const bool v)
-      {
-	force_aes_cbc_ciphersuites = v;
       }
 
       virtual void set_x509_track(X509Track::ConfigSet x509_track_config_arg)
@@ -476,8 +482,6 @@ namespace openvpn {
 	if ((lflags & LF_ALLOW_CLIENT_CERT_NOT_REQUIRED)
 	    && opt.exists("client-cert-not-required"))
 	  flags |= SSLConst::NO_VERIFY_PEER;
-
-	allow_name_constraints = lflags & LF_ALLOW_NAME_CONSTRAINTS;
 
 	// sni
 	{
@@ -542,6 +546,9 @@ namespace openvpn {
 	// parse tls-remote
 	tls_remote = opt.get_optional(relay_prefix + "tls-remote", 1, 256);
 
+	// parse verify-x509-name
+	verify_x509_name.init(opt, relay_prefix);
+
 	// parse tls-version-min option
 	{
 #         if defined(MBEDTLS_SSL_MAJOR_VERSION_3) && defined(MBEDTLS_SSL_MINOR_VERSION_3)
@@ -557,6 +564,13 @@ namespace openvpn {
 	// parse tls-cert-profile
 	tls_cert_profile = TLSCertProfile::parse_tls_cert_profile(opt, relay_prefix);
 
+	// Overrides for tls cipher suites
+	if (opt.exists("tls-cipher"))
+	  tls_cipher_list = opt.get_optional("tls-cipher", 1, 256);
+
+	if (opt.exists("tls-groups"))
+	  tls_groups = opt.get_optional("tls-groups", 1, 256);
+
 	// unsupported cert verification options
 	{
 	}
@@ -568,11 +582,6 @@ namespace openvpn {
 	throw MbedTLSException("json_override not implemented");
       }
 #endif
-
-      bool name_constraints_allowed() const
-      {
-	return allow_name_constraints;
-      }
 
       bool is_server() const
       {
@@ -618,12 +627,13 @@ namespace openvpn {
       std::vector<unsigned int> ku; // if defined, peer cert X509 key usage must match one of these values
       std::string eku;              // if defined, peer cert X509 extended key usage must match this OID/string
       std::string tls_remote;
+      VerifyX509Name verify_x509_name;  // --verify-x509-name feature
       TLSVersion::Type tls_version_min; // minimum TLS version that we will negotiate
       TLSCertProfile::Type tls_cert_profile;
+      std::string tls_cipher_list;
+      std::string tls_groups;
       X509Track::ConfigSet x509_track_config;
       bool local_cert_enabled;
-      bool force_aes_cbc_ciphersuites;
-      bool allow_name_constraints;
       RandomAPI::Ptr rng;   // random data source
     };
 
@@ -730,6 +740,11 @@ namespace openvpn {
 	return "";
       }
 
+      virtual bool export_keying_material(const std::string& label, unsigned char*, size_t size) override
+      {
+	return false; // not implemented in our mbed TLS implementation
+      }
+
       virtual bool did_full_handshake() override
       {
 	return false; // fixme -- not implemented
@@ -787,36 +802,32 @@ namespace openvpn {
 	  mbedtls_ssl_init(ssl);
 
 	  // set minimum TLS version
-	  if (!c.force_aes_cbc_ciphersuites || c.tls_version_min > TLSVersion::UNDEF)
+	  int major;
+	  int minor;
+	  switch (c.tls_version_min)
 	    {
-	      int major;
-	      int minor;
-	      switch (c.tls_version_min)
-		{
-		case TLSVersion::V1_0:
-		default:
-		  major = MBEDTLS_SSL_MAJOR_VERSION_3;
-		  minor = MBEDTLS_SSL_MINOR_VERSION_1;
-		  break;
-#               if defined(MBEDTLS_SSL_MAJOR_VERSION_3) && defined(MBEDTLS_SSL_MINOR_VERSION_2)
-	          case TLSVersion::V1_1:
-		    major = MBEDTLS_SSL_MAJOR_VERSION_3;
-		    minor = MBEDTLS_SSL_MINOR_VERSION_2;
-		    break;
-#               endif
-#               if defined(MBEDTLS_SSL_MAJOR_VERSION_3) && defined(MBEDTLS_SSL_MINOR_VERSION_3)
-	          case TLSVersion::V1_2:
-		    major = MBEDTLS_SSL_MAJOR_VERSION_3;
-		    minor = MBEDTLS_SSL_MINOR_VERSION_3;
-		    break;
-#               endif
-	        }
-	      mbedtls_ssl_conf_min_version(sslconf, major, minor);
-#if 0 // force TLS 1.0 as maximum version (debugging only, disable in production)
-	      mbedtls_ssl_conf_max_version(sslconf, MBEDTLS_SSL_MAJOR_VERSION_3, MBEDTLS_SSL_MINOR_VERSION_1);
+	    case TLSVersion::V1_0:
+	    default:
+	      major = MBEDTLS_SSL_MAJOR_VERSION_3;
+	      minor = MBEDTLS_SSL_MINOR_VERSION_1;
+	      break;
+#if defined(MBEDTLS_SSL_MAJOR_VERSION_3) && defined(MBEDTLS_SSL_MINOR_VERSION_2)
+	      case TLSVersion::V1_1:
+		major = MBEDTLS_SSL_MAJOR_VERSION_3;
+		minor = MBEDTLS_SSL_MINOR_VERSION_2;
+		break;
 #endif
-	    }
-
+#if defined(MBEDTLS_SSL_MAJOR_VERSION_3) && defined(MBEDTLS_SSL_MINOR_VERSION_3)
+	      case TLSVersion::V1_2:
+		major = MBEDTLS_SSL_MAJOR_VERSION_3;
+		minor = MBEDTLS_SSL_MINOR_VERSION_3;
+		break;
+#endif
+	       }
+	    mbedtls_ssl_conf_min_version(sslconf, major, minor);
+#if 0 // force TLS 1.0 as maximum version (debugging only, disable in production)
+	    mbedtls_ssl_conf_max_version(sslconf, MBEDTLS_SSL_MAJOR_VERSION_3, MBEDTLS_SSL_MINOR_VERSION_1);
+#endif
 
 	  {
 	    // peer must present a valid certificate unless SSLConst::NO_VERIFY_PEER.
@@ -847,10 +858,19 @@ namespace openvpn {
 	  // in mbed TLS config.h.
 	  mbedtls_ssl_conf_renegotiation(sslconf, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
 
-	  mbedtls_ssl_conf_ciphersuites(sslconf, c.force_aes_cbc_ciphersuites ?
-					mbedtls_ctx_private::aes_cbc_ciphersuites :
-					mbedtls_ctx_private::ciphersuites);
+	  if (!c.tls_cipher_list.empty())
+	    {
+	      set_mbedtls_cipherlist(c.tls_cipher_list);
+	    }
+	  else
+	    {
+	      mbedtls_ssl_conf_ciphersuites(sslconf, mbedtls_ctx_private::ciphersuites);
+	    }
 
+	  if (!c.tls_groups.empty())
+	    {
+	      set_mbedtls_groups(c.tls_groups);
+	    }
 	  // set CA chain
 	  if (c.ca_chain)
 	    mbedtls_ssl_conf_ca_chain(sslconf,
@@ -949,9 +969,88 @@ namespace openvpn {
       }
 
       mbedtls_ssl_config *sslconf;          // SSL configuration parameters for SSL connection object
+      std::unique_ptr<int[]> allowed_ciphers;	//! Hold the array that is used for setting the allowed ciphers
+						// must have the same lifetime as sslconf
+      std::unique_ptr<mbedtls_ecp_group_id[]> groups;	//! Hold the array that is used for setting the curves
+
+
       MbedTLSContext *parent;
 
     private:
+
+      void set_mbedtls_cipherlist(const std::string& cipher_list)
+      {
+	auto num_ciphers = std::count(cipher_list.begin(), cipher_list.end(), ':') + 1;
+
+	allowed_ciphers.reset(new int[num_ciphers+1]);
+
+	std::stringstream cipher_list_ss(cipher_list);
+	std::string ciphersuite;
+
+	int i=0;
+	while(std::getline(cipher_list_ss, ciphersuite, ':'))
+	  {
+	    const tls_cipher_name_pair* pair = tls_get_cipher_name_pair(ciphersuite);
+
+	    if (pair && pair->iana_name != ciphersuite)
+	      {
+		OPENVPN_LOG_SSL("mbed TLS -- Deprecated cipher suite name '"
+				  << pair->openssl_name << "' please use IANA name ' "
+				  << pair->iana_name << "'");
+	      }
+
+	    auto cipher_id = mbedtls_ssl_get_ciphersuite_id(ciphersuite.c_str());
+	    if (cipher_id != 0)
+	      {
+		allowed_ciphers[i] = cipher_id;
+		i++;
+	      }
+	    else
+	      {
+	        /* OpenVPN 2.x ignores silently ignores unknown cipher suites with
+	         * mbed TLS. We warn about them in OpenVPN 3.x */
+		OPENVPN_LOG_SSL("mbed TLS -- warning ignoring unknown cipher suite '"
+		                  << ciphersuite << "' in tls-cipher");
+	      }
+	  }
+
+	  // Last element needs to be null
+	allowed_ciphers[i] = 0;
+	mbedtls_ssl_conf_ciphersuites(sslconf, allowed_ciphers.get());
+      }
+
+      void set_mbedtls_groups(const std::string& tls_groups)
+      {
+	auto num_groups = std::count(tls_groups.begin(), tls_groups.end(), ':') + 1;
+
+	/* add extra space for sentinel at the end */
+	groups.reset(new mbedtls_ecp_group_id[num_groups + 1]);
+
+	std::stringstream groups_ss(tls_groups);
+	std::string group;
+
+	int i=0;
+	while(std::getline(groups_ss, group, ':'))
+	  {
+	    const mbedtls_ecp_curve_info *ci =
+	      mbedtls_ecp_curve_info_from_name(group.c_str());
+
+	    if (ci)
+	      {
+		groups[i] = ci->grp_id;
+		i++;
+	      }
+	    else
+	      {
+		OPENVPN_LOG_SSL("mbed TLS -- warning ignoring unknown group '"
+				  << group << "' in tls-groups");
+	      }
+	  }
+
+	groups[i] = MBEDTLS_ECP_DP_NONE;
+	mbedtls_ssl_conf_curves(sslconf, groups.get());
+      }
+
       // cleartext read callback
       static int ct_read_func(void *arg, unsigned char *data, size_t length)
       {
@@ -1000,6 +1099,7 @@ namespace openvpn {
 	ssl = nullptr;
 	sslconf = nullptr;
 	overflow = false;
+	allowed_ciphers = nullptr;
       }
 
       void erase()
@@ -1047,6 +1147,11 @@ namespace openvpn {
       erase();
     }
 
+    constexpr static bool support_key_material_export()
+    {
+      /* mbed TLS 2.18+ can support RFC5705 but the API is painful to use */
+      return false;
+    }
   protected:
     MbedTLSContext(Config* config_arg)
       : config(config_arg)
@@ -1140,55 +1245,6 @@ namespace openvpn {
       return false;
     }
 
-    // Try to return the x509 subject formatted like the OpenSSL X509_NAME_oneline method.
-    // Only attributes matched in the switch statements below will be rendered.  All other
-    // attributes will be ignored.
-    static std::string x509_get_subject(const mbedtls_x509_crt *cert)
-    {
-      std::string ret;
-      for (const mbedtls_x509_name *name = &cert->subject; name != nullptr; name = name->next)
-	{
-	  const char *key = nullptr;
-	  if (!MBEDTLS_OID_CMP(MBEDTLS_OID_AT_CN, &name->oid))
-	    key = "CN";
-	  else if (!MBEDTLS_OID_CMP(MBEDTLS_OID_AT_COUNTRY, &name->oid))
-	    key = "C";
-	  else if (!MBEDTLS_OID_CMP(MBEDTLS_OID_AT_LOCALITY, &name->oid))
-	    key = "L";
-	  else if (!MBEDTLS_OID_CMP(MBEDTLS_OID_AT_STATE, &name->oid))
-	    key = "ST";
-	  else if (!MBEDTLS_OID_CMP(MBEDTLS_OID_AT_ORGANIZATION, &name->oid))
-	    key = "O";
-	  else if (!MBEDTLS_OID_CMP(MBEDTLS_OID_AT_ORG_UNIT, &name->oid))
-	    key = "OU";
-	  else if (!MBEDTLS_OID_CMP(MBEDTLS_OID_PKCS9_EMAIL, &name->oid))
-	    key = "emailAddress";
-
-	  // make sure that key is defined and value has no embedded nulls
-	  if (key && !string::embedded_null((const char *)name->val.p, name->val.len))
-	    ret += "/" + std::string(key) + "=" + std::string((const char *)name->val.p, name->val.len);
-	}
-      return ret;
-    }
-
-    static std::string x509_get_common_name(const mbedtls_x509_crt *cert)
-    {
-      const mbedtls_x509_name *name = &cert->subject;
-
-      // find common name
-      while (name != nullptr)
-	{
-	  if (!MBEDTLS_OID_CMP(MBEDTLS_OID_AT_CN, &name->oid))
-	    break;
-	  name = name->next;
-	}
-
-      if (name)
-	return std::string((const char *)name->val.p, name->val.len);
-      else
-	return std::string("");
-    }
-
     static std::string status_string(const mbedtls_x509_crt *cert, const int depth, const uint32_t *flags)
     {
       std::ostringstream os;
@@ -1219,6 +1275,11 @@ namespace openvpn {
 	ssl->tls_warnings |= SSLAPI::TLS_WARN_SIG_MD5;
       }
 
+      if (cert->sig_md == MBEDTLS_MD_SHA1)
+      {
+	ssl->tls_warnings |= SSLAPI::TLS_WARN_SIG_SHA1;
+      }
+
       // leaf-cert verification
       if (depth == 0)
 	{
@@ -1246,8 +1307,8 @@ namespace openvpn {
 	  // verify tls-remote
 	  if (!self->config->tls_remote.empty())
 	    {
-	      const std::string subject = TLSRemote::sanitize_x509_name(x509_get_subject(cert));
-	      const std::string common_name = TLSRemote::sanitize_common_name(x509_get_common_name(cert));
+	      const std::string subject = TLSRemote::sanitize_x509_name(MbedTLSPKI::x509_get_subject(cert));
+	      const std::string common_name = TLSRemote::sanitize_common_name(MbedTLSPKI::x509_get_common_name(cert));
 	      TLSRemote::log(self->config->tls_remote, subject, common_name);
 	      if (!TLSRemote::test(self->config->tls_remote, subject, common_name))
 		{
@@ -1255,6 +1316,33 @@ namespace openvpn {
 		  fail = true;
 		}
 	    }
+
+	  // verify-x509-name
+	  const VerifyX509Name& verify_x509 = self->config->verify_x509_name;
+	  if (verify_x509.get_mode() != VerifyX509Name::VERIFY_X509_NONE)
+	  {
+	    bool res = false;
+	    switch (verify_x509.get_mode())
+	    {
+	      case VerifyX509Name::VERIFY_X509_SUBJECT_DN:
+	        res = verify_x509.verify(MbedTLSPKI::x509_get_subject(cert, true));
+	        break;
+
+	      case VerifyX509Name::VERIFY_X509_SUBJECT_RDN:
+	      case VerifyX509Name::VERIFY_X509_SUBJECT_RDN_PREFIX:
+	        res = verify_x509.verify(MbedTLSPKI::x509_get_common_name(cert));
+	        break;
+
+	      default:
+	        break;
+	    }
+	    if (!res)
+	    {
+	      OPENVPN_LOG_SSL("VERIFY FAIL -- verify-x509-name failed");
+	      fail = true;
+	    }
+
+	  }
 	}
 
       if (fail)
@@ -1317,7 +1405,7 @@ namespace openvpn {
 	  if (ssl->authcert)
 	    {
 	      // save the Common Name
-	      ssl->authcert->cn = x509_get_common_name(cert);
+	      ssl->authcert->cn = MbedTLSPKI::x509_get_common_name(cert);
 
 	      // save the leaf cert serial number
 	      const mbedtls_x509_buf *s = &cert->serial;

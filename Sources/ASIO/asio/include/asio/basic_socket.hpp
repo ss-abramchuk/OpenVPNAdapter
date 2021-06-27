@@ -294,7 +294,7 @@ public:
    * @note Following the move, the moved-from object is in the same state as if
    * constructed using the @c basic_socket(const executor_type&) constructor.
    */
-  basic_socket(basic_socket&& other)
+  basic_socket(basic_socket&& other) ASIO_NOEXCEPT
     : impl_(std::move(other.impl_))
   {
   }
@@ -939,11 +939,14 @@ public:
    * socket.async_connect(endpoint, connect_handler);
    * @endcode
    */
-  template <typename ConnectHandler>
-  ASIO_INITFN_RESULT_TYPE(ConnectHandler,
+  template <
+      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
+        ConnectHandler ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  ASIO_INITFN_AUTO_RESULT_TYPE(ConnectHandler,
       void (asio::error_code))
   async_connect(const endpoint_type& peer_endpoint,
-      ASIO_MOVE_ARG(ConnectHandler) handler)
+      ASIO_MOVE_ARG(ConnectHandler) handler
+        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     asio::error_code open_ec;
     if (!is_open())
@@ -955,7 +958,7 @@ public:
     }
 
     return async_initiate<ConnectHandler, void (asio::error_code)>(
-        initiate_async_connect(), handler, this, peer_endpoint, open_ec);
+        initiate_async_connect(this), handler, peer_endpoint, open_ec);
   }
 
   /// Set an option on the socket.
@@ -1771,13 +1774,17 @@ public:
    * socket.async_wait(asio::ip::tcp::socket::wait_read, wait_handler);
    * @endcode
    */
-  template <typename WaitHandler>
-  ASIO_INITFN_RESULT_TYPE(WaitHandler,
+  template <
+      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
+        WaitHandler ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  ASIO_INITFN_AUTO_RESULT_TYPE(WaitHandler,
       void (asio::error_code))
-  async_wait(wait_type w, ASIO_MOVE_ARG(WaitHandler) handler)
+  async_wait(wait_type w,
+      ASIO_MOVE_ARG(WaitHandler) handler
+        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return async_initiate<WaitHandler, void (asio::error_code)>(
-        initiate_async_wait(), handler, this, w);
+        initiate_async_wait(this), handler, w);
   }
 
 protected:
@@ -1786,7 +1793,7 @@ protected:
    * This function destroys the socket, cancelling any outstanding asynchronous
    * operations associated with the socket as if by calling @c cancel.
    */
-  ~basic_socket()
+  virtual ~basic_socket()
   {
   }
 
@@ -1811,11 +1818,24 @@ private:
   basic_socket(const basic_socket&) ASIO_DELETED;
   basic_socket& operator=(const basic_socket&) ASIO_DELETED;
 
-  struct initiate_async_connect
+  class initiate_async_connect
   {
+  public:
+    typedef Executor executor_type;
+
+    explicit initiate_async_connect(basic_socket* self)
+      : self_(self)
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return self_->get_executor();
+    }
+
     template <typename ConnectHandler>
     void operator()(ASIO_MOVE_ARG(ConnectHandler) handler,
-        basic_socket* self, const endpoint_type& peer_endpoint,
+        const endpoint_type& peer_endpoint,
         const asio::error_code& open_ec) const
     {
       // If you get an error on the following line it means that your handler
@@ -1824,35 +1844,53 @@ private:
 
       if (open_ec)
       {
-          asio::post(self->impl_.get_executor(),
+          asio::post(self_->impl_.get_executor(),
               asio::detail::bind_handler(
                 ASIO_MOVE_CAST(ConnectHandler)(handler), open_ec));
       }
       else
       {
         detail::non_const_lvalue<ConnectHandler> handler2(handler);
-        self->impl_.get_service().async_connect(
-            self->impl_.get_implementation(), peer_endpoint,
-            handler2.value, self->impl_.get_implementation_executor());
+        self_->impl_.get_service().async_connect(
+            self_->impl_.get_implementation(), peer_endpoint,
+            handler2.value, self_->impl_.get_implementation_executor());
       }
     }
+
+  private:
+    basic_socket* self_;
   };
 
-  struct initiate_async_wait
+  class initiate_async_wait
   {
+  public:
+    typedef Executor executor_type;
+
+    explicit initiate_async_wait(basic_socket* self)
+      : self_(self)
+    {
+    }
+
+    executor_type get_executor() const ASIO_NOEXCEPT
+    {
+      return self_->get_executor();
+    }
+
     template <typename WaitHandler>
-    void operator()(ASIO_MOVE_ARG(WaitHandler) handler,
-        basic_socket* self, wait_type w) const
+    void operator()(ASIO_MOVE_ARG(WaitHandler) handler, wait_type w) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a WaitHandler.
       ASIO_WAIT_HANDLER_CHECK(WaitHandler, handler) type_check;
 
       detail::non_const_lvalue<WaitHandler> handler2(handler);
-      self->impl_.get_service().async_wait(
-          self->impl_.get_implementation(), w, handler2.value,
-          self->impl_.get_implementation_executor());
+      self_->impl_.get_service().async_wait(
+          self_->impl_.get_implementation(), w, handler2.value,
+          self_->impl_.get_implementation_executor());
     }
+
+  private:
+    basic_socket* self_;
   };
 };
 

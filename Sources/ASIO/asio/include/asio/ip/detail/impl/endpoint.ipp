@@ -37,6 +37,10 @@ endpoint::endpoint() ASIO_NOEXCEPT
   data_.v4.sin_family = ASIO_OS_DEF(AF_INET);
   data_.v4.sin_port = 0;
   data_.v4.sin_addr.s_addr = ASIO_OS_DEF(INADDR_ANY);
+#if defined(ASIO_USE_KOVPN_ROUTE_ID)
+  data_.v4_sin_ovpn_magic = 0;
+  data_.v4_sin_ovpn_route_id = 0;
+#endif
 }
 
 endpoint::endpoint(int family, unsigned short port_num) ASIO_NOEXCEPT
@@ -49,6 +53,10 @@ endpoint::endpoint(int family, unsigned short port_num) ASIO_NOEXCEPT
     data_.v4.sin_port =
       asio::detail::socket_ops::host_to_network_short(port_num);
     data_.v4.sin_addr.s_addr = ASIO_OS_DEF(INADDR_ANY);
+#if defined(ASIO_USE_KOVPN_ROUTE_ID)
+    data_.v4_sin_ovpn_magic = 0;
+    data_.v4_sin_ovpn_route_id = 0;
+#endif
   }
   else
   {
@@ -81,6 +89,10 @@ endpoint::endpoint(const asio::ip::address& addr,
     data_.v4.sin_addr.s_addr =
       asio::detail::socket_ops::host_to_network_long(
         addr.to_v4().to_uint());
+#if defined(ASIO_USE_KOVPN_ROUTE_ID)
+    data_.v4_sin_ovpn_magic = 0;
+    data_.v4_sin_ovpn_route_id = 0;
+#endif
   }
   else
   {

@@ -300,10 +300,18 @@ public:
     return !a.equal(b);
   }
 
-  template <typename Random>
-  void randomize(Random& r)
+#define HAVE_ASIO_RESOLVER_RESULTS_DATA
+
+  /// Return a pointer to the underlying results vector.
+  auto* data()
   {
-    std::shuffle(this->values_->begin(), this->values_->end(), r);
+    return this->values_.get();
+  }
+
+  /// Return a const pointer to the underlying results vector.
+  const auto* cdata() const
+  {
+    return this->values_.get();
   }
 
 private:

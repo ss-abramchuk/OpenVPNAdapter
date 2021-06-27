@@ -2,31 +2,25 @@ version: 1.0.{build}
 
 image: Visual Studio 2019
 
+cache: c:\tools\vcpkg\installed\
+
 clone_folder: c:\ovpn3\core
 
 install:
-- pip install rfc6266 requests
-- if not exist "C:\strawberry" choco install strawberryperl -y
-- set PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
+ - cd C:\Tools\vcpkg
+ - git pull
+ - .\bootstrap-vcpkg.bat
+ - .\vcpkg upgrade --no-dry-run --overlay-ports=%APPVEYOR_BUILD_FOLDER%\deps\vcpkg-ports
+ - .\vcpkg install asio:x64-windows openssl-windows:x64-windows tap-windows6:x64-windows lz4:x64-windows gtest:x64-windows jsoncpp:x64-windows --overlay-ports=%APPVEYOR_BUILD_FOLDER%\deps\vcpkg-ports"
+ - cd %APPVEYOR_BUILD_FOLDER%
 
-environment:
-  MSVC_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community
-  O3: C:\ovpn3
-  STATIC: 1
-
-before_build:
-- cmd: cd win && python buildep.py
-
-after_build:
-- cmd: copy c:\ovpn3\deps\amd64\openssl\out32dll\ssleay32.dll c:\ovpn3\core\win\x64\ReleaseOpenSSL\
-- cmd: copy c:\ovpn3\deps\amd64\openssl\out32dll\libeay32.dll c:\ovpn3\core\win\x64\ReleaseOpenSSL\
-
-platform: x64
-
-configuration: ReleaseOpenSSL
+build_script:
+ - cmake -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -A x64 -B build .
+ - cmake --build build --config Release
 
 artifacts:
-  - path: win\x64\ReleaseOpenSSL\cli.exe
-  - path: win\x64\ReleaseOpenSSL\*.dll
+ - path: build\test\ovpncli\Release\*
+ - path: build\openvpn\omi\Release\*
+ - path: build\openvpn\ovpnagent\win\Release\*
 
 

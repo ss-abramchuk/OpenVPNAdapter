@@ -186,6 +186,18 @@ public:
     impl_.address(addr);
   }
 
+#if defined(ASIO_USE_KOVPN_ROUTE_ID)
+  int get_route_id() const
+  {
+    return impl_.get_route_id();
+  }
+
+  void set_route_id(const int route_id)
+  {
+    impl_.set_route_id(route_id);
+  }
+#endif
+
   /// Compare two endpoints for equality.
   friend bool operator==(const basic_endpoint<InternetProtocol>& e1,
       const basic_endpoint<InternetProtocol>& e2) ASIO_NOEXCEPT

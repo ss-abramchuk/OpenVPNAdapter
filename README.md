@@ -35,7 +35,7 @@ To install OpenVPNAdapter with Cocoapods, add the following lines to your `Podfi
 ```ruby
 target 'Your Target Name' do
   use_frameworks!
-  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.7.0'
+  pod 'OpenVPNAdapter', :git => 'https://github.com/ss-abramchuk/OpenVPNAdapter.git', :tag => '0.8.0'
 end
 ```
 
@@ -160,7 +160,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     var startHandler: ((Error?) -> Void)?
     var stopHandler: (() -> Void)?
 
-    override func startTunnel(options: [String : NSObject]?, completionHandler: @escaping (Error?) -> Void) {
+    override func startTunnel(
+        options: [String : NSObject]?, 
+        completionHandler: @escaping (Error?) -> Void
+    ) {
         // There are many ways to provide OpenVPN settings to the tunnel provider. For instance,
         // you can use `options` argument of `startTunnel(options:completionHandler:)` method or get
         // settings from `protocolConfiguration.providerConfiguration` property of `NEPacketTunnelProvider`
@@ -240,7 +243,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         vpnAdapter.connect(using: packetFlow)
     }
 
-    override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
+    override func stopTunnel(
+        with reason: NEProviderStopReason, 
+        completionHandler: @escaping () -> Void
+    ) {
         stopHandler = completionHandler
 
         if vpnReachability.isTracking {
@@ -260,7 +266,11 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     // `OpenVPNAdapterPacketFlow` method signatures are similar to `NEPacketTunnelFlow` so
     // you can just extend that class to adopt `OpenVPNAdapterPacketFlow` protocol and
     // send `self.packetFlow` to `completionHandler` callback.
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, completionHandler: @escaping (Error?) -> Void) {
+    func openVPNAdapter(
+        _ openVPNAdapter: OpenVPNAdapter, 
+        configureTunnelWithNetworkSettings networkSettings: NEPacketTunnelNetworkSettings?, 
+        completionHandler: @escaping (Error?) -> Void
+    ) {
         // In order to direct all DNS queries first to the VPN DNS servers before the primary DNS servers
         // send empty string to NEDNSSettings.matchDomains  
         networkSettings?.dnsSettings?.matchDomains = [""]
@@ -270,7 +280,11 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     }
 
     // Process events returned by the OpenVPN library
-    func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleEvent event: OpenVPNAdapterEvent, message: String?) {
+    func openVPNAdapter(
+        _ openVPNAdapter: OpenVPNAdapter, 
+        handleEvent event: 
+        OpenVPNAdapterEvent, message: String?
+    ) {
         switch event {
         case .connected:
             if reasserting {
@@ -303,9 +317,8 @@ extension PacketTunnelProvider: OpenVPNAdapterDelegate {
     // Handle errors thrown by the OpenVPN library
     func openVPNAdapter(_ openVPNAdapter: OpenVPNAdapter, handleError error: Error) {
         // Handle only fatal errors
-        guard let fatal = (error as NSError).userInfo[OpenVPNAdapterErrorFatalKey] as? Bool, fatal == true else {
-            return
-        }
+        guard let fatal = (error as NSError).userInfo[OpenVPNAdapterErrorFatalKey] as? Bool, 
+              fatal == true else { return }
 
         if vpnReachability.isTracking {
             vpnReachability.stopTracking()

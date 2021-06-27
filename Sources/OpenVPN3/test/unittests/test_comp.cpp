@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -170,7 +170,7 @@ void test_with_corpus(Compress& compressor,
     "comp-testdata/xargs.1",
    };
   for (auto fn: filenames) {
-      test(UNITTEST_SOURCE_DIR + fn, compressor, decompressor, frame, block_size, n_compress, n_expand_per_compress, bytes,
+      test(std::string(UNITTEST_SOURCE_DIR) + '/' + fn, compressor, decompressor, frame, block_size, n_compress, n_expand_per_compress, bytes,
 	      compress_bytes);
   }
 }

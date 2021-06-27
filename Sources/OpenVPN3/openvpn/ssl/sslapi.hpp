@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -57,8 +57,9 @@ namespace openvpn {
   public:
 
     enum TLSWarnings {
+      TLS_WARN_NONE = 0,
       TLS_WARN_SIG_MD5 = (1 << 0),
-      TLS_WARN_NAME_CONSTRAINTS = (1 << 1)
+      TLS_WARN_SIG_SHA1 = (1 << 1)
     };
 
     typedef RCPtr<SSLAPI> Ptr;
@@ -72,6 +73,7 @@ namespace openvpn {
     virtual bool read_ciphertext_ready() const = 0;
     virtual BufferPtr read_ciphertext() = 0;
     virtual std::string ssl_handshake_details() const = 0;
+    virtual bool export_keying_material(const std::string& label, unsigned char* dest, size_t size) = 0;
     virtual bool did_full_handshake() = 0;
     virtual const AuthCert::Ptr& auth_cert() const = 0;
     virtual void mark_no_cache() = 0; // prevent caching of client-side session (only meaningful when client_session_tickets is enabled)
@@ -113,7 +115,6 @@ namespace openvpn {
       LF_PARSE_MODE                     = (1<<0),
       LF_ALLOW_CLIENT_CERT_NOT_REQUIRED = (1<<1),
       LF_RELAY_MODE                     = (1<<2), // look for "relay-ca" instead of "ca" directive
-      LF_ALLOW_NAME_CONSTRAINTS         = (1<<3)  // do not fail on Name Constraints ext and drop a warning to UI
     };
 
     std::string private_key_type_string() const
@@ -171,7 +172,6 @@ namespace openvpn {
     virtual void set_tls_cert_profile(const TLSCertProfile::Type type) = 0;
     virtual void set_tls_cert_profile_override(const std::string& override) = 0;
     virtual void set_local_cert_enabled(const bool v) = 0;
-    virtual void set_force_aes_cbc_ciphersuites(const bool v) = 0;
     virtual void set_x509_track(X509Track::ConfigSet x509_track_config_arg) = 0;
     virtual void set_rng(const RandomAPI::Ptr& rng_arg) = 0;
     virtual void load(const OptionList& opt, const unsigned int lflags) = 0;
