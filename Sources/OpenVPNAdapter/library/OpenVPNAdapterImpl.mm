@@ -10,7 +10,7 @@
 
 #define TUNNEL_CONFIGURATION_TIMEOUT 30
 
-#import "OpenVPNAdapter.h"
+#import "OpenVPNAdapterImpl.h"
 
 #import <NetworkExtension/NetworkExtension.h>
 
