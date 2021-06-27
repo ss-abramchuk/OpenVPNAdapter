@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.name = "OpenVPNAdapter"
-  s.version = "0.7.0"
+  s.version = "0.8.0"
   s.summary   = "Objective-C wrapper for OpenVPN library. Compatible with iOS and macOS."
   s.description = <<-DESC
     OpenVPNAdapter is an Objective-C framework that allows to easily configure and establish VPN connection using OpenVPN protocol.
