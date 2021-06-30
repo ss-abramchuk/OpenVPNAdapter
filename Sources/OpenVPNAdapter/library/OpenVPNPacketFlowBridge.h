@@ -16,8 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OpenVPNAdapterPacketFlow> packetFlow;
 
-@property (nonatomic, readonly) CFSocketRef openVPNSocket;
-@property (nonatomic, readonly) CFSocketRef packetFlowSocket;
+@property (nonatomic, readonly) int openVPNSocket;
+@property (nonatomic, readonly) int packetFlowSocket;
+@property (nonatomic, readonly) dispatch_source_t source;
 
 - (BOOL)configureSocketsWithError:(NSError **)error;
 - (void)invalidateSocketsIfNeeded;
