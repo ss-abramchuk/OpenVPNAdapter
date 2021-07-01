@@ -372,7 +372,7 @@
 }
 
 - (CFSocketNativeHandle)socketHandle {
-    return CFSocketGetNative(self.packetFlowBridge.openVPNSocket);
+    return self.packetFlowBridge.openVPNSocket;
 }
 
 - (void)clientEventName:(NSString *)eventName message:(NSString *)message {

@@ -19,12 +19,10 @@
 
 #pragma mark - Sockets Configuration
 
-static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFDataRef address, const void *data, void *obj) {
-    if (type != kCFSocketDataCallBack) { return; }
+static void SocketCallback(NSData *data, OpenVPNPacketFlowBridge *obj) {
+    OpenVPNPacket *packet = [[OpenVPNPacket alloc] initWithVPNData:data];
     
-    OpenVPNPacket *packet = [[OpenVPNPacket alloc] initWithVPNData:(__bridge NSData *)data];
-    
-    OpenVPNPacketFlowBridge *bridge = (__bridge OpenVPNPacketFlowBridge *)obj;
+    OpenVPNPacketFlowBridge *bridge = obj;
     [bridge writePackets:@[packet] toPacketFlow:bridge.packetFlow];
 }
 
@@ -46,13 +44,24 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
         return NO;
     }
     
-    CFSocketContext socketCtxt = {0, (__bridge void *)self, NULL, NULL, NULL};
+    _packetFlowSocket = sockets[0];
+    _openVPNSocket = sockets[1];
     
-    _packetFlowSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[0], kCFSocketDataCallBack,
-                                                 SocketCallback, &socketCtxt);
-    _openVPNSocket = CFSocketCreateWithNative(kCFAllocatorDefault, sockets[1], kCFSocketNoCallBack, NULL, NULL);
+    int flags = fcntl(_packetFlowSocket, F_GETFL);
+    bool success = fcntl(_packetFlowSocket, F_SETFL, flags | O_NONBLOCK) >= 0;
+    _source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _packetFlowSocket, 0, DISPATCH_QUEUE_SERIAL);
+    dispatch_source_set_event_handler(_source, ^{
+        unsigned long bytesAvail = dispatch_source_get_data(_source);
+        static char buffer[1024*500];    // 500 KB buffer
+        unsigned long actual = read(_packetFlowSocket, buffer, sizeof(buffer));
+        NSData* someData = [NSData dataWithBytes:(const void *)buffer length:sizeof(unsigned char)*actual];
+        SocketCallback(someData, self);
+    });
+    dispatch_source_set_cancel_handler(_source, ^{
+        close(_packetFlowSocket);
+    });
     
-    if (!(_packetFlowSocket && _openVPNSocket)) {
+    if (!(flags != 0 && success && _source)) {
         if (error) {
             NSDictionary *userInfo = @{
                 NSLocalizedDescriptionKey: @"Failed to create core foundation sockets from native sockets.",
@@ -70,15 +79,13 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
     if (!([self configureOptionsForSocket:_packetFlowSocket error:error] &&
           [self configureOptionsForSocket:_openVPNSocket error:error])) { return NO; }
     
-    CFRunLoopSourceRef packetFlowSocketSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _packetFlowSocket, 0);
-    CFRunLoopAddSource(CFRunLoopGetMain(), packetFlowSocketSource, kCFRunLoopDefaultMode);
-    CFRelease(packetFlowSocketSource);
+    dispatch_activate(_source);
     
     return YES;
 }
 
-- (BOOL)configureOptionsForSocket:(CFSocketRef)socket error:(NSError * __autoreleasing *)error {
-    CFSocketNativeHandle socketHandle = CFSocketGetNative(socket);
+- (BOOL)configureOptionsForSocket:(int)socket error:(NSError * __autoreleasing *)error {
+    CFSocketNativeHandle socketHandle = socket;
     
     int buf_value = 65536;
     socklen_t buf_len = sizeof(buf_value);
@@ -120,17 +127,14 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 - (void)invalidateSocketsIfNeeded {
     if (_openVPNSocket) {
-        CFSocketInvalidate(_openVPNSocket);
-        CFRelease(_openVPNSocket);
-        
+        close(_openVPNSocket);
         _openVPNSocket = NULL;
     }
     
     if (_packetFlowSocket) {
-        CFSocketInvalidate(_packetFlowSocket);
-        CFRelease(_packetFlowSocket);
-        
+        dispatch_source_cancel(_source);
         _packetFlowSocket = NULL;
+        _source = NULL;
     }
 }
 
@@ -149,14 +153,14 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType type, CFData
 
 #pragma mark - TUN -> VPN
 
-- (void)writePackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols toSocket:(CFSocketRef)socket {
-    if (socket == NULL) { return; }
-    
+- (void)writePackets:(NSArray<NSData *> *)packets protocols:(NSArray<NSNumber *> *)protocols toSocket:(int)socket {
     [packets enumerateObjectsUsingBlock:^(NSData *data, NSUInteger idx, BOOL *stop) {
         NSNumber *protocolFamily = protocols[idx];
         OpenVPNPacket *packet = [[OpenVPNPacket alloc] initWithPacketFlowData:data protocolFamily:protocolFamily];
-        
-        CFSocketSendData(socket, NULL, (CFDataRef)packet.vpnData, 0.05);
+
+        char buffer[1024*500];
+        [packet.vpnData getBytes:buffer length:packet.vpnData.length];
+        write(socket, buffer, packet.vpnData.length);
     }];
 }
 
