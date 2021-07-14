@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <string>
 #include <type_traits>
@@ -82,7 +82,11 @@ namespace openvpn
 
 	send_ring_ = (TUN_RING*)MapViewOfFile(send_ring_hmem(), FILE_MAP_ALL_ACCESS, 0, 0, sizeof(TUN_RING));
 	receive_ring_ = (TUN_RING*)MapViewOfFile(receive_ring_hmem(), FILE_MAP_ALL_ACCESS, 0, 0, sizeof(TUN_RING));
-	send_tail_moved_asio_event_.assign(send_ring_tail_moved_());
+
+	HANDLE handle;
+	DuplicateHandle(GetCurrentProcess(), send_ring_tail_moved_(),
+			GetCurrentProcess(), &handle, 0, FALSE, DUPLICATE_SAME_ACCESS);
+	send_tail_moved_asio_event_.assign(handle);
       }
 
       RingBuffer(openvpn_io::io_context& io_context,

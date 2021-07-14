@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -41,7 +41,7 @@ namespace openvpn {
   inline std::string get_hwaddr()
   {
 #if defined(OPENVPN_PLATFORM_WIN) && !defined(OPENVPN_PLATFORM_UWP)
-    const TunWin::Util::DefaultGateway dg;
+    const TunWin::Util::BestGateway dg;
     if (dg.defined())
       {
 	const TunWin::Util::IPAdaptersInfo ai_list;

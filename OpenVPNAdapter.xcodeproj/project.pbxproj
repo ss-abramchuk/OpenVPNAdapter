@@ -13,10 +13,11 @@
 		C910EAEF24EBBFB60081AF13 /* ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = C910EAEC24EBBFB60081AF13 /* ca.crt */; };
 		C910EAF024EBBFB60081AF13 /* client.key in Resources */ = {isa = PBXBuildFile; fileRef = C910EAED24EBBFB60081AF13 /* client.key */; };
 		C910EAF224EBC6F90081AF13 /* client.ovpn in Resources */ = {isa = PBXBuildFile; fileRef = C910EAF124EBC6F90081AF13 /* client.ovpn */; };
+		C96B36B326888CF20054CA12 /* OpenVPNAdapterImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = C96B36B226888CF20054CA12 /* OpenVPNAdapterImpl.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97E5F6E24122F12005C2EBC /* NSArray+OpenVPNAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */; };
 		C97E5F7024122F22005C2EBC /* NSError+OpenVPNError.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */; };
 		C97E5F7224122F5C005C2EBC /* OpenVPNClient.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */; };
-		C97E5F7424122FE6005C2EBC /* OpenVPNAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7324122FE6005C2EBC /* OpenVPNAdapter.h */; };
+		C97E5F7424122FE6005C2EBC /* OpenVPNAdapterImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7324122FE6005C2EBC /* OpenVPNAdapterImpl.h */; };
 		C97E5F762412300A005C2EBC /* OpenVPNAdapterEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F752412300A005C2EBC /* OpenVPNAdapterEvent.h */; };
 		C97E5F7824123019005C2EBC /* OpenVPNAdapterPacketFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7724123019005C2EBC /* OpenVPNAdapterPacketFlow.h */; };
 		C97E5F7A24123022005C2EBC /* OpenVPNCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = C97E5F7924123022005C2EBC /* OpenVPNCertificate.h */; };
@@ -66,7 +67,7 @@
 		OBJ_253 /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* xxhash.c */; };
 		OBJ_260 /* NSArray+OpenVPNAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_28 /* NSArray+OpenVPNAdditions.m */; };
 		OBJ_261 /* NSError+OpenVPNError.m in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* NSError+OpenVPNError.m */; };
-		OBJ_262 /* OpenVPNAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* OpenVPNAdapter.mm */; };
+		OBJ_262 /* OpenVPNAdapterImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* OpenVPNAdapterImpl.mm */; };
 		OBJ_263 /* OpenVPNCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* OpenVPNCertificate.m */; };
 		OBJ_264 /* OpenVPNClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* OpenVPNClient.mm */; };
 		OBJ_265 /* OpenVPNConfiguration.mm in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* OpenVPNConfiguration.mm */; };
@@ -96,7 +97,6 @@
 		OBJ_291 /* OpenVPNIPv6Preference.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_59 /* OpenVPNIPv6Preference.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_292 /* OpenVPNAdapterPacketFlow.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_60 /* OpenVPNAdapterPacketFlow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_293 /* OpenVPNMinTLSVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_61 /* OpenVPNMinTLSVersion.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		OBJ_294 /* OpenVPNAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_62 /* OpenVPNAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_295 /* OpenVPNConnectionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_63 /* OpenVPNConnectionInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_296 /* OpenVPNReachabilityStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_64 /* OpenVPNReachabilityStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_297 /* OpenVPNServerEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_65 /* OpenVPNServerEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -229,15 +229,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNConfigurationEvaluation.h; sourceTree = "<group>"; };
+		C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = OpenVPNConfigurationEvaluation.h; sourceTree = "<group>"; };
 		C910EAEB24EBBFB60081AF13 /* client.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = client.crt; sourceTree = "<group>"; };
 		C910EAEC24EBBFB60081AF13 /* ca.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ca.crt; sourceTree = "<group>"; };
 		C910EAED24EBBFB60081AF13 /* client.key */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = client.key; sourceTree = "<group>"; };
 		C910EAF124EBC6F90081AF13 /* client.ovpn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = client.ovpn; sourceTree = "<group>"; };
+		C96B36B226888CF20054CA12 /* OpenVPNAdapterImpl.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = OpenVPNAdapterImpl.h; sourceTree = "<group>"; };
 		C97E5F6D24122F12005C2EBC /* NSArray+OpenVPNAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+OpenVPNAdditions.h"; sourceTree = "<group>"; };
 		C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+OpenVPNError.h"; sourceTree = "<group>"; };
 		C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNClient.h; sourceTree = "<group>"; };
-		C97E5F7324122FE6005C2EBC /* OpenVPNAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapter.h; sourceTree = "<group>"; };
+		C97E5F7324122FE6005C2EBC /* OpenVPNAdapterImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapterImpl.h; sourceTree = "<group>"; };
 		C97E5F752412300A005C2EBC /* OpenVPNAdapterEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapterEvent.h; sourceTree = "<group>"; };
 		C97E5F7724123019005C2EBC /* OpenVPNAdapterPacketFlow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapterPacketFlow.h; sourceTree = "<group>"; };
 		C97E5F7924123022005C2EBC /* OpenVPNCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenVPNCertificate.h; sourceTree = "<group>"; };
@@ -282,7 +283,7 @@
 		C97E5FDB24123F48005C2EBC /* Bundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		C9EABF3024110BE200D828D4 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C9EABF3224110E7500D828D4 /* ovpnapi.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ovpnapi.hpp; sourceTree = "<group>"; };
-		C9EABF3324110E7500D828D4 /* ovpncli.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ovpncli.hpp; sourceTree = "<group>"; };
+		C9EABF3324110E7500D828D4 /* ovpncli.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = ovpncli.hpp; sourceTree = "<group>"; };
 		C9EABF492411133400D828D4 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		C9EABF642411189800D828D4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C9EABF7324111AEE00D828D4 /* OpenVPNClient.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = OpenVPNClient.xcconfig; sourceTree = "<group>"; };
@@ -427,7 +428,7 @@
 		OBJ_24 /* lz4frame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lz4frame.h; sourceTree = "<group>"; };
 		OBJ_28 /* NSArray+OpenVPNAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+OpenVPNAdditions.m"; sourceTree = "<group>"; };
 		OBJ_29 /* NSError+OpenVPNError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSError+OpenVPNError.m"; sourceTree = "<group>"; };
-		OBJ_30 /* OpenVPNAdapter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNAdapter.mm; sourceTree = "<group>"; };
+		OBJ_30 /* OpenVPNAdapterImpl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNAdapterImpl.mm; sourceTree = "<group>"; };
 		OBJ_31 /* OpenVPNCertificate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenVPNCertificate.m; sourceTree = "<group>"; };
 		OBJ_32 /* OpenVPNClient.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNClient.mm; sourceTree = "<group>"; };
 		OBJ_33 /* OpenVPNConfiguration.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNConfiguration.mm; sourceTree = "<group>"; };
@@ -445,28 +446,27 @@
 		OBJ_45 /* OpenVPNServerEntry.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNServerEntry.mm; sourceTree = "<group>"; };
 		OBJ_46 /* OpenVPNSessionToken.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNSessionToken.mm; sourceTree = "<group>"; };
 		OBJ_47 /* OpenVPNTransportStats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenVPNTransportStats.mm; sourceTree = "<group>"; };
-		OBJ_49 /* OpenVPNCompressionMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNCompressionMode.h; sourceTree = "<group>"; };
-		OBJ_50 /* OpenVPNKeyType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNKeyType.h; sourceTree = "<group>"; };
-		OBJ_51 /* OpenVPNAdapterEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapterEvent.h; sourceTree = "<group>"; };
-		OBJ_52 /* OpenVPNError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNError.h; sourceTree = "<group>"; };
-		OBJ_53 /* OpenVPNTransportProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNTransportProtocol.h; sourceTree = "<group>"; };
-		OBJ_54 /* OpenVPNTLSCertProfile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNTLSCertProfile.h; sourceTree = "<group>"; };
-		OBJ_55 /* OpenVPNPrivateKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNPrivateKey.h; sourceTree = "<group>"; };
-		OBJ_56 /* OpenVPNInterfaceStats.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNInterfaceStats.h; sourceTree = "<group>"; };
-		OBJ_58 /* OpenVPNReachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNReachability.h; sourceTree = "<group>"; };
-		OBJ_59 /* OpenVPNIPv6Preference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNIPv6Preference.h; sourceTree = "<group>"; };
-		OBJ_60 /* OpenVPNAdapterPacketFlow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapterPacketFlow.h; sourceTree = "<group>"; };
-		OBJ_61 /* OpenVPNMinTLSVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNMinTLSVersion.h; sourceTree = "<group>"; };
-		OBJ_62 /* OpenVPNAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNAdapter.h; sourceTree = "<group>"; };
-		OBJ_63 /* OpenVPNConnectionInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNConnectionInfo.h; sourceTree = "<group>"; };
-		OBJ_64 /* OpenVPNReachabilityStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNReachabilityStatus.h; sourceTree = "<group>"; };
-		OBJ_65 /* OpenVPNServerEntry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNServerEntry.h; sourceTree = "<group>"; };
-		OBJ_66 /* OpenVPNConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNConfiguration.h; sourceTree = "<group>"; };
-		OBJ_67 /* OpenVPNCredentials.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNCredentials.h; sourceTree = "<group>"; };
-		OBJ_68 /* OpenVPNTransportStats.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNTransportStats.h; sourceTree = "<group>"; };
-		OBJ_69 /* OpenVPNSessionToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNSessionToken.h; sourceTree = "<group>"; };
-		OBJ_70 /* OpenVPNCertificate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenVPNCertificate.h; sourceTree = "<group>"; };
-		OBJ_73 /* ovpncli.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ovpncli.mm; sourceTree = "<group>"; };
+		OBJ_49 /* OpenVPNCompressionMode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNCompressionMode.h; sourceTree = "<group>"; };
+		OBJ_50 /* OpenVPNKeyType.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNKeyType.h; sourceTree = "<group>"; };
+		OBJ_51 /* OpenVPNAdapterEvent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNAdapterEvent.h; sourceTree = "<group>"; };
+		OBJ_52 /* OpenVPNError.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNError.h; sourceTree = "<group>"; };
+		OBJ_53 /* OpenVPNTransportProtocol.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNTransportProtocol.h; sourceTree = "<group>"; };
+		OBJ_54 /* OpenVPNTLSCertProfile.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNTLSCertProfile.h; sourceTree = "<group>"; };
+		OBJ_55 /* OpenVPNPrivateKey.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNPrivateKey.h; sourceTree = "<group>"; };
+		OBJ_56 /* OpenVPNInterfaceStats.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNInterfaceStats.h; sourceTree = "<group>"; };
+		OBJ_58 /* OpenVPNReachability.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNReachability.h; sourceTree = "<group>"; };
+		OBJ_59 /* OpenVPNIPv6Preference.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNIPv6Preference.h; sourceTree = "<group>"; };
+		OBJ_60 /* OpenVPNAdapterPacketFlow.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNAdapterPacketFlow.h; sourceTree = "<group>"; };
+		OBJ_61 /* OpenVPNMinTLSVersion.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNMinTLSVersion.h; sourceTree = "<group>"; };
+		OBJ_63 /* OpenVPNConnectionInfo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNConnectionInfo.h; sourceTree = "<group>"; };
+		OBJ_64 /* OpenVPNReachabilityStatus.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNReachabilityStatus.h; sourceTree = "<group>"; };
+		OBJ_65 /* OpenVPNServerEntry.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNServerEntry.h; sourceTree = "<group>"; };
+		OBJ_66 /* OpenVPNConfiguration.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNConfiguration.h; sourceTree = "<group>"; };
+		OBJ_67 /* OpenVPNCredentials.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNCredentials.h; sourceTree = "<group>"; };
+		OBJ_68 /* OpenVPNTransportStats.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNTransportStats.h; sourceTree = "<group>"; };
+		OBJ_69 /* OpenVPNSessionToken.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNSessionToken.h; sourceTree = "<group>"; };
+		OBJ_70 /* OpenVPNCertificate.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = OpenVPNCertificate.h; sourceTree = "<group>"; };
+		OBJ_73 /* ovpncli.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = ovpncli.mm; sourceTree = "<group>"; };
 		OBJ_85 /* aes.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = aes.c; sourceTree = "<group>"; };
 		OBJ_86 /* aesni.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = aesni.c; sourceTree = "<group>"; };
 		OBJ_87 /* arc4.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = arc4.c; sourceTree = "<group>"; };
@@ -737,8 +737,8 @@
 				OBJ_28 /* NSArray+OpenVPNAdditions.m */,
 				C97E5F6F24122F22005C2EBC /* NSError+OpenVPNError.h */,
 				OBJ_29 /* NSError+OpenVPNError.m */,
-				C97E5F7324122FE6005C2EBC /* OpenVPNAdapter.h */,
-				OBJ_30 /* OpenVPNAdapter.mm */,
+				C97E5F7324122FE6005C2EBC /* OpenVPNAdapterImpl.h */,
+				OBJ_30 /* OpenVPNAdapterImpl.mm */,
 				C97E5F7924123022005C2EBC /* OpenVPNCertificate.h */,
 				OBJ_31 /* OpenVPNCertificate.m */,
 				C97E5F7124122F5C005C2EBC /* OpenVPNClient.h */,
@@ -800,9 +800,9 @@
 				C910EAE624EBB5210081AF13 /* OpenVPNConfigurationEvaluation.h */,
 				OBJ_58 /* OpenVPNReachability.h */,
 				OBJ_59 /* OpenVPNIPv6Preference.h */,
+				C96B36B226888CF20054CA12 /* OpenVPNAdapterImpl.h */,
 				OBJ_60 /* OpenVPNAdapterPacketFlow.h */,
 				OBJ_61 /* OpenVPNMinTLSVersion.h */,
-				OBJ_62 /* OpenVPNAdapter.h */,
 				OBJ_63 /* OpenVPNConnectionInfo.h */,
 				OBJ_64 /* OpenVPNReachabilityStatus.h */,
 				OBJ_65 /* OpenVPNServerEntry.h */,
@@ -996,7 +996,7 @@
 				C97E5F9E2412314A005C2EBC /* OpenVPNConfigurationEvaluation.h in Headers */,
 				C97E5FA62412317B005C2EBC /* OpenVPNReachabilityStatus.h in Headers */,
 				OBJ_287 /* OpenVPNPrivateKey.h in Headers */,
-				C97E5F7424122FE6005C2EBC /* OpenVPNAdapter.h in Headers */,
+				C97E5F7424122FE6005C2EBC /* OpenVPNAdapterImpl.h in Headers */,
 				OBJ_288 /* OpenVPNInterfaceStats.h in Headers */,
 				OBJ_290 /* OpenVPNReachability.h in Headers */,
 				OBJ_291 /* OpenVPNIPv6Preference.h in Headers */,
@@ -1011,7 +1011,6 @@
 				C97E5FA824123186005C2EBC /* OpenVPNReachabilityTracker.h in Headers */,
 				OBJ_293 /* OpenVPNMinTLSVersion.h in Headers */,
 				C97E5F7224122F5C005C2EBC /* OpenVPNClient.h in Headers */,
-				OBJ_294 /* OpenVPNAdapter.h in Headers */,
 				OBJ_295 /* OpenVPNConnectionInfo.h in Headers */,
 				OBJ_296 /* OpenVPNReachabilityStatus.h in Headers */,
 				C97E5F822412305C005C2EBC /* OpenVPNConnectionInfo.h in Headers */,
@@ -1023,6 +1022,7 @@
 				C97E5FB0241231BB005C2EBC /* OpenVPNSessionToken+Internal.h in Headers */,
 				C97E5F8024123051005C2EBC /* OpenVPNConfiguration+Internal.h in Headers */,
 				OBJ_299 /* OpenVPNCredentials.h in Headers */,
+				C96B36B326888CF20054CA12 /* OpenVPNAdapterImpl.h in Headers */,
 				OBJ_300 /* OpenVPNTransportStats.h in Headers */,
 				OBJ_301 /* OpenVPNSessionToken.h in Headers */,
 				C97E5FA424123168005C2EBC /* OpenVPNReachability+Internal.h in Headers */,
@@ -1205,7 +1205,7 @@
 			files = (
 				OBJ_260 /* NSArray+OpenVPNAdditions.m in Sources */,
 				OBJ_261 /* NSError+OpenVPNError.m in Sources */,
-				OBJ_262 /* OpenVPNAdapter.mm in Sources */,
+				OBJ_262 /* OpenVPNAdapterImpl.mm in Sources */,
 				OBJ_263 /* OpenVPNCertificate.m in Sources */,
 				OBJ_264 /* OpenVPNClient.mm in Sources */,
 				OBJ_265 /* OpenVPNConfiguration.mm in Sources */,
@@ -1551,7 +1551,7 @@
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
 				);
-				MARKETING_VERSION = 0.7.0;
+				MARKETING_VERSION = 0.8.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = OpenVPNAdapter;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
@@ -1581,7 +1581,7 @@
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
 				);
-				MARKETING_VERSION = 0.7.0;
+				MARKETING_VERSION = 0.8.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = OpenVPNAdapter;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";

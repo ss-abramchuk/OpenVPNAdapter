@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -38,6 +38,27 @@ namespace openvpn {
     OPENVPN_EXCEPTION(crypto_alg);
     OPENVPN_SIMPLE_EXCEPTION(crypto_alg_index);
 
+    enum class KeyDerivation {
+      UNDEFINED,
+      OPENVPN_PRF,
+      TLS_EKM
+    };
+
+    inline const char* name(const KeyDerivation kd)
+    {
+      switch (kd)
+	{
+	  case KeyDerivation::UNDEFINED:
+	    return "[PRF undefined]";
+	  case KeyDerivation::OPENVPN_PRF:
+	    return "OpenVPN PRF";
+	  case KeyDerivation::TLS_EKM:
+	    return "TLS Keying Material Exporter [RFC5705]";
+	  default:
+	    return "Unknown";
+	}
+    }
+
     enum Type {
       NONE=0,
 
@@ -56,6 +77,7 @@ namespace openvpn {
       AES_128_GCM,
       AES_192_GCM,
       AES_256_GCM,
+      CHACHA20_POLY1305,
 
       // digests
       MD4,
@@ -134,6 +156,7 @@ namespace openvpn {
       { "AES-128-GCM",  F_CIPHER|F_ALLOW_DC|AEAD|F_NO_CIPHER_DIGEST,  16, 12, 16 },
       { "AES-192-GCM",  F_CIPHER|F_ALLOW_DC|AEAD|F_NO_CIPHER_DIGEST,  24, 12, 16 },
       { "AES-256-GCM",  F_CIPHER|F_ALLOW_DC|AEAD|F_NO_CIPHER_DIGEST,  32, 12, 16 },
+      { "CHACHA20-POLY1305",  F_CIPHER|F_ALLOW_DC|AEAD|F_NO_CIPHER_DIGEST,  32, 12, 16 },
       { "MD4",          F_DIGEST,                              16,  0,  0 },
       { "MD5",          F_DIGEST|F_ALLOW_DC,                   16,  0,  0 },
       { "SHA1",         F_DIGEST|F_ALLOW_DC,                   20,  0,  0 },

@@ -4,7 +4,7 @@
 //               packet encryption, packet authentication, and
 //               packet compression.
 //
-//    Copyright (C) 2012-2017 OpenVPN Inc.
+//    Copyright (C) 2012-2020 OpenVPN Inc.
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License Version 3
@@ -26,6 +26,7 @@
 #include <vector>
 #include <sstream>
 #include <cstring>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -229,7 +230,7 @@ namespace openvpn {
 	return cn;
       }
 
-      long get_sn() const
+      std::int64_t get_sn() const
       {
 	return sn;
       }
@@ -269,10 +270,12 @@ namespace openvpn {
 	  return "OK";
       }
 
+#ifndef UNIT_TEST
     private:
+#endif
       std::string sni;               // SNI (server name indication)
       std::string cn;                // common name
-      long sn;                       // serial number
+      std::int64_t sn;               // serial number
       unsigned char issuer_fp[20];   // issuer cert fingerprint
 
       std::unique_ptr<Fail> fail;
