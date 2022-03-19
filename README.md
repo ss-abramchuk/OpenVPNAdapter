@@ -9,6 +9,9 @@
 ![Swift Package Manager Compatible](https://img.shields.io/badge/Swift%20Package%20Manager-Compatible-4BC51D.svg?style=flat)
 ![License](https://img.shields.io/badge/License-AGPLv3-lightgrey.svg)
 
+## !!!ATTENTION!!!
+Due to the lack of time and motivation the support of this project was dropped. If you need a solution for OpenVPN please take a look at alternatives such as [TunnelKit](https://github.com/passepartoutvpn/tunnelkit).
+
 ## Overview
 OpenVPNAdapter is an Objective-C framework that allows to easily configure and establish VPN connection using OpenVPN protocol. It is based on the original [openvpn3](https://github.com/OpenVPN/openvpn3) library so it has every feature the library has.
 
